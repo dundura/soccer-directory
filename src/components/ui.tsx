@@ -152,7 +152,7 @@ export function AnytimeInlineCTA() {
       <img
         src="/ast-shield.png"
         alt="Anytime Soccer Training"
-        className="hidden sm:block h-24 md:h-28 w-auto opacity-80 shrink-0"
+        className="hidden sm:block h-32 md:h-[150px] w-auto opacity-80 shrink-0 mr-4"
       />
     </div>
   );
