@@ -1,18 +1,19 @@
-import { getClubs, getTeams, getTrainers, getCamps, getTournaments, getBlogPosts } from "@/lib/db";
+import { getClubs, getTeams, getTrainers, getCamps, getTournaments, getFutsalTeams, getBlogPosts } from "@/lib/db";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [clubs, teams, trainers, camps, tournaments, blogPosts] = await Promise.all([
-    getClubs(), getTeams(), getTrainers(), getCamps(), getTournaments(), getBlogPosts(),
+  const [clubs, teams, trainers, camps, tournaments, futsalTeams, blogPosts] = await Promise.all([
+    getClubs(), getTeams(), getTrainers(), getCamps(), getTournaments(), getFutsalTeams(), getBlogPosts(),
   ]);
   const featuredClubs = clubs.filter((c) => c.featured).slice(0, 3);
   const featuredTeams = teams.filter((t) => t.featured).slice(0, 3);
   const featuredTrainers = trainers.filter((t) => t.featured).slice(0, 3);
   const featuredCamps = camps.filter((c) => c.featured).slice(0, 3);
   const featuredTournaments = tournaments.filter((t) => t.featured).slice(0, 3);
+  const featuredFutsal = futsalTeams.filter((t) => t.featured).slice(0, 3);
   const featuredPosts = blogPosts.filter((p) => p.featured).slice(0, 3);
 
   return (
@@ -45,10 +46,11 @@ export default async function HomePage() {
                   {[
                     { label: "🏟️ Clubs", href: "/clubs" },
                     { label: "👥 Teams", href: "/teams" },
+                    { label: "⚽ Futsal", href: "/futsal" },
                     { label: "🎯 Trainers", href: "/trainers" },
                     { label: "⛺ Camps", href: "/camps" },
                     { label: "🤝 Guest Play", href: "/guest-play" },
-                { label: "🏆 Tournaments", href: "/tournaments" },
+                    { label: "🏆 Tournaments", href: "/tournaments" },
                   ].map((link) => (
                     <a
                       key={link.href}
@@ -172,6 +174,42 @@ export default async function HomePage() {
             ))}
           </div>
         </section>
+
+        {/* ── Featured Futsal Teams ─────────────── */}
+        {featuredFutsal.length > 0 && (
+          <section className="py-16 border-t border-border">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Futsal Teams</h2>
+                <p className="text-muted mt-1">Find futsal teams near you</p>
+              </div>
+              <a href="/futsal" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {featuredFutsal.map((team) => (
+                <ListingCard
+                  key={team.id}
+                  href={`/futsal/${team.slug}`}
+                  title={team.name}
+                  subtitle={`${team.clubName || ""} · ${team.city}, ${team.state}`}
+                  badges={[
+                    { label: team.level, variant: "blue" },
+                    { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
+                    { label: team.format, variant: "orange" },
+                    ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : []),
+                  ]}
+                  details={[
+                    { label: "Age Group", value: team.ageGroup },
+                    { label: "Coach", value: team.coach },
+                    { label: "Season", value: team.season },
+                  ]}
+                  featured
+                  cta="View Team"
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── Anytime CTA Mid-page ──────────────── */}
         <section className="py-8">

@@ -8,6 +8,7 @@ import {
   createCampListing,
   createGuestListing,
   createTournamentListing,
+  createFutsalListing,
   deleteListing,
 } from "@/lib/db";
 
@@ -48,6 +49,9 @@ export async function POST(req: Request) {
         break;
       case "tournament":
         slug = await createTournamentListing(data, session.user.id);
+        break;
+      case "futsal":
+        slug = await createFutsalListing(data, session.user.id);
         break;
       default:
         return NextResponse.json({ error: "Invalid listing type" }, { status: 400 });

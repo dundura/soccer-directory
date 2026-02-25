@@ -11,6 +11,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
   const [level, setLevel] = useState("");
   const [state, setState] = useState("");
   const [format, setFormat] = useState("");
+  const [region, setRegion] = useState(searchParams.get("region") || "");
 
   const levels = [...new Set(tournaments.map((t) => t.level))].sort();
   const states = [...new Set(tournaments.map((t) => t.state))].sort();
@@ -24,6 +25,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
     if (level && t.level !== level) return false;
     if (state && t.state !== state) return false;
     if (format && t.format !== format) return false;
+    if (region && t.region !== region) return false;
     return true;
   });
 
@@ -40,6 +42,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
       />
       <FilterBar
         filters={[
+          { label: "All Regions", options: ["US", "International"], value: region, onChange: setRegion },
           { label: "All Levels", options: levels, value: level, onChange: setLevel },
           { label: "All States", options: states, value: state, onChange: setState },
           { label: "All Formats", options: formats, value: format, onChange: setFormat },
@@ -60,6 +63,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
                   { label: tournament.level, variant: "blue" },
                   { label: tournament.format, variant: "orange" },
                   { label: tournament.gender },
+                  { label: tournament.region, variant: tournament.region === "International" ? "purple" : "default" },
                 ]}
                 details={[
                   { label: "Dates", value: tournament.dates },

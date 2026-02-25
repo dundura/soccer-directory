@@ -5,10 +5,12 @@ import { useState } from "react";
 const navLinks = [
   { label: "Clubs", href: "/clubs" },
   { label: "Teams", href: "/teams" },
+  { label: "Futsal", href: "/futsal" },
   { label: "Trainers", href: "/trainers" },
   { label: "Camps", href: "/camps" },
   { label: "Guest Play", href: "/guest-play" },
-  { label: "Tournaments", href: "/tournaments" },
+  { label: "US Tournaments", href: "/tournaments?region=US" },
+  { label: "Int'l Tournaments", href: "/tournaments?region=International" },
   { label: "Blog", href: "/blog" },
 ];
 
@@ -73,7 +75,7 @@ export function MobileMenu() {
               onClick={() => setOpen(false)}
               className="mt-2 text-center py-3 px-4 rounded-xl bg-accent text-white text-lg font-semibold hover:bg-accent-hover transition-colors"
             >
-              List Your Club
+              Get Listed
             </a>
           </nav>
         </div>

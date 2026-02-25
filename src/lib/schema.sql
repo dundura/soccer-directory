@@ -145,6 +145,32 @@ CREATE TABLE IF NOT EXISTS tournaments (
   description TEXT NOT NULL DEFAULT '',
   registration_url TEXT,
   email TEXT,
+  region TEXT NOT NULL DEFAULT 'US',
+  featured BOOLEAN NOT NULL DEFAULT FALSE,
+  user_id TEXT REFERENCES users(id),
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Futsal Teams
+CREATE TABLE IF NOT EXISTS futsal_teams (
+  id TEXT PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  club_name TEXT,
+  city TEXT NOT NULL,
+  state TEXT NOT NULL,
+  level TEXT NOT NULL,
+  age_group TEXT NOT NULL,
+  gender TEXT NOT NULL,
+  coach TEXT NOT NULL,
+  looking_for_players BOOLEAN NOT NULL DEFAULT FALSE,
+  positions_needed TEXT,
+  season TEXT NOT NULL,
+  description TEXT,
+  practice_schedule TEXT,
+  format TEXT NOT NULL DEFAULT '5v5',
   featured BOOLEAN NOT NULL DEFAULT FALSE,
   user_id TEXT REFERENCES users(id),
   status TEXT NOT NULL DEFAULT 'pending',

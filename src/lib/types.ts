@@ -132,9 +132,32 @@ export interface Tournament {
   description: string;
   registrationUrl?: string;
   email?: string;
+  region: string;
   featured: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament";
+export interface FutsalTeam {
+  id: string;
+  slug: string;
+  name: string;
+  clubName?: string;
+  city: string;
+  state: string;
+  level: string;
+  ageGroup: string;
+  gender: string;
+  coach: string;
+  lookingForPlayers: boolean;
+  positionsNeeded?: string;
+  season: string;
+  description?: string;
+  practiceSchedule?: string;
+  format: string;
+  featured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal";

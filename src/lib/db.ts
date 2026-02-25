@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { Club, Team, Trainer, Camp, GuestOpportunity, BlogPost, Tournament } from "./types";
+import type { Club, Team, Trainer, Camp, GuestOpportunity, BlogPost, Tournament, FutsalTeam } from "./types";
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -190,6 +190,39 @@ function mapTournament(r: Record<string, unknown>): Tournament {
     description: r.description as string,
     registrationUrl: r.registration_url as string | undefined,
     email: r.email as string | undefined,
+    region: (r.region as string) || "US",
+    featured: r.featured as boolean,
+    createdAt: r.created_at as string, updatedAt: r.updated_at as string,
+  };
+}
+
+// ── Futsal Teams ────────────────────────────────────────────
+export async function getFutsalTeams(): Promise<FutsalTeam[]> {
+  const rows = await sql`SELECT * FROM futsal_teams WHERE status = 'approved' ORDER BY featured DESC, name ASC`;
+  return rows.map(mapFutsalTeam);
+}
+
+export async function getFutsalTeamBySlug(slug: string): Promise<FutsalTeam | null> {
+  const rows = await sql`SELECT * FROM futsal_teams WHERE slug = ${slug} AND status = 'approved' LIMIT 1`;
+  return rows[0] ? mapFutsalTeam(rows[0]) : null;
+}
+
+export async function getFutsalTeamSlugs(): Promise<string[]> {
+  const rows = await sql`SELECT slug FROM futsal_teams WHERE status = 'approved'`;
+  return rows.map((r) => r.slug as string);
+}
+
+function mapFutsalTeam(r: Record<string, unknown>): FutsalTeam {
+  return {
+    id: r.id as string, slug: r.slug as string, name: r.name as string,
+    clubName: r.club_name as string | undefined,
+    city: r.city as string, state: r.state as string, level: r.level as string,
+    ageGroup: r.age_group as string, gender: r.gender as string,
+    coach: r.coach as string, lookingForPlayers: r.looking_for_players as boolean,
+    positionsNeeded: r.positions_needed as string | undefined,
+    season: r.season as string, description: r.description as string | undefined,
+    practiceSchedule: r.practice_schedule as string | undefined,
+    format: r.format as string,
     featured: r.featured as boolean,
     createdAt: r.created_at as string, updatedAt: r.updated_at as string,
   };
@@ -243,15 +276,16 @@ export async function createUser(id: string, email: string, name: string, passwo
 
 // ── Listings by User ─────────────────────────────────────────
 export async function getListingsByUserId(userId: string) {
-  const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows] = await Promise.all([
+  const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows] = await Promise.all([
     sql`SELECT id, slug, name, status, 'club' as type FROM clubs WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'team' as type FROM teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'trainer' as type FROM trainers WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'camp' as type FROM camps WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, team_name as name, status, 'guest' as type FROM guest_opportunities WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'tournament' as type FROM tournaments WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, 'futsal' as type FROM futsal_teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
   ]);
-  return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows] as { id: string; slug: string; name: string; status: string; type: string }[];
+  return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows] as { id: string; slug: string; name: string; status: string; type: string }[];
 }
 
 // ── Create Listings ──────────────────────────────────────────
@@ -301,7 +335,14 @@ export async function createGuestListing(data: Record<string, string>, userId: s
 export async function createTournamentListing(data: Record<string, string>, userId: string) {
   const id = genId();
   const slug = slugify(data.name);
-  await sql`INSERT INTO tournaments (id, slug, name, organizer, city, state, dates, age_groups, gender, level, entry_fee, format, description, registration_url, email, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.organizer}, ${data.city}, ${data.state}, ${data.dates}, ${data.ageGroups}, ${data.gender}, ${data.level}, ${data.entryFee}, ${data.format}, ${data.description}, ${data.registrationUrl || null}, ${data.email || null}, false, ${userId}, 'approved')`;
+  await sql`INSERT INTO tournaments (id, slug, name, organizer, city, state, dates, age_groups, gender, level, entry_fee, format, description, registration_url, email, region, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.organizer}, ${data.city}, ${data.state}, ${data.dates}, ${data.ageGroups}, ${data.gender}, ${data.level}, ${data.entryFee}, ${data.format}, ${data.description}, ${data.registrationUrl || null}, ${data.email || null}, ${data.region || 'US'}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
+export async function createFutsalListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  await sql`INSERT INTO futsal_teams (id, slug, name, club_name, city, state, level, age_group, gender, coach, looking_for_players, positions_needed, season, description, format, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.clubName || null}, ${data.city}, ${data.state}, ${data.level}, ${data.ageGroup}, ${data.gender}, ${data.coach}, ${data.lookingForPlayers === "true"}, ${data.positionsNeeded || null}, ${data.season}, ${data.description || null}, ${data.format || '5v5'}, false, ${userId}, 'approved')`;
   return slug;
 }
 
@@ -315,6 +356,7 @@ export async function deleteListing(type: string, id: string, userId: string): P
     case "camp": rows = await sql`DELETE FROM camps WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     case "guest": rows = await sql`DELETE FROM guest_opportunities WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     case "tournament": rows = await sql`DELETE FROM tournaments WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+    case "futsal": rows = await sql`DELETE FROM futsal_teams WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     default: return false;
   }
   return rows.length > 0;
@@ -330,6 +372,7 @@ export async function getListingOwner(type: string, slug: string): Promise<strin
     case "camp": rows = await sql`SELECT user_id FROM camps WHERE slug = ${slug} LIMIT 1`; break;
     case "guest": rows = await sql`SELECT user_id FROM guest_opportunities WHERE slug = ${slug} LIMIT 1`; break;
     case "tournament": rows = await sql`SELECT user_id FROM tournaments WHERE slug = ${slug} LIMIT 1`; break;
+    case "futsal": rows = await sql`SELECT user_id FROM futsal_teams WHERE slug = ${slug} LIMIT 1`; break;
     default: return null;
   }
   return rows[0]?.user_id as string | null;

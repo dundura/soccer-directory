@@ -1,0 +1,105 @@
+import { getFutsalTeamBySlug, getFutsalTeamSlugs, getListingOwner } from "@/lib/db";
+import { Badge, AnytimeInlineCTA } from "@/components/ui";
+import { ManageListingButton } from "@/components/manage-listing-button";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+
+export const dynamic = "force-dynamic";
+
+type Props = { params: Promise<{ slug: string }> };
+
+export async function generateStaticParams() {
+  const slugs = await getFutsalTeamSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const team = await getFutsalTeamBySlug(slug);
+  if (!team) return {};
+  return {
+    title: `${team.name} | Futsal Team in ${team.city}, ${team.state}`,
+    description: team.description || `${team.level} futsal team for ${team.ageGroup} ${team.gender} in ${team.city}, ${team.state}`,
+  };
+}
+
+export default async function FutsalDetailPage({ params }: Props) {
+  const { slug } = await params;
+  const team = await getFutsalTeamBySlug(slug);
+  if (!team) notFound();
+  const ownerId = await getListingOwner("futsal", slug);
+
+  return (
+    <>
+      <div className="bg-primary text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <a href="/futsal" className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">← All Futsal Teams</a>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Badge variant="blue">{team.level}</Badge>
+            <Badge variant={team.gender === "Boys" || team.gender === "Men" ? "blue" : "purple"}>{team.gender}</Badge>
+            <Badge variant="orange">{team.format}</Badge>
+            <Badge variant="default">{team.ageGroup}</Badge>
+            {team.lookingForPlayers && <Badge variant="green">Recruiting</Badge>}
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{team.name}</h1>
+              <p className="text-white/60 text-lg">
+                {team.clubName && `${team.clubName} · `}{team.city}, {team.state}
+              </p>
+            </div>
+            <ManageListingButton ownerId={ownerId} />
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            {team.description && (
+              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About</h2>
+                <p className="text-muted leading-relaxed">{team.description}</p>
+              </section>
+            )}
+
+            <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+              <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Team Details</h2>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div><p className="text-xs text-muted mb-1">Level</p><p className="font-medium">{team.level}</p></div>
+                <div><p className="text-xs text-muted mb-1">Age Group</p><p className="font-medium">{team.ageGroup}</p></div>
+                <div><p className="text-xs text-muted mb-1">Gender</p><p className="font-medium">{team.gender}</p></div>
+                <div><p className="text-xs text-muted mb-1">Head Coach</p><p className="font-medium">{team.coach}</p></div>
+                <div><p className="text-xs text-muted mb-1">Format</p><p className="font-medium">{team.format}</p></div>
+                <div><p className="text-xs text-muted mb-1">Season</p><p className="font-medium">{team.season}</p></div>
+                {team.positionsNeeded && <div><p className="text-xs text-muted mb-1">Positions Needed</p><p className="font-medium">{team.positionsNeeded}</p></div>}
+                {team.practiceSchedule && <div><p className="text-xs text-muted mb-1">Practice Schedule</p><p className="font-medium">{team.practiceSchedule}</p></div>}
+              </div>
+            </section>
+
+            {team.lookingForPlayers && (
+              <section className="bg-red-50 rounded-2xl border border-red-200 p-6 md:p-8">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#DC373E] mb-2">This Team Is Recruiting</h2>
+                <p className="text-red-700 mb-4">
+                  This futsal team is actively looking for players{team.positionsNeeded ? ` at the following positions: ${team.positionsNeeded}` : ""}.
+                  Reach out to the coaching staff to schedule a tryout.
+                </p>
+              </section>
+            )}
+          </div>
+
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl border border-border p-6">
+              <h3 className="font-[family-name:var(--font-display)] font-bold mb-3">Contact this team</h3>
+              <p className="text-muted text-sm mb-4">Reach out to learn about tryouts and team availability.</p>
+              <a href="#" className="block w-full text-center py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-light transition-colors mb-3">
+                Request Tryout Info
+              </a>
+            </div>
+            <AnytimeInlineCTA />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

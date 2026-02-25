@@ -82,6 +82,22 @@ const FIELDS: Record<ListingType, { name: string; label: string; required?: bool
     { name: "description", label: "Description", required: true, type: "textarea" },
     { name: "registrationUrl", label: "Registration URL" },
     { name: "email", label: "Contact Email", type: "email" },
+    { name: "region", label: "Region", required: true, options: ["US", "International"] },
+  ],
+  futsal: [
+    { name: "name", label: "Team Name", required: true },
+    { name: "clubName", label: "Club Name" },
+    { name: "city", label: "City", required: true },
+    { name: "state", label: "State", required: true },
+    { name: "level", label: "Level", required: true, options: ["Recreational", "Competitive", "Premier", "Semi-Pro", "Other"] },
+    { name: "ageGroup", label: "Age Group (e.g. U14, Adult)", required: true },
+    { name: "gender", label: "Gender", required: true, options: ["Boys", "Girls", "Coed", "Men", "Women"] },
+    { name: "coach", label: "Head Coach", required: true },
+    { name: "lookingForPlayers", label: "Looking for Players?", options: ["true", "false"] },
+    { name: "positionsNeeded", label: "Positions Needed" },
+    { name: "season", label: "Season", required: true, options: ["2025-2026", "2026-2027", "Year-Round"] },
+    { name: "format", label: "Format", required: true, options: ["5v5", "6v6", "4v4"] },
+    { name: "description", label: "Description", type: "textarea" },
   ],
 };
 
@@ -92,6 +108,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   camp: "Camp",
   guest: "Guest Play Opportunity",
   tournament: "Tournament",
+  futsal: "Futsal Team",
 };
 
 export function ListingForm({ onSuccess, onCancel }: { onSuccess: () => void; onCancel: () => void }) {

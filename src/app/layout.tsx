@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MobileMenu } from "@/components/mobile-menu";
+import { NavDropdown } from "@/components/nav-dropdown";
 import AuthProvider from "@/components/session-provider";
 import "./globals.css";
 
@@ -63,11 +64,10 @@ function Header() {
             {[
               { label: "Clubs", href: "/clubs" },
               { label: "Teams", href: "/teams" },
+              { label: "Futsal", href: "/futsal" },
               { label: "Trainers", href: "/trainers" },
               { label: "Camps", href: "/camps" },
               { label: "Guest Play", href: "/guest-play" },
-              { label: "Tournaments", href: "/tournaments" },
-              { label: "Blog", href: "/blog" },
             ].map((link) => (
               <a
                 key={link.href}
@@ -77,6 +77,15 @@ function Header() {
                 {link.label}
               </a>
             ))}
+            <NavDropdown
+              label="Tournaments"
+              items={[
+                { label: "US Tournaments", href: "/tournaments?region=US" },
+                { label: "International", href: "/tournaments?region=International" },
+                { label: "All Tournaments", href: "/tournaments" },
+              ]}
+            />
+            <a href="/blog" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Blog</a>
           </nav>
 
           {/* CTA */}
@@ -88,7 +97,7 @@ function Header() {
               href="/dashboard"
               className="hidden md:inline-flex items-center px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors"
             >
-              List Your Club
+              Get Listed
             </a>
             <MobileMenu />
           </div>
@@ -151,6 +160,7 @@ function Footer() {
             <div className="flex flex-col gap-2 text-sm">
               <a href="/clubs" className="hover:text-white transition-colors">Find Clubs</a>
               <a href="/teams" className="hover:text-white transition-colors">Find Teams</a>
+              <a href="/futsal" className="hover:text-white transition-colors">Find Futsal Teams</a>
               <a href="/trainers" className="hover:text-white transition-colors">Find Trainers</a>
               <a href="/camps" className="hover:text-white transition-colors">Find Camps</a>
               <a href="/guest-play" className="hover:text-white transition-colors">Guest Player Ops</a>
@@ -160,10 +170,10 @@ function Footer() {
           <div>
             <h4 className="font-[family-name:var(--font-display)] text-white font-semibold mb-4 text-sm">For Clubs & Coaches</h4>
             <div className="flex flex-col gap-2 text-sm">
-              <a href="/dashboard" className="hover:text-white transition-colors">List Your Club</a>
-              <a href="/dashboard" className="hover:text-white transition-colors">List Your Team</a>
-              <a href="/dashboard" className="hover:text-white transition-colors">Trainer Profile</a>
+              <a href="/dashboard" className="hover:text-white transition-colors">Get Listed</a>
+              <a href="/dashboard" className="hover:text-white transition-colors">Manage Listings</a>
               <a href="/dashboard" className="hover:text-white transition-colors">Post a Camp</a>
+              <a href="/dashboard" className="hover:text-white transition-colors">Post a Tournament</a>
             </div>
           </div>
           <div>
