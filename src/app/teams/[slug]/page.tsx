@@ -66,9 +66,9 @@ export default async function TeamDetailPage({ params }: Props) {
             </section>
 
             {team.lookingForPlayers && (
-              <section className="bg-emerald-50 rounded-2xl border border-emerald-200 p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-emerald-800 mb-2">🟢 This Team Is Recruiting</h2>
-                <p className="text-emerald-700 mb-4">
+              <section className="bg-red-50 rounded-2xl border border-red-200 p-6 md:p-8">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#DC373E] mb-2">🔴 This Team Is Recruiting</h2>
+                <p className="text-red-700 mb-4">
                   This team is actively looking for players{team.positionsNeeded ? ` at the following positions: ${team.positionsNeeded}` : ""}.
                   Reach out to the coaching staff to schedule a tryout or guest training session.
                 </p>

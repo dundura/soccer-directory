@@ -2,7 +2,7 @@
 export function Badge({ children, variant = "default" }: { children: React.ReactNode; variant?: "default" | "green" | "orange" | "red" | "purple" | "blue" }) {
   const styles: Record<string, string> = {
     default: "bg-slate-100 text-slate-700",
-    green: "bg-emerald-50 text-emerald-700",
+    green: "bg-red-50 text-[#DC373E]",
     orange: "bg-amber-50 text-amber-700",
     red: "bg-red-50 text-red-700",
     purple: "bg-purple-50 text-purple-700",
@@ -143,7 +143,7 @@ export function AnytimeInlineCTA() {
         href="https://anytime-soccer.com?ref=soccerfinder"
         target="_blank"
         rel="noopener"
-        className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-primary font-semibold text-sm hover:bg-accent-hover transition-colors"
+        className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors"
       >
         Try It Free →
       </a>

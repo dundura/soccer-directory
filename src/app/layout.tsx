@@ -11,6 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -33,7 +34,7 @@ function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <a href="/" className="flex items-center gap-2">
-            <span className="text-2xl">⚽</span>
+            <img src="/logo.png" alt="Anytime Soccer Training" className="h-8 w-8 rounded-full" />
             <span className="font-[family-name:var(--font-display)] font-bold text-xl tracking-tight">
               Soccer<span className="text-accent">Finder</span>
             </span>
@@ -66,7 +67,7 @@ function Header() {
             </a>
             <a
               href="/dashboard"
-              className="inline-flex items-center px-4 py-2 rounded-lg bg-accent text-primary text-sm font-semibold hover:bg-accent-hover transition-colors"
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors"
             >
               List Your Club
             </a>
@@ -96,7 +97,7 @@ function AnytimeBanner() {
                 href="https://anytime-soccer.com?ref=soccerfinder"
                 target="_blank"
                 rel="noopener"
-                className="inline-flex items-center px-6 py-3 rounded-lg bg-accent text-primary font-semibold hover:bg-accent-hover transition-colors"
+                className="inline-flex items-center px-6 py-3 rounded-lg bg-accent text-white font-semibold hover:bg-accent-hover transition-colors"
               >
                 Explore Anytime Soccer →
               </a>
