@@ -1,15 +1,18 @@
 import { Suspense } from "react";
-import { teams } from "@/data/sample-data";
+import { getTeams } from "@/lib/db";
 import { PageHeader } from "@/components/ui";
 import { TeamFilters } from "./filters";
 import type { Metadata } from "next";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Youth Soccer Teams | SoccerFinder",
   description: "Find youth soccer teams looking for players. Browse by age group, level, gender, and location.",
 };
 
-export default function TeamsPage() {
+export default async function TeamsPage() {
+  const teams = await getTeams();
   return (
     <>
       <PageHeader

@@ -1,8 +1,13 @@
-import { clubs, teams, trainers, camps, blogPosts } from "@/data/sample-data";
+import { getClubs, getTeams, getTrainers, getCamps, getBlogPosts } from "@/lib/db";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const [clubs, teams, trainers, camps, blogPosts] = await Promise.all([
+    getClubs(), getTeams(), getTrainers(), getCamps(), getBlogPosts(),
+  ]);
   const featuredClubs = clubs.filter((c) => c.featured).slice(0, 3);
   const featuredTeams = teams.filter((t) => t.featured).slice(0, 3);
   const featuredTrainers = trainers.filter((t) => t.featured).slice(0, 3);

@@ -1,15 +1,18 @@
 import { Suspense } from "react";
-import { camps } from "@/data/sample-data";
+import { getCamps } from "@/lib/db";
 import { PageHeader } from "@/components/ui";
 import { CampFilters } from "./filters";
 import type { Metadata } from "next";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Soccer Camps & Clinics | SoccerFinder",
   description: "Find soccer camps, clinics, ID camps, and college showcases near you. Register for summer 2026 programs now.",
 };
 
-export default function CampsPage() {
+export default async function CampsPage() {
+  const camps = await getCamps();
   return (
     <>
       <PageHeader

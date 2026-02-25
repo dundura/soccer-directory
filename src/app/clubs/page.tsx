@@ -1,15 +1,18 @@
 import { Suspense } from "react";
-import { clubs } from "@/data/sample-data";
+import { getClubs } from "@/lib/db";
 import { PageHeader, ListingCard } from "@/components/ui";
 import { ClubFilters } from "./filters";
 import type { Metadata } from "next";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Youth Soccer Clubs | SoccerFinder",
   description: "Find youth soccer clubs near you. Browse verified clubs across ECNL, MLS Next, GA, and recreational leagues.",
 };
 
-export default function ClubsPage() {
+export default async function ClubsPage() {
+  const clubs = await getClubs();
   return (
     <>
       <PageHeader

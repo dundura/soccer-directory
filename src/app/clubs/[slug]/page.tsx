@@ -1,17 +1,20 @@
-import { clubs, teams } from "@/data/sample-data";
+import { getClubBySlug, getClubSlugs, getTeamsByClubId } from "@/lib/db";
 import { Badge, ListingCard, AnytimeInlineCTA } from "@/components/ui";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return clubs.map((c) => ({ slug: c.slug }));
+  const slugs = await getClubSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const club = clubs.find((c) => c.slug === slug);
+  const club = await getClubBySlug(slug);
   if (!club) return {};
   return {
     title: `${club.name} | Youth Soccer Club in ${club.city}, ${club.state}`,
@@ -21,10 +24,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ClubDetailPage({ params }: Props) {
   const { slug } = await params;
-  const club = clubs.find((c) => c.slug === slug);
+  const club = await getClubBySlug(slug);
   if (!club) notFound();
 
-  const clubTeams = teams.filter((t) => t.clubId === club.id);
+  const clubTeams = await getTeamsByClubId(club.id);
 
   return (
     <>

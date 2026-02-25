@@ -1,13 +1,16 @@
-import { guestOpportunities } from "@/data/sample-data";
+import { getGuestOpportunities } from "@/lib/db";
 import { PageHeader, ListingCard, AnytimeInlineCTA } from "@/components/ui";
 import type { Metadata } from "next";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Guest Player Opportunities | SoccerFinder",
   description: "Find guest player opportunities for tournaments and showcases. Get exposure without switching clubs.",
 };
 
-export default function GuestPlayPage() {
+export default async function GuestPlayPage() {
+  const guestOpportunities = await getGuestOpportunities();
   const sorted = [...guestOpportunities].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
 
   return (

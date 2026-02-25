@@ -1,25 +1,29 @@
-import { blogPosts } from "@/data/sample-data";
+import { getBlogPostBySlug, getBlogPostSlugs, getBlogPosts } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return blogPosts.map((p) => ({ slug: p.slug }));
+  const slugs = await getBlogPostSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = blogPosts.find((p) => p.slug === slug);
+  const post = await getBlogPostBySlug(slug);
   if (!post) return {};
   return { title: `${post.title} | SoccerFinder Blog`, description: post.excerpt };
 }
 
 export default async function BlogDetailPage({ params }: Props) {
   const { slug } = await params;
-  const post = blogPosts.find((p) => p.slug === slug);
+  const post = await getBlogPostBySlug(slug);
   if (!post) notFound();
+  const blogPosts = await getBlogPosts();
 
   return (
     <>

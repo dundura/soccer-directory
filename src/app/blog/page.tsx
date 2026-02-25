@@ -1,13 +1,16 @@
-import { blogPosts } from "@/data/sample-data";
+import { getBlogPosts } from "@/lib/db";
 import { PageHeader, Badge, AnytimeInlineCTA } from "@/components/ui";
 import type { Metadata } from "next";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Soccer Blog | Tips, Guides & News for Soccer Parents | SoccerFinder",
   description: "Expert guides on youth soccer: club selection, tryout prep, home training, player development pathways, and more.",
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const blogPosts = await getBlogPosts();
   const featured = blogPosts.filter((p) => p.featured);
   const rest = blogPosts.filter((p) => !p.featured);
 

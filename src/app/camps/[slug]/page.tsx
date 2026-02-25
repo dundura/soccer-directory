@@ -1,17 +1,20 @@
-import { camps } from "@/data/sample-data";
+import { getCampBySlug, getCampSlugs } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return camps.map((c) => ({ slug: c.slug }));
+  const slugs = await getCampSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const camp = camps.find((c) => c.slug === slug);
+  const camp = await getCampBySlug(slug);
   if (!camp) return {};
   return {
     title: `${camp.name} | Soccer Camp in ${camp.city}, ${camp.state}`,
@@ -21,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CampDetailPage({ params }: Props) {
   const { slug } = await params;
-  const camp = camps.find((c) => c.slug === slug);
+  const camp = await getCampBySlug(slug);
   if (!camp) notFound();
 
   return (

@@ -1,17 +1,20 @@
-import { trainers } from "@/data/sample-data";
+import { getTrainerBySlug, getTrainerSlugs } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return trainers.map((t) => ({ slug: t.slug }));
+  const slugs = await getTrainerSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const trainer = trainers.find((t) => t.slug === slug);
+  const trainer = await getTrainerBySlug(slug);
   if (!trainer) return {};
   return {
     title: `${trainer.name} | Private Soccer Trainer in ${trainer.city}, ${trainer.state}`,
@@ -21,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function TrainerDetailPage({ params }: Props) {
   const { slug } = await params;
-  const trainer = trainers.find((t) => t.slug === slug);
+  const trainer = await getTrainerBySlug(slug);
   if (!trainer) notFound();
 
   return (
