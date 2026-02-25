@@ -1,10 +1,25 @@
 import type { Metadata } from "next";
+import { MobileMenu } from "@/components/mobile-menu";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Soccer Finder | Find Youth Soccer Teams, Clubs, Camps & Trainers",
   description: "The #1 directory for youth soccer. Find clubs, teams, private trainers, camps, and guest player opportunities near you. Powered by Anytime Soccer Training.",
   keywords: "youth soccer, soccer teams, soccer clubs, soccer camps, private soccer trainer, guest player, ECNL, MLS Next",
+  openGraph: {
+    title: "Soccer Finder | Find Youth Soccer Teams, Clubs, Camps & Trainers Near You",
+    description: "The #1 directory for youth soccer. Find clubs, teams, private trainers, camps, and guest player opportunities near you.",
+    url: "https://www.soccer-near-me.com",
+    siteName: "Soccer Finder",
+    images: [{ url: "https://www.soccer-near-me.com/og-image.png", width: 1200, height: 630 }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Soccer Finder | Find Youth Soccer Teams, Clubs, Camps & Trainers Near You",
+    description: "The #1 directory for youth soccer. Find clubs, teams, private trainers, camps, and guest player opportunities near you.",
+    images: ["https://www.soccer-near-me.com/og-image.png"],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -67,10 +82,11 @@ function Header() {
             </a>
             <a
               href="/dashboard"
-              className="inline-flex items-center px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors"
+              className="hidden md:inline-flex items-center px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors"
             >
               List Your Club
             </a>
+            <MobileMenu />
           </div>
         </div>
       </div>
