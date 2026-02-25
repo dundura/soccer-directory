@@ -29,6 +29,13 @@ export interface Club extends ProfileFields {
   updatedAt: string;
 }
 
+export interface TeamEvent {
+  name: string;
+  date: string;
+  location: string;
+  type: string;
+}
+
 export interface Team extends ProfileFields {
   id: string;
   slug: string;
@@ -46,6 +53,7 @@ export interface Team extends ProfileFields {
   positionsNeeded?: string;
   season: string;
   description?: string;
+  events?: TeamEvent[];
   featured: boolean;
   createdAt: string;
   updatedAt: string;

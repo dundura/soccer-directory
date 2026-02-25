@@ -28,7 +28,7 @@ export default async function HomePage() {
               {/* Left Column — Text Content */}
               <div className="flex-1 min-w-0">
                 <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-4">
-                  Welcome to Soccer Finder
+                  Welcome to Soccer Near Me
                 </p>
                 <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
                   Find the perfect youth soccer

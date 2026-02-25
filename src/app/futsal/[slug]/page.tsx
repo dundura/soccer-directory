@@ -1,5 +1,5 @@
 import { getFutsalTeamBySlug, getFutsalTeamSlugs, getListingOwner } from "@/lib/db";
-import { Badge, AnytimeInlineCTA } from "@/components/ui";
+import { Badge } from "@/components/ui";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { VideoEmbed, PhotoGallery, PracticeSchedule, SocialLinks, ShareButtons } from "@/components/profile-ui";
 import { notFound } from "next/navigation";
@@ -91,7 +91,6 @@ export default async function FutsalDetailPage({ params }: Props) {
               {team.phone && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Phone</p><p className="font-medium">{team.phone}</p></div>}
             </div>
 
-            <AnytimeInlineCTA />
           </div>
 
           {/* Main Content */}
@@ -150,6 +149,32 @@ export default async function FutsalDetailPage({ params }: Props) {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Anytime Soccer Training Banner */}
+      <div className="bg-[#0F3154] text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col md:flex-row items-center gap-8">
+          <div className="flex-1">
+            <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold mb-3">
+              Supplement Team Training with 5,000+ Follow-Along Videos
+            </h2>
+            <p className="text-white/70 text-lg mb-6">
+              Structured sessions your player can do at home, in the backyard, or at the park.
+            </p>
+            <a
+              href="https://anytime-soccer.com"
+              target="_blank"
+              className="inline-block px-8 py-4 rounded-xl bg-[#DC373E] text-white font-semibold text-lg hover:opacity-90 transition-opacity"
+            >
+              Try It Free &rarr;
+            </a>
+          </div>
+          <img
+            src="/ast-shield.png"
+            alt="Anytime Soccer Training"
+            className="hidden md:block w-48 h-48 object-contain"
+          />
         </div>
       </div>
     </>

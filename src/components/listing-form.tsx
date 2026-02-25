@@ -120,6 +120,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "positionsNeeded", label: "Positions Needed", type: "positions" },
     { name: "season", label: "Season", required: true, options: ["2025-2026", "2026-2027", "Year-Round"] },
     { name: "description", label: "Description", type: "textarea" },
+    { name: "_events", label: "Upcoming Events", type: "heading" },
+    { name: "events", label: "Events (up to 5)", type: "events" },
     { name: "phone", label: "Phone" },
     { name: "_socials", label: "Social Media", type: "heading" },
     { name: "facebook", label: "Facebook URL" },
@@ -540,6 +542,38 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", editType, ed
                   );
                 })}
                 <p className="text-xs text-muted">Add up to 5 photo URLs</p>
+              </div>
+
+            /* Events (up to 5) */
+            ) : field.type === "events" ? (
+              <div className="space-y-3">
+                {Array.from({ length: Math.min(5, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                  let arr: { name: string; date: string; location: string; type: string }[] = [];
+                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  const ev = arr[i] || { name: "", date: "", location: "", type: "" };
+                  const updateEvent = (key: string, val: string) => {
+                    const updated = [...arr];
+                    if (!updated[i]) updated[i] = { name: "", date: "", location: "", type: "" };
+                    (updated[i] as Record<string, string>)[key] = val;
+                    const filtered = updated.filter((e) => e.name || e.date || e.location || e.type);
+                    handleChange(field.name, JSON.stringify(filtered));
+                  };
+                  return (
+                    <div key={i} className="grid grid-cols-2 gap-2 p-3 rounded-xl border border-border bg-surface">
+                      <input type="text" value={ev.name} onChange={(e) => updateEvent("name", e.target.value)} placeholder="Event Name" className={inputClass} />
+                      <input type="text" value={ev.date} onChange={(e) => updateEvent("date", e.target.value)} placeholder="Date (e.g. March 15, 2026)" className={inputClass} />
+                      <input type="text" value={ev.location} onChange={(e) => updateEvent("location", e.target.value)} placeholder="Location" className={inputClass} />
+                      <select value={ev.type} onChange={(e) => updateEvent("type", e.target.value)} className={inputClass + " bg-white"}>
+                        <option value="">Event Type...</option>
+                        <option value="Tryout">Tryout</option>
+                        <option value="Tournament">Tournament</option>
+                        <option value="Showcase">Showcase</option>
+                        <option value="Training Session">Training Session</option>
+                      </select>
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-muted">Add up to 5 upcoming events</p>
               </div>
 
             /* Practice schedule checkboxes */
