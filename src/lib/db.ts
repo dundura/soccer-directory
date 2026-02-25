@@ -85,6 +85,11 @@ export async function getTeamsByClubId(clubId: string): Promise<Team[]> {
   return rows.map(mapTeam);
 }
 
+export async function getSimilarTeams(slug: string, state: string, ageGroup: string, limit = 3): Promise<Team[]> {
+  const rows = await sql`SELECT * FROM teams WHERE slug != ${slug} AND status = 'approved' AND (state = ${state} OR age_group = ${ageGroup}) ORDER BY CASE WHEN state = ${state} AND age_group = ${ageGroup} THEN 0 WHEN state = ${state} THEN 1 ELSE 2 END, featured DESC LIMIT ${limit}`;
+  return rows.map(mapTeam);
+}
+
 function mapTeam(r: Record<string, unknown>): Team {
   return {
     id: r.id as string, slug: r.slug as string, name: r.name as string,
