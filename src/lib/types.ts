@@ -116,4 +116,25 @@ export interface BlogPost {
   coverImage?: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest";
+export interface Tournament {
+  id: string;
+  slug: string;
+  name: string;
+  organizer: string;
+  city: string;
+  state: string;
+  dates: string;
+  ageGroups: string;
+  gender: string;
+  level: string;
+  entryFee: string;
+  format: string;
+  description: string;
+  registrationUrl?: string;
+  email?: string;
+  featured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament";

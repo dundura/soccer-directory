@@ -10,6 +10,7 @@ const categories = [
   { label: "Trainers", value: "trainers" },
   { label: "Camps", value: "camps" },
   { label: "Guest Play", value: "guest-play" },
+  { label: "Tournaments", value: "tournaments" },
 ];
 
 export function HeroSearchBar() {

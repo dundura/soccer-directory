@@ -95,6 +95,19 @@ async function seed() {
     await sql`INSERT INTO blog_posts (id, slug, title, excerpt, content, category, date, read_time, featured) VALUES (${p.id}, ${p.slug}, ${p.title}, ${p.excerpt}, ${p.content}, ${p.category}, ${p.date}, ${p.read_time}, ${p.featured}) ON CONFLICT (id) DO NOTHING`;
   }
 
+  // ── Tournaments ─────────────────────────────────────────────
+  console.log("Seeding tournaments...");
+  const tournaments = [
+    { id: "tn1", slug: "jefferson-cup-2026", name: "Jefferson Cup 2026", organizer: "Richmond Strikers", city: "Richmond", state: "VA", dates: "Mar 14–16, 2026", age_groups: "U9–U19", gender: "Boys & Girls", level: "Open / ECNL / MLS Next", entry_fee: "$1,200/team", format: "11v11", description: "One of the most prestigious youth soccer tournaments on the East Coast. Over 1,000 teams competing across multiple age groups and levels.", registration_url: "https://jeffersoncup.com", featured: true },
+    { id: "tn2", slug: "disney-soccer-showcase-2026", name: "Disney Soccer Showcase 2026", organizer: "Disney Sports", city: "Orlando", state: "FL", dates: "Mar 20–23, 2026", age_groups: "U10–U19", gender: "Boys & Girls", level: "Open / Premier", entry_fee: "$1,400/team", format: "11v11", description: "Play at ESPN Wide World of Sports Complex at Walt Disney World. A premier showcase event with college coach attendance.", registration_url: "https://disneysports.com/soccer", featured: true },
+    { id: "tn3", slug: "carolina-cup-spring-2026", name: "Carolina Cup Spring Classic", organizer: "CESA", city: "Charlotte", state: "NC", dates: "Apr 12–13, 2026", age_groups: "U8–U15", gender: "Boys & Girls", level: "Recreational / Competitive", entry_fee: "$600/team", format: "7v7 / 9v9 / 11v11", description: "Charlotte's premier spring tournament for recreational and competitive teams. Age-appropriate formats with professional referees.", registration_url: "https://cesasoccer.com/tournaments", featured: true },
+    { id: "tn4", slug: "ecnl-southeast-conference-event", name: "ECNL Southeast Conference Event", organizer: "ECNL", city: "Greensboro", state: "NC", dates: "May 3–4, 2026", age_groups: "U13–U17", gender: "Girls", level: "ECNL", entry_fee: "Included in ECNL fees", format: "11v11", description: "Official ECNL conference event for Southeast conference teams. Heavy college coach attendance expected.", featured: false },
+    { id: "tn5", slug: "rock-hill-memorial-day-classic", name: "Rock Hill Memorial Day Classic", organizer: "Carolina Rapids", city: "Rock Hill", state: "SC", dates: "May 24–25, 2026", age_groups: "U8–U18", gender: "Boys & Girls", level: "Open", entry_fee: "$500/team", format: "7v7 / 9v9 / 11v11", description: "Annual Memorial Day weekend tournament with teams from across the Southeast. Great competition and a fun holiday weekend atmosphere.", featured: false },
+  ];
+  for (const t of tournaments) {
+    await sql`INSERT INTO tournaments (id, slug, name, organizer, city, state, dates, age_groups, gender, level, entry_fee, format, description, registration_url, featured, status) VALUES (${t.id}, ${t.slug}, ${t.name}, ${t.organizer}, ${t.city}, ${t.state}, ${t.dates}, ${t.age_groups}, ${t.gender}, ${t.level}, ${t.entry_fee}, ${t.format}, ${t.description}, ${t.registration_url || null}, ${t.featured}, 'approved') ON CONFLICT (id) DO NOTHING`;
+  }
+
   console.log("Seed complete!");
 }
 

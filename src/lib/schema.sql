@@ -128,6 +128,30 @@ CREATE TABLE IF NOT EXISTS guest_opportunities (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Tournaments
+CREATE TABLE IF NOT EXISTS tournaments (
+  id TEXT PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  organizer TEXT NOT NULL,
+  city TEXT NOT NULL,
+  state TEXT NOT NULL,
+  dates TEXT NOT NULL,
+  age_groups TEXT NOT NULL,
+  gender TEXT NOT NULL,
+  level TEXT NOT NULL,
+  entry_fee TEXT NOT NULL,
+  format TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  registration_url TEXT,
+  email TEXT,
+  featured BOOLEAN NOT NULL DEFAULT FALSE,
+  user_id TEXT REFERENCES users(id),
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- Blog Posts
 CREATE TABLE IF NOT EXISTS blog_posts (
   id TEXT PRIMARY KEY,

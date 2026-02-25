@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { Club, Team, Trainer, Camp, GuestOpportunity, BlogPost } from "./types";
+import type { Club, Team, Trainer, Camp, GuestOpportunity, BlogPost, Tournament } from "./types";
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -158,6 +158,38 @@ function mapGuest(r: Record<string, unknown>): GuestOpportunity {
     positionsNeeded: r.positions_needed as string,
     contactEmail: r.contact_email as string,
     description: r.description as string | undefined,
+    featured: r.featured as boolean,
+    createdAt: r.created_at as string, updatedAt: r.updated_at as string,
+  };
+}
+
+// ── Tournaments ──────────────────────────────────────────────
+export async function getTournaments(): Promise<Tournament[]> {
+  const rows = await sql`SELECT * FROM tournaments WHERE status = 'approved' ORDER BY featured DESC, name ASC`;
+  return rows.map(mapTournament);
+}
+
+export async function getTournamentBySlug(slug: string): Promise<Tournament | null> {
+  const rows = await sql`SELECT * FROM tournaments WHERE slug = ${slug} AND status = 'approved' LIMIT 1`;
+  return rows[0] ? mapTournament(rows[0]) : null;
+}
+
+export async function getTournamentSlugs(): Promise<string[]> {
+  const rows = await sql`SELECT slug FROM tournaments WHERE status = 'approved'`;
+  return rows.map((r) => r.slug as string);
+}
+
+function mapTournament(r: Record<string, unknown>): Tournament {
+  return {
+    id: r.id as string, slug: r.slug as string, name: r.name as string,
+    organizer: r.organizer as string,
+    city: r.city as string, state: r.state as string,
+    dates: r.dates as string, ageGroups: r.age_groups as string,
+    gender: r.gender as string, level: r.level as string,
+    entryFee: r.entry_fee as string, format: r.format as string,
+    description: r.description as string,
+    registrationUrl: r.registration_url as string | undefined,
+    email: r.email as string | undefined,
     featured: r.featured as boolean,
     createdAt: r.created_at as string, updatedAt: r.updated_at as string,
   };

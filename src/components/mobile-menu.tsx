@@ -8,6 +8,7 @@ const navLinks = [
   { label: "Trainers", href: "/trainers" },
   { label: "Camps", href: "/camps" },
   { label: "Guest Play", href: "/guest-play" },
+  { label: "Tournaments", href: "/tournaments" },
   { label: "Blog", href: "/blog" },
 ];
 

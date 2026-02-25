@@ -1,17 +1,18 @@
-import { getClubs, getTeams, getTrainers, getCamps, getBlogPosts } from "@/lib/db";
+import { getClubs, getTeams, getTrainers, getCamps, getTournaments, getBlogPosts } from "@/lib/db";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [clubs, teams, trainers, camps, blogPosts] = await Promise.all([
-    getClubs(), getTeams(), getTrainers(), getCamps(), getBlogPosts(),
+  const [clubs, teams, trainers, camps, tournaments, blogPosts] = await Promise.all([
+    getClubs(), getTeams(), getTrainers(), getCamps(), getTournaments(), getBlogPosts(),
   ]);
   const featuredClubs = clubs.filter((c) => c.featured).slice(0, 3);
   const featuredTeams = teams.filter((t) => t.featured).slice(0, 3);
   const featuredTrainers = trainers.filter((t) => t.featured).slice(0, 3);
   const featuredCamps = camps.filter((c) => c.featured).slice(0, 3);
+  const featuredTournaments = tournaments.filter((t) => t.featured).slice(0, 3);
   const featuredPosts = blogPosts.filter((p) => p.featured).slice(0, 3);
 
   return (
@@ -47,6 +48,7 @@ export default async function HomePage() {
                     { label: "🎯 Trainers", href: "/trainers" },
                     { label: "⛺ Camps", href: "/camps" },
                     { label: "🤝 Guest Play", href: "/guest-play" },
+                { label: "🏆 Tournaments", href: "/tournaments" },
                   ].map((link) => (
                     <a
                       key={link.href}
@@ -235,6 +237,38 @@ export default async function HomePage() {
                 ]}
                 featured={camp.featured}
                 cta="View Camp"
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* ── Featured Tournaments ──────────────── */}
+        <section className="py-16 border-t border-border">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Upcoming Tournaments</h2>
+              <p className="text-muted mt-1">Register your team for top events</p>
+            </div>
+            <a href="/tournaments" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {featuredTournaments.map((tournament) => (
+              <ListingCard
+                key={tournament.id}
+                href={`/tournaments/${tournament.slug}`}
+                title={tournament.name}
+                subtitle={`${tournament.organizer} · ${tournament.city}, ${tournament.state}`}
+                badges={[
+                  { label: tournament.level, variant: "blue" },
+                  { label: tournament.format, variant: "orange" },
+                ]}
+                details={[
+                  { label: "Dates", value: tournament.dates },
+                  { label: "Ages", value: tournament.ageGroups },
+                  { label: "Entry Fee", value: tournament.entryFee },
+                ]}
+                featured={tournament.featured}
+                cta="View Tournament"
               />
             ))}
           </div>
