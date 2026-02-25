@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { notifyNewListing } from "@/lib/notifications";
 import {
   getListingsByUserId,
   getListingData,
@@ -73,6 +74,9 @@ export async function POST(req: Request) {
       default:
         return NextResponse.json({ error: "Invalid listing type" }, { status: 400 });
     }
+
+    // Send notifications (don't block the response)
+    notifyNewListing(type, data, slug).catch(() => {});
 
     return NextResponse.json({ success: true, slug });
   } catch {
