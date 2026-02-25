@@ -1,6 +1,7 @@
 import { getTrainerBySlug, getTrainerSlugs, getListingOwner } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
 import { ManageListingButton } from "@/components/manage-listing-button";
+import { VideoEmbed, PhotoGallery, PracticeSchedule, SocialLinks, ShareButtons } from "@/components/profile-ui";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -29,14 +30,16 @@ export default async function TrainerDetailPage({ params }: Props) {
   if (!trainer) notFound();
   const ownerId = await getListingOwner("trainer", slug);
 
+  const pageUrl = `https://www.soccer-near-me.com/trainers/${slug}`;
+
   return (
     <>
       <div className="bg-primary text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <a href="/trainers" className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">← All Trainers</a>
+          <a href="/trainers" className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">&larr; All Trainers</a>
           <div className="flex flex-wrap gap-2 mb-4">
             <Badge variant="green">{trainer.specialty}</Badge>
-            <Badge variant="default">⭐ {trainer.rating} ({trainer.reviewCount} reviews)</Badge>
+            {trainer.rating > 0 && <Badge variant="default">&#9733; {trainer.rating} ({trainer.reviewCount} reviews)</Badge>}
           </div>
           <div className="flex items-center justify-between">
             <div>
@@ -50,33 +53,93 @@ export default async function TrainerDetailPage({ params }: Props) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid lg:grid-cols-3 gap-8">
+          {/* Sidebar */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl border border-border overflow-hidden">
+              {trainer.teamPhoto && (
+                <img src={trainer.teamPhoto} alt={trainer.name} className="w-full h-48 object-cover" />
+              )}
+              <div className="p-6">
+                {trainer.logo && (
+                  <img src={trainer.logo} alt={`${trainer.name} logo`} className="w-16 h-16 rounded-xl object-contain border border-border mb-3 -mt-12 bg-white relative z-10" />
+                )}
+                <h2 className="font-[family-name:var(--font-display)] font-bold text-lg">{trainer.name}</h2>
+                <p className="text-muted text-sm mb-1">{trainer.specialty}</p>
+                <p className="font-[family-name:var(--font-display)] text-xl font-bold text-accent mb-4">{trainer.priceRange}</p>
+
+                <a
+                  href={`/contact/trainer/${slug}`}
+                  className="block w-full text-center py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors mb-3"
+                >
+                  Contact Trainer
+                </a>
+                {trainer.website && (
+                  <a
+                    href={trainer.website.startsWith("http") ? trainer.website : `https://${trainer.website}`}
+                    target="_blank"
+                    className="block w-full text-center py-3 rounded-xl border-2 border-border text-primary font-semibold hover:bg-surface transition-colors"
+                  >
+                    Visit Website
+                  </a>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-border p-6 space-y-3">
+              <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Experience</p><p className="font-medium">{trainer.experience}</p></div>
+              <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Credentials</p><p className="font-medium">{trainer.credentials}</p></div>
+              <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Service Area</p><p className="font-medium">{trainer.serviceArea}</p></div>
+              <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Pricing</p><p className="font-medium">{trainer.priceRange}</p></div>
+              {trainer.address && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Location</p><p className="font-medium">{trainer.address}</p></div>}
+              {trainer.phone && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Phone</p><p className="font-medium">{trainer.phone}</p></div>}
+              {trainer.email && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Email</p><a href={`mailto:${trainer.email}`} className="font-medium text-accent-hover hover:underline">{trainer.email}</a></div>}
+            </div>
+
+            <AnytimeInlineCTA />
+          </div>
+
+          {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {trainer.description && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About</h2>
-                <p className="text-muted leading-relaxed">{trainer.description}</p>
+                <p className="text-muted leading-relaxed whitespace-pre-line">{trainer.description}</p>
               </section>
             )}
-            <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-              <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Details</h2>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div><p className="text-xs text-muted mb-1">Specialty</p><p className="font-medium">{trainer.specialty}</p></div>
-                <div><p className="text-xs text-muted mb-1">Experience</p><p className="font-medium">{trainer.experience}</p></div>
-                <div><p className="text-xs text-muted mb-1">Credentials</p><p className="font-medium">{trainer.credentials}</p></div>
-                <div><p className="text-xs text-muted mb-1">Pricing</p><p className="font-medium">{trainer.priceRange}</p></div>
-                <div className="sm:col-span-2"><p className="text-xs text-muted mb-1">Service Area</p><p className="font-medium">{trainer.serviceArea}</p></div>
+
+            {trainer.practiceSchedule && trainer.practiceSchedule.length > 0 && (
+              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Availability</h2>
+                <PracticeSchedule days={trainer.practiceSchedule} />
+              </section>
+            )}
+
+            {trainer.videoUrl && (
+              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Video</h2>
+                <VideoEmbed url={trainer.videoUrl} />
+              </section>
+            )}
+
+            {trainer.photos && trainer.photos.length > 0 && (
+              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Photos</h2>
+                <PhotoGallery photos={trainer.photos} />
+              </section>
+            )}
+
+            <div className="bg-white rounded-2xl border border-border p-6 md:p-8 space-y-6">
+              {trainer.socialMedia && (
+                <div>
+                  <h3 className="font-[family-name:var(--font-display)] font-bold mb-3">Connect</h3>
+                  <SocialLinks website={trainer.website} facebook={trainer.socialMedia.facebook} instagram={trainer.socialMedia.instagram} />
+                </div>
+              )}
+              <div>
+                <h3 className="font-[family-name:var(--font-display)] font-bold mb-3">Share</h3>
+                <ShareButtons url={pageUrl} title={trainer.name} />
               </div>
-            </section>
-          </div>
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-border p-6">
-              <h3 className="font-[family-name:var(--font-display)] font-bold mb-1">{trainer.priceRange}</h3>
-              <p className="text-muted text-sm mb-4">per session</p>
-              <a href="#" className="block w-full text-center py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-light transition-colors mb-3">
-                Contact Trainer
-              </a>
             </div>
-            <AnytimeInlineCTA />
           </div>
         </div>
       </div>

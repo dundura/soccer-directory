@@ -91,9 +91,14 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_images", label: "Images", type: "heading" },
+    { name: "_profile", label: "Profile & Media", type: "heading" },
+    { name: "teamPhoto", label: "Main Club Photo URL" },
     { name: "logo", label: "Logo URL" },
     { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "address", label: "Practice Address" },
+    { name: "practiceSchedule", label: "Practice Days", type: "schedule" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
   team: [
     { name: "name", label: "Team Name", required: true },
@@ -114,9 +119,14 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_images", label: "Images", type: "heading" },
+    { name: "_profile", label: "Profile & Media", type: "heading" },
+    { name: "teamPhoto", label: "Main Team Photo URL" },
     { name: "logo", label: "Logo URL" },
     { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "address", label: "Practice Address" },
+    { name: "practiceSchedule", label: "Practice Days", type: "schedule" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
   trainer: [
     { name: "name", label: "Your Name", required: true },
@@ -136,9 +146,14 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_images", label: "Images", type: "heading" },
-    { name: "logo", label: "Logo / Headshot URL" },
+    { name: "_profile", label: "Profile & Media", type: "heading" },
+    { name: "teamPhoto", label: "Headshot / Profile Photo URL" },
+    { name: "logo", label: "Logo URL" },
     { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "address", label: "Training Location Address" },
+    { name: "practiceSchedule", label: "Availability", type: "schedule" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
   camp: [
     { name: "name", label: "Camp Name", required: true },
@@ -160,9 +175,12 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_images", label: "Images", type: "heading" },
+    { name: "_profile", label: "Profile & Media", type: "heading" },
+    { name: "teamPhoto", label: "Camp Photo URL" },
     { name: "logo", label: "Logo URL" },
     { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
   guest: [
     { name: "teamName", label: "Team Name", required: true },
@@ -182,9 +200,12 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_images", label: "Images", type: "heading" },
+    { name: "_profile", label: "Profile & Media", type: "heading" },
+    { name: "teamPhoto", label: "Team Photo URL" },
     { name: "logo", label: "Logo URL" },
     { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
   tournament: [
     { name: "name", label: "Tournament Name", required: true },
@@ -207,9 +228,12 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_images", label: "Images", type: "heading" },
+    { name: "_profile", label: "Profile & Media", type: "heading" },
+    { name: "teamPhoto", label: "Tournament Photo URL" },
     { name: "logo", label: "Logo URL" },
     { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
   futsal: [
     { name: "name", label: "Team Name", required: true },
@@ -231,9 +255,14 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_images", label: "Images", type: "heading" },
+    { name: "_profile", label: "Profile & Media", type: "heading" },
+    { name: "teamPhoto", label: "Main Team Photo URL" },
     { name: "logo", label: "Logo URL" },
     { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "address", label: "Practice Address" },
+    { name: "practiceSchedule", label: "Practice Days", type: "schedule" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
 };
 
@@ -468,6 +497,70 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", editType, ed
                     className="rounded-lg max-h-40 object-cover border border-border"
                   />
                 )}
+              </div>
+
+            /* Photos (up to 5 URLs) */
+            ) : field.type === "photos" ? (
+              <div className="space-y-2">
+                {Array.from({ length: Math.min(5, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                  let arr: string[] = [];
+                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  return (
+                    <div key={i} className="flex gap-2">
+                      <input
+                        type="url"
+                        value={arr[i] || ""}
+                        onChange={(e) => {
+                          const updated = [...arr];
+                          updated[i] = e.target.value;
+                          handleChange(field.name, JSON.stringify(updated.filter(Boolean)));
+                        }}
+                        placeholder={`Photo URL ${i + 1}`}
+                        className={inputClass}
+                      />
+                      {arr[i] && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = arr.filter((_, j) => j !== i);
+                            handleChange(field.name, JSON.stringify(updated));
+                          }}
+                          className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0"
+                        >
+                          x
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-muted">Add up to 5 photo URLs</p>
+              </div>
+
+            /* Practice schedule checkboxes */
+            ) : field.type === "schedule" ? (
+              <div className="flex flex-wrap gap-2">
+                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => {
+                  let days: string[] = [];
+                  try { days = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  const active = days.includes(day);
+                  return (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => {
+                        const updated = active ? days.filter((d) => d !== day) : [...days, day];
+                        handleChange(field.name, JSON.stringify(updated));
+                      }}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                        active
+                          ? "bg-accent text-white border-accent"
+                          : "bg-white border-border text-muted hover:border-accent/30"
+                      }`}
+                    >
+                      {day}
+                    </button>
+                  );
+                })}
               </div>
 
             /* Textarea */

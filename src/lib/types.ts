@@ -1,26 +1,35 @@
-export interface Club {
+export interface ProfileFields {
+  teamPhoto?: string;
+  photos?: string[];
+  videoUrl?: string;
+  practiceSchedule?: string[];
+  address?: string;
+  imageUrl?: string;
+  logo?: string;
+  socialMedia?: { facebook?: string; instagram?: string; youtube?: string };
+  phone?: string;
+}
+
+export interface Club extends ProfileFields {
   id: string;
   slug: string;
   name: string;
   city: string;
   state: string;
+  country?: string;
   level: string;
   ageGroups: string;
   gender: string;
   teamCount: number;
   description: string;
-  logo?: string;
   website?: string;
   email?: string;
-  phone?: string;
-  address?: string;
-  socialMedia?: { facebook?: string; instagram?: string; twitter?: string };
   featured: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface Team {
+export interface Team extends ProfileFields {
   id: string;
   slug: string;
   name: string;
@@ -28,6 +37,7 @@ export interface Team {
   clubName?: string;
   city: string;
   state: string;
+  country?: string;
   level: string;
   ageGroup: string;
   gender: string;
@@ -36,18 +46,18 @@ export interface Team {
   positionsNeeded?: string;
   season: string;
   description?: string;
-  practiceSchedule?: string;
   featured: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface Trainer {
+export interface Trainer extends ProfileFields {
   id: string;
   slug: string;
   name: string;
   city: string;
   state: string;
+  country?: string;
   specialty: string;
   experience: string;
   credentials: string;
@@ -58,24 +68,25 @@ export interface Trainer {
   reviewCount: number;
   website?: string;
   email?: string;
-  phone?: string;
   featured: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface Camp {
+export interface Camp extends ProfileFields {
   id: string;
   slug: string;
   name: string;
   organizerName: string;
   city: string;
   state: string;
+  country?: string;
   campType: "Elite ID Camp" | "Recreational Camp" | "Position-Specific Clinic" | "College Showcase" | "Specialty Clinic" | "Day Camp";
   ageRange: string;
   dates: string;
   price: string;
   gender: string;
+  location?: string;
   description: string;
   registrationUrl?: string;
   email?: string;
@@ -84,12 +95,13 @@ export interface Camp {
   updatedAt: string;
 }
 
-export interface GuestOpportunity {
+export interface GuestOpportunity extends ProfileFields {
   id: string;
   slug: string;
   teamName: string;
   city: string;
   state: string;
+  country?: string;
   level: string;
   ageGroup: string;
   gender: string;
@@ -116,13 +128,14 @@ export interface BlogPost {
   coverImage?: string;
 }
 
-export interface Tournament {
+export interface Tournament extends ProfileFields {
   id: string;
   slug: string;
   name: string;
   organizer: string;
   city: string;
   state: string;
+  country?: string;
   dates: string;
   ageGroups: string;
   gender: string;
@@ -138,13 +151,14 @@ export interface Tournament {
   updatedAt: string;
 }
 
-export interface FutsalTeam {
+export interface FutsalTeam extends ProfileFields {
   id: string;
   slug: string;
   name: string;
   clubName?: string;
   city: string;
   state: string;
+  country?: string;
   level: string;
   ageGroup: string;
   gender: string;
@@ -153,7 +167,6 @@ export interface FutsalTeam {
   positionsNeeded?: string;
   season: string;
   description?: string;
-  practiceSchedule?: string;
   format: string;
   featured: boolean;
   createdAt: string;
