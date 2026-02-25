@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { camps } from "@/data/sample-data";
 import { PageHeader } from "@/components/ui";
 import { CampFilters } from "./filters";
@@ -17,7 +18,7 @@ export default function CampsPage() {
         listingCount={camps.length}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <CampFilters camps={camps} />
+        <Suspense><CampFilters camps={camps} /></Suspense>
       </div>
     </>
   );

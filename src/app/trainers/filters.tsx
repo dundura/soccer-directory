@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Trainer } from "@/lib/types";
 import { ListingCard, FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui";
 
 export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [specialty, setSpecialty] = useState("");
   const [state, setState] = useState("");
 
@@ -12,6 +15,10 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
   const states = [...new Set(trainers.map((t) => t.state))].sort();
 
   const filtered = trainers.filter((t) => {
+    if (search) {
+      const q = search.toLowerCase();
+      if (!t.name.toLowerCase().includes(q) && !t.city.toLowerCase().includes(q) && !t.state.toLowerCase().includes(q)) return false;
+    }
     if (specialty && t.specialty !== specialty) return false;
     if (state && t.state !== state) return false;
     return true;
@@ -21,6 +28,13 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
 
   return (
     <>
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search trainers by name, city, or state..."
+        className="w-full px-5 py-3 rounded-xl border border-border bg-white text-sm font-medium text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent mt-6"
+      />
       <FilterBar
         filters={[
           { label: "All Specialties", options: specialties, value: specialty, onChange: setSpecialty },

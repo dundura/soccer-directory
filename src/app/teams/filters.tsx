@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Team } from "@/lib/types";
 import { ListingCard, FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui";
 
 export function TeamFilters({ teams }: { teams: Team[] }) {
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [level, setLevel] = useState("");
   const [ageGroup, setAgeGroup] = useState("");
   const [gender, setGender] = useState("");
@@ -14,6 +17,10 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
   const ageGroups = [...new Set(teams.map((t) => t.ageGroup))].sort();
 
   const filtered = teams.filter((t) => {
+    if (search) {
+      const q = search.toLowerCase();
+      if (!t.name.toLowerCase().includes(q) && !t.city.toLowerCase().includes(q) && !t.state.toLowerCase().includes(q)) return false;
+    }
     if (level && t.level !== level) return false;
     if (ageGroup && t.ageGroup !== ageGroup) return false;
     if (gender && t.gender !== gender) return false;
@@ -25,6 +32,13 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
 
   return (
     <>
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search teams by name, city, or state..."
+        className="w-full px-5 py-3 rounded-xl border border-border bg-white text-sm font-medium text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent mt-6"
+      />
       <FilterBar
         filters={[
           { label: "All Levels", options: levels, value: level, onChange: setLevel },

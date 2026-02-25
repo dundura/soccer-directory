@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { teams } from "@/data/sample-data";
 import { PageHeader } from "@/components/ui";
 import { TeamFilters } from "./filters";
@@ -17,7 +18,7 @@ export default function TeamsPage() {
         listingCount={teams.length}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <TeamFilters teams={teams} />
+        <Suspense><TeamFilters teams={teams} /></Suspense>
       </div>
     </>
   );

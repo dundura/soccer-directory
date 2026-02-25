@@ -1,5 +1,6 @@
 import { clubs, teams, trainers, camps, blogPosts } from "@/data/sample-data";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
+import { HeroSearchBar } from "@/components/hero-search";
 
 export default function HomePage() {
   const featuredClubs = clubs.filter((c) => c.featured).slice(0, 3);
@@ -11,47 +12,88 @@ export default function HomePage() {
   return (
     <>
       {/* ── Hero ──────────────────────────────────── */}
-      <section className="relative bg-primary overflow-hidden">
-        {/* Decorative grid */}
-        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "40px 40px" }} />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-          <div className="max-w-3xl">
-            <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-4">
-              Powered by Anytime Soccer Training
-            </p>
-            <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-              Find the perfect youth soccer
-              <span className="text-accent"> team, club, or coach</span>
-            </h1>
-            <p className="text-white/70 text-lg md:text-xl mb-8 max-w-2xl">
-              Search our directory of verified clubs, teams, private trainers, camps, and guest player opportunities. All in one place.
-            </p>
+      <section className="bg-surface px-4 sm:px-6 lg:px-8 pt-6 pb-0">
+        <div className="relative bg-primary rounded-[20px] overflow-hidden max-w-7xl mx-auto">
+          {/* Decorative grid */}
+          <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "40px 40px" }} />
+          <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
+            <div className="flex items-center gap-12">
+              {/* Left Column — Text Content */}
+              <div className="flex-1 min-w-0">
+                <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-4">
+                  Welcome to Soccer Finder
+                </p>
+                <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+                  Find the perfect youth soccer
+                  <span className="text-accent"> team, club, or coach</span>
+                </h1>
+                <p className="text-white/70 text-lg md:text-xl mb-8 max-w-2xl">
+                  Search our directory of verified clubs, teams, private trainers, camps, and guest player opportunities. All in one place.
+                </p>
 
-            {/* Search Shortcuts */}
-            <div className="flex flex-wrap gap-3 mb-8">
-              {[
-                { label: "🏟️ Clubs", href: "/clubs" },
-                { label: "👥 Teams", href: "/teams" },
-                { label: "🎯 Trainers", href: "/trainers" },
-                { label: "⛺ Camps", href: "/camps" },
-                { label: "🤝 Guest Play", href: "/guest-play" },
-              ].map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="px-5 py-3 rounded-xl bg-white/10 border border-white/10 text-white font-medium text-sm hover:bg-white/20 hover:border-white/20 transition-all"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
+                {/* Search Bar */}
+                <HeroSearchBar />
 
-            {/* Quick Stats */}
-            <div className="flex gap-8 text-white/50 text-sm">
-              <div><span className="text-white font-bold text-xl">{clubs.length}+</span> Clubs</div>
-              <div><span className="text-white font-bold text-xl">{teams.length}+</span> Teams</div>
-              <div><span className="text-white font-bold text-xl">{trainers.length}+</span> Trainers</div>
-              <div><span className="text-white font-bold text-xl">{camps.length}+</span> Camps</div>
+                {/* Search Shortcuts */}
+                <div className="flex flex-wrap gap-3 mb-8">
+                  {[
+                    { label: "🏟️ Clubs", href: "/clubs" },
+                    { label: "👥 Teams", href: "/teams" },
+                    { label: "🎯 Trainers", href: "/trainers" },
+                    { label: "⛺ Camps", href: "/camps" },
+                    { label: "🤝 Guest Play", href: "/guest-play" },
+                  ].map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      className="px-5 py-3 rounded-xl bg-white/10 border border-white/10 text-white font-medium text-sm hover:bg-white/20 hover:border-white/20 transition-all"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+
+                {/* Quick Stats */}
+                <div className="flex gap-8 text-white/50 text-sm">
+                  <div><span className="text-white font-bold text-xl">{clubs.length}+</span> Clubs</div>
+                  <div><span className="text-white font-bold text-xl">{teams.length}+</span> Teams</div>
+                  <div><span className="text-white font-bold text-xl">{trainers.length}+</span> Trainers</div>
+                  <div><span className="text-white font-bold text-xl">{camps.length}+</span> Camps</div>
+                </div>
+              </div>
+
+              {/* Right Column — Hero Image + Floating Cards */}
+              <div className="hidden lg:block relative w-[420px] shrink-0">
+                <div className="relative">
+                  <img
+                    src="/hero-soccer.webp"
+                    alt="Youth soccer players training"
+                    className="w-full h-[480px] object-cover rounded-2xl"
+                  />
+
+                  {/* Floating Card 1 — top-left */}
+                  <div className="absolute -top-4 -left-8 bg-white rounded-xl shadow-xl p-4 w-52 rotate-[-3deg]">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-primary">Charlotte FC 2012</span>
+                      <span className="text-[10px] font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full">2012</span>
+                    </div>
+                    <span className="inline-block text-[10px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full mr-1">Boys</span>
+                    <span className="inline-block text-[10px] font-semibold bg-red-50 text-[#DC373E] px-2 py-0.5 rounded-full">Recruiting</span>
+                    <p className="text-xs text-muted mt-2">Charlotte, NC</p>
+                  </div>
+
+                  {/* Floating Card 2 — bottom-right */}
+                  <div className="absolute -bottom-4 -right-6 bg-white rounded-xl shadow-xl p-4 w-52 rotate-[3deg]">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-primary">NC Fusion ECNL</span>
+                      <span className="text-[10px] font-semibold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded-full">2011</span>
+                    </div>
+                    <span className="inline-block text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full mr-1">Girls</span>
+                    <span className="inline-block text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">ECNL</span>
+                    <p className="text-xs text-muted mt-2">Greensboro, NC</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

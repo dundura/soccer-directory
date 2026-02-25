@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Camp } from "@/lib/types";
 import { ListingCard, FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui";
 
 export function CampFilters({ camps }: { camps: Camp[] }) {
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [campType, setCampType] = useState("");
   const [state, setState] = useState("");
 
@@ -12,6 +15,10 @@ export function CampFilters({ camps }: { camps: Camp[] }) {
   const states = [...new Set(camps.map((c) => c.state))].sort();
 
   const filtered = camps.filter((c) => {
+    if (search) {
+      const q = search.toLowerCase();
+      if (!c.name.toLowerCase().includes(q) && !c.city.toLowerCase().includes(q) && !c.state.toLowerCase().includes(q) && !c.organizerName.toLowerCase().includes(q)) return false;
+    }
     if (campType && c.campType !== campType) return false;
     if (state && c.state !== state) return false;
     return true;
@@ -21,6 +28,13 @@ export function CampFilters({ camps }: { camps: Camp[] }) {
 
   return (
     <>
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search camps by name, city, or organizer..."
+        className="w-full px-5 py-3 rounded-xl border border-border bg-white text-sm font-medium text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent mt-6"
+      />
       <FilterBar
         filters={[
           { label: "All Camp Types", options: campTypes, value: campType, onChange: setCampType },

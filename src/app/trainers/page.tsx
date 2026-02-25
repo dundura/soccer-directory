@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { trainers } from "@/data/sample-data";
 import { PageHeader } from "@/components/ui";
 import { TrainerFilters } from "./filters";
@@ -17,7 +18,7 @@ export default function TrainersPage() {
         listingCount={trainers.length}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <TrainerFilters trainers={trainers} />
+        <Suspense><TrainerFilters trainers={trainers} /></Suspense>
       </div>
     </>
   );

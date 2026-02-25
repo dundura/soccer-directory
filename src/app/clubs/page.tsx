@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { clubs } from "@/data/sample-data";
 import { PageHeader, ListingCard } from "@/components/ui";
 import { ClubFilters } from "./filters";
@@ -17,7 +18,7 @@ export default function ClubsPage() {
         listingCount={clubs.length}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <ClubFilters clubs={clubs} />
+        <Suspense><ClubFilters clubs={clubs} /></Suspense>
       </div>
     </>
   );

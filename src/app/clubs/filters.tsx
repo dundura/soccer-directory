@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Club } from "@/lib/types";
 import { ListingCard, FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui";
 
+const quickStates = ["NC", "SC", "VA", "GA", "TX", "FL"];
+
 export function ClubFilters({ clubs }: { clubs: Club[] }) {
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [level, setLevel] = useState("");
   const [state, setState] = useState("");
   const [gender, setGender] = useState("");
@@ -13,6 +18,10 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
   const states = [...new Set(clubs.map((c) => c.state))].sort();
 
   const filtered = clubs.filter((c) => {
+    if (search) {
+      const q = search.toLowerCase();
+      if (!c.name.toLowerCase().includes(q) && !c.city.toLowerCase().includes(q) && !c.state.toLowerCase().includes(q)) return false;
+    }
     if (level && c.level !== level) return false;
     if (state && c.state !== state) return false;
     if (gender && !c.gender.includes(gender)) return false;
@@ -24,6 +33,24 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
 
   return (
     <>
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search clubs by name, city, or state..."
+        className="w-full px-5 py-3 rounded-xl border border-border bg-white text-sm font-medium text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent mt-6"
+      />
+      <div className="flex flex-wrap gap-2 mt-3">
+        {quickStates.map((s) => (
+          <button
+            key={s}
+            onClick={() => setState(state === s ? "" : s)}
+            className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${state === s ? "bg-accent text-white" : "bg-surface text-primary hover:bg-border"}`}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
       <FilterBar
         filters={[
           { label: "All Levels", options: levels, value: level, onChange: setLevel },
