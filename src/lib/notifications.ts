@@ -30,12 +30,12 @@ export async function notifyNewListing(type: string, data: Record<string, string
   if (resend) {
     try {
       await resend.emails.send({
-        from: "SoccerFinder <notifications@soccer-near-me.com>",
+        from: "Soccer Near Me <notifications@soccer-near-me.com>",
         to: NOTIFY_EMAIL,
         subject: `New ${label} Listed: ${name} — ${city}, ${state}`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px;">
-            <h2 style="color: #1a365d;">New ${label} Listed on SoccerFinder</h2>
+            <h2 style="color: #1a365d;">New ${label} Listed on Soccer Near Me</h2>
             <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
               <tr><td style="padding: 8px 0; color: #666; width: 120px;">Name</td><td style="padding: 8px 0; font-weight: bold;">${name}</td></tr>
               <tr><td style="padding: 8px 0; color: #666;">Type</td><td style="padding: 8px 0;">${label}</td></tr>
@@ -88,8 +88,8 @@ async function sendToGHL(type: string, data: Record<string, string>, slug: strin
         phone: phone || undefined,
         city,
         state,
-        tags: [`soccerfinder`, `listing-${type}`],
-        source: "SoccerFinder",
+        tags: [`soccernearme`, `listing-${type}`],
+        source: "Soccer Near Me",
         customFields: [
           { key: "listing_type", field_value: label },
           { key: "listing_url", field_value: listingUrl },

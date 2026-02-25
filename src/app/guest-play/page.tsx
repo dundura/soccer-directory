@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Guest Player Opportunities | SoccerFinder",
+  title: "Guest Player Opportunities | Soccer Near Me",
   description: "Find guest player opportunities for tournaments and showcases. Get exposure without switching clubs.",
 };
 

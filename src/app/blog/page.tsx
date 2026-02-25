@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Soccer Blog | Tips, Guides & News for Soccer Parents | SoccerFinder",
+  title: "Soccer Blog | Tips, Guides & News for Soccer Parents | Soccer Near Me",
   description: "Expert guides on youth soccer: club selection, tryout prep, home training, player development pathways, and more.",
 };
 

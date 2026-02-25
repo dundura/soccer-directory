@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Youth Soccer Clubs | SoccerFinder",
+  title: "Youth Soccer Clubs | Soccer Near Me",
   description: "Find youth soccer clubs near you. Browse verified clubs across ECNL, MLS Next, GA, and recreational leagues.",
 };
 

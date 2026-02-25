@@ -55,7 +55,7 @@ function Header() {
           <a href="/" className="flex items-center gap-2">
             <img src="/logo.png" alt="Anytime Soccer Training" className="h-8 w-8 rounded-full" />
             <span className="font-[family-name:var(--font-display)] font-bold text-xl tracking-tight">
-              Soccer<span className="text-accent">Finder</span>
+              Soccer<span className="text-accent">Near Me</span>
             </span>
           </a>
 
@@ -154,7 +154,7 @@ function Footer() {
           </div>
         </div>
         <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm">© 2026 SoccerFinder. A product of <a href="https://anytime-soccer.com" target="_blank" className="text-accent hover:underline">Anytime Soccer Training</a></p>
+          <p className="text-sm">© 2026 Soccer Near Me. A product of <a href="https://anytime-soccer.com" target="_blank" className="text-accent hover:underline">Anytime Soccer Training</a></p>
           <div className="flex gap-6 text-sm">
             <a href="/privacy" className="hover:text-white transition-colors">Privacy</a>
             <a href="/terms" className="hover:text-white transition-colors">Terms</a>

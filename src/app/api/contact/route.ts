@@ -38,14 +38,14 @@ export async function POST(req: Request) {
       }
 
       await resend.emails.send({
-        from: "SoccerFinder <notifications@soccer-near-me.com>",
+        from: "Soccer Near Me <notifications@soccer-near-me.com>",
         to: recipients,
         replyTo: senderEmail,
         subject: `New inquiry for ${listing.name} (${label})`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px;">
             <h2 style="color: #1a365d;">New Contact Inquiry</h2>
-            <p style="color: #666;">Someone is interested in your ${label.toLowerCase()} listing on SoccerFinder.</p>
+            <p style="color: #666;">Someone is interested in your ${label.toLowerCase()} listing on Soccer Near Me.</p>
             <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
               <tr><td style="padding: 8px 0; color: #666; width: 120px;">Listing</td><td style="padding: 8px 0; font-weight: bold;">${listing.name}</td></tr>
               <tr><td style="padding: 8px 0; color: #666;">From</td><td style="padding: 8px 0; font-weight: bold;">${senderName}</td></tr>

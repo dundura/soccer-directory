@@ -77,7 +77,7 @@ function AuthForm() {
         </h2>
         <p className="text-muted mb-6">
           {mode === "login"
-            ? "Manage your listings on SoccerFinder"
+            ? "Manage your listings on Soccer Near Me"
             : "Start listing your club, team, camp, or training services"}
         </p>
 

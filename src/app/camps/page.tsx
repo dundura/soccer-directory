@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Soccer Camps & Clinics | SoccerFinder",
+  title: "Soccer Camps & Clinics | Soccer Near Me",
   description: "Find soccer camps, clinics, ID camps, and college showcases near you. Register for summer 2026 programs now.",
 };
 

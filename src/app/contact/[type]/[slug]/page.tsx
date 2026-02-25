@@ -81,7 +81,7 @@ export default function ContactPage() {
         <div className="max-w-2xl mx-auto px-4">
           <a href={backPath} className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">&larr; Back to Listing</a>
           <h1 className="font-[family-name:var(--font-display)] text-3xl font-bold mb-2">Send a Message</h1>
-          <p className="text-white/60">Contact this {label.toLowerCase()} through SoccerFinder</p>
+          <p className="text-white/60">Contact this {label.toLowerCase()} through Soccer Near Me</p>
         </div>
       </div>
 

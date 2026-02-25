@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Manage Your Listings | SoccerFinder",
-  description: "Create and manage your club, team, trainer, or camp listings on SoccerFinder.",
+  title: "Dashboard | Manage Your Listings | Soccer Near Me",
+  description: "Create and manage your club, team, trainer, or camp listings on Soccer Near Me.",
 };
 
 export default function DashboardPage() {

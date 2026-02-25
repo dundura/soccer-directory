@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       }
 
       await resend.emails.send({
-        from: "SoccerFinder <notifications@soccer-near-me.com>",
+        from: "Soccer Near Me <notifications@soccer-near-me.com>",
         to: recipients,
         replyTo: email,
         subject: `Guest Player Request: ${playerName} for ${teamName} — ${tournament}`,

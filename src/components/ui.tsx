@@ -141,7 +141,7 @@ export function AnytimeInlineCTA() {
           Anytime Soccer Training offers structured follow-along sessions your player can do at home, in the backyard, or at the park.
         </p>
         <a
-          href="https://anytime-soccer.com?ref=soccerfinder"
+          href="https://anytime-soccer.com?ref=soccernearme"
           target="_blank"
           rel="noopener"
           className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors"
