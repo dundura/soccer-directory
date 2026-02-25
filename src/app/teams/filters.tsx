@@ -14,7 +14,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
   const [gender, setGender] = useState("");
   const [recruiting, setRecruiting] = useState("");
 
-  const levels = [...new Set(teams.map((t) => t.level))].sort();
+  const LEVELS = ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club / Local Travel", "Rec Select", "Recreational / Grassroots"];
   const ageGroups = [...new Set(teams.map((t) => t.ageGroup))].sort();
   const states = [...new Set(teams.map((t) => t.state))].sort();
 
@@ -74,7 +74,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <FilterBar
           filters={[
-            { label: "All Levels", options: levels, value: level, onChange: setLevel },
+            { label: "All Levels", options: LEVELS, value: level, onChange: setLevel },
             { label: "All Birth Years", options: ageGroups, value: ageGroup, onChange: setAgeGroup },
             { label: "All Genders", options: ["Boys", "Girls"], value: gender, onChange: setGender },
             { label: "Recruiting?", options: ["yes"], value: recruiting, onChange: setRecruiting },
