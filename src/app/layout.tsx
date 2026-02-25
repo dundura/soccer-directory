@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <Header />
           <main className="min-h-screen">{children}</main>
-          <AnytimeBanner />
+
           <Footer />
         </AuthProvider>
       </body>
@@ -104,48 +104,6 @@ function Header() {
         </div>
       </div>
     </header>
-  );
-}
-
-// ── Anytime Soccer CTA Banner ────────────────────────────────
-function AnytimeBanner() {
-  return (
-    <section className="bg-primary">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-primary-light rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 border border-white/10">
-          <div className="flex-1">
-            <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-2">Powered by Anytime Soccer Training</p>
-            <h2 className="font-[family-name:var(--font-display)] text-white text-2xl md:text-3xl font-bold mb-4">
-              5,000+ Follow-Along Training Videos Your Players Can Do Anywhere
-            </h2>
-            <p className="text-white/70 mb-6 max-w-xl">
-              Give your players the extra edge with structured home training. Clubs get team accounts for just $6/player/year — assign homework, track progress, and watch your players develop faster.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href="https://anytime-soccer.com?ref=soccerfinder"
-                target="_blank"
-                rel="noopener"
-                className="inline-flex items-center px-6 py-3 rounded-lg bg-accent text-white font-semibold hover:bg-accent-hover transition-colors"
-              >
-                Explore Anytime Soccer →
-              </a>
-              <a
-                href="https://anytime-soccer.com/team-plans?ref=soccerfinder"
-                target="_blank"
-                rel="noopener"
-                className="inline-flex items-center px-6 py-3 rounded-lg border border-white/30 text-white font-medium hover:bg-white/10 transition-colors"
-              >
-                Team Plans from $6/player
-              </a>
-            </div>
-          </div>
-          <div className="hidden md:flex items-center justify-center w-48 h-48 rounded-2xl bg-white/5 border border-white/10 text-6xl">
-            ⚽
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 

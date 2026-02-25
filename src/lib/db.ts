@@ -300,50 +300,170 @@ function genId(): string {
 export async function createClubListing(data: Record<string, string>, userId: string) {
   const id = genId();
   const slug = slugify(data.name);
-  await sql`INSERT INTO clubs (id, slug, name, city, state, level, age_groups, gender, team_count, description, website, email, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.state}, ${data.level}, ${data.ageGroups}, ${data.gender}, ${Number(data.teamCount) || 0}, ${data.description}, ${data.website || null}, ${data.email || null}, false, ${userId}, 'approved')`;
+  const sm = buildSocialMedia(data);
+  await sql`INSERT INTO clubs (id, slug, name, city, country, state, level, age_groups, gender, team_count, description, website, email, phone, social_media, logo, image_url, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.ageGroups}, ${data.gender}, ${Number(data.teamCount) || 0}, ${data.description}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, false, ${userId}, 'approved')`;
   return slug;
 }
 
 export async function createTeamListing(data: Record<string, string>, userId: string) {
   const id = genId();
   const slug = slugify(data.name);
-  await sql`INSERT INTO teams (id, slug, name, club_name, city, state, level, age_group, gender, coach, looking_for_players, positions_needed, season, description, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.clubName || null}, ${data.city}, ${data.state}, ${data.level}, ${data.ageGroup}, ${data.gender}, ${data.coach}, ${data.lookingForPlayers === "true"}, ${data.positionsNeeded || null}, ${data.season}, ${data.description || null}, false, ${userId}, 'approved')`;
+  const sm = buildSocialMedia(data);
+  await sql`INSERT INTO teams (id, slug, name, club_name, city, country, state, level, age_group, gender, coach, looking_for_players, positions_needed, season, description, phone, social_media, logo, image_url, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.clubName || null}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.ageGroup}, ${data.gender}, ${data.coach}, ${data.lookingForPlayers === "true"}, ${data.positionsNeeded || null}, ${data.season}, ${data.description || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, false, ${userId}, 'approved')`;
   return slug;
 }
 
 export async function createTrainerListing(data: Record<string, string>, userId: string) {
   const id = genId();
   const slug = slugify(data.name);
-  await sql`INSERT INTO trainers (id, slug, name, city, state, specialty, experience, credentials, price_range, service_area, description, rating, review_count, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.state}, ${data.specialty}, ${data.experience}, ${data.credentials}, ${data.priceRange}, ${data.serviceArea}, ${data.description || null}, 0, 0, false, ${userId}, 'approved')`;
+  const sm = buildSocialMedia(data);
+  await sql`INSERT INTO trainers (id, slug, name, city, country, state, specialty, experience, credentials, price_range, service_area, description, phone, social_media, logo, image_url, rating, review_count, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.specialty}, ${data.experience}, ${data.credentials}, ${data.priceRange}, ${data.serviceArea}, ${data.description || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, 0, 0, false, ${userId}, 'approved')`;
   return slug;
 }
 
 export async function createCampListing(data: Record<string, string>, userId: string) {
   const id = genId();
   const slug = slugify(data.name);
-  await sql`INSERT INTO camps (id, slug, name, organizer_name, city, state, camp_type, age_range, dates, price, gender, description, registration_url, email, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.organizerName}, ${data.city}, ${data.state}, ${data.campType}, ${data.ageRange}, ${data.dates}, ${data.price}, ${data.gender}, ${data.description}, ${data.registrationUrl || null}, ${data.email || null}, false, ${userId}, 'approved')`;
+  const sm = buildSocialMedia(data);
+  await sql`INSERT INTO camps (id, slug, name, organizer_name, city, country, state, camp_type, age_range, dates, price, gender, location, description, registration_url, email, phone, social_media, logo, image_url, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.organizerName}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.campType}, ${data.ageRange}, ${data.dates}, ${data.price}, ${data.gender}, ${data.location || null}, ${data.description}, ${data.registrationUrl || null}, ${data.email || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, false, ${userId}, 'approved')`;
   return slug;
 }
 
 export async function createGuestListing(data: Record<string, string>, userId: string) {
   const id = genId();
   const slug = slugify(data.teamName + "-" + data.tournament);
-  await sql`INSERT INTO guest_opportunities (id, slug, team_name, city, state, level, age_group, gender, dates, tournament, positions_needed, contact_email, description, featured, user_id, status) VALUES (${id}, ${slug}, ${data.teamName}, ${data.city}, ${data.state}, ${data.level}, ${data.ageGroup}, ${data.gender}, ${data.dates}, ${data.tournament}, ${data.positionsNeeded}, ${data.contactEmail}, ${data.description || null}, false, ${userId}, 'approved')`;
+  const sm = buildSocialMedia(data);
+  await sql`INSERT INTO guest_opportunities (id, slug, team_name, city, country, state, level, age_group, gender, dates, tournament, positions_needed, contact_email, description, phone, social_media, logo, image_url, featured, user_id, status) VALUES (${id}, ${slug}, ${data.teamName}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.ageGroup}, ${data.gender}, ${data.dates}, ${data.tournament}, ${data.positionsNeeded}, ${data.contactEmail}, ${data.description || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, false, ${userId}, 'approved')`;
   return slug;
 }
 
 export async function createTournamentListing(data: Record<string, string>, userId: string) {
   const id = genId();
   const slug = slugify(data.name);
-  await sql`INSERT INTO tournaments (id, slug, name, organizer, city, state, dates, age_groups, gender, level, entry_fee, format, description, registration_url, email, region, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.organizer}, ${data.city}, ${data.state}, ${data.dates}, ${data.ageGroups}, ${data.gender}, ${data.level}, ${data.entryFee}, ${data.format}, ${data.description}, ${data.registrationUrl || null}, ${data.email || null}, ${data.region || 'US'}, false, ${userId}, 'approved')`;
+  const sm = buildSocialMedia(data);
+  await sql`INSERT INTO tournaments (id, slug, name, organizer, city, country, state, dates, age_groups, gender, level, entry_fee, format, description, registration_url, email, region, phone, social_media, logo, image_url, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.organizer}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.dates}, ${data.ageGroups}, ${data.gender}, ${data.level}, ${data.entryFee}, ${data.format}, ${data.description}, ${data.registrationUrl || null}, ${data.email || null}, ${data.region || 'US'}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, false, ${userId}, 'approved')`;
   return slug;
 }
 
 export async function createFutsalListing(data: Record<string, string>, userId: string) {
   const id = genId();
   const slug = slugify(data.name);
-  await sql`INSERT INTO futsal_teams (id, slug, name, club_name, city, state, level, age_group, gender, coach, looking_for_players, positions_needed, season, description, format, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.clubName || null}, ${data.city}, ${data.state}, ${data.level}, ${data.ageGroup}, ${data.gender}, ${data.coach}, ${data.lookingForPlayers === "true"}, ${data.positionsNeeded || null}, ${data.season}, ${data.description || null}, ${data.format || '5v5'}, false, ${userId}, 'approved')`;
+  const sm = buildSocialMedia(data);
+  await sql`INSERT INTO futsal_teams (id, slug, name, club_name, city, country, state, level, age_group, gender, coach, looking_for_players, positions_needed, season, description, format, phone, social_media, logo, image_url, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.clubName || null}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.ageGroup}, ${data.gender}, ${data.coach}, ${data.lookingForPlayers === "true"}, ${data.positionsNeeded || null}, ${data.season}, ${data.description || null}, ${data.format || '5v5'}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, false, ${userId}, 'approved')`;
   return slug;
+}
+
+// ── Get Listing Data (for editing) ───────────────────────────
+export async function getListingData(type: string, id: string, userId: string): Promise<Record<string, string> | null> {
+  let rows: Record<string, unknown>[];
+  switch (type) {
+    case "club":
+      rows = await sql`SELECT * FROM clubs WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapClubToForm(rows[0]);
+    case "team":
+      rows = await sql`SELECT * FROM teams WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapTeamToForm(rows[0]);
+    case "trainer":
+      rows = await sql`SELECT * FROM trainers WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapTrainerToForm(rows[0]);
+    case "camp":
+      rows = await sql`SELECT * FROM camps WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapCampToForm(rows[0]);
+    case "guest":
+      rows = await sql`SELECT * FROM guest_opportunities WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapGuestToForm(rows[0]);
+    case "tournament":
+      rows = await sql`SELECT * FROM tournaments WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapTournamentToForm(rows[0]);
+    case "futsal":
+      rows = await sql`SELECT * FROM futsal_teams WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapFutsalToForm(rows[0]);
+    default:
+      return null;
+  }
+}
+
+function parseSocial(raw: unknown): { facebook: string; instagram: string; youtube: string } {
+  if (!raw) return { facebook: "", instagram: "", youtube: "" };
+  try {
+    const sm = typeof raw === "string" ? JSON.parse(raw) : raw;
+    return { facebook: sm.facebook || "", instagram: sm.instagram || "", youtube: sm.youtube || "" };
+  } catch { return { facebook: "", instagram: "", youtube: "" }; }
+}
+
+function s(v: unknown): string { return (v as string) || ""; }
+
+function mapClubToForm(r: Record<string, unknown>): Record<string, string> {
+  const sm = parseSocial(r.social_media);
+  return { name: s(r.name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), ageGroups: s(r.age_groups), gender: s(r.gender), teamCount: String(r.team_count || ""), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url) };
+}
+function mapTeamToForm(r: Record<string, unknown>): Record<string, string> {
+  const sm = parseSocial(r.social_media);
+  return { name: s(r.name), clubName: s(r.club_name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), ageGroup: s(r.age_group), gender: s(r.gender), coach: s(r.coach), lookingForPlayers: r.looking_for_players ? "true" : "false", positionsNeeded: s(r.positions_needed), season: s(r.season), description: s(r.description), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url) };
+}
+function mapTrainerToForm(r: Record<string, unknown>): Record<string, string> {
+  const sm = parseSocial(r.social_media);
+  return { name: s(r.name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), specialty: s(r.specialty), experience: s(r.experience), credentials: s(r.credentials), priceRange: s(r.price_range), serviceArea: s(r.service_area), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url) };
+}
+function mapCampToForm(r: Record<string, unknown>): Record<string, string> {
+  const sm = parseSocial(r.social_media);
+  return { name: s(r.name), organizerName: s(r.organizer_name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), campType: s(r.camp_type), ageRange: s(r.age_range), dates: s(r.dates), price: s(r.price), gender: s(r.gender), location: s(r.location), description: s(r.description), registrationUrl: s(r.registration_url), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url) };
+}
+function mapGuestToForm(r: Record<string, unknown>): Record<string, string> {
+  const sm = parseSocial(r.social_media);
+  return { teamName: s(r.team_name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), ageGroup: s(r.age_group), gender: s(r.gender), dates: s(r.dates), tournament: s(r.tournament), positionsNeeded: s(r.positions_needed), contactEmail: s(r.contact_email), description: s(r.description), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url) };
+}
+function mapTournamentToForm(r: Record<string, unknown>): Record<string, string> {
+  const sm = parseSocial(r.social_media);
+  return { name: s(r.name), organizer: s(r.organizer), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), dates: s(r.dates), ageGroups: s(r.age_groups), gender: s(r.gender), level: s(r.level), entryFee: s(r.entry_fee), format: s(r.format), description: s(r.description), registrationUrl: s(r.registration_url), email: s(r.email), region: s(r.region) || "US", phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url) };
+}
+function mapFutsalToForm(r: Record<string, unknown>): Record<string, string> {
+  const sm = parseSocial(r.social_media);
+  return { name: s(r.name), clubName: s(r.club_name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), ageGroup: s(r.age_group), gender: s(r.gender), coach: s(r.coach), lookingForPlayers: r.looking_for_players ? "true" : "false", positionsNeeded: s(r.positions_needed), season: s(r.season), description: s(r.description), format: s(r.format), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url) };
+}
+
+// ── Update Listing ──────────────────────────────────────────
+function buildSocialMedia(data: Record<string, string>): string | null {
+  const sm = { facebook: data.facebook || null, instagram: data.instagram || null, youtube: data.youtube || null };
+  return (sm.facebook || sm.instagram || sm.youtube) ? JSON.stringify(sm) : null;
+}
+
+export async function updateListing(type: string, id: string, data: Record<string, string>, userId: string): Promise<boolean> {
+  const sm = buildSocialMedia(data);
+  let rows: Record<string, unknown>[];
+  switch (type) {
+    case "club":
+      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "team":
+      rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "trainer":
+      rows = await sql`UPDATE trainers SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty}, experience=${data.experience}, credentials=${data.credentials}, price_range=${data.priceRange}, service_area=${data.serviceArea}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "camp":
+      rows = await sql`UPDATE camps SET name=${data.name}, organizer_name=${data.organizerName}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, camp_type=${data.campType}, age_range=${data.ageRange}, dates=${data.dates}, price=${data.price}, gender=${data.gender}, location=${data.location || null}, description=${data.description}, registration_url=${data.registrationUrl || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "guest":
+      rows = await sql`UPDATE guest_opportunities SET team_name=${data.teamName}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, dates=${data.dates}, tournament=${data.tournament}, positions_needed=${data.positionsNeeded}, contact_email=${data.contactEmail}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "tournament":
+      rows = await sql`UPDATE tournaments SET name=${data.name}, organizer=${data.organizer}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, dates=${data.dates}, age_groups=${data.ageGroups}, gender=${data.gender}, level=${data.level}, entry_fee=${data.entryFee}, format=${data.format}, description=${data.description}, registration_url=${data.registrationUrl || null}, email=${data.email || null}, region=${data.region || 'US'}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "futsal":
+      rows = await sql`UPDATE futsal_teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, format=${data.format || '5v5'}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    default:
+      return false;
+  }
+  return rows.length > 0;
 }
 
 // ── Delete Listing ───────────────────────────────────────────

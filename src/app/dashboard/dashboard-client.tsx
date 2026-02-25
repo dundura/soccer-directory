@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { ListingForm } from "@/components/listing-form";
+import type { ListingType } from "@/lib/types";
 
 const TYPE_PATHS: Record<string, string> = {
   club: "clubs",
@@ -168,6 +169,11 @@ function DashboardContent() {
   const [showForm, setShowForm] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
 
+  // Edit state
+  const [editingListing, setEditingListing] = useState<Listing | null>(null);
+  const [editData, setEditData] = useState<Record<string, string> | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+
   useEffect(() => {
     fetchListings();
   }, []);
@@ -182,6 +188,19 @@ function DashboardContent() {
       }
     } catch { /* ignore */ }
     setLoading(false);
+  }
+
+  async function handleEdit(listing: Listing) {
+    setEditLoading(true);
+    try {
+      const res = await fetch(`/api/listings?type=${listing.type}&id=${listing.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setEditData(data);
+        setEditingListing(listing);
+      }
+    } catch { /* ignore */ }
+    setEditLoading(false);
   }
 
   async function handleDelete(listing: Listing) {
@@ -200,6 +219,28 @@ function DashboardContent() {
     setDeleting(null);
   }
 
+  // Edit form
+  if (editingListing && editData) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
+          <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-6">
+            Edit {TYPE_LABELS[editingListing.type] || editingListing.type}: {editingListing.name}
+          </h2>
+          <ListingForm
+            mode="edit"
+            editType={editingListing.type as ListingType}
+            editId={editingListing.id}
+            initialData={editData}
+            onSuccess={() => { setEditingListing(null); setEditData(null); fetchListings(); }}
+            onCancel={() => { setEditingListing(null); setEditData(null); }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Create form
   if (showForm) {
     return (
       <div className="max-w-2xl mx-auto">
@@ -282,6 +323,13 @@ function DashboardContent() {
                 <h3 className="font-[family-name:var(--font-display)] font-bold text-lg truncate">{listing.name}</h3>
               </div>
               <div className="flex items-center gap-2 shrink-0 ml-4">
+                <button
+                  onClick={() => handleEdit(listing)}
+                  disabled={editLoading}
+                  className="px-4 py-2 rounded-xl bg-accent/10 text-accent-hover text-sm font-medium hover:bg-accent/20 transition-colors disabled:opacity-50"
+                >
+                  Edit
+                </button>
                 <a
                   href={`/${TYPE_PATHS[listing.type] || listing.type}/${listing.slug}`}
                   className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-surface transition-colors"

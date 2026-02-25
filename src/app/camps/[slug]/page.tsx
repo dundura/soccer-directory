@@ -70,11 +70,23 @@ export default async function CampDetailPage({ params }: Props) {
           </div>
           <div className="space-y-6">
             <div className="bg-white rounded-2xl border border-border p-6">
-              <p className="font-[family-name:var(--font-display)] text-2xl font-bold mb-1">{camp.price}</p>
-              <p className="text-muted text-sm mb-4">{camp.dates}</p>
+              <div className="space-y-3 mb-5">
+                <div>
+                  <p className="text-xs text-muted font-medium uppercase tracking-wide">When</p>
+                  <p className="font-[family-name:var(--font-display)] font-bold text-lg">{camp.dates}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted font-medium uppercase tracking-wide">Price</p>
+                  <p className="font-[family-name:var(--font-display)] font-bold text-2xl">{camp.price}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted font-medium uppercase tracking-wide">Where</p>
+                  <p className="font-medium">{camp.city}, {camp.state}</p>
+                </div>
+              </div>
               {camp.registrationUrl ? (
                 <a href={camp.registrationUrl} target="_blank" className="block w-full text-center py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors mb-3">
-                  Register Now →
+                  Visit →
                 </a>
               ) : (
                 <a href="#" className="block w-full text-center py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-light transition-colors mb-3">

@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { getClubs } from "@/lib/db";
-import { PageHeader, ListingCard } from "@/components/ui";
 import { ClubFilters } from "./filters";
 import type { Metadata } from "next";
 
@@ -13,16 +12,5 @@ export const metadata: Metadata = {
 
 export default async function ClubsPage() {
   const clubs = await getClubs();
-  return (
-    <>
-      <PageHeader
-        title="Youth Soccer Clubs"
-        description="Browse verified clubs across ECNL, MLS Next, GA, recreational leagues, and more."
-        listingCount={clubs.length}
-      />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <Suspense><ClubFilters clubs={clubs} /></Suspense>
-      </div>
-    </>
-  );
+  return <Suspense><ClubFilters clubs={clubs} /></Suspense>;
 }
