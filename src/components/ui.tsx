@@ -131,22 +131,29 @@ export function FilterBar({
 // ── Inline Anytime CTA (for use within listing pages) ───────
 export function AnytimeInlineCTA() {
   return (
-    <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-light p-6 md:p-8 text-white">
-      <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Recommended Resource</p>
-      <h3 className="font-[family-name:var(--font-display)] text-xl font-bold mb-2">
-        Supplement Team Training with 5,000+ Videos
-      </h3>
-      <p className="text-white/70 text-sm mb-4">
-        Anytime Soccer Training offers structured follow-along sessions your player can do at home, in the backyard, or at the park.
-      </p>
-      <a
-        href="https://anytime-soccer.com?ref=soccerfinder"
-        target="_blank"
-        rel="noopener"
-        className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors"
-      >
-        Try It Free →
-      </a>
+    <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-light p-6 md:p-8 text-white flex items-center gap-6">
+      <div className="flex-1">
+        <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Recommended Resource</p>
+        <h3 className="font-[family-name:var(--font-display)] text-xl font-bold mb-2">
+          Supplement Team Training with 5,000+ Videos
+        </h3>
+        <p className="text-white/70 text-sm mb-4">
+          Anytime Soccer Training offers structured follow-along sessions your player can do at home, in the backyard, or at the park.
+        </p>
+        <a
+          href="https://anytime-soccer.com?ref=soccerfinder"
+          target="_blank"
+          rel="noopener"
+          className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors"
+        >
+          Try It Free →
+        </a>
+      </div>
+      <img
+        src="/ast-shield.png"
+        alt="Anytime Soccer Training"
+        className="hidden sm:block h-24 md:h-28 w-auto opacity-80 shrink-0"
+      />
     </div>
   );
 }
