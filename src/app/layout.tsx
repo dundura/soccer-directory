@@ -1,0 +1,177 @@
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "Soccer Finder | Find Youth Soccer Teams, Clubs, Camps & Trainers",
+  description: "The #1 directory for youth soccer. Find clubs, teams, private trainers, camps, and guest player opportunities near you. Powered by Anytime Soccer Training.",
+  keywords: "youth soccer, soccer teams, soccer clubs, soccer camps, private soccer trainer, guest player, ECNL, MLS Next",
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+      </head>
+      <body className="bg-surface antialiased">
+        <Header />
+        <main className="min-h-screen">{children}</main>
+        <AnytimeBanner />
+        <Footer />
+      </body>
+    </html>
+  );
+}
+
+// ── Header ───────────────────────────────────────────────────
+function Header() {
+  return (
+    <header className="bg-primary text-white sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <a href="/" className="flex items-center gap-2">
+            <span className="text-2xl">⚽</span>
+            <span className="font-[family-name:var(--font-display)] font-bold text-xl tracking-tight">
+              Soccer<span className="text-accent">Finder</span>
+            </span>
+          </a>
+
+          {/* Nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {[
+              { label: "Clubs", href: "/clubs" },
+              { label: "Teams", href: "/teams" },
+              { label: "Trainers", href: "/trainers" },
+              { label: "Camps", href: "/camps" },
+              { label: "Guest Play", href: "/guest-play" },
+              { label: "Blog", href: "/blog" },
+            ].map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+
+          {/* CTA */}
+          <div className="flex items-center gap-3">
+            <a href="/dashboard" className="hidden sm:inline-flex text-sm text-white/80 hover:text-white transition-colors">
+              Log In
+            </a>
+            <a
+              href="/dashboard"
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-accent text-primary text-sm font-semibold hover:bg-accent-hover transition-colors"
+            >
+              List Your Club
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+// ── Anytime Soccer CTA Banner ────────────────────────────────
+function AnytimeBanner() {
+  return (
+    <section className="bg-primary">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="bg-primary-light rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 border border-white/10">
+          <div className="flex-1">
+            <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-2">Powered by Anytime Soccer Training</p>
+            <h2 className="font-[family-name:var(--font-display)] text-white text-2xl md:text-3xl font-bold mb-4">
+              5,000+ Follow-Along Training Videos Your Players Can Do Anywhere
+            </h2>
+            <p className="text-white/70 mb-6 max-w-xl">
+              Give your players the extra edge with structured home training. Clubs get team accounts for just $6/player/year — assign homework, track progress, and watch your players develop faster.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="https://anytime-soccer.com?ref=soccerfinder"
+                target="_blank"
+                rel="noopener"
+                className="inline-flex items-center px-6 py-3 rounded-lg bg-accent text-primary font-semibold hover:bg-accent-hover transition-colors"
+              >
+                Explore Anytime Soccer →
+              </a>
+              <a
+                href="https://anytime-soccer.com/team-plans?ref=soccerfinder"
+                target="_blank"
+                rel="noopener"
+                className="inline-flex items-center px-6 py-3 rounded-lg border border-white/30 text-white font-medium hover:bg-white/10 transition-colors"
+              >
+                Team Plans from $6/player
+              </a>
+            </div>
+          </div>
+          <div className="hidden md:flex items-center justify-center w-48 h-48 rounded-2xl bg-white/5 border border-white/10 text-6xl">
+            ⚽
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Footer ───────────────────────────────────────────────────
+function Footer() {
+  return (
+    <footer className="bg-primary text-white/60 border-t border-white/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <h4 className="font-[family-name:var(--font-display)] text-white font-semibold mb-4 text-sm">For Players</h4>
+            <div className="flex flex-col gap-2 text-sm">
+              <a href="/clubs" className="hover:text-white transition-colors">Find Clubs</a>
+              <a href="/teams" className="hover:text-white transition-colors">Find Teams</a>
+              <a href="/trainers" className="hover:text-white transition-colors">Find Trainers</a>
+              <a href="/camps" className="hover:text-white transition-colors">Find Camps</a>
+              <a href="/guest-play" className="hover:text-white transition-colors">Guest Player Ops</a>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-[family-name:var(--font-display)] text-white font-semibold mb-4 text-sm">For Clubs & Coaches</h4>
+            <div className="flex flex-col gap-2 text-sm">
+              <a href="/dashboard" className="hover:text-white transition-colors">List Your Club</a>
+              <a href="/dashboard" className="hover:text-white transition-colors">List Your Team</a>
+              <a href="/dashboard" className="hover:text-white transition-colors">Trainer Profile</a>
+              <a href="/dashboard" className="hover:text-white transition-colors">Post a Camp</a>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-[family-name:var(--font-display)] text-white font-semibold mb-4 text-sm">Resources</h4>
+            <div className="flex flex-col gap-2 text-sm">
+              <a href="/blog" className="hover:text-white transition-colors">Blog</a>
+              <a href="https://anytime-soccer.com" target="_blank" className="hover:text-white transition-colors">Anytime Soccer Training</a>
+              <a href="https://anytime-soccer.com/podcast" target="_blank" className="hover:text-white transition-colors">The Inside Scoop Podcast</a>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-[family-name:var(--font-display)] text-white font-semibold mb-4 text-sm">States</h4>
+            <div className="flex flex-col gap-2 text-sm">
+              <a href="/clubs?state=NC" className="hover:text-white transition-colors">North Carolina</a>
+              <a href="/clubs?state=SC" className="hover:text-white transition-colors">South Carolina</a>
+              <a href="/clubs?state=VA" className="hover:text-white transition-colors">Virginia</a>
+              <a href="/clubs?state=GA" className="hover:text-white transition-colors">Georgia</a>
+              <a href="/clubs?state=TX" className="hover:text-white transition-colors">Texas</a>
+            </div>
+          </div>
+        </div>
+        <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm">© 2026 SoccerFinder. A product of <a href="https://anytime-soccer.com" target="_blank" className="text-accent hover:underline">Anytime Soccer Training</a></p>
+          <div className="flex gap-6 text-sm">
+            <a href="/privacy" className="hover:text-white transition-colors">Privacy</a>
+            <a href="/terms" className="hover:text-white transition-colors">Terms</a>
+            <a href="/contact" className="hover:text-white transition-colors">Contact</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}

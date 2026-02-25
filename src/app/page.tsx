@@ -1,0 +1,249 @@
+import { clubs, teams, trainers, camps, blogPosts } from "@/data/sample-data";
+import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
+
+export default function HomePage() {
+  const featuredClubs = clubs.filter((c) => c.featured).slice(0, 3);
+  const featuredTeams = teams.filter((t) => t.featured).slice(0, 3);
+  const featuredTrainers = trainers.filter((t) => t.featured).slice(0, 3);
+  const featuredCamps = camps.filter((c) => c.featured).slice(0, 3);
+  const featuredPosts = blogPosts.filter((p) => p.featured).slice(0, 3);
+
+  return (
+    <>
+      {/* ── Hero ──────────────────────────────────── */}
+      <section className="relative bg-primary overflow-hidden">
+        {/* Decorative grid */}
+        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "40px 40px" }} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+          <div className="max-w-3xl">
+            <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-4">
+              Powered by Anytime Soccer Training
+            </p>
+            <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+              Find the perfect youth soccer
+              <span className="text-accent"> team, club, or coach</span>
+            </h1>
+            <p className="text-white/70 text-lg md:text-xl mb-8 max-w-2xl">
+              Search our directory of verified clubs, teams, private trainers, camps, and guest player opportunities. All in one place.
+            </p>
+
+            {/* Search Shortcuts */}
+            <div className="flex flex-wrap gap-3 mb-8">
+              {[
+                { label: "🏟️ Clubs", href: "/clubs" },
+                { label: "👥 Teams", href: "/teams" },
+                { label: "🎯 Trainers", href: "/trainers" },
+                { label: "⛺ Camps", href: "/camps" },
+                { label: "🤝 Guest Play", href: "/guest-play" },
+              ].map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="px-5 py-3 rounded-xl bg-white/10 border border-white/10 text-white font-medium text-sm hover:bg-white/20 hover:border-white/20 transition-all"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+
+            {/* Quick Stats */}
+            <div className="flex gap-8 text-white/50 text-sm">
+              <div><span className="text-white font-bold text-xl">{clubs.length}+</span> Clubs</div>
+              <div><span className="text-white font-bold text-xl">{teams.length}+</span> Teams</div>
+              <div><span className="text-white font-bold text-xl">{trainers.length}+</span> Trainers</div>
+              <div><span className="text-white font-bold text-xl">{camps.length}+</span> Camps</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* ── Featured Clubs ─────────────────────── */}
+        <section className="py-16">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Featured Clubs</h2>
+              <p className="text-muted mt-1">Top youth soccer organizations</p>
+            </div>
+            <a href="/clubs" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {featuredClubs.map((club) => (
+              <ListingCard
+                key={club.id}
+                href={`/clubs/${club.slug}`}
+                title={club.name}
+                subtitle={`${club.city}, ${club.state}`}
+                badges={[
+                  { label: club.level, variant: club.level.includes("MLS") ? "purple" : "blue" },
+                  { label: club.gender },
+                ]}
+                details={[
+                  { label: "Teams", value: String(club.teamCount) },
+                  { label: "Ages", value: club.ageGroups },
+                ]}
+                featured
+                cta="View Club"
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* ── Featured Teams ─────────────────────── */}
+        <section className="py-16 border-t border-border">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Teams Looking for Players</h2>
+              <p className="text-muted mt-1">Open roster spots across the region</p>
+            </div>
+            <a href="/teams" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {featuredTeams.map((team) => (
+              <ListingCard
+                key={team.id}
+                href={`/teams/${team.slug}`}
+                title={team.name}
+                subtitle={`${team.clubName} · ${team.city}, ${team.state}`}
+                badges={[
+                  { label: team.level, variant: "blue" },
+                  { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
+                  ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : []),
+                ]}
+                details={[
+                  { label: "Birth Year", value: team.ageGroup },
+                  { label: "Coach", value: team.coach },
+                  ...(team.positionsNeeded ? [{ label: "Positions", value: team.positionsNeeded }] : []),
+                  { label: "Season", value: team.season },
+                ]}
+                featured
+                cta="View Team"
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* ── Anytime CTA Mid-page ──────────────── */}
+        <section className="py-8">
+          <AnytimeInlineCTA />
+        </section>
+
+        {/* ── Featured Trainers ──────────────────── */}
+        <section className="py-16 border-t border-border">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Private Trainers</h2>
+              <p className="text-muted mt-1">Verified coaches offering 1-on-1 and small group training</p>
+            </div>
+            <a href="/trainers" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {featuredTrainers.map((trainer) => (
+              <ListingCard
+                key={trainer.id}
+                href={`/trainers/${trainer.slug}`}
+                title={trainer.name}
+                subtitle={`${trainer.city}, ${trainer.state}`}
+                badges={[
+                  { label: trainer.specialty, variant: "green" },
+                ]}
+                details={[
+                  { label: "Price", value: trainer.priceRange },
+                  { label: "Rating", value: `⭐ ${trainer.rating} (${trainer.reviewCount})` },
+                  { label: "Experience", value: trainer.experience },
+                  { label: "Area", value: trainer.serviceArea },
+                ]}
+                featured={trainer.featured}
+                cta="View Trainer"
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* ── Featured Camps ─────────────────────── */}
+        <section className="py-16 border-t border-border">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Upcoming Camps & Clinics</h2>
+              <p className="text-muted mt-1">Registration open for summer 2026</p>
+            </div>
+            <a href="/camps" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {featuredCamps.map((camp) => (
+              <ListingCard
+                key={camp.id}
+                href={`/camps/${camp.slug}`}
+                title={camp.name}
+                subtitle={`${camp.organizerName} · ${camp.city}, ${camp.state}`}
+                badges={[
+                  { label: camp.campType, variant: "orange" },
+                  { label: camp.gender },
+                ]}
+                details={[
+                  { label: "Ages", value: camp.ageRange },
+                  { label: "Dates", value: camp.dates },
+                  { label: "Price", value: camp.price },
+                ]}
+                featured={camp.featured}
+                cta="View Camp"
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* ── Blog Preview ───────────────────────── */}
+        <section className="py-16 border-t border-border">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">From the Blog</h2>
+              <p className="text-muted mt-1">Guides and tips for soccer parents</p>
+            </div>
+            <a href="/blog" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">All articles →</a>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {featuredPosts.map((post) => (
+              <a
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className="group block bg-white rounded-2xl border border-border p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              >
+                <Badge variant="orange">{post.category}</Badge>
+                <h3 className="font-[family-name:var(--font-display)] text-lg font-bold mt-3 mb-2 group-hover:text-accent-hover transition-colors">
+                  {post.title}
+                </h3>
+                <p className="text-muted text-sm mb-4 line-clamp-2">{post.excerpt}</p>
+                <div className="flex items-center gap-3 text-xs text-muted">
+                  <span>{post.date}</span>
+                  <span>·</span>
+                  <span>{post.readTime} read</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        {/* ── List Your Club CTA ─────────────────── */}
+        <section className="py-16 border-t border-border">
+          <div className="bg-surface rounded-2xl p-8 md:p-12 text-center">
+            <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold mb-4">
+              Are you a club, coach, or trainer?
+            </h2>
+            <p className="text-muted text-lg mb-8 max-w-xl mx-auto">
+              Get discovered by thousands of soccer families. Create your free listing and start connecting with players today.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a href="/dashboard" className="px-8 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-light transition-colors">
+                Create Free Listing
+              </a>
+              <a href="/blog/how-it-works" className="px-8 py-3 rounded-xl border-2 border-primary text-primary font-semibold hover:bg-primary hover:text-white transition-colors">
+                Learn How It Works
+              </a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </>
+  );
+}
