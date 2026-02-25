@@ -170,6 +170,11 @@ export async function getGuestOpportunities(): Promise<GuestOpportunity[]> {
   return rows.map(mapGuest);
 }
 
+export async function getGuestBySlug(slug: string): Promise<GuestOpportunity | null> {
+  const rows = await sql`SELECT * FROM guest_opportunities WHERE slug = ${slug} AND status = 'approved' LIMIT 1`;
+  return rows[0] ? mapGuest(rows[0]) : null;
+}
+
 export async function getGuestSlugs(): Promise<string[]> {
   const rows = await sql`SELECT slug FROM guest_opportunities WHERE status = 'approved'`;
   return rows.map((r) => r.slug as string);
