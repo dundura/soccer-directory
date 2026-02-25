@@ -1,5 +1,6 @@
-import { getTrainerBySlug, getTrainerSlugs } from "@/lib/db";
+import { getTrainerBySlug, getTrainerSlugs, getListingOwner } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
+import { ManageListingButton } from "@/components/manage-listing-button";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -26,6 +27,7 @@ export default async function TrainerDetailPage({ params }: Props) {
   const { slug } = await params;
   const trainer = await getTrainerBySlug(slug);
   if (!trainer) notFound();
+  const ownerId = await getListingOwner("trainer", slug);
 
   return (
     <>
@@ -36,8 +38,13 @@ export default async function TrainerDetailPage({ params }: Props) {
             <Badge variant="green">{trainer.specialty}</Badge>
             <Badge variant="default">⭐ {trainer.rating} ({trainer.reviewCount} reviews)</Badge>
           </div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{trainer.name}</h1>
-          <p className="text-white/60 text-lg">{trainer.city}, {trainer.state}</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{trainer.name}</h1>
+              <p className="text-white/60 text-lg">{trainer.city}, {trainer.state}</p>
+            </div>
+            <ManageListingButton ownerId={ownerId} />
+          </div>
         </div>
       </div>
 

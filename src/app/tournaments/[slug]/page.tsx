@@ -1,5 +1,6 @@
-import { getTournamentBySlug, getTournamentSlugs } from "@/lib/db";
+import { getTournamentBySlug, getTournamentSlugs, getListingOwner } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
+import { ManageListingButton } from "@/components/manage-listing-button";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -26,6 +27,7 @@ export default async function TournamentDetailPage({ params }: Props) {
   const { slug } = await params;
   const tournament = await getTournamentBySlug(slug);
   if (!tournament) notFound();
+  const ownerId = await getListingOwner("tournament", slug);
 
   return (
     <>
@@ -38,8 +40,13 @@ export default async function TournamentDetailPage({ params }: Props) {
             <Badge variant="default">{tournament.gender}</Badge>
             <Badge variant="default">{tournament.ageGroups}</Badge>
           </div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{tournament.name}</h1>
-          <p className="text-white/60 text-lg">{tournament.organizer} · {tournament.city}, {tournament.state}</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{tournament.name}</h1>
+              <p className="text-white/60 text-lg">{tournament.organizer} · {tournament.city}, {tournament.state}</p>
+            </div>
+            <ManageListingButton ownerId={ownerId} />
+          </div>
         </div>
       </div>
 

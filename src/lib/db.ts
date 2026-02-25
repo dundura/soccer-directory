@@ -220,3 +220,117 @@ function mapBlogPost(r: Record<string, unknown>): BlogPost {
     coverImage: r.cover_image as string | undefined,
   };
 }
+
+// ── Users ────────────────────────────────────────────────────
+export interface DbUser {
+  id: string;
+  email: string;
+  name: string;
+  passwordHash: string;
+  role: string;
+}
+
+export async function getUserByEmail(email: string): Promise<DbUser | null> {
+  const rows = await sql`SELECT * FROM users WHERE email = ${email} LIMIT 1`;
+  if (!rows[0]) return null;
+  const r = rows[0];
+  return { id: r.id as string, email: r.email as string, name: r.name as string, passwordHash: r.password_hash as string, role: r.role as string };
+}
+
+export async function createUser(id: string, email: string, name: string, passwordHash: string): Promise<void> {
+  await sql`INSERT INTO users (id, email, name, password_hash, role) VALUES (${id}, ${email}, ${name}, ${passwordHash}, 'user')`;
+}
+
+// ── Listings by User ─────────────────────────────────────────
+export async function getListingsByUserId(userId: string) {
+  const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows] = await Promise.all([
+    sql`SELECT id, slug, name, status, 'club' as type FROM clubs WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, 'team' as type FROM teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, 'trainer' as type FROM trainers WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, 'camp' as type FROM camps WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, team_name as name, status, 'guest' as type FROM guest_opportunities WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, 'tournament' as type FROM tournaments WHERE user_id = ${userId} ORDER BY created_at DESC`,
+  ]);
+  return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows] as { id: string; slug: string; name: string; status: string; type: string }[];
+}
+
+// ── Create Listings ──────────────────────────────────────────
+function slugify(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function genId(): string {
+  return "u" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+export async function createClubListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  await sql`INSERT INTO clubs (id, slug, name, city, state, level, age_groups, gender, team_count, description, website, email, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.state}, ${data.level}, ${data.ageGroups}, ${data.gender}, ${Number(data.teamCount) || 0}, ${data.description}, ${data.website || null}, ${data.email || null}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
+export async function createTeamListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  await sql`INSERT INTO teams (id, slug, name, club_name, city, state, level, age_group, gender, coach, looking_for_players, positions_needed, season, description, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.clubName || null}, ${data.city}, ${data.state}, ${data.level}, ${data.ageGroup}, ${data.gender}, ${data.coach}, ${data.lookingForPlayers === "true"}, ${data.positionsNeeded || null}, ${data.season}, ${data.description || null}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
+export async function createTrainerListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  await sql`INSERT INTO trainers (id, slug, name, city, state, specialty, experience, credentials, price_range, service_area, description, rating, review_count, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.state}, ${data.specialty}, ${data.experience}, ${data.credentials}, ${data.priceRange}, ${data.serviceArea}, ${data.description || null}, 0, 0, false, ${userId}, 'approved')`;
+  return slug;
+}
+
+export async function createCampListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  await sql`INSERT INTO camps (id, slug, name, organizer_name, city, state, camp_type, age_range, dates, price, gender, description, registration_url, email, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.organizerName}, ${data.city}, ${data.state}, ${data.campType}, ${data.ageRange}, ${data.dates}, ${data.price}, ${data.gender}, ${data.description}, ${data.registrationUrl || null}, ${data.email || null}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
+export async function createGuestListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.teamName + "-" + data.tournament);
+  await sql`INSERT INTO guest_opportunities (id, slug, team_name, city, state, level, age_group, gender, dates, tournament, positions_needed, contact_email, description, featured, user_id, status) VALUES (${id}, ${slug}, ${data.teamName}, ${data.city}, ${data.state}, ${data.level}, ${data.ageGroup}, ${data.gender}, ${data.dates}, ${data.tournament}, ${data.positionsNeeded}, ${data.contactEmail}, ${data.description || null}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
+export async function createTournamentListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  await sql`INSERT INTO tournaments (id, slug, name, organizer, city, state, dates, age_groups, gender, level, entry_fee, format, description, registration_url, email, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.organizer}, ${data.city}, ${data.state}, ${data.dates}, ${data.ageGroups}, ${data.gender}, ${data.level}, ${data.entryFee}, ${data.format}, ${data.description}, ${data.registrationUrl || null}, ${data.email || null}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
+// ── Delete Listing ───────────────────────────────────────────
+export async function deleteListing(type: string, id: string, userId: string): Promise<boolean> {
+  let rows: Record<string, unknown>[];
+  switch (type) {
+    case "club": rows = await sql`DELETE FROM clubs WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+    case "team": rows = await sql`DELETE FROM teams WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+    case "trainer": rows = await sql`DELETE FROM trainers WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+    case "camp": rows = await sql`DELETE FROM camps WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+    case "guest": rows = await sql`DELETE FROM guest_opportunities WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+    case "tournament": rows = await sql`DELETE FROM tournaments WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+    default: return false;
+  }
+  return rows.length > 0;
+}
+
+// ── Get listing owner ────────────────────────────────────────
+export async function getListingOwner(type: string, slug: string): Promise<string | null> {
+  let rows: Record<string, unknown>[];
+  switch (type) {
+    case "club": rows = await sql`SELECT user_id FROM clubs WHERE slug = ${slug} LIMIT 1`; break;
+    case "team": rows = await sql`SELECT user_id FROM teams WHERE slug = ${slug} LIMIT 1`; break;
+    case "trainer": rows = await sql`SELECT user_id FROM trainers WHERE slug = ${slug} LIMIT 1`; break;
+    case "camp": rows = await sql`SELECT user_id FROM camps WHERE slug = ${slug} LIMIT 1`; break;
+    case "guest": rows = await sql`SELECT user_id FROM guest_opportunities WHERE slug = ${slug} LIMIT 1`; break;
+    case "tournament": rows = await sql`SELECT user_id FROM tournaments WHERE slug = ${slug} LIMIT 1`; break;
+    default: return null;
+  }
+  return rows[0]?.user_id as string | null;
+}

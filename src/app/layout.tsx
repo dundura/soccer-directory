@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MobileMenu } from "@/components/mobile-menu";
+import AuthProvider from "@/components/session-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,10 +33,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </head>
       <body className="bg-surface antialiased">
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <AnytimeBanner />
-        <Footer />
+        <AuthProvider>
+          <Header />
+          <main className="min-h-screen">{children}</main>
+          <AnytimeBanner />
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

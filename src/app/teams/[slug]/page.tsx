@@ -1,5 +1,6 @@
-import { getTeamBySlug, getTeamSlugs, getClubById } from "@/lib/db";
+import { getTeamBySlug, getTeamSlugs, getClubById, getListingOwner } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
+import { ManageListingButton } from "@/components/manage-listing-button";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -26,7 +27,10 @@ export default async function TeamDetailPage({ params }: Props) {
   const { slug } = await params;
   const team = await getTeamBySlug(slug);
   if (!team) notFound();
-  const club = team.clubId ? await getClubById(team.clubId) : null;
+  const [club, ownerId] = await Promise.all([
+    team.clubId ? getClubById(team.clubId) : Promise.resolve(null),
+    getListingOwner("team", slug),
+  ]);
 
   return (
     <>
@@ -39,10 +43,15 @@ export default async function TeamDetailPage({ params }: Props) {
             <Badge variant="default">{team.ageGroup}</Badge>
             {team.lookingForPlayers && <Badge variant="green">Recruiting</Badge>}
           </div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{team.name}</h1>
-          <p className="text-white/60 text-lg">
-            {club ? <a href={`/clubs/${club.slug}`} className="hover:text-white transition-colors">{club.name}</a> : team.clubName} · {team.city}, {team.state}
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{team.name}</h1>
+              <p className="text-white/60 text-lg">
+                {club ? <a href={`/clubs/${club.slug}`} className="hover:text-white transition-colors">{club.name}</a> : team.clubName} · {team.city}, {team.state}
+              </p>
+            </div>
+            <ManageListingButton ownerId={ownerId} />
+          </div>
         </div>
       </div>
 

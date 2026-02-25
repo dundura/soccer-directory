@@ -1,5 +1,6 @@
-import { getClubBySlug, getClubSlugs, getTeamsByClubId } from "@/lib/db";
+import { getClubBySlug, getClubSlugs, getTeamsByClubId, getListingOwner } from "@/lib/db";
 import { Badge, ListingCard, AnytimeInlineCTA } from "@/components/ui";
+import { ManageListingButton } from "@/components/manage-listing-button";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -27,7 +28,10 @@ export default async function ClubDetailPage({ params }: Props) {
   const club = await getClubBySlug(slug);
   if (!club) notFound();
 
-  const clubTeams = await getTeamsByClubId(club.id);
+  const [clubTeams, ownerId] = await Promise.all([
+    getTeamsByClubId(club.id),
+    getListingOwner("club", slug),
+  ]);
 
   return (
     <>
@@ -40,8 +44,13 @@ export default async function ClubDetailPage({ params }: Props) {
             <Badge variant="default">{club.gender}</Badge>
             <Badge variant="default">{club.ageGroups}</Badge>
           </div>
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{club.name}</h1>
-          <p className="text-white/60 text-lg">{club.city}, {club.state}</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{club.name}</h1>
+              <p className="text-white/60 text-lg">{club.city}, {club.state}</p>
+            </div>
+            <ManageListingButton ownerId={ownerId} />
+          </div>
         </div>
       </div>
 
