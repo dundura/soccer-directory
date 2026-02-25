@@ -53,6 +53,12 @@ const COUNTRIES = [
 
 const AGE_GROUPS = ["All", "U7", "U8", "U9", "U10", "U11", "U12", "U13", "U14", "U15", "U16", "U17", "U18", "U19"];
 
+const SOCCER_POSITIONS = [
+  "All Positions", "Goalkeeper", "Right Back", "Left Back", "Center Back",
+  "Defensive Midfielder", "Central Midfielder", "Attacking Midfielder",
+  "Right Winger", "Left Winger", "Striker", "Forward",
+];
+
 const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   club: "We are a youth soccer club committed to developing players of all levels. Our experienced coaching staff focuses on technical skills, tactical awareness, and a love for the game.",
   team: "Our team competes at a competitive level and we're looking for dedicated players who want to improve and compete. Join us for a great season!",
@@ -111,7 +117,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "gender", label: "Gender", required: true, options: ["Boys", "Girls", "Coed"] },
     { name: "coach", label: "Head Coach", required: true },
     { name: "lookingForPlayers", label: "Looking for Players?", options: ["true", "false"] },
-    { name: "positionsNeeded", label: "Positions Needed" },
+    { name: "positionsNeeded", label: "Positions Needed", type: "positions" },
     { name: "season", label: "Season", required: true, options: ["2025-2026", "2026-2027", "Year-Round"] },
     { name: "description", label: "Description", type: "textarea" },
     { name: "phone", label: "Phone" },
@@ -192,7 +198,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "gender", label: "Gender", required: true, options: ["Boys", "Girls", "Coed"] },
     { name: "dates", label: "Dates", required: true },
     { name: "tournament", label: "Tournament Name", required: true },
-    { name: "positionsNeeded", label: "Positions Needed", required: true },
+    { name: "positionsNeeded", label: "Positions Needed", required: true, type: "positions" },
     { name: "contactEmail", label: "Contact Email", required: true, type: "email" },
     { name: "description", label: "Description", type: "textarea" },
     { name: "phone", label: "Phone" },
@@ -246,7 +252,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "gender", label: "Gender", required: true, options: ["Boys", "Girls", "Coed", "Men", "Women"] },
     { name: "coach", label: "Head Coach", required: true },
     { name: "lookingForPlayers", label: "Looking for Players?", options: ["true", "false"] },
-    { name: "positionsNeeded", label: "Positions Needed" },
+    { name: "positionsNeeded", label: "Positions Needed", type: "positions" },
     { name: "season", label: "Season", required: true, options: ["2025-2026", "2026-2027", "Year-Round"] },
     { name: "format", label: "Format", required: true, options: ["5v5", "6v6", "4v4"] },
     { name: "description", label: "Description", type: "textarea" },
@@ -558,6 +564,38 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", editType, ed
                       }`}
                     >
                       {day}
+                    </button>
+                  );
+                })}
+              </div>
+
+            /* Positions selector */
+            ) : field.type === "positions" ? (
+              <div className="flex flex-wrap gap-2">
+                {SOCCER_POSITIONS.map((pos) => {
+                  const current = formData[field.name] || "";
+                  const isAll = current === "All Positions";
+                  const selected = isAll ? pos === "All Positions" : current.split(", ").includes(pos);
+                  return (
+                    <button
+                      key={pos}
+                      type="button"
+                      onClick={() => {
+                        if (pos === "All Positions") {
+                          handleChange(field.name, isAll ? "" : "All Positions");
+                        } else {
+                          const parts = current === "All Positions" ? [] : current.split(", ").filter(Boolean);
+                          const updated = selected ? parts.filter((p) => p !== pos) : [...parts, pos];
+                          handleChange(field.name, updated.join(", "));
+                        }
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                        selected
+                          ? "bg-accent text-white border-accent"
+                          : "bg-white border-border text-muted hover:border-accent/30"
+                      }`}
+                    >
+                      {pos}
                     </button>
                   );
                 })}
