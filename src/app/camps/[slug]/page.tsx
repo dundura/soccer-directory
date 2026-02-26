@@ -40,7 +40,7 @@ export default async function CampDetailPage({ params }: Props) {
   const ownerId = await getListingOwner("camp", slug);
 
   const pageUrl = `https://www.soccer-near-me.com/camps/${slug}`;
-  const heroPhoto = camp.teamPhoto || DEFAULT_HERO_PHOTO;
+  const heroPhoto = camp.imageUrl || DEFAULT_HERO_PHOTO;
   const campPhotos = camp.photos && camp.photos.length > 0 ? camp.photos : DEFAULT_PHOTOS;
   const logo = camp.logo || DEFAULT_LOGO;
   const videoUrl = camp.videoUrl === undefined || camp.videoUrl === null ? DEFAULT_VIDEO : camp.videoUrl || null;
@@ -67,7 +67,7 @@ export default async function CampDetailPage({ params }: Props) {
 
             {/* Photo + Name + CTA */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={camp.imageUrl || DEFAULT_SIDEBAR_PHOTO} alt={camp.name} className="w-full h-[200px] object-cover block" />
+              <img src={camp.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={camp.name} className="w-full h-[200px] object-cover block" />
               <div className="text-center py-3.5 px-4">
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{camp.name}</h3>
                 <p className="text-sm text-muted mt-1">{camp.city}, {camp.state}</p>

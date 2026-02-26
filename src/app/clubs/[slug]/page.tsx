@@ -47,7 +47,7 @@ export default async function ClubDetailPage({ params }: Props) {
   ]);
 
   const pageUrl = `https://www.soccer-near-me.com/clubs/${slug}`;
-  const heroPhoto = club.teamPhoto || DEFAULT_HERO_PHOTO;
+  const heroPhoto = club.imageUrl || DEFAULT_HERO_PHOTO;
   const clubPhotos = club.photos && club.photos.length > 0 ? club.photos : DEFAULT_PHOTOS;
   const logo = club.logo || DEFAULT_LOGO;
   const videoUrl = club.videoUrl === undefined || club.videoUrl === null ? DEFAULT_VIDEO : club.videoUrl || null;
@@ -77,7 +77,7 @@ export default async function ClubDetailPage({ params }: Props) {
 
             {/* Photo + Club ID + Contact */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={club.imageUrl || DEFAULT_SIDEBAR_PHOTO} alt={club.name} className="w-full h-[200px] object-cover block" />
+              <img src={club.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={club.name} className="w-full h-[200px] object-cover block" />
               <div className="text-center py-3.5 px-4">
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{club.name}</h3>
                 <p className="text-sm text-muted mt-1">{club.city}, {club.state}</p>

@@ -5,7 +5,8 @@ import type { ListingType } from "@/lib/types";
 
 // ── Constants ──────────────────────────────────────────────────
 
-const DEFAULT_IMAGE = "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+const DEFAULT_HERO_IMAGE = "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+const DEFAULT_SIDEBAR_IMAGE = "http://anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
 
 const US_STATES = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
@@ -102,10 +103,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_profile", label: "Profile & Media", type: "heading" },
-    { name: "teamPhoto", label: "Main Club Photo URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
     { name: "address", label: "Practice Address" },
     { name: "practiceSchedule", label: "Practice Days", type: "schedule" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
@@ -134,10 +135,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_profile", label: "Profile & Media", type: "heading" },
-    { name: "teamPhoto", label: "Main Team Photo URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
     { name: "address", label: "Practice Address" },
     { name: "practiceSchedule", label: "Practice Days", type: "schedule" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
@@ -161,10 +162,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_profile", label: "Profile & Media", type: "heading" },
-    { name: "teamPhoto", label: "Headshot / Profile Photo URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
     { name: "address", label: "Training Location Address" },
     { name: "practiceSchedule", label: "Availability", type: "schedule" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
@@ -190,10 +191,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_profile", label: "Profile & Media", type: "heading" },
-    { name: "teamPhoto", label: "Camp Photo URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
@@ -215,10 +216,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_profile", label: "Profile & Media", type: "heading" },
-    { name: "teamPhoto", label: "Team Photo URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
@@ -243,10 +244,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_profile", label: "Profile & Media", type: "heading" },
-    { name: "teamPhoto", label: "Tournament Photo URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
@@ -270,10 +271,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_profile", label: "Profile & Media", type: "heading" },
-    { name: "teamPhoto", label: "Main Team Photo URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
     { name: "address", label: "Practice Address" },
     { name: "practiceSchedule", label: "Practice Days", type: "schedule" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
@@ -299,10 +300,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_profile", label: "Profile & Media", type: "heading" },
-    { name: "teamPhoto", label: "Trip Photo URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
@@ -368,10 +369,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube URL" },
-    { name: "_profile", label: "Profile & Media", type: "heading" },
-    { name: "teamPhoto", label: "Showcase Photo URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
@@ -397,6 +398,37 @@ const TYPE_LABELS: Record<ListingType, string> = {
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";
 const selectClass = inputClass + " bg-white";
 
+// ── Image Field ──────────────────────────────────────────────────
+
+function ImageField({ value, defaultImage, onChange }: { value: string; defaultImage: string; onChange: (v: string) => void }) {
+  return (
+    <div className="space-y-2">
+      <input
+        type="url"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Image URL"
+        className={inputClass}
+      />
+      <div className="flex items-center gap-2">
+        {value && value !== defaultImage && (
+          <button type="button" onClick={() => onChange(defaultImage)} className="text-xs text-accent hover:underline">
+            Reset to Default
+          </button>
+        )}
+        {!value && (
+          <button type="button" onClick={() => onChange(defaultImage)} className="text-xs text-accent hover:underline">
+            Use Default Image
+          </button>
+        )}
+      </div>
+      {value && (
+        <img src={value} alt="Preview" className="rounded-lg max-h-40 object-cover border border-border" />
+      )}
+    </div>
+  );
+}
+
 // ── Component ──────────────────────────────────────────────────
 
 interface ListingFormProps {
@@ -413,7 +445,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", editType, ed
   const isEdit = mode === "edit";
   const [type, setType] = useState<ListingType>(editType || "club");
   const [formData, setFormData] = useState<Record<string, string>>(
-    initialData || { description: DEFAULT_DESCRIPTIONS["club"], imageUrl: DEFAULT_IMAGE, country: "United States" }
+    initialData || { description: DEFAULT_DESCRIPTIONS["club"], imageUrl: DEFAULT_HERO_IMAGE, teamPhoto: DEFAULT_SIDEBAR_IMAGE, country: "United States" }
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -426,7 +458,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", editType, ed
 
   function handleTypeSwitch(t: ListingType) {
     setType(t);
-    setFormData({ description: DEFAULT_DESCRIPTIONS[t], imageUrl: DEFAULT_IMAGE, country: "United States" });
+    setFormData({ description: DEFAULT_DESCRIPTIONS[t], imageUrl: DEFAULT_HERO_IMAGE, teamPhoto: DEFAULT_SIDEBAR_IMAGE, country: "United States" });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -579,44 +611,13 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", editType, ed
                 </select>
               </div>
 
-            /* Feature image with default + reset */
+            /* Image with default + reset */
             ) : field.type === "image" ? (
-              <div className="space-y-2">
-                <input
-                  type="url"
-                  value={formData[field.name] || ""}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  placeholder="Image URL"
-                  className={inputClass}
-                />
-                <div className="flex items-center gap-2">
-                  {formData[field.name] && formData[field.name] !== DEFAULT_IMAGE && (
-                    <button
-                      type="button"
-                      onClick={() => handleChange(field.name, DEFAULT_IMAGE)}
-                      className="text-xs text-accent hover:underline"
-                    >
-                      Reset to Default
-                    </button>
-                  )}
-                  {!formData[field.name] && (
-                    <button
-                      type="button"
-                      onClick={() => handleChange(field.name, DEFAULT_IMAGE)}
-                      className="text-xs text-accent hover:underline"
-                    >
-                      Use Default Image
-                    </button>
-                  )}
-                </div>
-                {formData[field.name] && (
-                  <img
-                    src={formData[field.name]}
-                    alt="Preview"
-                    className="rounded-lg max-h-40 object-cover border border-border"
-                  />
-                )}
-              </div>
+              <ImageField
+                value={formData[field.name] || ""}
+                defaultImage={field.name === "teamPhoto" ? DEFAULT_SIDEBAR_IMAGE : DEFAULT_HERO_IMAGE}
+                onChange={(v) => handleChange(field.name, v)}
+              />
 
             /* Photos (up to 5 URLs) */
             ) : field.type === "photos" ? (

@@ -40,7 +40,7 @@ export default async function TournamentDetailPage({ params }: Props) {
   const ownerId = await getListingOwner("tournament", slug);
 
   const pageUrl = `https://www.soccer-near-me.com/tournaments/${slug}`;
-  const heroPhoto = tournament.teamPhoto || DEFAULT_HERO_PHOTO;
+  const heroPhoto = tournament.imageUrl || DEFAULT_HERO_PHOTO;
   const tournamentPhotos = tournament.photos && tournament.photos.length > 0 ? tournament.photos : DEFAULT_PHOTOS;
   const logo = tournament.logo || DEFAULT_LOGO;
   const videoUrl = tournament.videoUrl === undefined || tournament.videoUrl === null ? DEFAULT_VIDEO : tournament.videoUrl || null;
@@ -67,7 +67,7 @@ export default async function TournamentDetailPage({ params }: Props) {
 
             {/* Photo + Name + CTA */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={tournament.imageUrl || DEFAULT_SIDEBAR_PHOTO} alt={tournament.name} className="w-full h-[200px] object-cover block" />
+              <img src={tournament.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={tournament.name} className="w-full h-[200px] object-cover block" />
               <div className="text-center py-3.5 px-4">
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{tournament.name}</h3>
                 <p className="text-sm text-muted mt-1">{tournament.city}, {tournament.state}</p>
