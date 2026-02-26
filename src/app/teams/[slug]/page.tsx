@@ -240,12 +240,10 @@ export default async function TeamDetailPage({ params }: Props) {
                   </span>
                 ))}
               </div>
-              {team.address && (
-                <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
-                  <span className="text-base">&#128205;</span>
-                  <span>{team.address}</span>
-                </div>
-              )}
+              <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
+                <span className="text-base">&#128205;</span>
+                <span>{team.address || `${team.city}, ${team.state}`}</span>
+              </div>
             </div>
 
             {/* Upcoming Events */}
