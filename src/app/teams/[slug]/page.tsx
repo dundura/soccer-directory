@@ -286,7 +286,7 @@ export default async function TeamDetailPage({ params }: Props) {
               <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
               <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
                 {teamPhotos.map((photo, i) => (
-                  <img key={i} src={photo} alt={`Team photo ${i + 1}`} className="w-full h-[150px] object-cover rounded-xl block" />
+                  <img key={i} src={photo} alt={`Team photo ${i + 1}`} className="w-full aspect-square object-cover rounded-xl block" />
                 ))}
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
