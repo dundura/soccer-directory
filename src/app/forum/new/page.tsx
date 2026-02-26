@@ -68,6 +68,7 @@ export default function NewTopicPage() {
         </div>
       </div>
 
+      <div className="bg-white min-h-[60vh]">
       <div className="max-w-2xl mx-auto px-4 py-12">
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-border p-6 md:p-8 space-y-5">
           <div>
@@ -92,6 +93,7 @@ export default function NewTopicPage() {
             {submitting ? "Creating..." : "Create Discussion"}
           </button>
         </form>
+      </div>
       </div>
     </>
   );

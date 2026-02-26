@@ -52,6 +52,7 @@ export default async function TopicDetailPage({ params }: Props) {
         </div>
       </div>
 
+      <div className="bg-white min-h-[60vh]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Original Post */}
         <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
@@ -71,6 +72,7 @@ export default async function TopicDetailPage({ params }: Props) {
             createdAt: c.createdAt,
           }))}
         />
+      </div>
       </div>
 
       {/* Anytime Soccer Training Banner */}
