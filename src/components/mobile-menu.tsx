@@ -118,6 +118,15 @@ export function MobileMenu() {
                     Guest Play
                   </a>
                 )}
+                {idx === 3 && (
+                  <a
+                    href="/free"
+                    onClick={() => setOpen(false)}
+                    className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
+                  >
+                    Free
+                  </a>
+                )}
               </div>
             ))}
             <hr className="border-white/10 my-3" />
