@@ -33,6 +33,7 @@ const navGroups = [
     links: [
       { label: "Equipment", href: "/shop?category=Equipment" },
       { label: "Books", href: "/shop?category=Books" },
+      { label: "Store", href: "/store" },
     ],
   },
   {
