@@ -70,7 +70,14 @@ function Header() {
                 { label: "Futsal", href: "/futsal" },
               ]}
             />
-            <a href="/guest-play" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Guest Play</a>
+            <NavDropdown
+              label="Guest Play"
+              items={[
+                { label: "Opportunities", href: "/guest-play" },
+                { label: "Players", href: "/guest-play/players" },
+                { label: "Guest Player Posts", href: "/guest-play/posts" },
+              ]}
+            />
             <NavDropdown
               label="Camps"
               items={[
@@ -135,6 +142,7 @@ function Footer() {
               <a href="/trainers" className="hover:text-white transition-colors">Find Trainers</a>
               <a href="/camps" className="hover:text-white transition-colors">Find Camps</a>
               <a href="/guest-play" className="hover:text-white transition-colors">Guest Player Ops</a>
+              <a href="/guest-play/players" className="hover:text-white transition-colors">Player Profiles</a>
               <a href="/international-trips" className="hover:text-white transition-colors">International Trips</a>
               <a href="/tournaments" className="hover:text-white transition-colors">Find Tournaments</a>
               <a href="/shop" className="hover:text-white transition-colors">Shop Equipment & Books</a>

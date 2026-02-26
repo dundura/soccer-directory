@@ -73,6 +73,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   equipment: "Quality soccer equipment available for purchase. Great condition and ready for the next player!",
   books: "Soccer book available for purchase. A great resource for players, parents, and coaches!",
   showcase: "Join us for a competitive college showcase event! Get exposure in front of college coaches and recruiters.",
+  player: "A dedicated soccer player looking for new opportunities to compete and grow. Open to guest play, tryouts, and showcase events.",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -376,6 +377,35 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
+  player: [
+    { name: "playerName", label: "Player Name", required: true },
+    { name: "position", label: "Primary Position", required: true, options: ["GK", "CB", "FB/WB", "CDM", "CM", "CAM", "Winger", "ST"] },
+    { name: "secondaryPosition", label: "Secondary Position", options: ["GK", "CB", "FB/WB", "CDM", "CM", "CAM", "Winger", "ST"] },
+    { name: "birthYear", label: "Birth Year", required: true, options: ["2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016"] },
+    { name: "height", label: "Height (e.g. 5'8\")" },
+    { name: "preferredFoot", label: "Preferred Foot", options: ["Right", "Left", "Both"] },
+    { name: "currentClub", label: "Current Club" },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "level", label: "Level", required: true, options: ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club / Local Travel", "Rec Select", "Recreational / Grassroots"] },
+    { name: "gender", label: "Gender", required: true, options: ["Boys", "Girls"] },
+    { name: "gpa", label: "GPA (optional)" },
+    { name: "description", label: "About the Player", type: "textarea" },
+    { name: "lookingFor", label: "What opportunities are you looking for?", required: true, type: "textarea" },
+    { name: "contactEmail", label: "Contact Email", required: true, type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "_socials", label: "Social Media", type: "heading" },
+    { name: "facebook", label: "Facebook URL" },
+    { name: "instagram", label: "Instagram URL" },
+    { name: "youtube", label: "YouTube / Highlight Reel URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Player Photo", type: "image" },
+    { name: "logo", label: "Club Logo URL" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "photos", label: "Action Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Highlight Video URL (YouTube/Vimeo)" },
+  ],
 };
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -391,6 +421,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   equipment: "Equipment",
   books: "Books",
   marketplace: "Shop Item",
+  player: "Player Profile",
 };
 
 // ── Shared styles ──────────────────────────────────────────────

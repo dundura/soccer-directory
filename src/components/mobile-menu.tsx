@@ -13,6 +13,14 @@ const navGroups = [
     ],
   },
   {
+    label: "Guest Play",
+    links: [
+      { label: "Opportunities", href: "/guest-play" },
+      { label: "Players", href: "/guest-play/players" },
+      { label: "Guest Player Posts", href: "/guest-play/posts" },
+    ],
+  },
+  {
     label: "Camps",
     links: [
       { label: "Camps", href: "/camps" },
@@ -113,15 +121,6 @@ export function MobileMenu() {
                       </a>
                     ))}
                   </div>
-                )}
-                {group.label === "Find" && (
-                  <a
-                    href="/guest-play"
-                    onClick={() => setOpen(false)}
-                    className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
-                  >
-                    Guest Play
-                  </a>
                 )}
                 {group.label === "Community" && (
                   <a

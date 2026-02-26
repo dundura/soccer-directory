@@ -11,6 +11,7 @@ const TYPE_LABELS: Record<string, string> = {
 const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers", camp: "camps",
   guest: "guest-play", tournament: "tournaments", futsal: "futsal",
+  player: "guest-play/players",
 };
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";

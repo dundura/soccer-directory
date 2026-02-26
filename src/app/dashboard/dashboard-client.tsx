@@ -17,6 +17,7 @@ const TYPE_PATHS: Record<string, string> = {
   equipment: "shop",
   books: "shop",
   showcase: "camps",
+  player: "guest-play/players",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -31,6 +32,7 @@ const TYPE_LABELS: Record<string, string> = {
   equipment: "Equipment",
   books: "Books",
   showcase: "College Showcase",
+  player: "Player Profile",
 };
 
 type Listing = { id: string; slug: string; name: string; status: string; type: string };

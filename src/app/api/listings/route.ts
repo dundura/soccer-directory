@@ -13,6 +13,7 @@ import {
   createFutsalListing,
   createTripListing,
   createMarketplaceListing,
+  createPlayerProfile,
   updateListing,
   deleteListing,
 } from "@/lib/db";
@@ -90,6 +91,9 @@ export async function POST(req: Request) {
       case "showcase":
         data.campType = "College Showcase";
         slug = await createCampListing(data, session.user.id);
+        break;
+      case "player":
+        slug = await createPlayerProfile(data, session.user.id);
         break;
       default:
         return NextResponse.json({ error: "Invalid listing type" }, { status: 400 });

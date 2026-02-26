@@ -12,12 +12,14 @@ const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
   guest: "Guest Play", tournament: "Tournament", futsal: "Futsal", trip: "Trip",
   marketplace: "Shop", equipment: "Equipment", books: "Books", showcase: "College Showcase",
+  player: "Player Profile",
 };
 
 const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers", camp: "camps",
   guest: "guest-play", tournament: "tournaments", futsal: "futsal", trip: "international-trips",
   marketplace: "shop", equipment: "shop", books: "shop", showcase: "camps",
+  player: "guest-play/players",
 };
 
 export default function AdminClient() {

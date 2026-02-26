@@ -223,7 +223,58 @@ export interface MarketplaceItem {
   createdAt: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase";
+export interface PlayerProfile extends ProfileFields {
+  id: string;
+  slug: string;
+  playerName: string;
+  position: string;
+  secondaryPosition?: string;
+  birthYear: string;
+  height?: string;
+  preferredFoot?: string;
+  currentClub?: string;
+  city: string;
+  state: string;
+  country?: string;
+  level: string;
+  gender: string;
+  gpa?: string;
+  description?: string;
+  lookingFor?: string;
+  contactEmail: string;
+  featured: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export type GuestPostCategory = "Looking for Players" | "Looking for Team" | "Tournament Guest Play" | "Showcase Opportunity" | "General";
+
+export interface GuestPost {
+  id: string;
+  title: string;
+  slug: string;
+  category: GuestPostCategory;
+  body: string;
+  userId: string;
+  userName: string;
+  viewCount: number;
+  isPinned: boolean;
+  commentCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GuestPostComment {
+  id: string;
+  postId: string;
+  body: string;
+  userId: string;
+  userName: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";

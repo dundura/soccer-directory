@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { Club, Team, TeamEvent, Trainer, Camp, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, ProfileFields, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment } from "./types";
+import type { Club, Team, TeamEvent, Trainer, Camp, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, ProfileFields, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment } from "./types";
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -209,6 +209,41 @@ function mapGuest(r: Record<string, unknown>): GuestOpportunity {
   };
 }
 
+// ── Player Profiles ─────────────────────────────────────────
+export async function getPlayerProfiles(): Promise<PlayerProfile[]> {
+  const rows = await sql`SELECT * FROM player_profiles WHERE status = 'approved' ORDER BY featured DESC, player_name ASC`;
+  return rows.map(mapPlayerProfile);
+}
+
+export async function getPlayerProfileBySlug(slug: string): Promise<PlayerProfile | null> {
+  const rows = await sql`SELECT * FROM player_profiles WHERE slug = ${slug} AND status = 'approved' LIMIT 1`;
+  return rows[0] ? mapPlayerProfile(rows[0]) : null;
+}
+
+export async function getPlayerProfileSlugs(): Promise<string[]> {
+  const rows = await sql`SELECT slug FROM player_profiles WHERE status = 'approved'`;
+  return rows.map((r) => r.slug as string);
+}
+
+function mapPlayerProfile(r: Record<string, unknown>): PlayerProfile {
+  return {
+    id: r.id as string, slug: r.slug as string, playerName: r.player_name as string,
+    position: r.position as string, secondaryPosition: r.secondary_position as string | undefined,
+    birthYear: r.birth_year as string, height: r.height as string | undefined,
+    preferredFoot: r.preferred_foot as string | undefined,
+    currentClub: r.current_club as string | undefined,
+    city: r.city as string, state: r.state as string, country: r.country as string | undefined,
+    level: r.level as string, gender: r.gender as string,
+    gpa: r.gpa as string | undefined,
+    description: r.description as string | undefined,
+    lookingFor: r.looking_for as string | undefined,
+    contactEmail: r.contact_email as string,
+    featured: r.featured as boolean,
+    createdAt: r.created_at as string,
+    ...mapProfileFields(r),
+  };
+}
+
 // ── International Trips ─────────────────────────────────────
 export async function getInternationalTrips(): Promise<InternationalTrip[]> {
   const rows = await sql`SELECT * FROM international_trips WHERE status = 'approved' ORDER BY featured DESC, trip_name ASC`;
@@ -394,6 +429,7 @@ export async function deleteUserAccount(userId: string): Promise<void> {
   await sql`DELETE FROM futsal_teams WHERE user_id = ${userId}`;
   await sql`DELETE FROM international_trips WHERE user_id = ${userId}`;
   await sql`DELETE FROM marketplace WHERE user_id = ${userId}`;
+  await sql`DELETE FROM player_profiles WHERE user_id = ${userId}`;
   await sql`DELETE FROM users WHERE id = ${userId}`;
 }
 
@@ -414,7 +450,7 @@ export async function updateUserRole(userId: string, role: string): Promise<void
 }
 
 export async function getAllListings() {
-  const [clubs, teams, trainers, camps, guests, tournaments, futsals, trips, marketplace] = await Promise.all([
+  const [clubs, teams, trainers, camps, guests, tournaments, futsals, trips, marketplace, players] = await Promise.all([
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'club' as type FROM clubs ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'team' as type FROM teams ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'trainer' as type FROM trainers ORDER BY created_at DESC`,
@@ -424,8 +460,9 @@ export async function getAllListings() {
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'futsal' as type FROM futsal_teams ORDER BY created_at DESC`,
     sql`SELECT id, slug, trip_name as name, status, featured, user_id, created_at, 'trip' as type FROM international_trips ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, CASE WHEN category = 'Books' THEN 'books' ELSE 'equipment' END as type FROM marketplace ORDER BY created_at DESC`,
+    sql`SELECT id, slug, player_name as name, status, featured, user_id, created_at, 'player' as type FROM player_profiles ORDER BY created_at DESC`,
   ]);
-  return [...clubs, ...teams, ...trainers, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace].map((r) => ({
+  return [...clubs, ...teams, ...trainers, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace, ...players].map((r) => ({
     id: r.id as string,
     slug: r.slug as string,
     name: r.name as string,
@@ -449,6 +486,7 @@ export async function updateListingStatus(type: string, id: string, status: stri
     case "futsal": await sql`UPDATE futsal_teams SET status = ${status} WHERE id = ${id}`; break;
     case "trip": await sql`UPDATE international_trips SET status = ${status} WHERE id = ${id}`; break;
     case "marketplace": await sql`UPDATE marketplace SET status = ${status} WHERE id = ${id}`; break;
+    case "player": await sql`UPDATE player_profiles SET status = ${status} WHERE id = ${id}`; break;
   }
 }
 
@@ -464,12 +502,13 @@ export async function updateListingFeatured(type: string, id: string, featured: 
     case "futsal": await sql`UPDATE futsal_teams SET featured = ${featured} WHERE id = ${id}`; break;
     case "trip": await sql`UPDATE international_trips SET featured = ${featured} WHERE id = ${id}`; break;
     case "marketplace": await sql`UPDATE marketplace SET featured = ${featured} WHERE id = ${id}`; break;
+    case "player": await sql`UPDATE player_profiles SET featured = ${featured} WHERE id = ${id}`; break;
   }
 }
 
 // ── Listings by User ─────────────────────────────────────────
 export async function getListingsByUserId(userId: string) {
-  const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows] = await Promise.all([
+  const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows] = await Promise.all([
     sql`SELECT id, slug, name, status, 'club' as type FROM clubs WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'team' as type FROM teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'trainer' as type FROM trainers WHERE user_id = ${userId} ORDER BY created_at DESC`,
@@ -479,8 +518,9 @@ export async function getListingsByUserId(userId: string) {
     sql`SELECT id, slug, name, status, 'futsal' as type FROM futsal_teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, trip_name as name, status, 'trip' as type FROM international_trips WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, CASE WHEN category = 'Books' THEN 'books' ELSE 'equipment' END as type FROM marketplace WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, player_name as name, status, 'player' as type FROM player_profiles WHERE user_id = ${userId} ORDER BY created_at DESC`,
   ]);
-  return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows] as { id: string; slug: string; name: string; status: string; type: string }[];
+  return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows, ...playerRows] as { id: string; slug: string; name: string; status: string; type: string }[];
 }
 
 // ── Create Listings ──────────────────────────────────────────
@@ -581,6 +621,15 @@ export async function createMarketplaceListing(data: Record<string, string>, use
   return slug;
 }
 
+export async function createPlayerProfile(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.playerName + "-" + data.birthYear);
+  const sm = buildSocialMedia(data);
+  const pf = profileFields(data);
+  await sql`INSERT INTO player_profiles (id, slug, player_name, position, secondary_position, birth_year, height, preferred_foot, current_club, city, country, state, level, gender, gpa, description, looking_for, contact_email, phone, social_media, logo, image_url, team_photo, photos, video_url, featured, user_id, status) VALUES (${id}, ${slug}, ${data.playerName}, ${data.position}, ${data.secondaryPosition || null}, ${data.birthYear}, ${data.height || null}, ${data.preferredFoot || null}, ${data.currentClub || null}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.gender}, ${data.gpa || null}, ${data.description || null}, ${data.lookingFor || null}, ${data.contactEmail}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, ${pf.teamPhoto}, ${pf.photos}, ${pf.videoUrl}, false, ${userId}, 'pending')`;
+  return slug;
+}
+
 // ── Get Listing Data (for editing) ───────────────────────────
 export async function getListingData(type: string, id: string, userId: string): Promise<Record<string, string> | null> {
   type = normalizeType(type);
@@ -622,6 +671,10 @@ export async function getListingData(type: string, id: string, userId: string): 
       rows = await sql`SELECT * FROM marketplace WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
       return mapMarketplaceToForm(rows[0]);
+    case "player":
+      rows = await sql`SELECT * FROM player_profiles WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapPlayerToForm(rows[0]);
     default:
       return null;
   }
@@ -641,6 +694,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "futsal": rows = await sql`SELECT * FROM futsal_teams WHERE id = ${id} LIMIT 1`; break;
     case "trip": rows = await sql`SELECT * FROM international_trips WHERE id = ${id} LIMIT 1`; break;
     case "marketplace": rows = await sql`SELECT * FROM marketplace WHERE id = ${id} LIMIT 1`; break;
+    case "player": rows = await sql`SELECT * FROM player_profiles WHERE id = ${id} LIMIT 1`; break;
     default: return null;
   }
   if (!rows[0]) return null;
@@ -654,6 +708,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "futsal": return mapFutsalToForm(rows[0]);
     case "trip": return mapTripToForm(rows[0]);
     case "marketplace": return mapMarketplaceToForm(rows[0]);
+    case "player": return mapPlayerToForm(rows[0]);
     default: return null;
   }
 }
@@ -708,6 +763,10 @@ function mapTripToForm(r: Record<string, unknown>): Record<string, string> {
 function mapMarketplaceToForm(r: Record<string, unknown>): Record<string, string> {
   return { name: s(r.name), category: s(r.category), description: s(r.description), price: s(r.price), condition: s(r.condition), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), contactEmail: s(r.contact_email), phone: s(r.phone), imageUrl: s(r.image_url), photos: s(r.photos) };
 }
+function mapPlayerToForm(r: Record<string, unknown>): Record<string, string> {
+  const sm = parseSocial(r.social_media);
+  return { playerName: s(r.player_name), position: s(r.position), secondaryPosition: s(r.secondary_position), birthYear: s(r.birth_year), height: s(r.height), preferredFoot: s(r.preferred_foot), currentClub: s(r.current_club), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), gender: s(r.gender), gpa: s(r.gpa), description: s(r.description), lookingFor: s(r.looking_for), contactEmail: s(r.contact_email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
+}
 
 // ── Update Listing ──────────────────────────────────────────
 function buildSocialMedia(data: Record<string, string>): string | null {
@@ -747,6 +806,9 @@ export async function updateListing(type: string, id: string, data: Record<strin
       break;
     case "marketplace":
       rows = await sql`UPDATE marketplace SET name=${data.name}, category=${data.category}, description=${data.description}, price=${data.price}, condition=${data.condition}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, contact_email=${data.contactEmail}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, photos=${data.photos || null} WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "player":
+      rows = await sql`UPDATE player_profiles SET player_name=${data.playerName}, position=${data.position}, secondary_position=${data.secondaryPosition || null}, birth_year=${data.birthYear}, height=${data.height || null}, preferred_foot=${data.preferredFoot || null}, current_club=${data.currentClub || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, gender=${data.gender}, gpa=${data.gpa || null}, description=${data.description || null}, looking_for=${data.lookingFor || null}, contact_email=${data.contactEmail}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl} WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     default:
       return false;
@@ -788,6 +850,9 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
     case "marketplace":
       rows = await sql`UPDATE marketplace SET name=${data.name}, category=${data.category}, description=${data.description}, price=${data.price}, condition=${data.condition}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, contact_email=${data.contactEmail}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, photos=${data.photos || null} WHERE id=${id} RETURNING id`;
       break;
+    case "player":
+      rows = await sql`UPDATE player_profiles SET player_name=${data.playerName}, position=${data.position}, secondary_position=${data.secondaryPosition || null}, birth_year=${data.birthYear}, height=${data.height || null}, preferred_foot=${data.preferredFoot || null}, current_club=${data.currentClub || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, gender=${data.gender}, gpa=${data.gpa || null}, description=${data.description || null}, looking_for=${data.lookingFor || null}, contact_email=${data.contactEmail}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl} WHERE id=${id} RETURNING id`;
+      break;
     default:
       return false;
   }
@@ -808,6 +873,7 @@ export async function deleteListing(type: string, id: string, userId: string): P
     case "futsal": rows = await sql`DELETE FROM futsal_teams WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     case "trip": rows = await sql`DELETE FROM international_trips WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     case "marketplace": rows = await sql`DELETE FROM marketplace WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+    case "player": rows = await sql`DELETE FROM player_profiles WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     default: return false;
   }
   return rows.length > 0;
@@ -827,6 +893,7 @@ export async function getListingContact(type: string, slug: string): Promise<{ n
     case "futsal": rows = await sql`SELECT name, NULL as email, user_id FROM futsal_teams WHERE slug = ${slug} LIMIT 1`; break;
     case "trip": rows = await sql`SELECT trip_name as name, contact_email as email, user_id FROM international_trips WHERE slug = ${slug} LIMIT 1`; break;
     case "marketplace": rows = await sql`SELECT name, contact_email as email, user_id FROM marketplace WHERE slug = ${slug} LIMIT 1`; break;
+    case "player": rows = await sql`SELECT player_name as name, contact_email as email, user_id FROM player_profiles WHERE slug = ${slug} LIMIT 1`; break;
     default: return null;
   }
   if (!rows[0]) return null;
@@ -851,6 +918,7 @@ export async function getListingOwner(type: string, slug: string): Promise<strin
     case "futsal": rows = await sql`SELECT user_id FROM futsal_teams WHERE slug = ${slug} LIMIT 1`; break;
     case "trip": rows = await sql`SELECT user_id FROM international_trips WHERE slug = ${slug} LIMIT 1`; break;
     case "marketplace": rows = await sql`SELECT user_id FROM marketplace WHERE slug = ${slug} LIMIT 1`; break;
+    case "player": rows = await sql`SELECT user_id FROM player_profiles WHERE slug = ${slug} LIMIT 1`; break;
     default: return null;
   }
   return rows[0]?.user_id as string | null;
@@ -987,6 +1055,75 @@ function mapForumTopic(r: Record<string, unknown>): ForumTopic {
 function mapForumComment(r: Record<string, unknown>): ForumComment {
   return {
     id: r.id as string, topicId: r.topic_id as string, body: r.body as string,
+    userId: r.user_id as string, userName: r.user_name as string,
+    createdAt: r.created_at as string, updatedAt: r.updated_at as string,
+  };
+}
+
+// ── Guest Posts (Guest Play Forum) ──────────────────────────
+
+export async function createGuestPost(title: string, category: string, body: string, userId: string): Promise<string> {
+  const id = genId();
+  const slug = slugify(title) + "-" + id.slice(-4);
+  await sql`INSERT INTO guest_posts (id, title, slug, category, body, user_id) VALUES (${id}, ${title}, ${slug}, ${category}, ${body}, ${userId})`;
+  return slug;
+}
+
+export async function getGuestPosts(category?: string): Promise<GuestPost[]> {
+  let rows: Record<string, unknown>[];
+  if (category) {
+    rows = await sql`SELECT t.*, u.name as user_name, (SELECT COUNT(*)::int FROM guest_post_comments c WHERE c.post_id = t.id) as comment_count FROM guest_posts t JOIN users u ON u.id = t.user_id WHERE t.category = ${category} ORDER BY t.is_pinned DESC, t.updated_at DESC`;
+  } else {
+    rows = await sql`SELECT t.*, u.name as user_name, (SELECT COUNT(*)::int FROM guest_post_comments c WHERE c.post_id = t.id) as comment_count FROM guest_posts t JOIN users u ON u.id = t.user_id ORDER BY t.is_pinned DESC, t.updated_at DESC`;
+  }
+  return rows.map(mapGuestPost);
+}
+
+export async function getGuestPostBySlug(slug: string): Promise<GuestPost | null> {
+  const rows = await sql`SELECT t.*, u.name as user_name, (SELECT COUNT(*)::int FROM guest_post_comments c WHERE c.post_id = t.id) as comment_count FROM guest_posts t JOIN users u ON u.id = t.user_id WHERE t.slug = ${slug} LIMIT 1`;
+  return rows[0] ? mapGuestPost(rows[0]) : null;
+}
+
+export async function incrementGuestPostViewCount(slug: string): Promise<void> {
+  await sql`UPDATE guest_posts SET view_count = view_count + 1 WHERE slug = ${slug}`;
+}
+
+export async function deleteGuestPost(id: string, userId: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM guest_posts WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function createGuestPostComment(postId: string, body: string, userId: string): Promise<string> {
+  const id = genId();
+  await sql`INSERT INTO guest_post_comments (id, post_id, body, user_id) VALUES (${id}, ${postId}, ${body}, ${userId})`;
+  await sql`UPDATE guest_posts SET updated_at = NOW() WHERE id = ${postId}`;
+  return id;
+}
+
+export async function getGuestPostComments(postId: string): Promise<GuestPostComment[]> {
+  const rows = await sql`SELECT c.*, u.name as user_name FROM guest_post_comments c JOIN users u ON u.id = c.user_id WHERE c.post_id = ${postId} ORDER BY c.created_at ASC`;
+  return rows.map(mapGuestPostComment);
+}
+
+export async function deleteGuestPostComment(id: string, userId: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM guest_post_comments WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
+  return rows.length > 0;
+}
+
+function mapGuestPost(r: Record<string, unknown>): GuestPost {
+  return {
+    id: r.id as string, title: r.title as string, slug: r.slug as string,
+    category: r.category as GuestPostCategory, body: r.body as string,
+    userId: r.user_id as string, userName: r.user_name as string,
+    viewCount: Number(r.view_count), isPinned: r.is_pinned as boolean,
+    commentCount: Number(r.comment_count),
+    createdAt: r.created_at as string, updatedAt: r.updated_at as string,
+  };
+}
+
+function mapGuestPostComment(r: Record<string, unknown>): GuestPostComment {
+  return {
+    id: r.id as string, postId: r.post_id as string, body: r.body as string,
     userId: r.user_id as string, userName: r.user_name as string,
     createdAt: r.created_at as string, updatedAt: r.updated_at as string,
   };
