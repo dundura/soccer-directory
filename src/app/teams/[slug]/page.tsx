@@ -91,10 +91,129 @@ export default async function TeamDetailPage({ params }: Props) {
       </div>
 
       <div className="max-w-[1100px] mx-auto px-6 pb-16">
-        <div className="grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5 lg:gap-6 items-start">
 
-          {/* ====== LEFT SIDEBAR ====== */}
-          <aside className="flex flex-col gap-4 order-2 lg:order-1">
+          {/* ====== Hero ====== */}
+          <div className="lg:col-start-2 bg-white rounded-2xl overflow-hidden shadow-sm">
+              <img src={heroPhoto} alt={team.name} className="w-full h-[220px] object-cover block" />
+              <div className="p-7 flex gap-6 items-start">
+              <img
+                src={logo}
+                alt={`${team.name} logo`}
+                className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10"
+              />
+              <div className="flex-1 min-w-0">
+                <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{team.name}</h1>
+                <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
+                  {club ? <a href={`/clubs/${club.slug}`} className="text-muted hover:underline">{club.name}</a> : team.clubName}
+                  {" \u00b7 "}{team.city}, {team.state}
+                </p>
+                {team.description && (
+                  <p className="text-sm leading-relaxed text-gray-500">{team.description}</p>
+                )}
+                <div className="flex gap-2.5 mt-[18px] flex-wrap">
+                  {club && (
+                    <a
+                      href={`/clubs/${club.slug}`}
+                      className="bg-white text-primary border-2 border-primary px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-surface transition-colors"
+                    >
+                      View Club
+                    </a>
+                  )}
+                  {club?.website && (
+                    <a
+                      href={club.website.startsWith("http") ? club.website : `https://${club.website}`}
+                      target="_blank"
+                      className="bg-white text-primary border-2 border-border px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-surface transition-colors"
+                    >
+                      &#127760; Visit Website
+                    </a>
+                  )}
+                  {team.lookingForPlayers && (
+                    <a
+                      href={`/contact/team/${slug}`}
+                      className="bg-red-50 text-[#DC373E] border-2 border-red-200 px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-red-100 transition-colors"
+                    >
+                      &#128197; Tryout Info
+                    </a>
+                  )}
+                </div>
+              </div>
+              </div>
+          </div>
+
+          {/* ====== At a Glance ====== */}
+          <div className="lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="text-[15px] font-bold text-primary mb-3.5">At a Glance</h3>
+              <div className="grid grid-cols-2 gap-2.5 mt-1">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg leading-none">&#127942;</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Level</span>
+                  <span className="text-sm font-bold text-primary ml-auto">{team.level}</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg leading-none">&#127941;</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">League</span>
+                  <span className="text-sm font-bold text-primary ml-auto">{team.season || "—"}</span>
+                </div>
+                {team.events && team.events.some((e) => e.type === "Tryout") && (
+                  <div className="flex items-center gap-2.5 col-span-2">
+                    <span className="text-lg leading-none">&#128197;</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Tryout Dates</span>
+                    <span className="text-sm font-bold text-primary ml-auto">
+                      {team.events.filter((e) => e.type === "Tryout").map((e) => e.date).join(" & ")}
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg leading-none">&#9917;</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Practices</span>
+                  <span className="text-sm font-bold text-primary ml-auto">
+                    {team.practiceSchedule && team.practiceSchedule.length > 0
+                      ? `${team.practiceSchedule.length}x / week`
+                      : "—"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg leading-none">&#128197;</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Age Group</span>
+                  <span className="text-sm font-bold text-primary ml-auto">{team.ageGroup} {team.gender}</span>
+                </div>
+                {team.annualTournaments && team.annualTournaments.length > 0 && (
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-lg leading-none">&#129349;</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Tournaments</span>
+                    <span className="text-sm font-bold text-primary ml-auto">{team.annualTournaments.length}</span>
+                  </div>
+                )}
+              </div>
+          </div>
+
+          {/* ====== Practice Schedule ====== */}
+          <div className="lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="text-[15px] font-bold text-primary mb-3.5">Practice Schedule</h3>
+              <div className="flex gap-2 flex-wrap">
+                {ALL_DAYS.map((day) => (
+                  <span
+                    key={day}
+                    className={`px-3.5 py-[7px] rounded-full text-sm font-semibold ${
+                      practiceSet.has(day.toLowerCase())
+                        ? "bg-primary text-white"
+                        : "bg-surface text-gray-400"
+                    }`}
+                  >
+                    {day}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
+                <span className="text-base">&#128205;</span>
+                <span>{team.address || `${team.city}, ${team.state}`}</span>
+              </div>
+          </div>
+
+          {/* ====== LEFT SIDEBAR (position 4 on mobile, left column on desktop) ====== */}
+          <aside className="flex flex-col gap-4 lg:col-start-1 lg:[grid-row:1/-1]">
 
             {/* Photo + Team ID + Roster */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
@@ -190,130 +309,19 @@ export default async function TeamDetailPage({ params }: Props) {
             </div>
           </aside>
 
-          {/* ====== RIGHT MAIN COLUMN ====== */}
-          <main className="flex flex-col gap-5 order-1 lg:order-2">
-
-            {/* Hero */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={heroPhoto} alt={team.name} className="w-full h-[220px] object-cover block" />
-              <div className="p-7 flex gap-6 items-start">
-              <img
-                src={logo}
-                alt={`${team.name} logo`}
-                className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10"
-              />
-              <div className="flex-1 min-w-0">
-                <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{team.name}</h1>
-                <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
-                  {club ? <a href={`/clubs/${club.slug}`} className="text-muted hover:underline">{club.name}</a> : team.clubName}
-                  {" \u00b7 "}{team.city}, {team.state}
-                </p>
-                {team.description && (
-                  <p className="text-sm leading-relaxed text-gray-500">{team.description}</p>
-                )}
-                <div className="flex gap-2.5 mt-[18px] flex-wrap">
-                  {club && (
-                    <a
-                      href={`/clubs/${club.slug}`}
-                      className="bg-white text-primary border-2 border-primary px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-surface transition-colors"
-                    >
-                      View Club
-                    </a>
-                  )}
-                  {club?.website && (
-                    <a
-                      href={club.website.startsWith("http") ? club.website : `https://${club.website}`}
-                      target="_blank"
-                      className="bg-white text-primary border-2 border-border px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-surface transition-colors"
-                    >
-                      &#127760; Visit Website
-                    </a>
-                  )}
-                  {team.lookingForPlayers && (
-                    <a
-                      href={`/contact/team/${slug}`}
-                      className="bg-red-50 text-[#DC373E] border-2 border-red-200 px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-red-100 transition-colors"
-                    >
-                      &#128197; Tryout Info
-                    </a>
-                  )}
-                </div>
-              </div>
-              </div>
-            </div>
-
-            {/* At a Glance */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">At a Glance</h3>
-              <div className="grid grid-cols-2 gap-2.5 mt-1">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#127942;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Level</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{team.level}</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#127941;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">League</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{team.season || "—"}</span>
-                </div>
-                {team.events && team.events.some((e) => e.type === "Tryout") && (
-                  <div className="flex items-center gap-2.5 col-span-2">
-                    <span className="text-lg leading-none">&#128197;</span>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Tryout Dates</span>
-                    <span className="text-sm font-bold text-primary ml-auto">
-                      {team.events.filter((e) => e.type === "Tryout").map((e) => e.date).join(" & ")}
-                    </span>
-                  </div>
-                )}
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#9917;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Practices</span>
-                  <span className="text-sm font-bold text-primary ml-auto">
-                    {team.practiceSchedule && team.practiceSchedule.length > 0
-                      ? `${team.practiceSchedule.length}x / week`
-                      : "—"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#128197;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Age Group</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{team.ageGroup} {team.gender}</span>
-                </div>
-                {team.annualTournaments && team.annualTournaments.length > 0 && (
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-lg leading-none">&#129349;</span>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Tournaments</span>
-                    <span className="text-sm font-bold text-primary ml-auto">{team.annualTournaments.length}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Practice Schedule */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">Practice Schedule</h3>
-              <div className="flex gap-2 flex-wrap">
-                {ALL_DAYS.map((day) => (
-                  <span
-                    key={day}
-                    className={`px-3.5 py-[7px] rounded-full text-sm font-semibold ${
-                      practiceSet.has(day.toLowerCase())
-                        ? "bg-primary text-white"
-                        : "bg-surface text-gray-400"
-                    }`}
-                  >
-                    {day}
-                  </span>
+          {/* ====== Photos & Video ====== */}
+          <div className="lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
+              <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
+                {teamPhotos.map((photo, i) => (
+                  <img key={i} src={photo} alt={`Team photo ${i + 1}`} className="w-full aspect-square object-contain rounded-xl block bg-surface" />
                 ))}
               </div>
-              <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
-                <span className="text-base">&#128205;</span>
-                <span>{team.address || `${team.city}, ${team.state}`}</span>
-              </div>
-            </div>
+              {videoUrl && <VideoEmbed url={videoUrl} />}
+          </div>
 
-            {/* Upcoming Events */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
+          {/* ====== Upcoming Events ====== */}
+          <div className="lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
               <h3 className="text-[15px] font-bold text-primary mb-3.5">Upcoming Events</h3>
               {team.events && team.events.length > 0 ? (
                 <div>
@@ -341,25 +349,16 @@ export default async function TeamDetailPage({ params }: Props) {
               ) : (
                 <p className="text-sm text-muted">No upcoming events posted.</p>
               )}
-            </div>
+          </div>
 
-            {/* Photos & Video */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
-              <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
-                {teamPhotos.map((photo, i) => (
-                  <img key={i} src={photo} alt={`Team photo ${i + 1}`} className="w-full aspect-square object-contain rounded-xl block bg-surface" />
-                ))}
-              </div>
-              {videoUrl && <VideoEmbed url={videoUrl} />}
-            </div>
-
-            {/* Reviews */}
+          {/* ====== Reviews ====== */}
+          <div className="lg:col-start-2">
             <ReviewSection listingType="team" listingId={team.id} />
+          </div>
 
-            {/* Similar Teams */}
-            {similarTeams.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
+          {/* ====== Similar Teams ====== */}
+          {similarTeams.length > 0 && (
+              <div className="lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
                 <h3 className="text-[15px] font-bold text-primary mb-3.5">Similar Teams</h3>
                 <div className="grid grid-cols-2 gap-3">
                   {similarTeams.map((t) => (
@@ -378,10 +377,10 @@ export default async function TeamDetailPage({ params }: Props) {
                   ))}
                 </div>
               </div>
-            )}
+          )}
 
-            {/* CTA Banner */}
-            <div className="bg-primary rounded-2xl px-10 py-8 flex flex-col md:flex-row items-center justify-between gap-6 mt-2">
+          {/* ====== CTA Banner ====== */}
+          <div className="lg:col-start-2 bg-primary rounded-2xl px-10 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
                 <h2 className="text-[22px] font-extrabold text-white tracking-tight mb-1.5">
                   Supplement Team Training with 5,000+ Videos
@@ -404,9 +403,8 @@ export default async function TeamDetailPage({ params }: Props) {
                   Try It Free &rarr;
                 </a>
               </div>
-            </div>
+          </div>
 
-          </main>
         </div>
       </div>
     </>

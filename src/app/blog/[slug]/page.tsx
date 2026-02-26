@@ -43,11 +43,13 @@ export default async function BlogDetailPage({ params }: Props) {
       <div className="bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Article Content */}
-          <div className="prose prose-lg max-w-none mb-12">
+          <div className="max-w-none mb-12">
             {post.content ? (
               <div dangerouslySetInnerHTML={{ __html: post.content }} />
             ) : (
-              <p className="text-muted text-lg leading-relaxed">{post.excerpt}</p>
+              <div className="prose prose-lg max-w-none">
+                <p className="text-muted text-lg leading-relaxed">{post.excerpt}</p>
+              </div>
             )}
           </div>
 
