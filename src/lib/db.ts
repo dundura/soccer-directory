@@ -3,6 +3,13 @@ import type { Club, Team, TeamEvent, Trainer, Camp, GuestOpportunity, BlogPost, 
 
 const sql = neon(process.env.DATABASE_URL!);
 
+// ── Type normalization (virtual → DB) ────────────────────────
+function normalizeType(type: string): string {
+  if (type === "equipment" || type === "books") return "marketplace";
+  if (type === "showcase") return "camp";
+  return type;
+}
+
 // ── Shared profile field mapper ──────────────────────────────
 function mapProfileFields(r: Record<string, unknown>): ProfileFields {
   let photos: string[] | undefined;
@@ -411,12 +418,12 @@ export async function getAllListings() {
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'club' as type FROM clubs ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'team' as type FROM teams ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'trainer' as type FROM trainers ORDER BY created_at DESC`,
-    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'camp' as type FROM camps ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, CASE WHEN camp_type = 'College Showcase' THEN 'showcase' ELSE 'camp' END as type FROM camps ORDER BY created_at DESC`,
     sql`SELECT id, slug, team_name as name, status, featured, user_id, created_at, 'guest' as type FROM guest_opportunities ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'tournament' as type FROM tournaments ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'futsal' as type FROM futsal_teams ORDER BY created_at DESC`,
     sql`SELECT id, slug, trip_name as name, status, featured, user_id, created_at, 'trip' as type FROM international_trips ORDER BY created_at DESC`,
-    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'marketplace' as type FROM marketplace ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, CASE WHEN category = 'Books' THEN 'books' ELSE 'equipment' END as type FROM marketplace ORDER BY created_at DESC`,
   ]);
   return [...clubs, ...teams, ...trainers, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace].map((r) => ({
     id: r.id as string,
@@ -431,6 +438,7 @@ export async function getAllListings() {
 }
 
 export async function updateListingStatus(type: string, id: string, status: string): Promise<void> {
+  type = normalizeType(type);
   switch (type) {
     case "club": await sql`UPDATE clubs SET status = ${status} WHERE id = ${id}`; break;
     case "team": await sql`UPDATE teams SET status = ${status} WHERE id = ${id}`; break;
@@ -445,6 +453,7 @@ export async function updateListingStatus(type: string, id: string, status: stri
 }
 
 export async function updateListingFeatured(type: string, id: string, featured: boolean): Promise<void> {
+  type = normalizeType(type);
   switch (type) {
     case "club": await sql`UPDATE clubs SET featured = ${featured} WHERE id = ${id}`; break;
     case "team": await sql`UPDATE teams SET featured = ${featured} WHERE id = ${id}`; break;
@@ -464,12 +473,12 @@ export async function getListingsByUserId(userId: string) {
     sql`SELECT id, slug, name, status, 'club' as type FROM clubs WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'team' as type FROM teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'trainer' as type FROM trainers WHERE user_id = ${userId} ORDER BY created_at DESC`,
-    sql`SELECT id, slug, name, status, 'camp' as type FROM camps WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, CASE WHEN camp_type = 'College Showcase' THEN 'showcase' ELSE 'camp' END as type FROM camps WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, team_name as name, status, 'guest' as type FROM guest_opportunities WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'tournament' as type FROM tournaments WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'futsal' as type FROM futsal_teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, trip_name as name, status, 'trip' as type FROM international_trips WHERE user_id = ${userId} ORDER BY created_at DESC`,
-    sql`SELECT id, slug, name, status, 'marketplace' as type FROM marketplace WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, CASE WHEN category = 'Books' THEN 'books' ELSE 'equipment' END as type FROM marketplace WHERE user_id = ${userId} ORDER BY created_at DESC`,
   ]);
   return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows] as { id: string; slug: string; name: string; status: string; type: string }[];
 }
@@ -568,12 +577,13 @@ export async function createTripListing(data: Record<string, string>, userId: st
 export async function createMarketplaceListing(data: Record<string, string>, userId: string) {
   const id = genId();
   const slug = slugify(data.name);
-  await sql`INSERT INTO marketplace (id, slug, name, category, description, price, condition, city, country, state, contact_email, phone, image_url, photos, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.category}, ${data.description}, ${data.price}, ${data.condition}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.contactEmail}, ${data.phone || null}, ${data.imageUrl || null}, ${data.photos || null}, false, ${userId}, 'approved')`;
+  await sql`INSERT INTO marketplace (id, slug, name, category, description, price, condition, city, country, state, contact_email, phone, image_url, photos, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.category}, ${data.description}, ${data.price}, ${data.condition}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.contactEmail}, ${data.phone || null}, ${data.imageUrl || null}, ${data.photos || null}, false, ${userId}, 'pending')`;
   return slug;
 }
 
 // ── Get Listing Data (for editing) ───────────────────────────
 export async function getListingData(type: string, id: string, userId: string): Promise<Record<string, string> | null> {
+  type = normalizeType(type);
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club":
@@ -614,6 +624,37 @@ export async function getListingData(type: string, id: string, userId: string): 
       return mapMarketplaceToForm(rows[0]);
     default:
       return null;
+  }
+}
+
+// Admin version — no user_id check
+export async function getListingDataAdmin(type: string, id: string): Promise<Record<string, string> | null> {
+  type = normalizeType(type);
+  let rows: Record<string, unknown>[];
+  switch (type) {
+    case "club": rows = await sql`SELECT * FROM clubs WHERE id = ${id} LIMIT 1`; break;
+    case "team": rows = await sql`SELECT * FROM teams WHERE id = ${id} LIMIT 1`; break;
+    case "trainer": rows = await sql`SELECT * FROM trainers WHERE id = ${id} LIMIT 1`; break;
+    case "camp": rows = await sql`SELECT * FROM camps WHERE id = ${id} LIMIT 1`; break;
+    case "guest": rows = await sql`SELECT * FROM guest_opportunities WHERE id = ${id} LIMIT 1`; break;
+    case "tournament": rows = await sql`SELECT * FROM tournaments WHERE id = ${id} LIMIT 1`; break;
+    case "futsal": rows = await sql`SELECT * FROM futsal_teams WHERE id = ${id} LIMIT 1`; break;
+    case "trip": rows = await sql`SELECT * FROM international_trips WHERE id = ${id} LIMIT 1`; break;
+    case "marketplace": rows = await sql`SELECT * FROM marketplace WHERE id = ${id} LIMIT 1`; break;
+    default: return null;
+  }
+  if (!rows[0]) return null;
+  switch (type) {
+    case "club": return mapClubToForm(rows[0]);
+    case "team": return mapTeamToForm(rows[0]);
+    case "trainer": return mapTrainerToForm(rows[0]);
+    case "camp": return mapCampToForm(rows[0]);
+    case "guest": return mapGuestToForm(rows[0]);
+    case "tournament": return mapTournamentToForm(rows[0]);
+    case "futsal": return mapFutsalToForm(rows[0]);
+    case "trip": return mapTripToForm(rows[0]);
+    case "marketplace": return mapMarketplaceToForm(rows[0]);
+    default: return null;
   }
 }
 
@@ -675,6 +716,7 @@ function buildSocialMedia(data: Record<string, string>): string | null {
 }
 
 export async function updateListing(type: string, id: string, data: Record<string, string>, userId: string): Promise<boolean> {
+  type = normalizeType(type);
   const sm = buildSocialMedia(data);
   const pf = profileFields(data);
   let rows: Record<string, unknown>[];
@@ -712,8 +754,49 @@ export async function updateListing(type: string, id: string, data: Record<strin
   return rows.length > 0;
 }
 
+// Admin version — no user_id check
+export async function updateListingAdmin(type: string, id: string, data: Record<string, string>): Promise<boolean> {
+  type = normalizeType(type);
+  const sm = buildSocialMedia(data);
+  const pf = profileFields(data);
+  let rows: Record<string, unknown>[];
+  switch (type) {
+    case "club":
+      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
+    case "team":
+      rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, events=${data.events || null}, annual_tournaments=${data.annualTournaments || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
+    case "trainer":
+      rows = await sql`UPDATE trainers SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty}, experience=${data.experience}, credentials=${data.credentials}, price_range=${data.priceRange}, service_area=${data.serviceArea}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
+    case "camp":
+      rows = await sql`UPDATE camps SET name=${data.name}, organizer_name=${data.organizerName}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, camp_type=${data.campType}, age_range=${data.ageRange}, dates=${data.dates}, price=${data.price}, gender=${data.gender}, location=${data.location || null}, description=${data.description}, registration_url=${data.registrationUrl || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
+    case "guest":
+      rows = await sql`UPDATE guest_opportunities SET team_name=${data.teamName}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, dates=${data.dates}, tournament=${data.tournament}, positions_needed=${data.positionsNeeded}, contact_email=${data.contactEmail}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
+    case "tournament":
+      rows = await sql`UPDATE tournaments SET name=${data.name}, organizer=${data.organizer}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, dates=${data.dates}, age_groups=${data.ageGroups}, gender=${data.gender}, level=${data.level}, entry_fee=${data.entryFee}, format=${data.format}, description=${data.description}, registration_url=${data.registrationUrl || null}, email=${data.email || null}, region=${data.region || 'US'}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
+    case "futsal":
+      rows = await sql`UPDATE futsal_teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, format=${data.format || '5v5'}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
+    case "trip":
+      rows = await sql`UPDATE international_trips SET trip_name=${data.tripName}, organizer=${data.organizer}, destination=${data.destination}, city=${data.city}, country=${data.country || 'International'}, state=${data.state || ''}, dates=${data.dates}, age_group=${data.ageGroup}, gender=${data.gender}, level=${data.level}, price=${data.price || null}, spots_available=${data.spotsAvailable || null}, contact_email=${data.contactEmail}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
+    case "marketplace":
+      rows = await sql`UPDATE marketplace SET name=${data.name}, category=${data.category}, description=${data.description}, price=${data.price}, condition=${data.condition}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, contact_email=${data.contactEmail}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, photos=${data.photos || null} WHERE id=${id} RETURNING id`;
+      break;
+    default:
+      return false;
+  }
+  return rows.length > 0;
+}
+
 // ── Delete Listing ───────────────────────────────────────────
 export async function deleteListing(type: string, id: string, userId: string): Promise<boolean> {
+  type = normalizeType(type);
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club": rows = await sql`DELETE FROM clubs WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
@@ -732,6 +815,7 @@ export async function deleteListing(type: string, id: string, userId: string): P
 
 // ── Get listing contact info (public) ────────────────────────
 export async function getListingContact(type: string, slug: string): Promise<{ name: string; email: string | null; userId: string } | null> {
+  type = normalizeType(type);
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club": rows = await sql`SELECT name, email, user_id FROM clubs WHERE slug = ${slug} LIMIT 1`; break;
@@ -755,6 +839,7 @@ export async function getListingContact(type: string, slug: string): Promise<{ n
 
 // ── Get listing owner ────────────────────────────────────────
 export async function getListingOwner(type: string, slug: string): Promise<string | null> {
+  type = normalizeType(type);
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club": rows = await sql`SELECT user_id FROM clubs WHERE slug = ${slug} LIMIT 1`; break;
@@ -802,6 +887,7 @@ export async function updateReviewStatus(token: string, status: string): Promise
 }
 
 export async function getListingNameById(type: string, id: string): Promise<string | null> {
+  type = normalizeType(type);
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club": rows = await sql`SELECT name FROM clubs WHERE id = ${id} LIMIT 1`; break;
@@ -814,6 +900,7 @@ export async function getListingNameById(type: string, id: string): Promise<stri
 }
 
 export async function getListingOwnerEmailById(type: string, id: string): Promise<string | null> {
+  type = normalizeType(type);
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club": rows = await sql`SELECT user_id FROM clubs WHERE id = ${id} LIMIT 1`; break;

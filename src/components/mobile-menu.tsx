@@ -13,12 +13,17 @@ const navGroups = [
     ],
   },
   {
-    label: "Train",
+    label: "Camps",
     links: [
-      { label: "Trainers", href: "/trainers" },
-      { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
       { label: "Camps", href: "/camps" },
       { label: "College Showcases", href: "/camps?type=College+Showcase" },
+    ],
+  },
+  {
+    label: "Train",
+    links: [
+      { label: "Private/Group Training", href: "/trainers" },
+      { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
     ],
   },
   {
@@ -26,6 +31,13 @@ const navGroups = [
     links: [
       { label: "US Tournaments", href: "/tournaments?region=US" },
       { label: "Int'l Tournaments", href: "/tournaments?region=International" },
+    ],
+  },
+  {
+    label: "Shop",
+    links: [
+      { label: "Equipment", href: "/shop" },
+      { label: "Books", href: "/shop?category=Books" },
     ],
   },
   {
@@ -111,23 +123,14 @@ export function MobileMenu() {
                     Guest Play
                   </a>
                 )}
-                {group.label === "Compete" && (
-                  <>
-                    <a
-                      href="/shop"
-                      onClick={() => setOpen(false)}
-                      className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
-                    >
-                      Equipment
-                    </a>
-                    <a
-                      href="/free"
-                      onClick={() => setOpen(false)}
-                      className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
-                    >
-                      Free
-                    </a>
-                  </>
+                {group.label === "Community" && (
+                  <a
+                    href="/free"
+                    onClick={() => setOpen(false)}
+                    className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
+                  >
+                    Free
+                  </a>
                 )}
               </div>
             ))}

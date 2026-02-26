@@ -2,18 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { ListingForm } from "@/components/listing-form";
+import type { ListingType } from "@/lib/types";
 
 type User = { id: string; name: string; email: string; role: string; createdAt: string };
 type Listing = { id: string; slug: string; name: string; status: string; featured: boolean; userId: string; createdAt: string; type: string };
 
 const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
-  guest: "Guest Play", tournament: "Tournament", futsal: "Futsal", trip: "Trip", marketplace: "Shop",
+  guest: "Guest Play", tournament: "Tournament", futsal: "Futsal", trip: "Trip",
+  marketplace: "Shop", equipment: "Equipment", books: "Books", showcase: "College Showcase",
 };
 
 const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers", camp: "camps",
-  guest: "guest-play", tournament: "tournaments", futsal: "futsal", trip: "international-trips", marketplace: "shop",
+  guest: "guest-play", tournament: "tournaments", futsal: "futsal", trip: "international-trips",
+  marketplace: "shop", equipment: "shop", books: "shop", showcase: "camps",
 };
 
 export default function AdminClient() {
@@ -28,6 +32,11 @@ export default function AdminClient() {
   // Filter state
   const [listingTypeFilter, setListingTypeFilter] = useState("all");
   const [listingStatusFilter, setListingStatusFilter] = useState("all");
+
+  // Edit state
+  const [editingListing, setEditingListing] = useState<Listing | null>(null);
+  const [editData, setEditData] = useState<Record<string, string> | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated") fetchData();
@@ -61,6 +70,19 @@ export default function AdminClient() {
       if (res.ok) await fetchData();
     } catch { /* ignore */ }
     setActionLoading(null);
+  }
+
+  async function handleEdit(listing: Listing) {
+    setEditLoading(true);
+    try {
+      const res = await fetch(`/api/admin?type=${listing.type}&id=${listing.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setEditData(data);
+        setEditingListing(listing);
+      }
+    } catch { /* ignore */ }
+    setEditLoading(false);
   }
 
   if (status === "loading" || loading) {
@@ -123,6 +145,26 @@ export default function AdminClient() {
 
       <div className="bg-white min-h-[60vh]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Edit Form */}
+          {editingListing && editData ? (
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-6">
+                  Edit {TYPE_LABELS[editingListing.type] || editingListing.type}: {editingListing.name}
+                </h2>
+                <ListingForm
+                  mode="edit"
+                  editType={editingListing.type as ListingType}
+                  editId={editingListing.id}
+                  initialData={editData}
+                  isAdmin
+                  onSuccess={() => { setEditingListing(null); setEditData(null); fetchData(); }}
+                  onCancel={() => { setEditingListing(null); setEditData(null); }}
+                />
+              </div>
+            </div>
+          ) : (
+          <>
           {/* Tabs */}
           <div className="flex gap-2 mb-6">
             <button
@@ -298,6 +340,13 @@ export default function AdminClient() {
                               >
                                 {listing.featured ? "Unfeature" : "Feature"}
                               </button>
+                              <button
+                                onClick={() => handleEdit(listing)}
+                                disabled={editLoading}
+                                className="text-xs px-2.5 py-1 rounded-lg bg-accent/10 text-accent-hover border border-accent/20 hover:bg-accent/20 transition-colors disabled:opacity-50"
+                              >
+                                Edit
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -307,6 +356,8 @@ export default function AdminClient() {
                 </table>
               </div>
             </>
+          )}
+          </>
           )}
         </div>
       </div>

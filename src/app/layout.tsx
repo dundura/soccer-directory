@@ -72,12 +72,17 @@ function Header() {
             />
             <a href="/guest-play" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Guest Play</a>
             <NavDropdown
-              label="Train"
+              label="Camps"
               items={[
-                { label: "Trainers", href: "/trainers" },
-                { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
                 { label: "Camps", href: "/camps" },
                 { label: "College Showcases", href: "/camps?type=College+Showcase" },
+              ]}
+            />
+            <NavDropdown
+              label="Train"
+              items={[
+                { label: "Private/Group Training", href: "/trainers" },
+                { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
               ]}
             />
             <NavDropdown
@@ -87,7 +92,13 @@ function Header() {
                 { label: "Int'l Tournaments", href: "/tournaments?region=International" },
               ]}
             />
-            <a href="/shop" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Equipment</a>
+            <NavDropdown
+              label="Shop"
+              items={[
+                { label: "Equipment", href: "/shop" },
+                { label: "Books", href: "/shop?category=Books" },
+              ]}
+            />
             <a href="/free" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Free</a>
             <NavDropdown
               label="Community"

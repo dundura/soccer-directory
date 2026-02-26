@@ -69,6 +69,9 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   futsal: "Our futsal team competes in a fast-paced indoor environment that develops quick thinking, close control, and sharp passing. All skill levels welcome.",
   trip: "Join us for an unforgettable international soccer experience! Players will train with local coaches, compete against international teams, and immerse themselves in a new soccer culture.",
   marketplace: "Quality soccer equipment / books available for purchase. Great condition and ready for the next player!",
+  equipment: "Quality soccer equipment available for purchase. Great condition and ready for the next player!",
+  books: "Soccer book available for purchase. A great resource for players, parents, and coaches!",
+  showcase: "Join us for a competitive college showcase event! Get exposure in front of college coaches and recruiters.",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -318,6 +321,60 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Main Photo", type: "image" },
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
   ],
+  equipment: [
+    { name: "name", label: "Item Name", required: true },
+    { name: "description", label: "Description", required: true, type: "textarea" },
+    { name: "price", label: "Price (e.g. $25)", required: true },
+    { name: "condition", label: "Condition", required: true, options: ["New", "Like New", "Used"] },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "contactEmail", label: "Contact Email", required: true, type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "_profile", label: "Photos", type: "heading" },
+    { name: "imageUrl", label: "Main Photo", type: "image" },
+    { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
+  ],
+  books: [
+    { name: "name", label: "Book Title", required: true },
+    { name: "description", label: "Description", required: true, type: "textarea" },
+    { name: "price", label: "Price (e.g. $15)", required: true },
+    { name: "condition", label: "Condition", required: true, options: ["New", "Like New", "Used"] },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "contactEmail", label: "Contact Email", required: true, type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "_profile", label: "Photos", type: "heading" },
+    { name: "imageUrl", label: "Main Photo", type: "image" },
+    { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
+  ],
+  showcase: [
+    { name: "name", label: "Showcase Name", required: true },
+    { name: "organizerName", label: "Organizer Name", required: true },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "ageRange", label: "Age Range", required: true, type: "age-multi" },
+    { name: "dates", label: "Dates (e.g. June 15-18, 2026)", required: true },
+    { name: "price", label: "Price (e.g. $299)", required: true },
+    { name: "gender", label: "Gender", required: true, options: ["Boys & Girls", "Boys", "Girls"] },
+    { name: "location", label: "Location / Venue" },
+    { name: "description", label: "Description", required: true, type: "textarea" },
+    { name: "registrationUrl", label: "Registration URL" },
+    { name: "email", label: "Contact Email", type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "_socials", label: "Social Media", type: "heading" },
+    { name: "facebook", label: "Facebook URL" },
+    { name: "instagram", label: "Instagram URL" },
+    { name: "youtube", label: "YouTube URL" },
+    { name: "_profile", label: "Profile & Media", type: "heading" },
+    { name: "teamPhoto", label: "Showcase Photo URL" },
+    { name: "logo", label: "Logo URL" },
+    { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+  ],
 };
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -325,10 +382,13 @@ const TYPE_LABELS: Record<ListingType, string> = {
   team: "Team",
   trainer: "Trainer",
   camp: "Camp",
+  showcase: "College Showcase",
   guest: "Guest Play Opportunity",
   tournament: "Tournament",
   futsal: "Futsal Team",
   trip: "International Trip",
+  equipment: "Equipment",
+  books: "Books",
   marketplace: "Shop Item",
 };
 
@@ -346,9 +406,10 @@ interface ListingFormProps {
   editType?: ListingType;
   editId?: string;
   initialData?: Record<string, string>;
+  isAdmin?: boolean;
 }
 
-export function ListingForm({ onSuccess, onCancel, mode = "create", editType, editId, initialData }: ListingFormProps) {
+export function ListingForm({ onSuccess, onCancel, mode = "create", editType, editId, initialData, isAdmin }: ListingFormProps) {
   const isEdit = mode === "edit";
   const [type, setType] = useState<ListingType>(editType || "club");
   const [formData, setFormData] = useState<Record<string, string>>(
@@ -374,9 +435,11 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", editType, ed
     setError("");
 
     try {
-      const url = "/api/listings";
+      const url = isAdmin && isEdit ? "/api/admin" : "/api/listings";
       const method = isEdit ? "PUT" : "POST";
-      const body = isEdit
+      const body = isAdmin && isEdit
+        ? JSON.stringify({ action: "updateListing", type, id: editId, data: formData })
+        : isEdit
         ? JSON.stringify({ type, id: editId, data: formData })
         : JSON.stringify({ type, data: formData });
 
@@ -398,7 +461,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", editType, ed
         <div>
           <label className="block text-sm font-medium mb-2">Listing Type</label>
           <div className="grid grid-cols-3 gap-2">
-            {(Object.keys(TYPE_LABELS) as ListingType[]).map((t) => (
+            {(Object.keys(TYPE_LABELS) as ListingType[]).filter((t) => t !== "marketplace").map((t) => (
               <button
                 key={t}
                 type="button"

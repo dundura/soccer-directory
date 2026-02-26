@@ -79,6 +79,18 @@ export async function POST(req: Request) {
       case "marketplace":
         slug = await createMarketplaceListing(data, session.user.id);
         break;
+      case "equipment":
+        data.category = "Equipment";
+        slug = await createMarketplaceListing(data, session.user.id);
+        break;
+      case "books":
+        data.category = "Books";
+        slug = await createMarketplaceListing(data, session.user.id);
+        break;
+      case "showcase":
+        data.campType = "College Showcase";
+        slug = await createCampListing(data, session.user.id);
+        break;
       default:
         return NextResponse.json({ error: "Invalid listing type" }, { status: 400 });
     }
