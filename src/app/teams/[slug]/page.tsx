@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 const DEFAULT_TEAM_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg";
+const DEFAULT_SIDEBAR_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
 const DEFAULT_HERO_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg";
 const DEFAULT_LOGO = "https://anytime-soccer.com/wp-content/uploads/2026/02/ast_logo_shield_only_blue.png";
 const DEFAULT_VIDEO = "https://youtu.be/JqombeGBALU";
@@ -88,8 +89,9 @@ export default async function TeamDetailPage({ params }: Props) {
           {/* ====== LEFT SIDEBAR ====== */}
           <aside className="flex flex-col gap-4 order-2 lg:order-1">
 
-            {/* Team ID + Roster */}
+            {/* Photo + Team ID + Roster */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+              <img src={team.imageUrl || DEFAULT_SIDEBAR_PHOTO} alt={team.name} className="w-full h-[200px] object-cover block" />
               <div className="text-center py-3.5 px-4">
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{team.name}</h3>
                 <p className="text-sm text-muted mt-1">{team.city}, {team.state}</p>
@@ -117,6 +119,8 @@ export default async function TeamDetailPage({ params }: Props) {
                 { label: "Gender", value: team.gender },
                 { label: "Level", value: team.level },
                 { label: "Season", value: team.season },
+                ...(team.practiceSchedule && team.practiceSchedule.length > 0 ? [{ label: "Practice Days", value: team.practiceSchedule.join(", ") }] : []),
+                ...(team.address ? [{ label: "Address", value: team.address }] : []),
               ].map((row) => (
                 <div key={row.label} className="flex justify-between items-center px-4 py-[11px] border-b border-border last:border-b-0 text-[13.5px]">
                   <span className="text-muted font-medium">{row.label}</span>
@@ -243,26 +247,6 @@ export default async function TeamDetailPage({ params }: Props) {
               </div>
             )}
 
-            {/* Team Photo */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={teamPhoto} alt={team.name} className="w-full h-[250px] object-cover block" />
-            </div>
-
-            {/* Photos & Video */}
-            {((team.photos && team.photos.length > 0) || videoUrl) && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
-                {team.photos && team.photos.length > 0 && (
-                  <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
-                    {team.photos.map((photo, i) => (
-                      <img key={i} src={photo} alt={`Team photo ${i + 1}`} className="w-full h-[150px] object-cover rounded-xl block" />
-                    ))}
-                  </div>
-                )}
-                {videoUrl && <VideoEmbed url={videoUrl} />}
-              </div>
-            )}
-
             {/* Upcoming Events */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <h3 className="text-[15px] font-bold text-primary mb-3.5">Upcoming Events</h3>
@@ -293,6 +277,26 @@ export default async function TeamDetailPage({ params }: Props) {
                 <p className="text-sm text-muted">No upcoming events posted.</p>
               )}
             </div>
+
+            {/* Team Photo */}
+            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+              <img src={teamPhoto} alt={team.name} className="w-full h-[250px] object-cover block" />
+            </div>
+
+            {/* Photos & Video */}
+            {((team.photos && team.photos.length > 0) || videoUrl) && (
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
+                {team.photos && team.photos.length > 0 && (
+                  <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
+                    {team.photos.map((photo, i) => (
+                      <img key={i} src={photo} alt={`Team photo ${i + 1}`} className="w-full h-[150px] object-cover rounded-xl block" />
+                    ))}
+                  </div>
+                )}
+                {videoUrl && <VideoEmbed url={videoUrl} />}
+              </div>
+            )}
 
             {/* Similar Teams */}
             {similarTeams.length > 0 && (
