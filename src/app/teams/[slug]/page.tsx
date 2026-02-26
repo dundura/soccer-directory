@@ -1,6 +1,7 @@
 import { getTeamBySlug, getTeamSlugs, getClubById, getListingOwner, getSimilarTeams } from "@/lib/db";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
+import { ReviewSection } from "@/components/review-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -361,6 +362,9 @@ export default async function TeamDetailPage({ params }: Props) {
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
             </div>
+
+            {/* Reviews */}
+            <ReviewSection listingType="team" listingId={team.id} />
 
             {/* Similar Teams */}
             {similarTeams.length > 0 && (

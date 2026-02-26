@@ -2,6 +2,7 @@ import { getCampBySlug, getCampSlugs, getListingOwner } from "@/lib/db";
 import { Badge } from "@/components/ui";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { VideoEmbed, PhotoGallery, SocialLinks, ShareButtons } from "@/components/profile-ui";
+import { ReviewSection } from "@/components/review-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -120,6 +121,9 @@ export default async function CampDetailPage({ params }: Props) {
                 <PhotoGallery photos={camp.photos} />
               </section>
             )}
+
+            {/* Reviews */}
+            <ReviewSection listingType="camp" listingId={camp.id} />
 
             <div className="bg-white rounded-2xl border border-border p-6 md:p-8 space-y-6">
               {camp.socialMedia && (

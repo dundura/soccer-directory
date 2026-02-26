@@ -2,6 +2,7 @@ import { getClubBySlug, getClubSlugs, getTeamsByClubId, getListingOwner } from "
 import { Badge, ListingCard } from "@/components/ui";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { VideoEmbed, PhotoGallery, PracticeSchedule, SocialLinks, ShareButtons } from "@/components/profile-ui";
+import { ReviewSection } from "@/components/review-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -135,6 +136,9 @@ export default async function ClubDetailPage({ params }: Props) {
                 <PhotoGallery photos={club.photos} />
               </section>
             )}
+
+            {/* Reviews */}
+            <ReviewSection listingType="club" listingId={club.id} />
 
             {/* Teams */}
             {clubTeams.length > 0 && (

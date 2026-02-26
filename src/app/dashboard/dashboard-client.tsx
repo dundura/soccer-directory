@@ -353,19 +353,36 @@ function DashboardContent() {
 }
 
 export default function DashboardClient() {
-  const { status } = useSession();
+  const { status, data: session } = useSession();
 
   if (status === "loading") {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center text-muted">Loading...</div>
-      </div>
+      <>
+        <div className="bg-primary text-white py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-3">Dashboard</h1>
+            <p className="text-white/70 text-lg">Loading...</p>
+          </div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {status === "authenticated" ? <DashboardContent /> : <AuthForm />}
-    </div>
+    <>
+      <div className="bg-primary text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-3">
+            {status === "authenticated" ? `Welcome, ${session?.user?.name || "User"}` : "Dashboard"}
+          </h1>
+          <p className="text-white/70 text-lg">
+            {status === "authenticated" ? "Create and manage your listings" : "Sign in to manage your listings"}
+          </p>
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {status === "authenticated" ? <DashboardContent /> : <AuthForm />}
+      </div>
+    </>
   );
 }

@@ -183,3 +183,47 @@ export interface FutsalTeam extends ProfileFields {
 }
 
 export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal";
+
+// ── Reviews ─────────────────────────────────────────────────
+export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";
+export type ReviewStatus = "pending" | "approved" | "rejected";
+
+export interface Review {
+  id: string;
+  listingType: string;
+  listingId: string;
+  reviewerName: string;
+  reviewerRole: ReviewerRole;
+  rating: number;
+  reviewText: string;
+  status: ReviewStatus;
+  createdAt: string;
+}
+
+// ── Forum ───────────────────────────────────────────────────
+export type ForumCategory = "Recruiting" | "Tryouts" | "League Talk" | "Training" | "General";
+
+export interface ForumTopic {
+  id: string;
+  title: string;
+  slug: string;
+  category: ForumCategory;
+  body: string;
+  userId: string;
+  userName: string;
+  viewCount: number;
+  isPinned: boolean;
+  commentCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ForumComment {
+  id: string;
+  topicId: string;
+  body: string;
+  userId: string;
+  userName: string;
+  createdAt: string;
+  updatedAt: string;
+}

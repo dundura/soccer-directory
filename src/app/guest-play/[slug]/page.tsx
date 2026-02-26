@@ -1,7 +1,7 @@
 import { getGuestBySlug, getGuestSlugs, getListingOwner } from "@/lib/db";
 import { Badge } from "@/components/ui";
 import { ManageListingButton } from "@/components/manage-listing-button";
-import { VideoEmbed, PhotoGallery, SocialLinks, ShareButtons } from "@/components/profile-ui";
+import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { RequestSpotForm } from "./request-spot-form";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -31,7 +31,6 @@ export default async function GuestDetailPage({ params }: Props) {
   if (!opp) notFound();
   const ownerId = await getListingOwner("guest", slug);
 
-  const pageUrl = `https://www.soccer-near-me.com/guest-play/${slug}`;
 
   return (
     <>
@@ -145,18 +144,12 @@ export default async function GuestDetailPage({ params }: Props) {
               <RequestSpotForm teamName={opp.teamName} tournament={opp.tournament} slug={slug} />
             </section>
 
-            <div className="bg-white rounded-2xl border border-border p-6 md:p-8 space-y-6">
-              {opp.socialMedia && (
-                <div>
-                  <h3 className="font-[family-name:var(--font-display)] font-bold mb-3">Follow</h3>
-                  <SocialLinks facebook={opp.socialMedia.facebook} instagram={opp.socialMedia.instagram} />
-                </div>
-              )}
-              <div>
-                <h3 className="font-[family-name:var(--font-display)] font-bold mb-3">Share</h3>
-                <ShareButtons url={pageUrl} title={`${opp.teamName} — Guest Player Opportunity`} />
+            {opp.socialMedia && (opp.socialMedia.facebook || opp.socialMedia.instagram) && (
+              <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
+                <h3 className="font-[family-name:var(--font-display)] font-bold mb-3">Follow</h3>
+                <SocialLinks facebook={opp.socialMedia.facebook} instagram={opp.socialMedia.instagram} />
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

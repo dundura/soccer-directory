@@ -85,6 +85,7 @@ function Header() {
                 { label: "All Tournaments", href: "/tournaments" },
               ]}
             />
+            <a href="/forum" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Forum</a>
             <a href="/blog" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Blog</a>
           </nav>
 

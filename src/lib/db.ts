@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { Club, Team, TeamEvent, Trainer, Camp, GuestOpportunity, BlogPost, Tournament, FutsalTeam, ProfileFields } from "./types";
+import type { Club, Team, TeamEvent, Trainer, Camp, GuestOpportunity, BlogPost, Tournament, FutsalTeam, ProfileFields, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment } from "./types";
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -548,12 +548,12 @@ export async function getListingContact(type: string, slug: string): Promise<{ n
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club": rows = await sql`SELECT name, email, user_id FROM clubs WHERE slug = ${slug} LIMIT 1`; break;
-    case "team": rows = await sql`SELECT name, email, user_id FROM teams WHERE slug = ${slug} LIMIT 1`; break;
+    case "team": rows = await sql`SELECT name, NULL as email, user_id FROM teams WHERE slug = ${slug} LIMIT 1`; break;
     case "trainer": rows = await sql`SELECT name, email, user_id FROM trainers WHERE slug = ${slug} LIMIT 1`; break;
     case "camp": rows = await sql`SELECT name, email, user_id FROM camps WHERE slug = ${slug} LIMIT 1`; break;
     case "guest": rows = await sql`SELECT team_name as name, contact_email as email, user_id FROM guest_opportunities WHERE slug = ${slug} LIMIT 1`; break;
     case "tournament": rows = await sql`SELECT name, email, user_id FROM tournaments WHERE slug = ${slug} LIMIT 1`; break;
-    case "futsal": rows = await sql`SELECT name, email, user_id FROM futsal_teams WHERE slug = ${slug} LIMIT 1`; break;
+    case "futsal": rows = await sql`SELECT name, NULL as email, user_id FROM futsal_teams WHERE slug = ${slug} LIMIT 1`; break;
     default: return null;
   }
   if (!rows[0]) return null;
@@ -578,4 +578,138 @@ export async function getListingOwner(type: string, slug: string): Promise<strin
     default: return null;
   }
   return rows[0]?.user_id as string | null;
+}
+
+// ── Reviews ─────────────────────────────────────────────────
+
+export async function createReview(listingType: string, listingId: string, reviewerName: string, reviewerRole: string, rating: number, reviewText: string): Promise<{ id: string; approvalToken: string }> {
+  const id = genId();
+  const approvalToken = id + "-" + Math.random().toString(36).slice(2, 10);
+  await sql`INSERT INTO reviews (id, listing_type, listing_id, reviewer_name, reviewer_role, rating, review_text, status, approval_token) VALUES (${id}, ${listingType}, ${listingId}, ${reviewerName}, ${reviewerRole}, ${rating}, ${reviewText}, 'pending', ${approvalToken})`;
+  return { id, approvalToken };
+}
+
+export async function getApprovedReviews(listingType: string, listingId: string): Promise<Review[]> {
+  const rows = await sql`SELECT * FROM reviews WHERE listing_type = ${listingType} AND listing_id = ${listingId} AND status = 'approved' ORDER BY created_at DESC`;
+  return rows.map(mapReview);
+}
+
+export async function getReviewSummary(listingType: string, listingId: string): Promise<{ averageRating: number; reviewCount: number }> {
+  const rows = await sql`SELECT COUNT(*)::int as count, COALESCE(AVG(rating), 0) as avg FROM reviews WHERE listing_type = ${listingType} AND listing_id = ${listingId} AND status = 'approved'`;
+  return { averageRating: Number(Number(rows[0].avg).toFixed(1)), reviewCount: Number(rows[0].count) };
+}
+
+export async function getReviewByToken(token: string): Promise<{ id: string; listingType: string; listingId: string; status: string } | null> {
+  const rows = await sql`SELECT id, listing_type, listing_id, status FROM reviews WHERE approval_token = ${token} LIMIT 1`;
+  if (!rows[0]) return null;
+  return { id: rows[0].id as string, listingType: rows[0].listing_type as string, listingId: rows[0].listing_id as string, status: rows[0].status as string };
+}
+
+export async function updateReviewStatus(token: string, status: string): Promise<boolean> {
+  const rows = await sql`UPDATE reviews SET status = ${status} WHERE approval_token = ${token} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function getListingNameById(type: string, id: string): Promise<string | null> {
+  let rows: Record<string, unknown>[];
+  switch (type) {
+    case "club": rows = await sql`SELECT name FROM clubs WHERE id = ${id} LIMIT 1`; break;
+    case "team": rows = await sql`SELECT name FROM teams WHERE id = ${id} LIMIT 1`; break;
+    case "trainer": rows = await sql`SELECT name FROM trainers WHERE id = ${id} LIMIT 1`; break;
+    case "camp": rows = await sql`SELECT name FROM camps WHERE id = ${id} LIMIT 1`; break;
+    default: return null;
+  }
+  return (rows[0]?.name as string) || null;
+}
+
+export async function getListingOwnerEmailById(type: string, id: string): Promise<string | null> {
+  let rows: Record<string, unknown>[];
+  switch (type) {
+    case "club": rows = await sql`SELECT user_id FROM clubs WHERE id = ${id} LIMIT 1`; break;
+    case "team": rows = await sql`SELECT user_id FROM teams WHERE id = ${id} LIMIT 1`; break;
+    case "trainer": rows = await sql`SELECT user_id FROM trainers WHERE id = ${id} LIMIT 1`; break;
+    case "camp": rows = await sql`SELECT user_id FROM camps WHERE id = ${id} LIMIT 1`; break;
+    default: return null;
+  }
+  if (!rows[0]?.user_id) return null;
+  const userRows = await sql`SELECT email FROM users WHERE id = ${rows[0].user_id} LIMIT 1`;
+  return (userRows[0]?.email as string) || null;
+}
+
+function mapReview(r: Record<string, unknown>): Review {
+  return {
+    id: r.id as string, listingType: r.listing_type as string, listingId: r.listing_id as string,
+    reviewerName: r.reviewer_name as string, reviewerRole: r.reviewer_role as ReviewerRole,
+    rating: Number(r.rating), reviewText: r.review_text as string,
+    status: r.status as ReviewStatus, createdAt: r.created_at as string,
+  };
+}
+
+// ── Forum ───────────────────────────────────────────────────
+
+export async function createForumTopic(title: string, category: string, body: string, userId: string): Promise<string> {
+  const id = genId();
+  const slug = slugify(title) + "-" + id.slice(-4);
+  await sql`INSERT INTO forum_topics (id, title, slug, category, body, user_id) VALUES (${id}, ${title}, ${slug}, ${category}, ${body}, ${userId})`;
+  return slug;
+}
+
+export async function getForumTopics(category?: string): Promise<ForumTopic[]> {
+  let rows: Record<string, unknown>[];
+  if (category) {
+    rows = await sql`SELECT t.*, u.name as user_name, (SELECT COUNT(*)::int FROM forum_comments c WHERE c.topic_id = t.id) as comment_count FROM forum_topics t JOIN users u ON u.id = t.user_id WHERE t.category = ${category} ORDER BY t.is_pinned DESC, t.updated_at DESC`;
+  } else {
+    rows = await sql`SELECT t.*, u.name as user_name, (SELECT COUNT(*)::int FROM forum_comments c WHERE c.topic_id = t.id) as comment_count FROM forum_topics t JOIN users u ON u.id = t.user_id ORDER BY t.is_pinned DESC, t.updated_at DESC`;
+  }
+  return rows.map(mapForumTopic);
+}
+
+export async function getForumTopicBySlug(slug: string): Promise<ForumTopic | null> {
+  const rows = await sql`SELECT t.*, u.name as user_name, (SELECT COUNT(*)::int FROM forum_comments c WHERE c.topic_id = t.id) as comment_count FROM forum_topics t JOIN users u ON u.id = t.user_id WHERE t.slug = ${slug} LIMIT 1`;
+  return rows[0] ? mapForumTopic(rows[0]) : null;
+}
+
+export async function incrementTopicViewCount(slug: string): Promise<void> {
+  await sql`UPDATE forum_topics SET view_count = view_count + 1 WHERE slug = ${slug}`;
+}
+
+export async function deleteForumTopic(id: string, userId: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM forum_topics WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function createForumComment(topicId: string, body: string, userId: string): Promise<string> {
+  const id = genId();
+  await sql`INSERT INTO forum_comments (id, topic_id, body, user_id) VALUES (${id}, ${topicId}, ${body}, ${userId})`;
+  await sql`UPDATE forum_topics SET updated_at = NOW() WHERE id = ${topicId}`;
+  return id;
+}
+
+export async function getForumComments(topicId: string): Promise<ForumComment[]> {
+  const rows = await sql`SELECT c.*, u.name as user_name FROM forum_comments c JOIN users u ON u.id = c.user_id WHERE c.topic_id = ${topicId} ORDER BY c.created_at ASC`;
+  return rows.map(mapForumComment);
+}
+
+export async function deleteForumComment(id: string, userId: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM forum_comments WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
+  return rows.length > 0;
+}
+
+function mapForumTopic(r: Record<string, unknown>): ForumTopic {
+  return {
+    id: r.id as string, title: r.title as string, slug: r.slug as string,
+    category: r.category as ForumCategory, body: r.body as string,
+    userId: r.user_id as string, userName: r.user_name as string,
+    viewCount: Number(r.view_count), isPinned: r.is_pinned as boolean,
+    commentCount: Number(r.comment_count),
+    createdAt: r.created_at as string, updatedAt: r.updated_at as string,
+  };
+}
+
+function mapForumComment(r: Record<string, unknown>): ForumComment {
+  return {
+    id: r.id as string, topicId: r.topic_id as string, body: r.body as string,
+    userId: r.user_id as string, userName: r.user_name as string,
+    createdAt: r.created_at as string, updatedAt: r.updated_at as string,
+  };
 }

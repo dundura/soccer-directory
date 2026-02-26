@@ -11,6 +11,7 @@ const navLinks = [
   { label: "Guest Play", href: "/guest-play" },
   { label: "US Tournaments", href: "/tournaments?region=US" },
   { label: "Int'l Tournaments", href: "/tournaments?region=International" },
+  { label: "Forum", href: "/forum" },
   { label: "Blog", href: "/blog" },
 ];
 
@@ -38,7 +39,7 @@ export function MobileMenu() {
             <a href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
               <img src="/logo.png" alt="Anytime Soccer Training" className="h-8 w-8 rounded-full" />
               <span className="font-[family-name:var(--font-display)] font-bold text-xl tracking-tight text-white">
-                Soccer<span className="text-accent">Finder</span>
+                Soccer <span className="text-accent">Near Me</span>
               </span>
             </a>
             <button
