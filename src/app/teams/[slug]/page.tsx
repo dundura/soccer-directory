@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 const DEFAULT_TEAM_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg";
+const DEFAULT_HERO_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg";
 const DEFAULT_LOGO = "https://anytime-soccer.com/wp-content/uploads/2026/02/ast_logo_shield_only_blue.png";
 
 const ALL_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -58,6 +59,7 @@ export default async function TeamDetailPage({ params }: Props) {
 
   const pageUrl = `https://www.soccer-near-me.com/teams/${slug}`;
   const teamPhoto = team.teamPhoto || DEFAULT_TEAM_PHOTO;
+  const heroPhoto = team.photos?.[0] || DEFAULT_HERO_PHOTO;
   const logo = team.logo || DEFAULT_LOGO;
   const practiceSet = new Set(
     (team.practiceSchedule || []).map((d) => d.trim().slice(0, 3).toLowerCase())
@@ -170,11 +172,13 @@ export default async function TeamDetailPage({ params }: Props) {
           <main className="flex flex-col gap-5 order-1 lg:order-2">
 
             {/* Hero */}
-            <div className="bg-white rounded-2xl p-7 shadow-sm flex gap-6 items-start">
+            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+              <img src={heroPhoto} alt={team.name} className="w-full h-[220px] object-cover block" />
+              <div className="p-7 flex gap-6 items-start">
               <img
                 src={logo}
                 alt={`${team.name} logo`}
-                className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface"
+                className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10"
               />
               <div className="flex-1 min-w-0">
                 <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{team.name}</h1>
@@ -212,6 +216,7 @@ export default async function TeamDetailPage({ params }: Props) {
                     </a>
                   )}
                 </div>
+              </div>
               </div>
             </div>
 
