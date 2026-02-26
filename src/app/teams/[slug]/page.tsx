@@ -141,14 +141,8 @@ export default async function TeamDetailPage({ params }: Props) {
             </div>
 
             {/* Details */}
-            {(team.positionsNeeded || team.phone || team.address) && (
+            {(team.phone || team.address) && (
               <div className="bg-white rounded-2xl p-[18px] shadow-sm space-y-3.5">
-                {team.positionsNeeded && (
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Positions Needed</p>
-                    <p className="text-sm font-bold text-primary">{team.positionsNeeded}</p>
-                  </div>
-                )}
                 {team.phone && (
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Phone</p>
