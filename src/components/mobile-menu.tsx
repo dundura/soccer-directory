@@ -29,14 +29,6 @@ const navGroups = [
     ],
   },
   {
-    label: "Shop",
-    links: [
-      { label: "Equipment", href: "/shop?category=Equipment" },
-      { label: "Books", href: "/shop?category=Books" },
-      { label: "Store", href: "/store" },
-    ],
-  },
-  {
     label: "Community",
     links: [
       { label: "Forum", href: "/forum" },
@@ -110,7 +102,7 @@ export function MobileMenu() {
                     ))}
                   </div>
                 )}
-                {idx === 0 && (
+                {group.label === "Find" && (
                   <a
                     href="/guest-play"
                     onClick={() => setOpen(false)}
@@ -119,14 +111,23 @@ export function MobileMenu() {
                     Guest Play
                   </a>
                 )}
-                {idx === 3 && (
-                  <a
-                    href="/free"
-                    onClick={() => setOpen(false)}
-                    className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
-                  >
-                    Free
-                  </a>
+                {group.label === "Compete" && (
+                  <>
+                    <a
+                      href="/shop"
+                      onClick={() => setOpen(false)}
+                      className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
+                    >
+                      Equipment
+                    </a>
+                    <a
+                      href="/free"
+                      onClick={() => setOpen(false)}
+                      className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
+                    >
+                      Free
+                    </a>
+                  </>
                 )}
               </div>
             ))}

@@ -87,14 +87,7 @@ function Header() {
                 { label: "Int'l Tournaments", href: "/tournaments?region=International" },
               ]}
             />
-            <NavDropdown
-              label="Shop"
-              items={[
-                { label: "Equipment", href: "/shop?category=Equipment" },
-                { label: "Books", href: "/shop?category=Books" },
-                { label: "Store", href: "/store" },
-              ]}
-            />
+            <a href="/shop" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Equipment</a>
             <a href="/free" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Free</a>
             <NavDropdown
               label="Community"
