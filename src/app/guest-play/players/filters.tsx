@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { PlayerProfile } from "@/lib/types";
 import { Badge, FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui";
-
-const DEFAULT_PLAYER_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
+import { PlayerAvatar } from "@/components/player-avatar";
 
 const POSITIONS = ["GK", "CB", "FB/WB", "CDM", "CM", "CAM", "Winger", "ST"];
 const LEVELS = ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club / Local Travel", "Rec Select", "Recreational / Grassroots"];
@@ -103,9 +102,9 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
                   )}
                   <div className="flex gap-4 md:gap-6">
                     <div className="shrink-0">
-                      <img
-                        src={player.teamPhoto || DEFAULT_PLAYER_PHOTO}
-                        alt={player.playerName}
+                      <PlayerAvatar
+                        src={player.teamPhoto}
+                        name={player.playerName}
                         className="w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover border border-border"
                       />
                     </div>

@@ -2,13 +2,13 @@ import { getPlayerProfileBySlug, getPlayerProfileSlugs, getListingOwner } from "
 import { Badge } from "@/components/ui";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
+import { PlayerAvatar } from "@/components/player-avatar";
 import { ContactPlayerForm } from "./contact-form";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-const DEFAULT_PLAYER_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
 const DEFAULT_HERO_IMAGE = "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -77,9 +77,9 @@ export default async function PlayerDetailPage({ params }: Props) {
           {/* Sidebar */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl border border-border overflow-hidden">
-              <img
-                src={player.teamPhoto || DEFAULT_PLAYER_PHOTO}
-                alt={player.playerName}
+              <PlayerAvatar
+                src={player.teamPhoto}
+                name={player.playerName}
                 className="w-full aspect-square object-cover"
               />
               <div className="p-6">
