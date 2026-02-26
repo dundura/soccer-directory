@@ -4,7 +4,17 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-const DEFAULT_COVER = "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+const COVER_IMAGES = [
+  "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp",
+  "http://anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg",
+  "http://anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg",
+  "http://anytime-soccer.com/wp-content/uploads/2026/01/idf.webp",
+  "http://anytime-soccer.com/wp-content/uploads/2026/02/futsal-scaled.jpg",
+];
+
+function getCover(coverImage: string | undefined, index: number) {
+  return coverImage || COVER_IMAGES[index % COVER_IMAGES.length];
+}
 
 export const metadata: Metadata = {
   title: "Soccer Blog | Tips, Guides & News for Soccer Parents | Soccer Near Me",
@@ -27,28 +37,33 @@ export default async function BlogPage() {
         {/* Featured Posts */}
         {featured.length > 0 && (
           <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {featured.map((post) => (
+            {featured.map((post, i) => (
               <a
                 key={post.id}
                 href={`/blog/${post.slug}`}
                 className="group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all"
               >
-                <img
-                  src={post.coverImage || DEFAULT_COVER}
-                  alt={post.title}
-                  className="w-full h-44 object-cover"
-                />
-                <div className="p-5">
-                  <Badge variant="orange">{post.category}</Badge>
-                  <h2 className="font-[family-name:var(--font-display)] text-lg font-bold mt-2.5 mb-2 group-hover:text-accent-hover transition-colors line-clamp-2">
-                    {post.title}
-                  </h2>
-                  <p className="text-muted text-sm mb-3 line-clamp-2">{post.excerpt}</p>
-                  <div className="flex items-center gap-3 text-xs text-muted">
-                    <span>{post.date}</span>
-                    <span>·</span>
-                    <span>{post.readTime} read</span>
+                <div className="relative">
+                  <img
+                    src={getCover(post.coverImage, i)}
+                    alt={post.title}
+                    className="w-full h-52 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-5">
+                    <Badge variant="orange">{post.category}</Badge>
+                    <h2 className="font-[family-name:var(--font-display)] text-lg font-bold mt-2 text-white leading-snug line-clamp-2 drop-shadow-sm">
+                      {post.title}
+                    </h2>
+                    <div className="flex items-center gap-3 text-xs text-white/70 mt-2">
+                      <span>{post.date}</span>
+                      <span>·</span>
+                      <span>{post.readTime} read</span>
+                    </div>
                   </div>
+                </div>
+                <div className="p-5">
+                  <p className="text-muted text-sm line-clamp-2">{post.excerpt}</p>
                 </div>
               </a>
             ))}
@@ -60,27 +75,33 @@ export default async function BlogPage() {
           <>
             <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-6">More Articles</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {rest.map((post) => (
+              {rest.map((post, i) => (
                 <a
                   key={post.id}
                   href={`/blog/${post.slug}`}
                   className="group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all"
                 >
-                  <img
-                    src={post.coverImage || DEFAULT_COVER}
-                    alt={post.title}
-                    className="w-full h-40 object-cover"
-                  />
-                  <div className="p-5">
-                    <div className="flex items-center gap-3 mb-2">
+                  <div className="relative">
+                    <img
+                      src={getCover(post.coverImage, featured.length + i)}
+                      alt={post.title}
+                      className="w-full h-44 object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
                       <Badge variant="orange">{post.category}</Badge>
-                      <span className="text-xs text-muted">{post.readTime} read</span>
+                      <h3 className="font-[family-name:var(--font-display)] text-base font-bold mt-1.5 text-white leading-snug line-clamp-2 drop-shadow-sm">
+                        {post.title}
+                      </h3>
                     </div>
-                    <h3 className="font-[family-name:var(--font-display)] text-base font-bold group-hover:text-accent-hover transition-colors mb-1 line-clamp-2">
-                      {post.title}
-                    </h3>
+                  </div>
+                  <div className="p-5 pt-3">
                     <p className="text-muted text-sm line-clamp-2">{post.excerpt}</p>
-                    <p className="text-xs text-muted mt-3">{post.date}</p>
+                    <div className="flex items-center gap-3 text-xs text-muted mt-3">
+                      <span>{post.date}</span>
+                      <span>·</span>
+                      <span>{post.readTime} read</span>
+                    </div>
                   </div>
                 </a>
               ))}
