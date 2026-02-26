@@ -86,7 +86,7 @@ function Header() {
               ]}
             />
             <NavDropdown
-              label="Compete"
+              label="Tournaments"
               items={[
                 { label: "US Tournaments", href: "/tournaments?region=US" },
                 { label: "Int'l Tournaments", href: "/tournaments?region=International" },

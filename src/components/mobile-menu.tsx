@@ -27,7 +27,7 @@ const navGroups = [
     ],
   },
   {
-    label: "Compete",
+    label: "Tournaments",
     links: [
       { label: "US Tournaments", href: "/tournaments?region=US" },
       { label: "Int'l Tournaments", href: "/tournaments?region=International" },
