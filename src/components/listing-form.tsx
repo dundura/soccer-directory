@@ -122,6 +122,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "description", label: "Description", type: "textarea" },
     { name: "_events", label: "Upcoming Events", type: "heading" },
     { name: "events", label: "Events (up to 5)", type: "events" },
+    { name: "_tournaments", label: "Annual Tournaments", type: "heading" },
+    { name: "annualTournaments", label: "Tournaments (up to 10)", type: "tournament-list" },
     { name: "phone", label: "Phone" },
     { name: "_socials", label: "Social Media", type: "heading" },
     { name: "facebook", label: "Facebook URL" },
@@ -574,6 +576,43 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", editType, ed
                   );
                 })}
                 <p className="text-xs text-muted">Add up to 5 upcoming events</p>
+              </div>
+
+            /* Tournament list (up to 10 names) */
+            ) : field.type === "tournament-list" ? (
+              <div className="space-y-2">
+                {Array.from({ length: Math.min(10, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                  let arr: string[] = [];
+                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  return (
+                    <div key={i} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={arr[i] || ""}
+                        onChange={(e) => {
+                          const updated = [...arr];
+                          updated[i] = e.target.value;
+                          handleChange(field.name, JSON.stringify(updated.filter(Boolean)));
+                        }}
+                        placeholder={`Tournament name ${i + 1}`}
+                        className={inputClass}
+                      />
+                      {arr[i] && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = arr.filter((_, j) => j !== i);
+                            handleChange(field.name, JSON.stringify(updated));
+                          }}
+                          className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0"
+                        >
+                          x
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-muted">Add tournament names your team competes in annually</p>
               </div>
 
             /* Practice schedule checkboxes */

@@ -164,6 +164,21 @@ export default async function TeamDetailPage({ params }: Props) {
               </div>
             )}
 
+            {/* Annual Tournaments */}
+            {team.annualTournaments && team.annualTournaments.length > 0 && (
+              <div className="bg-white rounded-2xl p-4 shadow-sm">
+                <h4 className="text-sm font-bold mb-2.5">Annual Tournaments</h4>
+                <ul className="space-y-1.5">
+                  {team.annualTournaments.map((t, i) => (
+                    <li key={i} className="text-sm text-muted flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Share */}
             <div className="bg-white rounded-2xl p-4 shadow-sm">
               <h4 className="text-sm font-bold mb-2.5">Share this profile!</h4>
@@ -220,6 +235,65 @@ export default async function TeamDetailPage({ params }: Props) {
                   )}
                 </div>
               </div>
+              </div>
+            </div>
+
+            {/* At a Glance */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="text-[15px] font-bold text-primary mb-3.5">At a Glance</h3>
+              <div className="grid grid-cols-2 gap-3 mt-1">
+                <div className="flex items-start gap-2.5">
+                  <span className="text-xl leading-none">&#127942;</span>
+                  <div>
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">Level</div>
+                    <div className="text-sm font-bold text-primary">{team.level}</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="text-xl leading-none">&#127941;</span>
+                  <div>
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">League</div>
+                    <div className="text-sm font-bold text-primary">{team.season || "—"}</div>
+                  </div>
+                </div>
+                {team.events && team.events.some((e) => e.type === "Tryout") && (
+                  <div className="flex items-start gap-2.5">
+                    <span className="text-xl leading-none">&#128197;</span>
+                    <div>
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">Tryout Dates</div>
+                      <div className="text-sm font-bold text-primary">
+                        {team.events.filter((e) => e.type === "Tryout").map((e) => e.date).join(" & ")}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-start gap-2.5">
+                  <span className="text-xl leading-none">&#9917;</span>
+                  <div>
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">Practices Per Week</div>
+                    <div className="text-sm font-bold text-primary">
+                      {team.practiceSchedule && team.practiceSchedule.length > 0
+                        ? `${team.practiceSchedule.length}x per week`
+                        : "—"}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <span className="text-xl leading-none">&#128197;</span>
+                  <div>
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">Age Group</div>
+                    <div className="text-sm font-bold text-primary">{team.ageGroup} {team.gender}</div>
+                  </div>
+                </div>
+                {team.annualTournaments && team.annualTournaments.length > 0 && (
+                  <div className="flex items-start gap-2.5">
+                    <span className="text-xl leading-none">&#129349;</span>
+                    <div>
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-0.5"># of Tournaments</div>
+                      <div className="text-sm font-bold text-primary">{team.annualTournaments.length} tournament{team.annualTournaments.length !== 1 ? "s" : ""}</div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

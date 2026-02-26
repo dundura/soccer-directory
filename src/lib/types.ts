@@ -54,6 +54,7 @@ export interface Team extends ProfileFields {
   season: string;
   description?: string;
   events?: TeamEvent[];
+  annualTournaments?: string[];
   featured: boolean;
   createdAt: string;
   updatedAt: string;
