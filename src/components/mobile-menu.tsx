@@ -26,8 +26,6 @@ const navGroups = [
     links: [
       { label: "US Tournaments", href: "/tournaments?region=US" },
       { label: "Int'l Tournaments", href: "/tournaments?region=International" },
-      { label: "Guest Play", href: "/guest-play" },
-      { label: "International Trips", href: "/international-trips" },
     ],
   },
   {
@@ -86,7 +84,7 @@ export function MobileMenu() {
 
           {/* Nav Links */}
           <nav className="flex-1 flex flex-col px-6 pt-6 gap-1 overflow-y-auto">
-            {navGroups.map((group) => (
+            {navGroups.map((group, idx) => (
               <div key={group.label}>
                 <button
                   onClick={() => setOpenGroup(openGroup === group.label ? null : group.label)}
@@ -110,6 +108,15 @@ export function MobileMenu() {
                       </a>
                     ))}
                   </div>
+                )}
+                {idx === 0 && (
+                  <a
+                    href="/guest-play"
+                    onClick={() => setOpen(false)}
+                    className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
+                  >
+                    Guest Play
+                  </a>
                 )}
               </div>
             ))}
