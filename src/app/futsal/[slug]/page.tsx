@@ -61,9 +61,7 @@ export default async function FutsalDetailPage({ params }: Props) {
           {/* Sidebar */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl border border-border overflow-hidden">
-              {team.teamPhoto && (
-                <img src={team.teamPhoto} alt={team.name} className="w-full h-48 object-cover" />
-              )}
+              <img src={team.teamPhoto || "https://anytime-soccer.com/wp-content/uploads/2026/02/futsal.png"} alt={team.name} className="w-full h-48 object-cover" />
               <div className="p-6">
                 {team.logo && (
                   <img src={team.logo} alt={`${team.name} logo`} className="w-16 h-16 rounded-xl object-contain border border-border mb-3 -mt-12 bg-white relative z-10" />
