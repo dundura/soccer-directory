@@ -1,7 +1,7 @@
 import { getTeamBySlug, getTeamSlugs, getClubById, getListingOwner, getSimilarTeams } from "@/lib/db";
-import { Badge, ListingCard } from "@/components/ui";
+import { ListingCard } from "@/components/ui";
 import { ManageListingButton } from "@/components/manage-listing-button";
-import { VideoEmbed, PhotoGallery, PracticeSchedule, SocialLinks, ShareButtons } from "@/components/profile-ui";
+import { VideoEmbed, PhotoGallery, PracticeSchedule, ShareButtons } from "@/components/profile-ui";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -76,16 +76,15 @@ export default async function TeamDetailPage({ params }: Props) {
               {team.description && (
                 <p className="text-muted leading-relaxed line-clamp-4 mb-3">{team.description}</p>
               )}
-              <div className="flex flex-wrap gap-2 mb-5">
-                <Badge variant="blue">{team.level}</Badge>
-                <Badge variant={team.gender === "Boys" ? "blue" : "purple"}>{team.gender}</Badge>
-                <Badge variant="default">{team.ageGroup}</Badge>
-                {team.lookingForPlayers && <Badge variant="green">Recruiting</Badge>}
-              </div>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <a href={`/contact/team/${slug}`} className="px-6 py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors">
                   Contact Team
                 </a>
+                {team.lookingForPlayers && (
+                  <a href={`/contact/team/${slug}`} className="px-6 py-3 rounded-xl bg-[#DC373E] text-white font-semibold hover:opacity-90 transition-opacity">
+                    Request Tryout
+                  </a>
+                )}
                 {club && (
                   <a href={`/clubs/${club.slug}`} className="px-6 py-3 rounded-xl border-2 border-border text-primary font-semibold hover:bg-surface transition-colors">
                     View Club
@@ -93,41 +92,6 @@ export default async function TeamDetailPage({ params }: Props) {
                 )}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Info bar */}
-      <div className="bg-surface border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="bg-white rounded-2xl border border-border p-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 text-center">
-              <div>
-                <p className="text-xs text-muted font-medium uppercase tracking-wide mb-1">Coach</p>
-                <p className="font-semibold">{team.coach}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted font-medium uppercase tracking-wide mb-1">Age Group</p>
-                <p className="font-semibold">{team.ageGroup}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted font-medium uppercase tracking-wide mb-1">Gender</p>
-                <p className="font-semibold">{team.gender}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted font-medium uppercase tracking-wide mb-1">Competition Level</p>
-                <p className="font-semibold">{team.level}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted font-medium uppercase tracking-wide mb-1">Season</p>
-                <p className="font-semibold">{team.season}</p>
-              </div>
-            </div>
-            {team.socialMedia && (team.socialMedia.facebook || team.socialMedia.instagram) && (
-              <div className="mt-4 pt-4 border-t border-border flex justify-center">
-                <SocialLinks website={undefined} facebook={team.socialMedia.facebook} instagram={team.socialMedia.instagram} />
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -158,20 +122,6 @@ export default async function TeamDetailPage({ params }: Props) {
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Practice Schedule</h2>
                 <PracticeSchedule days={team.practiceSchedule} />
-              </section>
-            )}
-
-            {/* Recruiting */}
-            {team.lookingForPlayers && (
-              <section className="bg-red-50 rounded-2xl border border-red-200 p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-[#DC373E] mb-2">This Team Is Recruiting</h2>
-                <p className="text-red-700 mb-4">
-                  This team is actively looking for players{team.positionsNeeded ? ` at the following positions: ${team.positionsNeeded}` : ""}.
-                  Reach out to the coaching staff to schedule a tryout or guest training session.
-                </p>
-                <a href={`/contact/team/${slug}`} className="inline-block px-6 py-3 rounded-xl bg-[#DC373E] text-white font-semibold hover:opacity-90 transition-opacity">
-                  Request Tryout Info
-                </a>
               </section>
             )}
 
