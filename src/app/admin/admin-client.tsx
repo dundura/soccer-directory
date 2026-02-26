@@ -8,12 +8,12 @@ type Listing = { id: string; slug: string; name: string; status: string; feature
 
 const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
-  guest: "Guest Play", tournament: "Tournament", futsal: "Futsal", trip: "Trip",
+  guest: "Guest Play", tournament: "Tournament", futsal: "Futsal", trip: "Trip", marketplace: "Shop",
 };
 
 const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers", camp: "camps",
-  guest: "guest-play", tournament: "tournaments", futsal: "futsal", trip: "international-trips",
+  guest: "guest-play", tournament: "tournaments", futsal: "futsal", trip: "international-trips", marketplace: "shop",
 };
 
 export default function AdminClient() {

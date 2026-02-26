@@ -204,7 +204,26 @@ export interface InternationalTrip extends ProfileFields {
   updatedAt: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip";
+export interface MarketplaceItem {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  description: string;
+  price: string;
+  condition: string;
+  city: string;
+  state: string;
+  country?: string;
+  contactEmail: string;
+  phone?: string;
+  imageUrl?: string;
+  photos?: string[];
+  featured: boolean;
+  createdAt: string;
+}
+
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";

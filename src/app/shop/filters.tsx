@@ -2,25 +2,25 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Trainer } from "@/lib/types";
+import { MarketplaceItem } from "@/lib/types";
 import { ListingCard, FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui";
 
-export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
+export function ShopFilters({ items }: { items: MarketplaceItem[] }) {
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [specialty, setSpecialty] = useState(searchParams.get("specialty") || "");
+  const [category, setCategory] = useState(searchParams.get("category") || "");
   const [state, setState] = useState(searchParams.get("state") || "");
 
-  const specialties = [...new Set(trainers.map((t) => t.specialty))].sort();
-  const states = [...new Set(trainers.map((t) => t.state))].sort();
+  const categories = [...new Set(items.map((i) => i.category))].sort();
+  const states = [...new Set(items.map((i) => i.state))].sort();
 
-  const filtered = trainers.filter((t) => {
+  const filtered = items.filter((i) => {
     if (search) {
       const q = search.toLowerCase();
-      if (!t.name.toLowerCase().includes(q) && !t.city.toLowerCase().includes(q) && !t.state.toLowerCase().includes(q)) return false;
+      if (!i.name.toLowerCase().includes(q) && !i.city.toLowerCase().includes(q) && !i.description.toLowerCase().includes(q)) return false;
     }
-    if (specialty && t.specialty !== specialty) return false;
-    if (state && t.state !== state) return false;
+    if (category && i.category !== category) return false;
+    if (state && i.state !== state) return false;
     return true;
   });
 
@@ -32,17 +32,17 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
       <div className="bg-primary text-white py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-3">
-            Private Trainers & Coaches
+            Soccer Shop
           </h1>
           <p className="text-white/70 max-w-2xl text-lg mb-8">
-            Find verified private trainers offering 1-on-1 and small group sessions near you.
+            Buy and sell soccer equipment, books, and gear from the community.
           </p>
           <div className="bg-white rounded-2xl shadow-lg p-2 flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by trainer name, city, or state..."
+              placeholder="Search by item name or description..."
               className="flex-1 px-5 py-4 rounded-xl text-primary text-base placeholder:text-muted focus:outline-none"
             />
             <select
@@ -67,29 +67,29 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <FilterBar
           filters={[
-            { label: "All Specialties", options: specialties, value: specialty, onChange: setSpecialty },
+            { label: "All Categories", options: categories, value: category, onChange: setCategory },
           ]}
         />
         {sorted.length === 0 ? (
-          <EmptyState message="No trainers match your filters." />
+          <EmptyState message="No items match your filters." />
         ) : (
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sorted.map((trainer) => (
+              {sorted.map((item) => (
                 <ListingCard
-                  key={trainer.id}
-                  href={`/trainers/${trainer.slug}`}
-                  title={trainer.name}
-                  subtitle={`${trainer.city}, ${trainer.state}`}
-                  badges={[{ label: trainer.specialty, variant: "green" }]}
-                  details={[
-                    { label: "Price", value: trainer.priceRange },
-                    { label: "Rating", value: `⭐ ${trainer.rating} (${trainer.reviewCount})` },
-                    { label: "Experience", value: trainer.experience },
-                    { label: "Area", value: trainer.serviceArea },
+                  key={item.id}
+                  href={`/shop/${item.slug}`}
+                  title={item.name}
+                  subtitle={`${item.city}, ${item.state}`}
+                  badges={[
+                    { label: item.category, variant: "green" },
+                    { label: item.condition },
                   ]}
-                  featured={trainer.featured}
-                  cta="View Trainer"
+                  details={[
+                    { label: "Price", value: item.price },
+                  ]}
+                  featured={item.featured}
+                  cta="View Item"
                 />
               ))}
             </div>

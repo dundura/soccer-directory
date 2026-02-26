@@ -68,6 +68,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   tournament: "Join teams from across the region for this exciting tournament. Competitive divisions, professional fields, and great competition for all age groups.",
   futsal: "Our futsal team competes in a fast-paced indoor environment that develops quick thinking, close control, and sharp passing. All skill levels welcome.",
   trip: "Join us for an unforgettable international soccer experience! Players will train with local coaches, compete against international teams, and immerse themselves in a new soccer culture.",
+  marketplace: "Quality soccer equipment / books available for purchase. Great condition and ready for the next player!",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -144,7 +145,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "city", label: "City", required: true },
     { name: "country", label: "Country", required: true, type: "country" },
     { name: "state", label: "State", required: true, type: "state-select" },
-    { name: "specialty", label: "Specialty", required: true, options: ["Shooting & Finishing", "Technical Skills", "Goalkeeping", "Speed & Agility", "Tactical Development", "Position-Specific", "General"] },
+    { name: "specialty", label: "Specialty", required: true, options: ["Shooting & Finishing", "Technical Skills", "Goalkeeping", "Speed & Agility", "Tactical Development", "Position-Specific", "Mental Training", "General"] },
     { name: "experience", label: "Experience (e.g. 10+ years)", required: true },
     { name: "credentials", label: "Credentials / Licenses", required: true },
     { name: "priceRange", label: "Price Range (e.g. $60-80/session)", required: true },
@@ -302,6 +303,21 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
+  marketplace: [
+    { name: "name", label: "Item Name", required: true },
+    { name: "category", label: "Category", required: true, options: ["Equipment", "Books"] },
+    { name: "description", label: "Description", required: true, type: "textarea" },
+    { name: "price", label: "Price (e.g. $25)", required: true },
+    { name: "condition", label: "Condition", required: true, options: ["New", "Like New", "Used"] },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "contactEmail", label: "Contact Email", required: true, type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "_profile", label: "Photos", type: "heading" },
+    { name: "imageUrl", label: "Main Photo", type: "image" },
+    { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
+  ],
 };
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -313,6 +329,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   tournament: "Tournament",
   futsal: "Futsal Team",
   trip: "International Trip",
+  marketplace: "Shop Item",
 };
 
 // ── Shared styles ──────────────────────────────────────────────

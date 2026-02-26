@@ -62,38 +62,46 @@ function Header() {
 
           {/* Nav */}
           <nav className="hidden md:flex items-center gap-1">
-            {[
-              { label: "Clubs", href: "/clubs" },
-              { label: "Teams", href: "/teams" },
-              { label: "Futsal", href: "/futsal" },
-              { label: "Trainers", href: "/trainers" },
-              { label: "Camps", href: "/camps" },
-            ].map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
             <NavDropdown
-              label="Guest Opportunities"
+              label="Find"
               items={[
+                { label: "Clubs", href: "/clubs" },
+                { label: "Teams", href: "/teams" },
+                { label: "Futsal", href: "/futsal" },
+              ]}
+            />
+            <NavDropdown
+              label="Train"
+              items={[
+                { label: "Trainers", href: "/trainers" },
+                { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
+                { label: "Camps", href: "/camps" },
+                { label: "College Showcases", href: "/camps?type=College+Showcase" },
+              ]}
+            />
+            <NavDropdown
+              label="Compete"
+              items={[
+                { label: "US Tournaments", href: "/tournaments?region=US" },
+                { label: "Int'l Tournaments", href: "/tournaments?region=International" },
                 { label: "Guest Play", href: "/guest-play" },
                 { label: "International Trips", href: "/international-trips" },
               ]}
             />
             <NavDropdown
-              label="Tournaments"
+              label="Shop"
               items={[
-                { label: "US Tournaments", href: "/tournaments?region=US" },
-                { label: "International", href: "/tournaments?region=International" },
-                { label: "All Tournaments", href: "/tournaments" },
+                { label: "Equipment", href: "/shop?category=Equipment" },
+                { label: "Books", href: "/shop?category=Books" },
               ]}
             />
-            <a href="/forum" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Forum</a>
-            <a href="/blog" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Blog</a>
+            <NavDropdown
+              label="Community"
+              items={[
+                { label: "Forum", href: "/forum" },
+                { label: "Blog", href: "/blog" },
+              ]}
+            />
           </nav>
 
           {/* CTA */}
@@ -124,6 +132,7 @@ function Footer() {
               <a href="/guest-play" className="hover:text-white transition-colors">Guest Player Ops</a>
               <a href="/international-trips" className="hover:text-white transition-colors">International Trips</a>
               <a href="/tournaments" className="hover:text-white transition-colors">Find Tournaments</a>
+              <a href="/shop" className="hover:text-white transition-colors">Shop Equipment & Books</a>
             </div>
           </div>
           <div>

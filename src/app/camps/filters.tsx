@@ -8,7 +8,7 @@ import { ListingCard, FilterBar, EmptyState, AnytimeInlineCTA } from "@/componen
 export function CampFilters({ camps }: { camps: Camp[] }) {
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [campType, setCampType] = useState("");
+  const [campType, setCampType] = useState(searchParams.get("type") || "");
   const [state, setState] = useState(searchParams.get("state") || "");
 
   const campTypes = [...new Set(camps.map((c) => c.campType))].sort();

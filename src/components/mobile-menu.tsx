@@ -3,22 +3,52 @@
 import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 
-const navLinks = [
-  { label: "Clubs", href: "/clubs" },
-  { label: "Teams", href: "/teams" },
-  { label: "Futsal", href: "/futsal" },
-  { label: "Trainers", href: "/trainers" },
-  { label: "Camps", href: "/camps" },
-  { label: "Guest Play", href: "/guest-play" },
-  { label: "International Trips", href: "/international-trips" },
-  { label: "US Tournaments", href: "/tournaments?region=US" },
-  { label: "Int'l Tournaments", href: "/tournaments?region=International" },
-  { label: "Forum", href: "/forum" },
-  { label: "Blog", href: "/blog" },
+const navGroups = [
+  {
+    label: "Find",
+    links: [
+      { label: "Clubs", href: "/clubs" },
+      { label: "Teams", href: "/teams" },
+      { label: "Futsal", href: "/futsal" },
+    ],
+  },
+  {
+    label: "Train",
+    links: [
+      { label: "Trainers", href: "/trainers" },
+      { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
+      { label: "Camps", href: "/camps" },
+      { label: "College Showcases", href: "/camps?type=College+Showcase" },
+    ],
+  },
+  {
+    label: "Compete",
+    links: [
+      { label: "US Tournaments", href: "/tournaments?region=US" },
+      { label: "Int'l Tournaments", href: "/tournaments?region=International" },
+      { label: "Guest Play", href: "/guest-play" },
+      { label: "International Trips", href: "/international-trips" },
+    ],
+  },
+  {
+    label: "Shop",
+    links: [
+      { label: "Equipment", href: "/shop?category=Equipment" },
+      { label: "Books", href: "/shop?category=Books" },
+    ],
+  },
+  {
+    label: "Community",
+    links: [
+      { label: "Forum", href: "/forum" },
+      { label: "Blog", href: "/blog" },
+    ],
+  },
 ];
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
   const { data: session } = useSession();
 
   return (
@@ -55,16 +85,33 @@ export function MobileMenu() {
           </div>
 
           {/* Nav Links */}
-          <nav className="flex-1 flex flex-col px-6 pt-6 gap-1">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className="text-white text-lg font-medium py-3 px-4 rounded-xl hover:bg-white/10 transition-colors"
-              >
-                {link.label}
-              </a>
+          <nav className="flex-1 flex flex-col px-6 pt-6 gap-1 overflow-y-auto">
+            {navGroups.map((group) => (
+              <div key={group.label}>
+                <button
+                  onClick={() => setOpenGroup(openGroup === group.label ? null : group.label)}
+                  className="w-full flex items-center justify-between text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors"
+                >
+                  {group.label}
+                  <svg className={`w-4 h-4 transition-transform ${openGroup === group.label ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {openGroup === group.label && (
+                  <div className="flex flex-col gap-1 pl-4 mb-2">
+                    {group.links.map((link) => (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setOpen(false)}
+                        className="text-white/70 text-base font-medium py-2 px-4 rounded-xl hover:bg-white/10 transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
             <hr className="border-white/10 my-3" />
             <a

@@ -13,6 +13,7 @@ const TYPE_PATHS: Record<string, string> = {
   guest: "guest-play",
   tournament: "tournaments",
   futsal: "futsal",
+  marketplace: "shop",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -23,6 +24,7 @@ const TYPE_LABELS: Record<string, string> = {
   guest: "Guest Play",
   tournament: "Tournament",
   futsal: "Futsal",
+  marketplace: "Shop Item",
 };
 
 type Listing = { id: string; slug: string; name: string; status: string; type: string };

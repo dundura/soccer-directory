@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { Club, Team, TeamEvent, Trainer, Camp, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, ProfileFields, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment } from "./types";
+import type { Club, Team, TeamEvent, Trainer, Camp, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, ProfileFields, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment } from "./types";
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -234,6 +234,33 @@ function mapTrip(r: Record<string, unknown>): InternationalTrip {
   };
 }
 
+// ── Marketplace ─────────────────────────────────────────────
+export async function getMarketplaceItems(): Promise<MarketplaceItem[]> {
+  const rows = await sql`SELECT * FROM marketplace WHERE status = 'approved' ORDER BY featured DESC, created_at DESC`;
+  return rows.map(mapMarketplaceItem);
+}
+
+export async function getMarketplaceItemBySlug(slug: string): Promise<MarketplaceItem | null> {
+  const rows = await sql`SELECT * FROM marketplace WHERE slug = ${slug} AND status = 'approved' LIMIT 1`;
+  return rows[0] ? mapMarketplaceItem(rows[0]) : null;
+}
+
+function mapMarketplaceItem(r: Record<string, unknown>): MarketplaceItem {
+  let photos: string[] | undefined;
+  if (r.photos) {
+    try { photos = JSON.parse(r.photos as string); } catch { photos = undefined; }
+  }
+  return {
+    id: r.id as string, slug: r.slug as string, name: r.name as string,
+    category: r.category as string, description: r.description as string,
+    price: r.price as string, condition: r.condition as string,
+    city: r.city as string, state: r.state as string, country: r.country as string | undefined,
+    contactEmail: r.contact_email as string, phone: r.phone as string | undefined,
+    imageUrl: r.image_url as string | undefined, photos,
+    featured: r.featured as boolean, createdAt: r.created_at as string,
+  };
+}
+
 // ── Tournaments ──────────────────────────────────────────────
 export async function getTournaments(): Promise<Tournament[]> {
   const rows = await sql`SELECT * FROM tournaments WHERE status = 'approved' ORDER BY featured DESC, name ASC`;
@@ -359,6 +386,7 @@ export async function deleteUserAccount(userId: string): Promise<void> {
   await sql`DELETE FROM tournaments WHERE user_id = ${userId}`;
   await sql`DELETE FROM futsal_teams WHERE user_id = ${userId}`;
   await sql`DELETE FROM international_trips WHERE user_id = ${userId}`;
+  await sql`DELETE FROM marketplace WHERE user_id = ${userId}`;
   await sql`DELETE FROM users WHERE id = ${userId}`;
 }
 
@@ -379,7 +407,7 @@ export async function updateUserRole(userId: string, role: string): Promise<void
 }
 
 export async function getAllListings() {
-  const [clubs, teams, trainers, camps, guests, tournaments, futsals, trips] = await Promise.all([
+  const [clubs, teams, trainers, camps, guests, tournaments, futsals, trips, marketplace] = await Promise.all([
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'club' as type FROM clubs ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'team' as type FROM teams ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'trainer' as type FROM trainers ORDER BY created_at DESC`,
@@ -388,8 +416,9 @@ export async function getAllListings() {
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'tournament' as type FROM tournaments ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'futsal' as type FROM futsal_teams ORDER BY created_at DESC`,
     sql`SELECT id, slug, trip_name as name, status, featured, user_id, created_at, 'trip' as type FROM international_trips ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'marketplace' as type FROM marketplace ORDER BY created_at DESC`,
   ]);
-  return [...clubs, ...teams, ...trainers, ...camps, ...guests, ...tournaments, ...futsals, ...trips].map((r) => ({
+  return [...clubs, ...teams, ...trainers, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace].map((r) => ({
     id: r.id as string,
     slug: r.slug as string,
     name: r.name as string,
@@ -411,6 +440,7 @@ export async function updateListingStatus(type: string, id: string, status: stri
     case "tournament": await sql`UPDATE tournaments SET status = ${status} WHERE id = ${id}`; break;
     case "futsal": await sql`UPDATE futsal_teams SET status = ${status} WHERE id = ${id}`; break;
     case "trip": await sql`UPDATE international_trips SET status = ${status} WHERE id = ${id}`; break;
+    case "marketplace": await sql`UPDATE marketplace SET status = ${status} WHERE id = ${id}`; break;
   }
 }
 
@@ -424,12 +454,13 @@ export async function updateListingFeatured(type: string, id: string, featured: 
     case "tournament": await sql`UPDATE tournaments SET featured = ${featured} WHERE id = ${id}`; break;
     case "futsal": await sql`UPDATE futsal_teams SET featured = ${featured} WHERE id = ${id}`; break;
     case "trip": await sql`UPDATE international_trips SET featured = ${featured} WHERE id = ${id}`; break;
+    case "marketplace": await sql`UPDATE marketplace SET featured = ${featured} WHERE id = ${id}`; break;
   }
 }
 
 // ── Listings by User ─────────────────────────────────────────
 export async function getListingsByUserId(userId: string) {
-  const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows, tripRows] = await Promise.all([
+  const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows] = await Promise.all([
     sql`SELECT id, slug, name, status, 'club' as type FROM clubs WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'team' as type FROM teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'trainer' as type FROM trainers WHERE user_id = ${userId} ORDER BY created_at DESC`,
@@ -438,8 +469,9 @@ export async function getListingsByUserId(userId: string) {
     sql`SELECT id, slug, name, status, 'tournament' as type FROM tournaments WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'futsal' as type FROM futsal_teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, trip_name as name, status, 'trip' as type FROM international_trips WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, 'marketplace' as type FROM marketplace WHERE user_id = ${userId} ORDER BY created_at DESC`,
   ]);
-  return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows] as { id: string; slug: string; name: string; status: string; type: string }[];
+  return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows] as { id: string; slug: string; name: string; status: string; type: string }[];
 }
 
 // ── Create Listings ──────────────────────────────────────────
@@ -533,6 +565,13 @@ export async function createTripListing(data: Record<string, string>, userId: st
   return slug;
 }
 
+export async function createMarketplaceListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  await sql`INSERT INTO marketplace (id, slug, name, category, description, price, condition, city, country, state, contact_email, phone, image_url, photos, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.category}, ${data.description}, ${data.price}, ${data.condition}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.contactEmail}, ${data.phone || null}, ${data.imageUrl || null}, ${data.photos || null}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
 // ── Get Listing Data (for editing) ───────────────────────────
 export async function getListingData(type: string, id: string, userId: string): Promise<Record<string, string> | null> {
   let rows: Record<string, unknown>[];
@@ -569,6 +608,10 @@ export async function getListingData(type: string, id: string, userId: string): 
       rows = await sql`SELECT * FROM international_trips WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
       return mapTripToForm(rows[0]);
+    case "marketplace":
+      rows = await sql`SELECT * FROM marketplace WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapMarketplaceToForm(rows[0]);
     default:
       return null;
   }
@@ -621,6 +664,10 @@ function mapTripToForm(r: Record<string, unknown>): Record<string, string> {
   return { tripName: s(r.trip_name), organizer: s(r.organizer), destination: s(r.destination), city: s(r.city), country: s(r.country) || "International", state: s(r.state), dates: s(r.dates), ageGroup: s(r.age_group), gender: s(r.gender), level: s(r.level), price: s(r.price), spotsAvailable: s(r.spots_available), contactEmail: s(r.contact_email), description: s(r.description), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
 }
 
+function mapMarketplaceToForm(r: Record<string, unknown>): Record<string, string> {
+  return { name: s(r.name), category: s(r.category), description: s(r.description), price: s(r.price), condition: s(r.condition), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), contactEmail: s(r.contact_email), phone: s(r.phone), imageUrl: s(r.image_url), photos: s(r.photos) };
+}
+
 // ── Update Listing ──────────────────────────────────────────
 function buildSocialMedia(data: Record<string, string>): string | null {
   const sm = { facebook: data.facebook || null, instagram: data.instagram || null, youtube: data.youtube || null };
@@ -656,6 +703,9 @@ export async function updateListing(type: string, id: string, data: Record<strin
     case "trip":
       rows = await sql`UPDATE international_trips SET trip_name=${data.tripName}, organizer=${data.organizer}, destination=${data.destination}, city=${data.city}, country=${data.country || 'International'}, state=${data.state || ''}, dates=${data.dates}, age_group=${data.ageGroup}, gender=${data.gender}, level=${data.level}, price=${data.price || null}, spots_available=${data.spotsAvailable || null}, contact_email=${data.contactEmail}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
+    case "marketplace":
+      rows = await sql`UPDATE marketplace SET name=${data.name}, category=${data.category}, description=${data.description}, price=${data.price}, condition=${data.condition}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, contact_email=${data.contactEmail}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, photos=${data.photos || null} WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
     default:
       return false;
   }
@@ -674,6 +724,7 @@ export async function deleteListing(type: string, id: string, userId: string): P
     case "tournament": rows = await sql`DELETE FROM tournaments WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     case "futsal": rows = await sql`DELETE FROM futsal_teams WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     case "trip": rows = await sql`DELETE FROM international_trips WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+    case "marketplace": rows = await sql`DELETE FROM marketplace WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     default: return false;
   }
   return rows.length > 0;
@@ -691,6 +742,7 @@ export async function getListingContact(type: string, slug: string): Promise<{ n
     case "tournament": rows = await sql`SELECT name, email, user_id FROM tournaments WHERE slug = ${slug} LIMIT 1`; break;
     case "futsal": rows = await sql`SELECT name, NULL as email, user_id FROM futsal_teams WHERE slug = ${slug} LIMIT 1`; break;
     case "trip": rows = await sql`SELECT trip_name as name, contact_email as email, user_id FROM international_trips WHERE slug = ${slug} LIMIT 1`; break;
+    case "marketplace": rows = await sql`SELECT name, contact_email as email, user_id FROM marketplace WHERE slug = ${slug} LIMIT 1`; break;
     default: return null;
   }
   if (!rows[0]) return null;
@@ -713,6 +765,7 @@ export async function getListingOwner(type: string, slug: string): Promise<strin
     case "tournament": rows = await sql`SELECT user_id FROM tournaments WHERE slug = ${slug} LIMIT 1`; break;
     case "futsal": rows = await sql`SELECT user_id FROM futsal_teams WHERE slug = ${slug} LIMIT 1`; break;
     case "trip": rows = await sql`SELECT user_id FROM international_trips WHERE slug = ${slug} LIMIT 1`; break;
+    case "marketplace": rows = await sql`SELECT user_id FROM marketplace WHERE slug = ${slug} LIMIT 1`; break;
     default: return null;
   }
   return rows[0]?.user_id as string | null;
