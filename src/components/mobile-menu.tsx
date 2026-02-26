@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const navLinks = [
   { label: "Clubs", href: "/clubs" },
@@ -74,6 +74,14 @@ export function MobileMenu() {
             >
               {session ? "Profile" : "Log In"}
             </a>
+            {session && (
+              <button
+                onClick={() => { signOut({ callbackUrl: "/" }); setOpen(false); }}
+                className="text-left text-white/80 text-lg font-medium py-3 px-4 rounded-xl hover:bg-white/10 transition-colors"
+              >
+                Log Out
+              </button>
+            )}
             <a
               href="/dashboard"
               onClick={() => setOpen(false)}
