@@ -83,21 +83,15 @@ export default async function ClubDetailPage({ params }: Props) {
                 <p className="text-sm text-muted mt-1">{club.city}, {club.state}</p>
               </div>
               <div className="flex items-center justify-between px-4 py-2.5 border-t border-border gap-2.5">
+                <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full flex-1 text-center">
+                  Roster spots available!
+                </span>
                 <a
                   href={`/contact/club/${slug}`}
                   className="bg-[#DC373E] text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#C42F36] transition-colors whitespace-nowrap"
                 >
                   Contact
                 </a>
-                {club.website && (
-                  <a
-                    href={club.website.startsWith("http") ? club.website : `https://${club.website}`}
-                    target="_blank"
-                    className="text-primary border-2 border-border px-5 py-2 rounded-lg text-sm font-bold hover:bg-surface transition-colors whitespace-nowrap"
-                  >
-                    Website
-                  </a>
-                )}
               </div>
             </div>
 

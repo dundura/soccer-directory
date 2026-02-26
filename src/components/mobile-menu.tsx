@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 const navLinks = [
   { label: "Clubs", href: "/clubs" },
@@ -18,6 +19,7 @@ const navLinks = [
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
+  const { data: session } = useSession();
 
   return (
     <>
@@ -70,7 +72,7 @@ export function MobileMenu() {
               onClick={() => setOpen(false)}
               className="text-white/80 text-lg font-medium py-3 px-4 rounded-xl hover:bg-white/10 transition-colors"
             >
-              Log In
+              {session ? "Profile" : "Log In"}
             </a>
             <a
               href="/dashboard"

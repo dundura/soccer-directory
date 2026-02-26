@@ -41,13 +41,13 @@ export default async function BlogDetailPage({ params }: Props) {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Article Content — in production this would come from MDX or a headless CMS */}
+        {/* Article Content */}
         <div className="prose prose-lg max-w-none mb-12">
-          <p className="text-muted text-lg leading-relaxed">{post.excerpt}</p>
-          <div className="bg-surface rounded-2xl border border-border p-8 my-8 text-center">
-            <p className="text-muted">📝 Full article content goes here.</p>
-            <p className="text-sm text-muted mt-2">In production, blog posts are authored via MDX files or a headless CMS like Sanity, Contentful, or even WordPress as a headless backend.</p>
-          </div>
+          {post.content ? (
+            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+          ) : (
+            <p className="text-muted text-lg leading-relaxed">{post.excerpt}</p>
+          )}
         </div>
 
         {/* Anytime CTA at end of article */}

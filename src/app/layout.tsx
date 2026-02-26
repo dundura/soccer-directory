@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { MobileMenu } from "@/components/mobile-menu";
 import { NavDropdown } from "@/components/nav-dropdown";
+import { HeaderAuth } from "@/components/header-auth";
 import AuthProvider from "@/components/session-provider";
 import "./globals.css";
 
@@ -97,15 +98,7 @@ function Header() {
 
           {/* CTA */}
           <div className="flex items-center gap-3">
-            <a href="/dashboard" className="hidden sm:inline-flex text-sm text-white/80 hover:text-white transition-colors">
-              Log In
-            </a>
-            <a
-              href="/dashboard"
-              className="hidden md:inline-flex items-center px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors"
-            >
-              Get Listed
-            </a>
+            <HeaderAuth />
             <MobileMenu />
           </div>
         </div>
