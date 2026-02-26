@@ -362,6 +362,71 @@ export async function deleteUserAccount(userId: string): Promise<void> {
   await sql`DELETE FROM users WHERE id = ${userId}`;
 }
 
+// ── Admin ─────────────────────────────────────────────────────
+export async function getAllUsers() {
+  const rows = await sql`SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC`;
+  return rows.map((r) => ({
+    id: r.id as string,
+    name: r.name as string,
+    email: r.email as string,
+    role: r.role as string,
+    createdAt: r.created_at as string,
+  }));
+}
+
+export async function updateUserRole(userId: string, role: string): Promise<void> {
+  await sql`UPDATE users SET role = ${role} WHERE id = ${userId}`;
+}
+
+export async function getAllListings() {
+  const [clubs, teams, trainers, camps, guests, tournaments, futsals, trips] = await Promise.all([
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'club' as type FROM clubs ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'team' as type FROM teams ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'trainer' as type FROM trainers ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'camp' as type FROM camps ORDER BY created_at DESC`,
+    sql`SELECT id, slug, team_name as name, status, featured, user_id, created_at, 'guest' as type FROM guest_opportunities ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'tournament' as type FROM tournaments ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'futsal' as type FROM futsal_teams ORDER BY created_at DESC`,
+    sql`SELECT id, slug, trip_name as name, status, featured, user_id, created_at, 'trip' as type FROM international_trips ORDER BY created_at DESC`,
+  ]);
+  return [...clubs, ...teams, ...trainers, ...camps, ...guests, ...tournaments, ...futsals, ...trips].map((r) => ({
+    id: r.id as string,
+    slug: r.slug as string,
+    name: r.name as string,
+    status: r.status as string,
+    featured: r.featured as boolean,
+    userId: r.user_id as string,
+    createdAt: r.created_at as string,
+    type: r.type as string,
+  }));
+}
+
+export async function updateListingStatus(type: string, id: string, status: string): Promise<void> {
+  switch (type) {
+    case "club": await sql`UPDATE clubs SET status = ${status} WHERE id = ${id}`; break;
+    case "team": await sql`UPDATE teams SET status = ${status} WHERE id = ${id}`; break;
+    case "trainer": await sql`UPDATE trainers SET status = ${status} WHERE id = ${id}`; break;
+    case "camp": await sql`UPDATE camps SET status = ${status} WHERE id = ${id}`; break;
+    case "guest": await sql`UPDATE guest_opportunities SET status = ${status} WHERE id = ${id}`; break;
+    case "tournament": await sql`UPDATE tournaments SET status = ${status} WHERE id = ${id}`; break;
+    case "futsal": await sql`UPDATE futsal_teams SET status = ${status} WHERE id = ${id}`; break;
+    case "trip": await sql`UPDATE international_trips SET status = ${status} WHERE id = ${id}`; break;
+  }
+}
+
+export async function updateListingFeatured(type: string, id: string, featured: boolean): Promise<void> {
+  switch (type) {
+    case "club": await sql`UPDATE clubs SET featured = ${featured} WHERE id = ${id}`; break;
+    case "team": await sql`UPDATE teams SET featured = ${featured} WHERE id = ${id}`; break;
+    case "trainer": await sql`UPDATE trainers SET featured = ${featured} WHERE id = ${id}`; break;
+    case "camp": await sql`UPDATE camps SET featured = ${featured} WHERE id = ${id}`; break;
+    case "guest": await sql`UPDATE guest_opportunities SET featured = ${featured} WHERE id = ${id}`; break;
+    case "tournament": await sql`UPDATE tournaments SET featured = ${featured} WHERE id = ${id}`; break;
+    case "futsal": await sql`UPDATE futsal_teams SET featured = ${featured} WHERE id = ${id}`; break;
+    case "trip": await sql`UPDATE international_trips SET featured = ${featured} WHERE id = ${id}`; break;
+  }
+}
+
 // ── Listings by User ─────────────────────────────────────────
 export async function getListingsByUserId(userId: string) {
   const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows, tripRows] = await Promise.all([
