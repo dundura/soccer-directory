@@ -16,7 +16,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
   if (!post) return {};
-  return { title: `${post.title} | Soccer Near Me Blog`, description: post.excerpt };
+  const { ogMeta } = await import("@/lib/og");
+  return ogMeta(
+    `${post.title} | Soccer Near Me Blog`,
+    post.excerpt,
+    post.coverImage,
+    `/blog/${slug}`,
+  );
 }
 
 export default async function BlogDetailPage({ params }: Props) {
