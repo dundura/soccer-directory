@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 const DEFAULT_TEAM_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg";
-const DEFAULT_HERO_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+const DEFAULT_HERO_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg";
 const DEFAULT_LOGO = "https://anytime-soccer.com/wp-content/uploads/2026/02/ast_logo_shield_only_blue.png";
 const DEFAULT_VIDEO = "https://youtu.be/JqombeGBALU";
 
@@ -88,9 +88,8 @@ export default async function TeamDetailPage({ params }: Props) {
           {/* ====== LEFT SIDEBAR ====== */}
           <aside className="flex flex-col gap-4 order-2 lg:order-1">
 
-            {/* Photo + Team ID + Roster */}
+            {/* Team ID + Roster */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={teamPhoto} alt={team.name} className="w-full h-[200px] object-cover block" />
               <div className="text-center py-3.5 px-4">
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{team.name}</h3>
                 <p className="text-sm text-muted mt-1">{team.city}, {team.state}</p>
@@ -243,6 +242,11 @@ export default async function TeamDetailPage({ params }: Props) {
                 )}
               </div>
             )}
+
+            {/* Team Photo */}
+            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+              <img src={teamPhoto} alt={team.name} className="w-full h-[250px] object-cover block" />
+            </div>
 
             {/* Photos & Video */}
             {((team.photos && team.photos.length > 0) || videoUrl) && (
