@@ -6,9 +6,12 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-const DEFAULT_TEAM_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg";
 const DEFAULT_SIDEBAR_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
-const DEFAULT_HERO_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg";
+const DEFAULT_HERO_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+const DEFAULT_PHOTOS = [
+  "http://anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg",
+  "http://anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg",
+];
 const DEFAULT_LOGO = "https://anytime-soccer.com/wp-content/uploads/2026/02/ast_logo_shield_only_blue.png";
 const DEFAULT_VIDEO = "https://youtu.be/JqombeGBALU";
 
@@ -60,8 +63,8 @@ export default async function TeamDetailPage({ params }: Props) {
   ]);
 
   const pageUrl = `https://www.soccer-near-me.com/teams/${slug}`;
-  const teamPhoto = team.teamPhoto || DEFAULT_TEAM_PHOTO;
-  const heroPhoto = team.photos?.[0] || DEFAULT_HERO_PHOTO;
+  const heroPhoto = team.teamPhoto || DEFAULT_HERO_PHOTO;
+  const teamPhotos = team.photos && team.photos.length > 0 ? team.photos : DEFAULT_PHOTOS;
   const logo = team.logo || DEFAULT_LOGO;
   // undefined/null = never set → show default; "" = user cleared → no video
   const videoUrl = team.videoUrl === undefined || team.videoUrl === null ? DEFAULT_VIDEO : team.videoUrl || null;
@@ -278,25 +281,16 @@ export default async function TeamDetailPage({ params }: Props) {
               )}
             </div>
 
-            {/* Team Photo */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={teamPhoto} alt={team.name} className="w-full h-[250px] object-cover block" />
-            </div>
-
             {/* Photos & Video */}
-            {((team.photos && team.photos.length > 0) || videoUrl) && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
-                {team.photos && team.photos.length > 0 && (
-                  <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
-                    {team.photos.map((photo, i) => (
-                      <img key={i} src={photo} alt={`Team photo ${i + 1}`} className="w-full h-[150px] object-cover rounded-xl block" />
-                    ))}
-                  </div>
-                )}
-                {videoUrl && <VideoEmbed url={videoUrl} />}
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
+              <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
+                {teamPhotos.map((photo, i) => (
+                  <img key={i} src={photo} alt={`Team photo ${i + 1}`} className="w-full h-[150px] object-cover rounded-xl block" />
+                ))}
               </div>
-            )}
+              {videoUrl && <VideoEmbed url={videoUrl} />}
+            </div>
 
             {/* Similar Teams */}
             {similarTeams.length > 0 && (
