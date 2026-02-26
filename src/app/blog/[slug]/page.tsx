@@ -40,39 +40,41 @@ export default async function BlogDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Article Content */}
-        <div className="prose prose-lg max-w-none mb-12">
-          {post.content ? (
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
-          ) : (
-            <p className="text-muted text-lg leading-relaxed">{post.excerpt}</p>
-          )}
-        </div>
+      <div className="bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Article Content */}
+          <div className="prose prose-lg max-w-none mb-12">
+            {post.content ? (
+              <div dangerouslySetInnerHTML={{ __html: post.content }} />
+            ) : (
+              <p className="text-muted text-lg leading-relaxed">{post.excerpt}</p>
+            )}
+          </div>
 
-        {/* Anytime CTA at end of article */}
-        <AnytimeInlineCTA />
+          {/* Anytime CTA at end of article */}
+          <AnytimeInlineCTA />
 
-        {/* Related Posts */}
-        <div className="mt-12 pt-12 border-t border-border">
-          <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-6">Related Articles</h2>
-          <div className="grid sm:grid-cols-2 gap-4">
-            {blogPosts
-              .filter((p) => p.id !== post.id)
-              .slice(0, 2)
-              .map((p) => (
-                <a
-                  key={p.id}
-                  href={`/blog/${p.slug}`}
-                  className="group block bg-white rounded-2xl border border-border p-5 hover:shadow-lg transition-all"
-                >
-                  <Badge variant="orange">{p.category}</Badge>
-                  <h3 className="font-[family-name:var(--font-display)] font-bold mt-2 mb-1 group-hover:text-accent-hover transition-colors">
-                    {p.title}
-                  </h3>
-                  <p className="text-muted text-sm line-clamp-2">{p.excerpt}</p>
-                </a>
-              ))}
+          {/* Related Posts */}
+          <div className="mt-12 pt-12 border-t border-border">
+            <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-6">Related Articles</h2>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {blogPosts
+                .filter((p) => p.id !== post.id)
+                .slice(0, 2)
+                .map((p) => (
+                  <a
+                    key={p.id}
+                    href={`/blog/${p.slug}`}
+                    className="group block bg-white rounded-2xl border border-border p-5 hover:shadow-lg transition-all"
+                  >
+                    <Badge variant="orange">{p.category}</Badge>
+                    <h3 className="font-[family-name:var(--font-display)] font-bold mt-2 mb-1 group-hover:text-accent-hover transition-colors">
+                      {p.title}
+                    </h3>
+                    <p className="text-muted text-sm line-clamp-2">{p.excerpt}</p>
+                  </a>
+                ))}
+            </div>
           </div>
         </div>
       </div>
