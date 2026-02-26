@@ -55,7 +55,7 @@ function Header() {
           <a href="/" className="flex items-center gap-2">
             <img src="/logo.png" alt="Anytime Soccer Training" className="h-8 w-8 rounded-full" />
             <span className="font-[family-name:var(--font-display)] font-bold text-xl tracking-tight">
-              Soccer<span className="text-accent">Near Me</span>
+              Soccer <span className="text-accent">Near Me</span>
             </span>
           </a>
 
