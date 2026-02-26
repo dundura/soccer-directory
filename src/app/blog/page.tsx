@@ -55,9 +55,6 @@ export default async function BlogPage() {
           </div>
         )}
 
-        {/* Anytime CTA */}
-        <div className="mb-12"><AnytimeInlineCTA /></div>
-
         {/* All Posts Grid */}
         {rest.length > 0 && (
           <>
@@ -90,6 +87,9 @@ export default async function BlogPage() {
             </div>
           </>
         )}
+
+        {/* Anytime CTA */}
+        <div className="mt-12"><AnytimeInlineCTA /></div>
       </div>
     </>
   );
