@@ -121,7 +121,7 @@ export default async function TeamDetailPage({ params }: Props) {
                 { label: "Age Group", value: team.ageGroup },
                 { label: "Gender", value: team.gender },
                 { label: "Level", value: team.level },
-                { label: "Season", value: team.season },
+                { label: "League", value: team.season },
                 ...(team.practiceSchedule && team.practiceSchedule.length > 0 ? [{ label: "Practice Days", value: team.practiceSchedule.join(", ") }] : []),
                 ...(team.address ? [{ label: "Address", value: team.address }] : []),
               ].map((row) => (
