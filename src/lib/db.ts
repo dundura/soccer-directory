@@ -65,6 +65,7 @@ function mapClub(r: Record<string, unknown>): Club {
     level: r.level as string, ageGroups: r.age_groups as string, gender: r.gender as string,
     teamCount: r.team_count as number, description: r.description as string,
     website: r.website as string | undefined, email: r.email as string | undefined,
+    blogUrl: r.blog_url as string | undefined,
     featured: r.featured as boolean,
     createdAt: r.created_at as string, updatedAt: r.updated_at as string,
     ...mapProfileFields(r),

@@ -24,6 +24,7 @@ export interface Club extends ProfileFields {
   description: string;
   website?: string;
   email?: string;
+  blogUrl?: string;
   featured: boolean;
   createdAt: string;
   updatedAt: string;

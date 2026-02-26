@@ -161,6 +161,14 @@ export default async function ClubDetailPage({ params }: Props) {
               </div>
             )}
 
+            {/* Blog Post */}
+            {club.blogUrl && (
+              <a href={club.blogUrl} className="block bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow group">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-accent mb-1.5">Featured Article</p>
+                <h4 className="text-sm font-bold text-primary group-hover:text-accent-hover transition-colors leading-snug">Read about {club.name} &rarr;</h4>
+              </a>
+            )}
+
             {/* Share */}
             <div className="bg-white rounded-2xl p-4 shadow-sm">
               <h4 className="text-sm font-bold mb-2.5">Share this profile!</h4>
