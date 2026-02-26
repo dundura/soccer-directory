@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 const DEFAULT_TEAM_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg";
-const DEFAULT_HERO_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg";
+const DEFAULT_HERO_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 const DEFAULT_LOGO = "https://anytime-soccer.com/wp-content/uploads/2026/02/ast_logo_shield_only_blue.png";
 const DEFAULT_VIDEO = "https://youtu.be/JqombeGBALU";
 
