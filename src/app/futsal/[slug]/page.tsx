@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 const DEFAULT_SIDEBAR_PHOTO = "https://anytime-soccer.com/wp-content/uploads/2026/02/futsal.png";
-const DEFAULT_HERO_PHOTO = "https://anytime-soccer.com/wp-content/uploads/2026/02/futsal.png";
+const DEFAULT_HERO_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/futsal-scaled.jpg";
 const DEFAULT_PHOTOS = [
   "http://anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg",
   "http://anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg",
