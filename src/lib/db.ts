@@ -346,6 +346,22 @@ export async function createUser(id: string, email: string, name: string, passwo
   await sql`INSERT INTO users (id, email, name, password_hash, role) VALUES (${id}, ${email}, ${name}, ${passwordHash}, 'user')`;
 }
 
+export async function updateUserProfile(userId: string, name: string, email: string): Promise<void> {
+  await sql`UPDATE users SET name = ${name}, email = ${email} WHERE id = ${userId}`;
+}
+
+export async function deleteUserAccount(userId: string): Promise<void> {
+  await sql`DELETE FROM teams WHERE user_id = ${userId}`;
+  await sql`DELETE FROM clubs WHERE user_id = ${userId}`;
+  await sql`DELETE FROM trainers WHERE user_id = ${userId}`;
+  await sql`DELETE FROM camps WHERE user_id = ${userId}`;
+  await sql`DELETE FROM guest_opportunities WHERE user_id = ${userId}`;
+  await sql`DELETE FROM tournaments WHERE user_id = ${userId}`;
+  await sql`DELETE FROM futsal_teams WHERE user_id = ${userId}`;
+  await sql`DELETE FROM international_trips WHERE user_id = ${userId}`;
+  await sql`DELETE FROM users WHERE id = ${userId}`;
+}
+
 // ── Listings by User ─────────────────────────────────────────
 export async function getListingsByUserId(userId: string) {
   const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows, tripRows] = await Promise.all([

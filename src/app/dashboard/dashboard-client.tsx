@@ -162,6 +162,121 @@ function AuthForm() {
   );
 }
 
+function AccountSettings() {
+  const { data: session, update } = useSession();
+  const [name, setName] = useState(session?.user?.name || "");
+  const [email, setEmail] = useState(session?.user?.email || "");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    setSaved(false);
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      await update({ name, email });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update");
+    }
+    setSaving(false);
+  }
+
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/user/profile", { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete account");
+      signOut({ callbackUrl: "/" });
+    } catch {
+      setError("Failed to delete account");
+      setDeleting(false);
+    }
+  }
+
+  return (
+    <div className="mt-12 pt-8 border-t border-border">
+      <h3 className="font-[family-name:var(--font-display)] text-xl font-bold mb-6">Account Settings</h3>
+      <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
+        <form onSubmit={handleSave} className="space-y-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium mb-1">Screen Name</label>
+            <input
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Email Address</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+            />
+          </div>
+          {error && <p className="text-[#DC373E] text-sm">{error}</p>}
+          {saved && <p className="text-green-600 text-sm">Profile updated successfully!</p>}
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-6 py-2.5 rounded-xl bg-primary text-white font-semibold hover:bg-primary-light transition-colors text-sm disabled:opacity-50"
+          >
+            {saving ? "Saving..." : "Save Changes"}
+          </button>
+        </form>
+
+        <hr className="border-border my-6" />
+
+        <div>
+          <h4 className="text-sm font-bold text-[#DC373E] mb-2">Danger Zone</h4>
+          <p className="text-muted text-sm mb-3">Permanently delete your account and all your listings. This cannot be undone.</p>
+          {!deleteConfirm ? (
+            <button
+              onClick={() => setDeleteConfirm(true)}
+              className="px-6 py-2.5 rounded-xl border-2 border-red-200 text-[#DC373E] font-semibold text-sm hover:bg-red-50 transition-colors"
+            >
+              Delete Account
+            </button>
+          ) : (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="px-6 py-2.5 rounded-xl bg-[#DC373E] text-white font-semibold text-sm hover:bg-[#C42F36] transition-colors disabled:opacity-50"
+              >
+                {deleting ? "Deleting..." : "Yes, delete my account"}
+              </button>
+              <button
+                onClick={() => setDeleteConfirm(false)}
+                className="px-6 py-2.5 rounded-xl border border-border text-sm font-medium hover:bg-surface transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DashboardContent() {
   const { data: session } = useSession();
   const [listings, setListings] = useState<Listing[]>([]);
@@ -348,6 +463,8 @@ function DashboardContent() {
           ))}
         </div>
       )}
+
+      <AccountSettings />
     </div>
   );
 }
