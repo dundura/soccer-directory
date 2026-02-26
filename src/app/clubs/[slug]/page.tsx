@@ -89,7 +89,7 @@ export default async function ClubDetailPage({ params }: Props) {
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5 lg:gap-6 items-start">
 
           {/* ====== LEFT SIDEBAR (first in source for desktop, order-4 on mobile) ====== */}
-          <aside className="order-4 lg:order-none flex flex-col gap-4">
+          <aside className="order-4 lg:order-none lg:[grid-row:span_10] flex flex-col gap-4">
 
             {/* Photo + Club ID + Contact */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
