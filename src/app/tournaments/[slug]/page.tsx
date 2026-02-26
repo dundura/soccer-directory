@@ -27,10 +27,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const tournament = await getTournamentBySlug(slug);
   if (!tournament) return {};
-  return {
-    title: `${tournament.name} | Soccer Tournament in ${tournament.city}, ${tournament.state}`,
-    description: tournament.description,
-  };
+  const { ogMeta } = await import("@/lib/og");
+  return ogMeta(
+    `${tournament.name} | Soccer Tournament in ${tournament.city}, ${tournament.state}`,
+    tournament.description || `Soccer tournament in ${tournament.city}, ${tournament.state}`,
+    tournament.imageUrl || tournament.teamPhoto || tournament.logo,
+    `/tournaments/${slug}`,
+  );
 }
 
 export default async function TournamentDetailPage({ params }: Props) {

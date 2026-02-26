@@ -26,10 +26,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const player = await getPlayerProfileBySlug(slug);
   if (!player) return {};
-  return {
-    title: `${player.playerName} — ${player.position} | Player Profile`,
-    description: player.description || `${player.position} from ${player.city}, ${player.state}. Birth year: ${player.birthYear}. ${player.lookingFor || ""}`,
-  };
+  const { ogMeta } = await import("@/lib/og");
+  return ogMeta(
+    `${player.playerName} — ${player.position} | Player Profile`,
+    player.description || `${player.position} from ${player.city}, ${player.state}. Birth year: ${player.birthYear}. ${player.lookingFor || ""}`,
+    player.teamPhoto || player.imageUrl,
+    `/guest-play/players/${slug}`,
+  );
 }
 
 export default async function PlayerDetailPage({ params }: Props) {

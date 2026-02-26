@@ -30,10 +30,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const club = await getClubBySlug(slug);
   if (!club) return {};
-  return {
-    title: `${club.name} | Youth Soccer Club in ${club.city}, ${club.state}`,
-    description: club.description,
-  };
+  const { ogMeta } = await import("@/lib/og");
+  return ogMeta(
+    `${club.name} | Youth Soccer Club in ${club.city}, ${club.state}`,
+    club.description || `Youth soccer club in ${club.city}, ${club.state}`,
+    club.imageUrl || club.teamPhoto || club.logo,
+    `/clubs/${slug}`,
+  );
 }
 
 export default async function ClubDetailPage({ params }: Props) {

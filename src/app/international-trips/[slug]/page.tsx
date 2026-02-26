@@ -19,10 +19,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const trip = await getTripBySlug(slug);
   if (!trip) return {};
-  return {
-    title: `${trip.tripName} — International Soccer Trip | ${trip.destination}`,
-    description: trip.description || `${trip.level} international soccer trip for ${trip.ageGroup} ${trip.gender} to ${trip.destination}`,
-  };
+  const { ogMeta } = await import("@/lib/og");
+  return ogMeta(
+    `${trip.tripName} — International Soccer Trip | ${trip.destination}`,
+    trip.description || `${trip.level} international soccer trip for ${trip.ageGroup} ${trip.gender} to ${trip.destination}`,
+    trip.imageUrl || trip.teamPhoto || trip.logo,
+    `/international-trips/${slug}`,
+  );
 }
 
 export default async function TripDetailPage({ params }: Props) {

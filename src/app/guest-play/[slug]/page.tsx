@@ -19,10 +19,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const opp = await getGuestBySlug(slug);
   if (!opp) return {};
-  return {
-    title: `${opp.teamName} — Guest Player Opportunity | ${opp.tournament}`,
-    description: opp.description || `${opp.level} guest player opportunity for ${opp.ageGroup} ${opp.gender} at ${opp.tournament} in ${opp.city}, ${opp.state}`,
-  };
+  const { ogMeta } = await import("@/lib/og");
+  return ogMeta(
+    `${opp.teamName} — Guest Player Opportunity | ${opp.tournament}`,
+    opp.description || `${opp.level} guest player opportunity for ${opp.ageGroup} ${opp.gender} at ${opp.tournament} in ${opp.city}, ${opp.state}`,
+    opp.imageUrl || opp.teamPhoto || opp.logo,
+    `/guest-play/${slug}`,
+  );
 }
 
 export default async function GuestDetailPage({ params }: Props) {

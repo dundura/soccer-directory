@@ -29,10 +29,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const team = await getFutsalTeamBySlug(slug);
   if (!team) return {};
-  return {
-    title: `${team.name} | Futsal Team in ${team.city}, ${team.state}`,
-    description: team.description || `${team.level} futsal team for ${team.ageGroup} ${team.gender} in ${team.city}, ${team.state}`,
-  };
+  const { ogMeta } = await import("@/lib/og");
+  return ogMeta(
+    `${team.name} | Futsal Team in ${team.city}, ${team.state}`,
+    team.description || `${team.level} futsal team for ${team.ageGroup} ${team.gender} in ${team.city}, ${team.state}`,
+    team.imageUrl || team.teamPhoto || team.logo,
+    `/futsal/${slug}`,
+  );
 }
 
 export default async function FutsalDetailPage({ params }: Props) {

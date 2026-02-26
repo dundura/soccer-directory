@@ -29,10 +29,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const trainer = await getTrainerBySlug(slug);
   if (!trainer) return {};
-  return {
-    title: `${trainer.name} | Private Soccer Trainer in ${trainer.city}, ${trainer.state}`,
-    description: trainer.description || `${trainer.specialty} trainer in ${trainer.serviceArea}`,
-  };
+  const { ogMeta } = await import("@/lib/og");
+  return ogMeta(
+    `${trainer.name} | Private Soccer Trainer in ${trainer.city}, ${trainer.state}`,
+    trainer.description || `${trainer.specialty} trainer in ${trainer.serviceArea}`,
+    trainer.imageUrl || trainer.teamPhoto || trainer.logo,
+    `/trainers/${slug}`,
+  );
 }
 
 export default async function TrainerDetailPage({ params }: Props) {

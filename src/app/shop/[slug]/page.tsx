@@ -13,10 +13,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const item = await getMarketplaceItemBySlug(slug);
   if (!item) return {};
-  return {
-    title: `${item.name} — ${item.category} | Soccer Near Me`,
-    description: item.description?.slice(0, 160) || `${item.category} for sale — ${item.price} in ${item.city}, ${item.state}`,
-  };
+  const { ogMeta } = await import("@/lib/og");
+  return ogMeta(
+    `${item.name} — ${item.category} | Soccer Near Me`,
+    item.description?.slice(0, 160) || `${item.category} for sale — ${item.price} in ${item.city}, ${item.state}`,
+    item.imageUrl,
+    `/shop/${slug}`,
+  );
 }
 
 const DEFAULT_IMAGE = "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";

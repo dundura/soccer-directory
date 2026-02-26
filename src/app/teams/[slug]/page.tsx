@@ -47,10 +47,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const team = await getTeamBySlug(slug);
   if (!team) return {};
-  return {
-    title: `${team.name} | Youth Soccer Team in ${team.city}, ${team.state}`,
-    description: team.description || `${team.level} team for ${team.ageGroup} ${team.gender} in ${team.city}, ${team.state}`,
-  };
+  const { ogMeta } = await import("@/lib/og");
+  return ogMeta(
+    `${team.name} | Youth Soccer Team in ${team.city}, ${team.state}`,
+    team.description || `${team.level} team for ${team.ageGroup} ${team.gender} in ${team.city}, ${team.state}`,
+    team.imageUrl || team.teamPhoto || team.logo,
+    `/teams/${slug}`,
+  );
 }
 
 export default async function TeamDetailPage({ params }: Props) {
