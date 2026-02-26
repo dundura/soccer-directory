@@ -67,6 +67,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   guest: "We're looking for guest players to join our team for an upcoming tournament. This is a great opportunity to compete at a high level and showcase your skills.",
   tournament: "Join teams from across the region for this exciting tournament. Competitive divisions, professional fields, and great competition for all age groups.",
   futsal: "Our futsal team competes in a fast-paced indoor environment that develops quick thinking, close control, and sharp passing. All skill levels welcome.",
+  trip: "Join us for an unforgettable international soccer experience! Players will train with local coaches, compete against international teams, and immerse themselves in a new soccer culture.",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -274,6 +275,33 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
+  trip: [
+    { name: "tripName", label: "Trip Name", required: true },
+    { name: "organizer", label: "Organizer / Company", required: true },
+    { name: "destination", label: "Destination (e.g. Barcelona, Spain)", required: true },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State (if US-based organizer)" },
+    { name: "dates", label: "Travel Dates", required: true },
+    { name: "ageGroup", label: "Age Group", required: true, type: "age-select" },
+    { name: "gender", label: "Gender", required: true, options: ["Boys", "Girls", "Coed"] },
+    { name: "level", label: "Level", required: true, options: ["Recreational", "Competitive", "Elite", "All Levels"] },
+    { name: "price", label: "Price (e.g. $3,500/player)" },
+    { name: "spotsAvailable", label: "Spots Available" },
+    { name: "contactEmail", label: "Contact Email", required: true, type: "email" },
+    { name: "description", label: "Description", type: "textarea" },
+    { name: "phone", label: "Phone" },
+    { name: "_socials", label: "Social Media", type: "heading" },
+    { name: "facebook", label: "Facebook URL" },
+    { name: "instagram", label: "Instagram URL" },
+    { name: "youtube", label: "YouTube URL" },
+    { name: "_profile", label: "Profile & Media", type: "heading" },
+    { name: "teamPhoto", label: "Trip Photo URL" },
+    { name: "logo", label: "Logo URL" },
+    { name: "imageUrl", label: "Feature Image", type: "image" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+  ],
 };
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -284,6 +312,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   guest: "Guest Play Opportunity",
   tournament: "Tournament",
   futsal: "Futsal Team",
+  trip: "International Trip",
 };
 
 // ── Shared styles ──────────────────────────────────────────────

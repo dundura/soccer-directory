@@ -182,7 +182,29 @@ export interface FutsalTeam extends ProfileFields {
   updatedAt: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal";
+export interface InternationalTrip extends ProfileFields {
+  id: string;
+  slug: string;
+  tripName: string;
+  organizer: string;
+  destination: string;
+  city: string;
+  state: string;
+  country?: string;
+  dates: string;
+  ageGroup: string;
+  gender: string;
+  level: string;
+  price?: string;
+  spotsAvailable?: string;
+  contactEmail: string;
+  description?: string;
+  featured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";

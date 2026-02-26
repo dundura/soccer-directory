@@ -67,7 +67,6 @@ function Header() {
               { label: "Futsal", href: "/futsal" },
               { label: "Trainers", href: "/trainers" },
               { label: "Camps", href: "/camps" },
-              { label: "Guest Play", href: "/guest-play" },
             ].map((link) => (
               <a
                 key={link.href}
@@ -77,6 +76,13 @@ function Header() {
                 {link.label}
               </a>
             ))}
+            <NavDropdown
+              label="Opportunities"
+              items={[
+                { label: "Guest Play", href: "/guest-play" },
+                { label: "International Trips", href: "/international-trips" },
+              ]}
+            />
             <NavDropdown
               label="Tournaments"
               items={[
@@ -123,6 +129,7 @@ function Footer() {
               <a href="/trainers" className="hover:text-white transition-colors">Find Trainers</a>
               <a href="/camps" className="hover:text-white transition-colors">Find Camps</a>
               <a href="/guest-play" className="hover:text-white transition-colors">Guest Player Ops</a>
+              <a href="/international-trips" className="hover:text-white transition-colors">International Trips</a>
               <a href="/tournaments" className="hover:text-white transition-colors">Find Tournaments</a>
             </div>
           </div>

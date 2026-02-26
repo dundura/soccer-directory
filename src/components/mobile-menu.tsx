@@ -9,6 +9,7 @@ const navLinks = [
   { label: "Trainers", href: "/trainers" },
   { label: "Camps", href: "/camps" },
   { label: "Guest Play", href: "/guest-play" },
+  { label: "International Trips", href: "/international-trips" },
   { label: "US Tournaments", href: "/tournaments?region=US" },
   { label: "Int'l Tournaments", href: "/tournaments?region=International" },
   { label: "Forum", href: "/forum" },
