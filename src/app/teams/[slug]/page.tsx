@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 const DEFAULT_TEAM_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg";
 const DEFAULT_HERO_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg";
 const DEFAULT_LOGO = "https://anytime-soccer.com/wp-content/uploads/2026/02/ast_logo_shield_only_blue.png";
+const DEFAULT_VIDEO = "https://youtu.be/JqombeGBALU";
 
 const ALL_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -61,6 +62,8 @@ export default async function TeamDetailPage({ params }: Props) {
   const teamPhoto = team.teamPhoto || DEFAULT_TEAM_PHOTO;
   const heroPhoto = team.photos?.[0] || DEFAULT_HERO_PHOTO;
   const logo = team.logo || DEFAULT_LOGO;
+  // undefined/null = never set → show default; "" = user cleared → no video
+  const videoUrl = team.videoUrl === undefined || team.videoUrl === null ? DEFAULT_VIDEO : team.videoUrl || null;
   const practiceSet = new Set(
     (team.practiceSchedule || []).map((d) => d.trim().slice(0, 3).toLowerCase())
   );
@@ -248,17 +251,17 @@ export default async function TeamDetailPage({ params }: Props) {
             )}
 
             {/* Photos & Video */}
-            {((team.photos && team.photos.length > 0) || team.videoUrl) && (
+            {((team.photos && team.photos.length > 0) || videoUrl) && (
               <div className="bg-white rounded-2xl p-6 shadow-sm">
                 <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
                 {team.photos && team.photos.length > 0 && (
-                  <div className={`grid grid-cols-2 gap-2.5 ${team.videoUrl ? "mb-4" : ""}`}>
+                  <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
                     {team.photos.map((photo, i) => (
                       <img key={i} src={photo} alt={`Team photo ${i + 1}`} className="w-full h-[150px] object-cover rounded-xl block" />
                     ))}
                   </div>
                 )}
-                {team.videoUrl && <VideoEmbed url={team.videoUrl} />}
+                {videoUrl && <VideoEmbed url={videoUrl} />}
               </div>
             )}
 

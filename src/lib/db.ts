@@ -332,7 +332,7 @@ function profileFields(data: Record<string, string>) {
   return {
     teamPhoto: data.teamPhoto || null,
     photos: data.photos || null,
-    videoUrl: data.videoUrl || null,
+    videoUrl: data.videoUrl !== undefined ? (data.videoUrl || "") : null,
     practiceSchedule: data.practiceSchedule || null,
     address: data.address || null,
   };
