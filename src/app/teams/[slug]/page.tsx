@@ -224,31 +224,29 @@ export default async function TeamDetailPage({ params }: Props) {
             </div>
 
             {/* Practice Schedule */}
-            {team.practiceSchedule && team.practiceSchedule.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 className="text-[15px] font-bold text-primary mb-3.5">Practice Schedule</h3>
-                <div className="flex gap-2 flex-wrap">
-                  {ALL_DAYS.map((day) => (
-                    <span
-                      key={day}
-                      className={`px-3.5 py-[7px] rounded-full text-sm font-semibold ${
-                        practiceSet.has(day.toLowerCase())
-                          ? "bg-primary text-white"
-                          : "bg-surface text-gray-400"
-                      }`}
-                    >
-                      {day}
-                    </span>
-                  ))}
-                </div>
-                {team.address && (
-                  <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
-                    <span className="text-base">&#128205;</span>
-                    <span>{team.address}</span>
-                  </div>
-                )}
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="text-[15px] font-bold text-primary mb-3.5">Practice Schedule</h3>
+              <div className="flex gap-2 flex-wrap">
+                {ALL_DAYS.map((day) => (
+                  <span
+                    key={day}
+                    className={`px-3.5 py-[7px] rounded-full text-sm font-semibold ${
+                      practiceSet.has(day.toLowerCase())
+                        ? "bg-primary text-white"
+                        : "bg-surface text-gray-400"
+                    }`}
+                  >
+                    {day}
+                  </span>
+                ))}
               </div>
-            )}
+              {team.address && (
+                <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
+                  <span className="text-base">&#128205;</span>
+                  <span>{team.address}</span>
+                </div>
+              )}
+            </div>
 
             {/* Upcoming Events */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
