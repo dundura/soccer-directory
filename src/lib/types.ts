@@ -201,7 +201,7 @@ export interface Review {
 }
 
 // ── Forum ───────────────────────────────────────────────────
-export type ForumCategory = "Recruiting" | "Tryouts" | "League Talk" | "Training" | "General";
+export type ForumCategory = "Questions" | "Club Feedback" | "League Feedback" | "Training" | "College Recruiting" | "Recommendation" | "General";
 
 export interface ForumTopic {
   id: string;

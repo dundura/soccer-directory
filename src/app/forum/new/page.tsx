@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";
 
-const CATEGORIES = ["Recruiting", "Tryouts", "League Talk", "Training", "General"];
+const CATEGORIES = ["Questions", "Club Feedback", "League Feedback", "Training", "College Recruiting", "Recommendation", "General"];
 
 export default function NewTopicPage() {
   const { status } = useSession();

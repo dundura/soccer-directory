@@ -18,10 +18,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Recruiting: "bg-blue-100 text-blue-700",
-  Tryouts: "bg-red-100 text-red-700",
-  "League Talk": "bg-purple-100 text-purple-700",
+  Questions: "bg-blue-100 text-blue-700",
+  "Club Feedback": "bg-orange-100 text-orange-700",
+  "League Feedback": "bg-purple-100 text-purple-700",
   Training: "bg-green-100 text-green-700",
+  "College Recruiting": "bg-red-100 text-red-700",
+  Recommendation: "bg-teal-100 text-teal-700",
   General: "bg-gray-100 text-gray-600",
 };
 
