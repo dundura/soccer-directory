@@ -242,6 +242,8 @@ export interface PlayerProfile extends ProfileFields {
   description?: string;
   lookingFor?: string;
   contactEmail: string;
+  videoUrl2?: string;
+  videoUrl3?: string;
   featured: boolean;
   createdAt: string;
   updatedAt?: string;

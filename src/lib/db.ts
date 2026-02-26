@@ -238,6 +238,8 @@ function mapPlayerProfile(r: Record<string, unknown>): PlayerProfile {
     description: r.description as string | undefined,
     lookingFor: r.looking_for as string | undefined,
     contactEmail: r.contact_email as string,
+    videoUrl2: r.video_url_2 as string | undefined,
+    videoUrl3: r.video_url_3 as string | undefined,
     featured: r.featured as boolean,
     createdAt: r.created_at as string,
     ...mapProfileFields(r),
@@ -626,7 +628,7 @@ export async function createPlayerProfile(data: Record<string, string>, userId: 
   const slug = slugify(data.playerName + "-" + data.birthYear);
   const sm = buildSocialMedia(data);
   const pf = profileFields(data);
-  await sql`INSERT INTO player_profiles (id, slug, player_name, position, secondary_position, birth_year, height, preferred_foot, current_club, city, country, state, level, gender, gpa, description, looking_for, contact_email, phone, social_media, logo, image_url, team_photo, photos, video_url, featured, user_id, status) VALUES (${id}, ${slug}, ${data.playerName}, ${data.position}, ${data.secondaryPosition || null}, ${data.birthYear}, ${data.height || null}, ${data.preferredFoot || null}, ${data.currentClub || null}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.gender}, ${data.gpa || null}, ${data.description || null}, ${data.lookingFor || null}, ${data.contactEmail}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, ${pf.teamPhoto}, ${pf.photos}, ${pf.videoUrl}, false, ${userId}, 'pending')`;
+  await sql`INSERT INTO player_profiles (id, slug, player_name, position, secondary_position, birth_year, height, preferred_foot, current_club, city, country, state, level, gender, gpa, description, looking_for, contact_email, phone, social_media, logo, image_url, team_photo, photos, video_url, video_url_2, video_url_3, featured, user_id, status) VALUES (${id}, ${slug}, ${data.playerName}, ${data.position}, ${data.secondaryPosition || null}, ${data.birthYear}, ${data.height || null}, ${data.preferredFoot || null}, ${data.currentClub || null}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.gender}, ${data.gpa || null}, ${data.description || null}, ${data.lookingFor || null}, ${data.contactEmail}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, ${pf.teamPhoto}, ${pf.photos}, ${pf.videoUrl}, ${data.videoUrl2 || null}, ${data.videoUrl3 || null}, false, ${userId}, 'pending')`;
   return slug;
 }
 
@@ -765,7 +767,7 @@ function mapMarketplaceToForm(r: Record<string, unknown>): Record<string, string
 }
 function mapPlayerToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
-  return { playerName: s(r.player_name), position: s(r.position), secondaryPosition: s(r.secondary_position), birthYear: s(r.birth_year), height: s(r.height), preferredFoot: s(r.preferred_foot), currentClub: s(r.current_club), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), gender: s(r.gender), gpa: s(r.gpa), description: s(r.description), lookingFor: s(r.looking_for), contactEmail: s(r.contact_email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
+  return { playerName: s(r.player_name), position: s(r.position), secondaryPosition: s(r.secondary_position), birthYear: s(r.birth_year), height: s(r.height), preferredFoot: s(r.preferred_foot), currentClub: s(r.current_club), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), gender: s(r.gender), gpa: s(r.gpa), description: s(r.description), lookingFor: s(r.looking_for), contactEmail: s(r.contact_email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), videoUrl2: s(r.video_url_2), videoUrl3: s(r.video_url_3), ...profileFormFields(r) };
 }
 
 // ── Update Listing ──────────────────────────────────────────
@@ -808,7 +810,7 @@ export async function updateListing(type: string, id: string, data: Record<strin
       rows = await sql`UPDATE marketplace SET name=${data.name}, category=${data.category}, description=${data.description}, price=${data.price}, condition=${data.condition}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, contact_email=${data.contactEmail}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, photos=${data.photos || null} WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "player":
-      rows = await sql`UPDATE player_profiles SET player_name=${data.playerName}, position=${data.position}, secondary_position=${data.secondaryPosition || null}, birth_year=${data.birthYear}, height=${data.height || null}, preferred_foot=${data.preferredFoot || null}, current_club=${data.currentClub || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, gender=${data.gender}, gpa=${data.gpa || null}, description=${data.description || null}, looking_for=${data.lookingFor || null}, contact_email=${data.contactEmail}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl} WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      rows = await sql`UPDATE player_profiles SET player_name=${data.playerName}, position=${data.position}, secondary_position=${data.secondaryPosition || null}, birth_year=${data.birthYear}, height=${data.height || null}, preferred_foot=${data.preferredFoot || null}, current_club=${data.currentClub || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, gender=${data.gender}, gpa=${data.gpa || null}, description=${data.description || null}, looking_for=${data.lookingFor || null}, contact_email=${data.contactEmail}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, video_url_2=${data.videoUrl2 || null}, video_url_3=${data.videoUrl3 || null} WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     default:
       return false;
@@ -851,7 +853,7 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
       rows = await sql`UPDATE marketplace SET name=${data.name}, category=${data.category}, description=${data.description}, price=${data.price}, condition=${data.condition}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, contact_email=${data.contactEmail}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, photos=${data.photos || null} WHERE id=${id} RETURNING id`;
       break;
     case "player":
-      rows = await sql`UPDATE player_profiles SET player_name=${data.playerName}, position=${data.position}, secondary_position=${data.secondaryPosition || null}, birth_year=${data.birthYear}, height=${data.height || null}, preferred_foot=${data.preferredFoot || null}, current_club=${data.currentClub || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, gender=${data.gender}, gpa=${data.gpa || null}, description=${data.description || null}, looking_for=${data.lookingFor || null}, contact_email=${data.contactEmail}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl} WHERE id=${id} RETURNING id`;
+      rows = await sql`UPDATE player_profiles SET player_name=${data.playerName}, position=${data.position}, secondary_position=${data.secondaryPosition || null}, birth_year=${data.birthYear}, height=${data.height || null}, preferred_foot=${data.preferredFoot || null}, current_club=${data.currentClub || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, gender=${data.gender}, gpa=${data.gpa || null}, description=${data.description || null}, looking_for=${data.lookingFor || null}, contact_email=${data.contactEmail}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, video_url_2=${data.videoUrl2 || null}, video_url_3=${data.videoUrl3 || null} WHERE id=${id} RETURNING id`;
       break;
     default:
       return false;

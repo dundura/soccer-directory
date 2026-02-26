@@ -171,10 +171,14 @@ export default async function PlayerDetailPage({ params }: Props) {
               </div>
             </section>
 
-            {player.videoUrl && (
+            {(player.videoUrl || player.videoUrl2 || player.videoUrl3) && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Highlights</h2>
-                <VideoEmbed url={player.videoUrl} />
+                <div className="space-y-6">
+                  {player.videoUrl && <VideoEmbed url={player.videoUrl} />}
+                  {player.videoUrl2 && <VideoEmbed url={player.videoUrl2} />}
+                  {player.videoUrl3 && <VideoEmbed url={player.videoUrl3} />}
+                </div>
               </section>
             )}
 

@@ -404,7 +404,9 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "logo", label: "Club Logo URL" },
     { name: "imageUrl", label: "Hero Banner Image", type: "image" },
     { name: "photos", label: "Action Photos (up to 5 URLs)", type: "photos" },
-    { name: "videoUrl", label: "Highlight Video URL (YouTube/Vimeo)" },
+    { name: "videoUrl", label: "Highlight Video 1 (YouTube/Vimeo)" },
+    { name: "videoUrl2", label: "Highlight Video 2 (YouTube/Vimeo)" },
+    { name: "videoUrl3", label: "Highlight Video 3 (YouTube/Vimeo)" },
   ],
 };
 
@@ -466,17 +468,19 @@ interface ListingFormProps {
   onSuccess: () => void;
   onCancel: () => void;
   mode?: "create" | "edit";
+  defaultType?: ListingType;
   editType?: ListingType;
   editId?: string;
   initialData?: Record<string, string>;
   isAdmin?: boolean;
 }
 
-export function ListingForm({ onSuccess, onCancel, mode = "create", editType, editId, initialData, isAdmin }: ListingFormProps) {
+export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType, editType, editId, initialData, isAdmin }: ListingFormProps) {
   const isEdit = mode === "edit";
-  const [type, setType] = useState<ListingType>(editType || "club");
+  const startType = editType || defaultType || "club";
+  const [type, setType] = useState<ListingType>(startType);
   const [formData, setFormData] = useState<Record<string, string>>(
-    initialData || { description: DEFAULT_DESCRIPTIONS["club"], imageUrl: DEFAULT_HERO_IMAGE, teamPhoto: DEFAULT_SIDEBAR_IMAGE, country: "United States" }
+    initialData || { description: DEFAULT_DESCRIPTIONS[startType], imageUrl: DEFAULT_HERO_IMAGE, teamPhoto: DEFAULT_SIDEBAR_IMAGE, country: "United States" }
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");

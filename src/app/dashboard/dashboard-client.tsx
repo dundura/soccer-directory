@@ -292,6 +292,7 @@ function DashboardContent() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [formDefaultType, setFormDefaultType] = useState<ListingType | undefined>(undefined);
   const [deleting, setDeleting] = useState<string | null>(null);
 
   // Edit state
@@ -370,10 +371,13 @@ function DashboardContent() {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
-          <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-6">Create New Listing</h2>
+          <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-6">
+            {formDefaultType === "player" ? "Create Guest Player Profile" : "Create New Listing"}
+          </h2>
           <ListingForm
-            onSuccess={() => { setShowForm(false); fetchListings(); }}
-            onCancel={() => setShowForm(false)}
+            defaultType={formDefaultType}
+            onSuccess={() => { setShowForm(false); setFormDefaultType(undefined); fetchListings(); }}
+            onCancel={() => { setShowForm(false); setFormDefaultType(undefined); }}
           />
         </div>
       </div>
@@ -390,12 +394,18 @@ function DashboardContent() {
           </h2>
           <p className="text-muted mt-1">Manage your listings below</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <button
-            onClick={() => setShowForm(true)}
+            onClick={() => { setFormDefaultType(undefined); setShowForm(true); }}
             className="px-6 py-2.5 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors text-sm"
           >
             + New Listing
+          </button>
+          <button
+            onClick={() => { setFormDefaultType("player"); setShowForm(true); }}
+            className="px-6 py-2.5 rounded-xl bg-primary text-white font-semibold hover:bg-primary-light transition-colors text-sm"
+          >
+            + Guest Player Profile
           </button>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
@@ -416,12 +426,20 @@ function DashboardContent() {
           <div className="text-5xl mb-4">📋</div>
           <h3 className="font-[family-name:var(--font-display)] text-xl font-bold mb-2">No listings yet</h3>
           <p className="text-muted mb-6">Create your first listing to get discovered by soccer families in your area.</p>
-          <button
-            onClick={() => setShowForm(true)}
-            className="px-8 py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors"
-          >
-            Create Your First Listing
-          </button>
+          <div className="flex gap-3 justify-center flex-wrap">
+            <button
+              onClick={() => { setFormDefaultType(undefined); setShowForm(true); }}
+              className="px-8 py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors"
+            >
+              Create Your First Listing
+            </button>
+            <button
+              onClick={() => { setFormDefaultType("player"); setShowForm(true); }}
+              className="px-8 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-light transition-colors"
+            >
+              + Guest Player Profile
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
