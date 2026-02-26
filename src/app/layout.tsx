@@ -77,7 +77,7 @@ function Header() {
               </a>
             ))}
             <NavDropdown
-              label="Opportunities"
+              label="Guest Opportunities"
               items={[
                 { label: "Guest Play", href: "/guest-play" },
                 { label: "International Trips", href: "/international-trips" },
