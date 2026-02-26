@@ -11,7 +11,7 @@ type Listing = { id: string; slug: string; name: string; status: string; feature
 const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
   guest: "Guest Play", tournament: "Tournament", futsal: "Futsal", trip: "Trip",
-  marketplace: "Shop", equipment: "Equipment", books: "Books", showcase: "College Showcase",
+  marketplace: "Equipment", equipment: "Equipment", books: "Equipment", showcase: "College Showcase",
   player: "Player Profile",
 };
 

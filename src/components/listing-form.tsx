@@ -69,9 +69,9 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   tournament: "Join teams from across the region for this exciting tournament. Competitive divisions, professional fields, and great competition for all age groups.",
   futsal: "Our futsal team competes in a fast-paced indoor environment that develops quick thinking, close control, and sharp passing. All skill levels welcome.",
   trip: "Join us for an unforgettable international soccer experience! Players will train with local coaches, compete against international teams, and immerse themselves in a new soccer culture.",
-  marketplace: "Quality soccer equipment / books available for purchase. Great condition and ready for the next player!",
+  marketplace: "Quality soccer equipment available for purchase. Great condition and ready for the next player!",
   equipment: "Quality soccer equipment available for purchase. Great condition and ready for the next player!",
-  books: "Soccer book available for purchase. A great resource for players, parents, and coaches!",
+  books: "Quality soccer equipment available for purchase. Great condition and ready for the next player!",
   showcase: "Join us for a competitive college showcase event! Get exposure in front of college coaches and recruiters.",
   player: "A dedicated soccer player looking for new opportunities to compete and grow. Open to guest play, tryouts, and showcase events.",
 };
@@ -310,7 +310,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
   ],
   marketplace: [
     { name: "name", label: "Item Name", required: true },
-    { name: "category", label: "Category", required: true, options: ["Equipment", "Books"] },
+    { name: "category", label: "Category", required: true, options: ["Equipment"] },
     { name: "description", label: "Description", required: true, type: "textarea" },
     { name: "price", label: "Price (e.g. $25)", required: true },
     { name: "condition", label: "Condition", required: true, options: ["New", "Like New", "Used"] },
@@ -338,9 +338,9 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
   ],
   books: [
-    { name: "name", label: "Book Title", required: true },
+    { name: "name", label: "Item Name", required: true },
     { name: "description", label: "Description", required: true, type: "textarea" },
-    { name: "price", label: "Price (e.g. $15)", required: true },
+    { name: "price", label: "Price (e.g. $25)", required: true },
     { name: "condition", label: "Condition", required: true, options: ["New", "Like New", "Used"] },
     { name: "city", label: "City", required: true },
     { name: "country", label: "Country", required: true, type: "country" },
@@ -421,8 +421,8 @@ const TYPE_LABELS: Record<ListingType, string> = {
   futsal: "Futsal Team",
   trip: "International Trip",
   equipment: "Equipment",
-  books: "Books",
-  marketplace: "Shop Item",
+  books: "Equipment",
+  marketplace: "Equipment",
   player: "Player Profile",
 };
 
@@ -528,7 +528,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
         <div>
           <label className="block text-sm font-medium mb-2">Listing Type</label>
           <div className="grid grid-cols-3 gap-2">
-            {(Object.keys(TYPE_LABELS) as ListingType[]).filter((t) => t !== "marketplace").map((t) => (
+            {(Object.keys(TYPE_LABELS) as ListingType[]).filter((t) => t !== "marketplace" && t !== "books").map((t) => (
               <button
                 key={t}
                 type="button"

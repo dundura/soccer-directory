@@ -70,10 +70,10 @@ export function ShopFilters({ items }: { items: MarketplaceItem[] }) {
       <div className="bg-primary text-white py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-3">
-            Soccer Equipment
+            Recommendations
           </h1>
           <p className="text-white/70 max-w-2xl text-lg">
-            Recommended gear, plus equipment and books from the community.
+            Recommended gear and equipment from the soccer community.
           </p>
         </div>
       </div>
@@ -134,7 +134,7 @@ export function ShopFilters({ items }: { items: MarketplaceItem[] }) {
         <div className="bg-surface">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <h2 className="font-[family-name:var(--font-display)] text-xl md:text-2xl font-bold mb-2">Community Marketplace</h2>
-            <p className="text-muted mb-6">Equipment and books listed by the soccer community.</p>
+            <p className="text-muted mb-6">Equipment listed by the soccer community.</p>
 
             {/* Search + Filters */}
             <div className="bg-white rounded-2xl shadow-lg p-2 flex flex-col sm:flex-row gap-2 mb-6">

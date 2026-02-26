@@ -42,10 +42,9 @@ const navGroups = [
     ],
   },
   {
-    label: "Shop",
+    label: "Recommendations",
     links: [
       { label: "Equipment", href: "/shop" },
-      { label: "Books", href: "/shop?category=Books" },
     ],
   },
   {

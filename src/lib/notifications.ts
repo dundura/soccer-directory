@@ -13,9 +13,9 @@ const TYPE_LABELS: Record<string, string> = {
   tournament: "Tournament",
   futsal: "Futsal Team",
   trip: "International Trip",
-  marketplace: "Shop Item",
+  marketplace: "Equipment",
   equipment: "Equipment",
-  books: "Books",
+  books: "Equipment",
   showcase: "College Showcase",
   player: "Player Profile",
 };

@@ -28,9 +28,9 @@ const TYPE_LABELS: Record<string, string> = {
   guest: "Guest Play",
   tournament: "Tournament",
   futsal: "Futsal",
-  marketplace: "Shop Item",
+  marketplace: "Equipment",
   equipment: "Equipment",
-  books: "Books",
+  books: "Equipment",
   showcase: "College Showcase",
   player: "Player Profile",
 };
