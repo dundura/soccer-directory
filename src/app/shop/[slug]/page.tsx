@@ -43,7 +43,7 @@ export default async function ShopDetailPage({ params }: Props) {
               <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{item.name}</h1>
               <p className="text-white/60 text-lg">{item.city}, {item.state}</p>
             </div>
-            <ManageListingButton ownerId={ownerId} />
+            <ManageListingButton ownerId={ownerId} listingType="marketplace" listingId={item.id} />
           </div>
         </div>
       </div>

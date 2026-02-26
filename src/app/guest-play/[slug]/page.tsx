@@ -47,7 +47,7 @@ export default async function GuestDetailPage({ params }: Props) {
               <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{opp.teamName}</h1>
               <p className="text-white/60 text-lg">{opp.tournament} &middot; {opp.city}, {opp.state}</p>
             </div>
-            <ManageListingButton ownerId={ownerId} />
+            <ManageListingButton ownerId={ownerId} listingType="guest" listingId={opp.id} />
           </div>
         </div>
       </div>

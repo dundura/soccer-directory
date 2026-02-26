@@ -84,7 +84,7 @@ export default async function TeamDetailPage({ params }: Props) {
           {" \u203A "}
           <span>{team.name}</span>
         </div>
-        <ManageListingButton ownerId={ownerId} />
+        <ManageListingButton ownerId={ownerId} listingType="team" listingId={team.id} />
       </div>
 
       <div className="max-w-[1100px] mx-auto px-6 pb-16">

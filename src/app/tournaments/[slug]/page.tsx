@@ -56,7 +56,7 @@ export default async function TournamentDetailPage({ params }: Props) {
           {" \u203A "}
           <span>{tournament.name}</span>
         </div>
-        <ManageListingButton ownerId={ownerId} />
+        <ManageListingButton ownerId={ownerId} listingType="tournament" listingId={tournament.id} />
       </div>
 
       <div className="max-w-[1100px] mx-auto px-6 pb-16">

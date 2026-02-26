@@ -46,7 +46,7 @@ export default async function TripDetailPage({ params }: Props) {
               <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{trip.tripName}</h1>
               <p className="text-white/60 text-lg">{trip.destination} &middot; {trip.organizer}</p>
             </div>
-            <ManageListingButton ownerId={ownerId} />
+            <ManageListingButton ownerId={ownerId} listingType="trip" listingId={trip.id} />
           </div>
         </div>
       </div>

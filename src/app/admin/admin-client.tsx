@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { ListingForm } from "@/components/listing-form";
 import type { ListingType } from "@/lib/types";
 
@@ -24,12 +25,14 @@ const TYPE_PATHS: Record<string, string> = {
 
 export default function AdminClient() {
   const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
   const [tab, setTab] = useState<"users" | "listings">("users");
   const [users, setUsers] = useState<User[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [autoEditDone, setAutoEditDone] = useState(false);
 
   // Filter state
   const [listingTypeFilter, setListingTypeFilter] = useState("all");
@@ -39,6 +42,18 @@ export default function AdminClient() {
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
   const [editData, setEditData] = useState<Record<string, string> | null>(null);
   const [editLoading, setEditLoading] = useState(false);
+
+  // Auto-open edit form from query params (?editType=...&editId=...)
+  useEffect(() => {
+    if (autoEditDone || loading || listings.length === 0) return;
+    const editType = searchParams.get("editType");
+    const editId = searchParams.get("editId");
+    if (editType && editId) {
+      setAutoEditDone(true);
+      const listing = listings.find((l) => l.type === editType && l.id === editId);
+      if (listing) handleEdit(listing);
+    }
+  }, [loading, listings, autoEditDone, searchParams]);
 
   useEffect(() => {
     if (status === "authenticated") fetchData();

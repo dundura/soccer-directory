@@ -66,7 +66,7 @@ export default async function PlayerDetailPage({ params }: Props) {
                   {player.city}, {player.state}
                 </p>
               </div>
-              <ManageListingButton ownerId={ownerId} />
+              <ManageListingButton ownerId={ownerId} listingType="player" listingId={player.id} />
             </div>
           </div>
         </div>
