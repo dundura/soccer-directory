@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getCampBySlug, getCampSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
@@ -38,9 +39,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CampDetailPage({ params }: Props) {
   const { slug } = await params;
-  const camp = await getCampBySlug(slug);
+
+  let camp;
+  try {
+    camp = await getCampBySlug(slug);
+  } catch {
+    throw new Error("Failed to load camp details. Please try again later.");
+  }
   if (!camp) notFound();
-  const ownerId = await getListingOwner("camp", slug);
+
+  let ownerId: string | null = null;
+  try {
+    ownerId = await getListingOwner("camp", slug);
+  } catch {
+    ownerId = null;
+  }
 
   const pageUrl = `https://www.soccer-near-me.com/camps/${slug}`;
   const heroPhoto = camp.imageUrl || DEFAULT_HERO_PHOTO;
@@ -244,7 +257,9 @@ export default async function CampDetailPage({ params }: Props) {
             </div>
 
             {/* Reviews */}
-            <ReviewSection listingType="camp" listingId={camp.id} />
+            <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
+              <ReviewSection listingType="camp" listingId={camp.id} />
+            </Suspense>
 
             {/* CTA Banner */}
             <div className="bg-primary rounded-2xl px-10 py-8 flex flex-col md:flex-row items-center justify-between gap-6 mt-2">

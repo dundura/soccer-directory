@@ -37,9 +37,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PlayerDetailPage({ params }: Props) {
   const { slug } = await params;
-  const player = await getPlayerProfileBySlug(slug);
+
+  let player;
+  try {
+    player = await getPlayerProfileBySlug(slug);
+  } catch {
+    throw new Error("Failed to load player profile. Please try again later.");
+  }
   if (!player) notFound();
-  const ownerId = await getListingOwner("player", slug);
+
+  let ownerId: string | null = null;
+  try {
+    ownerId = await getListingOwner("player", slug);
+  } catch {
+    ownerId = null;
+  }
 
   return (
     <>
