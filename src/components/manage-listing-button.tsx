@@ -10,7 +10,7 @@ export function ManageListingButton({ ownerId }: { ownerId: string | null }) {
   return (
     <a
       href="/dashboard"
-      className="inline-flex items-center px-4 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-sm font-medium hover:bg-white/20 transition-colors"
+      className="inline-flex items-center px-4 py-2 rounded-xl border-2 border-red-200 bg-red-50 text-[#DC373E] text-sm font-bold hover:bg-red-100 transition-colors"
     >
       Manage Listing
     </a>

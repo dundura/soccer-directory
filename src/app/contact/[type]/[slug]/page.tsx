@@ -20,10 +20,11 @@ export default function ContactPage() {
   const type = params.type as string;
   const slug = params.slug as string;
 
-  const [form, setForm] = useState({ senderName: "", senderEmail: "", message: "" });
+  const [form, setForm] = useState({ senderName: "", senderEmail: "", message: "", website: "" });
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [loadedAt] = useState(Date.now());
 
   const label = TYPE_LABELS[type] || type;
   const backPath = `/${TYPE_PATHS[type] || type}/${slug}`;
@@ -37,7 +38,7 @@ export default function ContactPage() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, slug, ...form }),
+        body: JSON.stringify({ type, slug, senderName: form.senderName, senderEmail: form.senderEmail, message: form.message, website: form.website, _t: loadedAt }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
@@ -118,6 +119,18 @@ export default function ContactPage() {
               onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
               className={inputClass + " resize-none"}
               placeholder="Hi, I'm interested in learning more about..."
+            />
+          </div>
+
+          {/* Honeypot - hidden from real users */}
+          <div className="absolute opacity-0 -z-10" aria-hidden="true">
+            <label>Website</label>
+            <input
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={form.website}
+              onChange={(e) => setForm((f) => ({ ...f, website: e.target.value }))}
             />
           </div>
 

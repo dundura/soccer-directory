@@ -7,7 +7,10 @@ const NOTIFY_EMAIL = "neil@anytime-soccer.com";
 
 export async function POST(req: Request) {
   try {
-    const { slug, teamName, tournament, parentName, playerName, position, email, phone, videoLink, message } = await req.json();
+    const { slug, teamName, tournament, parentName, playerName, position, email, phone, videoLink, message, website, _t } = await req.json();
+
+    if (website) return NextResponse.json({ success: true });
+    if (_t && Date.now() - _t < 3000) return NextResponse.json({ success: true });
 
     if (!slug || !parentName || !playerName || !position || !email) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });

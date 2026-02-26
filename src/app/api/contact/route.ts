@@ -17,7 +17,17 @@ const TYPE_PATHS: Record<string, string> = {
 
 export async function POST(req: Request) {
   try {
-    const { type, slug, senderName, senderEmail, message } = await req.json();
+    const { type, slug, senderName, senderEmail, message, website, _t } = await req.json();
+
+    // Honeypot check — bots fill hidden fields
+    if (website) {
+      return NextResponse.json({ success: true }); // silently discard
+    }
+
+    // Time-based check — reject if submitted in under 3 seconds
+    if (_t && Date.now() - _t < 3000) {
+      return NextResponse.json({ success: true }); // silently discard
+    }
 
     if (!type || !slug || !senderName || !senderEmail || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
