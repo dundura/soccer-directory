@@ -23,7 +23,7 @@ export function PlayerAvatar({ src, name, className }: { src?: string | null; na
     >
       {initials ? (
         <span
-          style={{ color: "white", fontWeight: 700, fontSize: "40%", lineHeight: 1, userSelect: "none" }}
+          style={{ color: "white", fontWeight: 700, fontSize: 76, lineHeight: 1, userSelect: "none", letterSpacing: 2 }}
         >
           {initials}
         </span>
