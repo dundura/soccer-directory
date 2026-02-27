@@ -23,6 +23,13 @@ const navGroups = [
     ],
   },
   {
+    label: "Rankings",
+    links: [
+      { label: "Team Rankings", href: "/rankings" },
+      { label: "Event Rankings", href: "/rankings/events" },
+    ],
+  },
+  {
     label: "Media",
     links: [
       { label: "Blog", href: "/blog" },
