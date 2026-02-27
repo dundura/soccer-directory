@@ -208,33 +208,33 @@ export default async function ClubDetailPage({ params }: Props) {
           </div>
 
           {/* ====== At a Glance ====== */}
-          <div className="order-2 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">At a Glance</h3>
-              <div className="grid grid-cols-2 gap-2.5 mt-1">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#127942;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Level</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{club.level}</span>
+          <div className="order-2 lg:order-none lg:col-start-2 bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
+              <h3 className="text-[13px] sm:text-[15px] font-bold text-primary mb-2.5 sm:mb-3.5">At a Glance</h3>
+              <div className="grid grid-cols-2 gap-1.5 sm:gap-2.5 mt-1">
+                <div className="flex items-center gap-1.5 sm:gap-2.5">
+                  <span className="text-sm sm:text-lg leading-none">&#127942;</span>
+                  <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-gray-400">Level</span>
+                  <span className="text-xs sm:text-sm font-bold text-primary ml-auto">{club.level}</span>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#9917;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Teams</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{club.teamCount}</span>
+                <div className="flex items-center gap-1.5 sm:gap-2.5">
+                  <span className="text-sm sm:text-lg leading-none">&#9917;</span>
+                  <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-gray-400">Teams</span>
+                  <span className="text-xs sm:text-sm font-bold text-primary ml-auto">{club.teamCount}</span>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#128197;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Age Groups</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{club.ageGroups}</span>
+                <div className="flex items-center gap-1.5 sm:gap-2.5">
+                  <span className="text-sm sm:text-lg leading-none">&#128197;</span>
+                  <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-gray-400">Age</span>
+                  <span className="text-xs sm:text-sm font-bold text-primary ml-auto">{club.ageGroups}</span>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#128101;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Gender</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{club.gender}</span>
+                <div className="flex items-center gap-1.5 sm:gap-2.5">
+                  <span className="text-sm sm:text-lg leading-none">&#128101;</span>
+                  <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-gray-400">Gender</span>
+                  <span className="text-xs sm:text-sm font-bold text-primary ml-auto">{club.gender}</span>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#128170;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Practices</span>
-                  <span className="text-sm font-bold text-primary ml-auto">
+                <div className="flex items-center gap-1.5 sm:gap-2.5">
+                  <span className="text-sm sm:text-lg leading-none">&#128170;</span>
+                  <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-gray-400">Practices</span>
+                  <span className="text-xs sm:text-sm font-bold text-primary ml-auto">
                     {club.practiceSchedule && club.practiceSchedule.length > 0
                       ? `${club.practiceSchedule.length}x / week`
                       : "—"}

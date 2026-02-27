@@ -7,7 +7,7 @@ import { Badge, FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui"
 import { PlayerAvatar } from "@/components/player-avatar";
 
 const POSITIONS = ["GK", "CB", "FB/WB", "CDM", "CM", "CAM", "Winger", "ST"];
-const LEVELS = ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club / Local Travel", "Rec Select", "Recreational / Grassroots"];
+const LEVELS = ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club Travel", "Rec Select", "Recreational / Grassroots"];
 
 export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
   const searchParams = useSearchParams();

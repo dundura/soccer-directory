@@ -12,7 +12,7 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
   const [state, setState] = useState(searchParams.get("state") || "");
   const [gender, setGender] = useState("");
 
-  const LEVELS = ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club / Local Travel", "Rec Select", "Recreational / Grassroots"];
+  const LEVELS = ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club Travel", "Rec Select", "Recreational / Grassroots"];
   const states = [...new Set(clubs.map((c) => c.state))].sort();
 
   const filtered = clubs.filter((c) => {

@@ -14,7 +14,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
   const [gender, setGender] = useState("");
   const [recruiting, setRecruiting] = useState("");
 
-  const LEVELS = ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club / Local Travel", "Rec Select", "Recreational / Grassroots"];
+  const LEVELS = ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club Travel", "Rec Select", "Recreational / Grassroots"];
   const ageGroups = [...new Set(teams.map((t) => t.ageGroup))].sort();
   const states = [...new Set(teams.map((t) => t.state))].sort();
 
