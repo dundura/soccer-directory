@@ -34,6 +34,8 @@ export function ManageListingButton({ ownerId, listingType, listingId }: { owner
       });
       if (res.ok) {
         setArchived(true);
+        router.push("/dashboard");
+        return;
       }
     } catch { /* */ }
     setArchiving(false);
