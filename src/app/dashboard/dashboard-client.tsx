@@ -19,6 +19,7 @@ const TYPE_PATHS: Record<string, string> = {
   showcase: "camps",
   player: "guest-play/players",
   podcast: "podcasts",
+  fbgroup: "facebook-groups",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -35,6 +36,7 @@ const TYPE_LABELS: Record<string, string> = {
   showcase: "College Showcase",
   player: "Player Profile",
   podcast: "Podcast",
+  fbgroup: "Facebook Group",
 };
 
 type Listing = { id: string; slug: string; name: string; status: string; type: string };

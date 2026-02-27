@@ -102,6 +102,7 @@ function Header() {
               items={[
                 { label: "Blog", href: "/blog" },
                 { label: "Podcasts", href: "/podcasts" },
+                { label: "Facebook Groups", href: "/facebook-groups" },
                 { label: "Forum", href: "/forum" },
               ]}
             />

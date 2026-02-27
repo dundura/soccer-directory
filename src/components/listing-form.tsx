@@ -75,6 +75,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   showcase: "Join us for a competitive college showcase event! Get exposure in front of college coaches and recruiters.",
   player: "A dedicated soccer player looking for new opportunities to compete and grow. Open to guest play, tryouts, and showcase events.",
   podcast: "A soccer podcast covering youth development, coaching insights, and the beautiful game.",
+  fbgroup: "A Facebook group for soccer families to connect, share information, and support each other.",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -442,6 +443,29 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl2", label: "Episode Video 2 (YouTube/Vimeo)" },
     { name: "videoUrl3", label: "Episode Video 3 (YouTube/Vimeo)" },
   ],
+  fbgroup: [
+    { name: "name", label: "Group Name", required: true },
+    { name: "adminName", label: "Admin / Creator Name", required: true },
+    { name: "groupUrl", label: "Facebook Group URL", required: true },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "category", label: "Category", required: true, options: ["Youth Soccer", "Club / Team", "Coaching", "College Recruiting", "Soccer Moms & Dads", "Buy / Sell / Trade", "Regional", "General"] },
+    { name: "privacy", label: "Privacy", required: true, options: ["Public", "Private"] },
+    { name: "memberCount", label: "Approximate Members" },
+    { name: "description", label: "About the Group", type: "textarea" },
+    { name: "email", label: "Contact Email", type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "_socials", label: "Social Media", type: "heading" },
+    { name: "facebook", label: "Facebook URL" },
+    { name: "instagram", label: "Instagram URL" },
+    { name: "youtube", label: "YouTube URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
+    { name: "logo", label: "Logo URL" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+  ],
 };
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -459,6 +483,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   marketplace: "Equipment",
   player: "Player Profile",
   podcast: "Podcast",
+  fbgroup: "Facebook Group",
 };
 
 // ── Shared styles ──────────────────────────────────────────────

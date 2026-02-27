@@ -15,6 +15,7 @@ import {
   createMarketplaceListing,
   createPlayerProfile,
   createPodcastListing,
+  createFacebookGroupListing,
   updateListing,
   archiveListing,
   deleteListing,
@@ -99,6 +100,9 @@ export async function POST(req: Request) {
         break;
       case "podcast":
         slug = await createPodcastListing(data, session.user.id);
+        break;
+      case "fbgroup":
+        slug = await createFacebookGroupListing(data, session.user.id);
         break;
       default:
         return NextResponse.json({ error: "Invalid listing type" }, { status: 400 });
