@@ -417,8 +417,30 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
   ],
   podcast: [
     { name: "name", label: "Podcast Name", required: true },
-    { name: "description", label: "Description", required: true, type: "textarea" },
+    { name: "hostName", label: "Host Name", required: true },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "category", label: "Category", required: true, options: ["Youth Soccer", "Coaching", "Player Development", "College Recruiting", "Professional Soccer", "Soccer Culture", "Training & Fitness", "Other"] },
+    { name: "description", label: "About the Podcast", required: true, type: "textarea" },
     { name: "website", label: "Website" },
+    { name: "rssFeedUrl", label: "RSS Feed URL (for all episodes)" },
+    { name: "email", label: "Contact Email", type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "_socials", label: "Social Media", type: "heading" },
+    { name: "facebook", label: "Facebook URL" },
+    { name: "instagram", label: "Instagram URL" },
+    { name: "youtube", label: "YouTube URL" },
+    { name: "_episodes", label: "Top Episodes", type: "heading" },
+    { name: "topEpisodes", label: "Top Episodes (up to 10)", type: "top-episodes" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Cover Art / Sidebar Image", type: "image" },
+    { name: "logo", label: "Logo URL" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Episode Video 1 (YouTube/Vimeo)" },
+    { name: "videoUrl2", label: "Episode Video 2 (YouTube/Vimeo)" },
+    { name: "videoUrl3", label: "Episode Video 3 (YouTube/Vimeo)" },
   ],
 };
 
@@ -752,6 +774,63 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                   );
                 })}
                 <p className="text-xs text-muted">Add a title and URL for each media link</p>
+              </div>
+
+            /* Top Episodes (up to 10 — title + description + URL) */
+            ) : field.type === "top-episodes" ? (
+              <div className="space-y-3">
+                {Array.from({ length: Math.min(10, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                  let arr: { title: string; description?: string; url: string }[] = [];
+                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  const ep = arr[i] || { title: "", description: "", url: "" };
+                  const updateEp = (key: string, val: string) => {
+                    const updated = [...arr];
+                    if (!updated[i]) updated[i] = { title: "", description: "", url: "" };
+                    (updated[i] as Record<string, string>)[key] = val;
+                    const filtered = updated.filter((e) => e.title || e.url);
+                    handleChange(field.name, JSON.stringify(filtered));
+                  };
+                  return (
+                    <div key={i} className="flex gap-2 items-start">
+                      <div className="flex-1 space-y-1.5">
+                        <input
+                          type="text"
+                          value={ep.title || ""}
+                          onChange={(e) => updateEp("title", e.target.value)}
+                          placeholder="Episode title"
+                          className={inputClass}
+                        />
+                        <input
+                          type="text"
+                          value={ep.description || ""}
+                          onChange={(e) => updateEp("description", e.target.value)}
+                          placeholder="Short description (optional)"
+                          className={inputClass}
+                        />
+                        <input
+                          type="url"
+                          value={ep.url || ""}
+                          onChange={(e) => updateEp("url", e.target.value)}
+                          placeholder="https://open.spotify.com/episode/..."
+                          className={inputClass}
+                        />
+                      </div>
+                      {(ep.title || ep.url) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = arr.filter((_, j) => j !== i);
+                            handleChange(field.name, JSON.stringify(updated));
+                          }}
+                          className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0 mt-2"
+                        >
+                          x
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-muted">Add your top episodes with title, optional description, and link</p>
               </div>
 
             /* Events (up to 5) */

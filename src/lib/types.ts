@@ -287,7 +287,34 @@ export interface GuestPostComment {
   updatedAt: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player";
+export interface TopEpisode {
+  title: string;
+  description?: string;
+  url: string;
+}
+
+export interface Podcast extends ProfileFields {
+  id: string;
+  slug: string;
+  name: string;
+  hostName: string;
+  category: string;
+  city: string;
+  state: string;
+  country?: string;
+  description?: string;
+  website?: string;
+  rssFeedUrl?: string;
+  email?: string;
+  topEpisodes?: TopEpisode[];
+  videoUrl2?: string;
+  videoUrl3?: string;
+  featured: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";

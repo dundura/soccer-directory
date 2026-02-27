@@ -30,7 +30,7 @@ const navGroups = [
     label: "Media",
     links: [
       { label: "Blog", href: "/blog" },
-      { label: "Podcasts", href: "https://anytime-soccer.com/podcast" },
+      { label: "Podcasts", href: "/podcasts" },
       { label: "Forum", href: "/forum" },
     ],
   },
