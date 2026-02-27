@@ -278,25 +278,23 @@ export default async function ClubDetailPage({ params }: Props) {
           </div>
 
           {/* ====== Media ====== */}
+          {club.mediaLinks && club.mediaLinks.length > 0 && (
           <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-5 shadow-sm">
               <h3 className="text-[15px] font-bold text-primary mb-3">Media</h3>
-              {club.mediaLinks && club.mediaLinks.length > 0 ? (
-                <div className="space-y-2.5">
-                  {club.mediaLinks.map((link, i) => (
-                    <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="flex gap-3 rounded-xl border border-border p-3 hover:bg-surface/50 transition-colors group">
-                      {link.image && <img src={link.image} alt="" className="w-20 h-14 object-cover rounded-lg shrink-0" />}
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-primary group-hover:text-accent-hover transition-colors truncate">{link.title || link.url}</p>
-                        {link.description && <p className="text-xs text-muted line-clamp-2 mt-0.5">{link.description}</p>}
-                        <p className="text-[11px] text-muted/60 mt-1 truncate">{(() => { try { return new URL(link.url).hostname; } catch { return link.url; } })()}</p>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted">No media coverage yet.</p>
-              )}
+              <div className="space-y-2.5">
+                {club.mediaLinks.map((link, i) => (
+                  <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="flex gap-3 rounded-xl border border-border p-3 hover:bg-surface/50 transition-colors group">
+                    {link.image && <img src={link.image} alt="" className="w-20 h-14 object-cover rounded-lg shrink-0" />}
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-primary group-hover:text-accent-hover transition-colors truncate">{link.title || link.url}</p>
+                      {link.description && <p className="text-xs text-muted line-clamp-2 mt-0.5">{link.description}</p>}
+                      <p className="text-[11px] text-muted/60 mt-1 truncate">{(() => { try { return new URL(link.url).hostname; } catch { return link.url; } })()}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
           </div>
+          )}
 
           {/* ====== Reviews ====== */}
           <div className="order-6 lg:order-none lg:col-start-2">
