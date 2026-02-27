@@ -94,7 +94,7 @@ export default async function PodcastPage({ params }: Props) {
             Be a Guest
           </a>
 
-          {ownerId && <ManageListingButton listingType="podcast" listingId={slug} ownerId={ownerId} />}
+          {ownerId && <ManageListingButton listingType="podcast" listingId={podcast.id} ownerId={ownerId} />}
         </aside>
 
         {/* ── Main Content ── */}

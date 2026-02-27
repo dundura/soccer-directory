@@ -89,7 +89,7 @@ export default async function FacebookGroupPage({ params }: Props) {
             </a>
           )}
 
-          {ownerId && <ManageListingButton listingType="fbgroup" listingId={slug} ownerId={ownerId} />}
+          {ownerId && <ManageListingButton listingType="fbgroup" listingId={group.id} ownerId={ownerId} />}
         </aside>
 
         {/* ── Main Content ── */}

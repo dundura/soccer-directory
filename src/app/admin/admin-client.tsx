@@ -54,7 +54,7 @@ export default function AdminClient() {
     const editId = searchParams.get("editId");
     if (editType && editId) {
       setAutoEditDone(true);
-      const listing = listings.find((l) => l.type === editType && l.id === editId);
+      const listing = listings.find((l) => l.type === editType && (l.id === editId || l.slug === editId));
       if (listing) handleEdit(listing);
     }
   }, [loading, listings, autoEditDone, searchParams]);
