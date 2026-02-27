@@ -498,7 +498,7 @@ export function RankingsClient() {
               ?.filter(team => {
                 if (!search) return true;
                 const q = search.toLowerCase();
-                return team.name.toLowerCase().includes(q) || team.club.toLowerCase().includes(q);
+                return (team.name || '').toLowerCase().includes(q) || (team.club || '').toLowerCase().includes(q);
               })
               .map((team, i) => (
                 <TeamRow key={team.teamId || i} team={team} index={i} state={state} />
