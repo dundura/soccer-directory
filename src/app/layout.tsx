@@ -68,6 +68,10 @@ function Header() {
                 { label: "Clubs", href: "/clubs" },
                 { label: "Teams", href: "/teams" },
                 { label: "Futsal", href: "/futsal" },
+                { label: "Camps", href: "/camps" },
+                { label: "College Showcases", href: "/camps?type=College+Showcase" },
+                { label: "Private/Group Training", href: "/trainers" },
+                { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
               ]}
             />
             <NavDropdown
@@ -76,20 +80,6 @@ function Header() {
                 { label: "Opportunities", href: "/guest-play" },
                 { label: "Players", href: "/guest-play/players" },
                 { label: "Guest Player Posts", href: "/guest-play/posts" },
-              ]}
-            />
-            <NavDropdown
-              label="Camps"
-              items={[
-                { label: "Camps", href: "/camps" },
-                { label: "College Showcases", href: "/camps?type=College+Showcase" },
-              ]}
-            />
-            <NavDropdown
-              label="Train"
-              items={[
-                { label: "Private/Group Training", href: "/trainers" },
-                { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
               ]}
             />
             <NavDropdown

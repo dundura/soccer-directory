@@ -10,6 +10,10 @@ const navGroups = [
       { label: "Clubs", href: "/clubs" },
       { label: "Teams", href: "/teams" },
       { label: "Futsal", href: "/futsal" },
+      { label: "Camps", href: "/camps" },
+      { label: "College Showcases", href: "/camps?type=College+Showcase" },
+      { label: "Private/Group Training", href: "/trainers" },
+      { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
     ],
   },
   {
@@ -18,20 +22,6 @@ const navGroups = [
       { label: "Opportunities", href: "/guest-play" },
       { label: "Players", href: "/guest-play/players" },
       { label: "Guest Player Posts", href: "/guest-play/posts" },
-    ],
-  },
-  {
-    label: "Camps",
-    links: [
-      { label: "Camps", href: "/camps" },
-      { label: "College Showcases", href: "/camps?type=College+Showcase" },
-    ],
-  },
-  {
-    label: "Train",
-    links: [
-      { label: "Private/Group Training", href: "/trainers" },
-      { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
     ],
   },
   {
