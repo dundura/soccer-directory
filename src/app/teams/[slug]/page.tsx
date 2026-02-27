@@ -213,7 +213,7 @@ export default async function TeamDetailPage({ params }: Props) {
               <img
                 src={logo}
                 alt={`${team.name} logo`}
-                className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1 sm:p-1.5 bg-surface -mt-12 sm:-mt-16 relative z-10"
+                className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1 sm:p-1.5 bg-surface -mt-8 sm:-mt-10 relative z-10"
               />
               <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0">
                 <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{team.name}</h1>
