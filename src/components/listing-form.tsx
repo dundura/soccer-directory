@@ -93,6 +93,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "country", label: "Country", required: true, type: "country" },
     { name: "state", label: "State", required: true, type: "state-select" },
     { name: "level", label: "Level", required: true, options: ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club Travel", "Rec Select", "Recreational / Grassroots", "Other"] },
+    { name: "league", label: "League Name" },
+    { name: "leagueUrl", label: "League Website URL" },
     { name: "ageGroups", label: "Age", required: true, type: "age-multi" },
     { name: "gender", label: "Gender", required: true, options: ["Boys & Girls", "Boys", "Girls"] },
     { name: "teamCount", label: "Number of Teams", type: "number" },
@@ -695,68 +697,54 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                 <p className="text-xs text-muted">Add up to 5 photo URLs</p>
               </div>
 
-            /* Media Links (up to 5 URLs with OG preview fetch) */
+            /* Media Links (up to 5 — title + URL) */
             ) : field.type === "media-links" ? (
               <div className="space-y-3">
                 {Array.from({ length: Math.min(5, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
-                  let arr: { url: string; title?: string; description?: string; image?: string }[] = [];
+                  let arr: { url: string; title?: string }[] = [];
                   try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
-                  const link = arr[i] || { url: "" };
+                  const link = arr[i] || { url: "", title: "" };
                   const updateLink = (key: string, val: string) => {
                     const updated = [...arr];
-                    if (!updated[i]) updated[i] = { url: "" };
+                    if (!updated[i]) updated[i] = { url: "", title: "" };
                     (updated[i] as Record<string, string>)[key] = val;
-                    const filtered = updated.filter((l) => l.url);
+                    const filtered = updated.filter((l) => l.url || l.title);
                     handleChange(field.name, JSON.stringify(filtered));
                   };
-                  const fetchOg = async (url: string) => {
-                    if (!url) return;
-                    try {
-                      const res = await fetch(`/api/og?url=${encodeURIComponent(url)}`);
-                      const meta = await res.json();
-                      const updated = [...arr];
-                      if (!updated[i]) updated[i] = { url: "" };
-                      updated[i] = { url, title: meta.title || "", description: meta.description || "", image: meta.image || "" };
-                      handleChange(field.name, JSON.stringify(updated.filter((l) => l.url)));
-                    } catch { /* */ }
-                  };
                   return (
-                    <div key={i} className="border border-border rounded-xl p-3 space-y-2">
-                      <div className="flex gap-2">
+                    <div key={i} className="flex gap-2 items-start">
+                      <div className="flex-1 space-y-1.5">
+                        <input
+                          type="text"
+                          value={link.title || ""}
+                          onChange={(e) => updateLink("title", e.target.value)}
+                          placeholder="Link title (e.g. WRAL Feature Story)"
+                          className={inputClass}
+                        />
                         <input
                           type="url"
                           value={link.url || ""}
                           onChange={(e) => updateLink("url", e.target.value)}
-                          onBlur={(e) => fetchOg(e.target.value)}
                           placeholder="https://example.com/article"
                           className={inputClass}
                         />
-                        {link.url && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const updated = arr.filter((_, j) => j !== i);
-                              handleChange(field.name, JSON.stringify(updated));
-                            }}
-                            className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0"
-                          >
-                            x
-                          </button>
-                        )}
                       </div>
-                      {link.title && (
-                        <div className="flex gap-3 bg-surface rounded-lg p-2.5">
-                          {link.image && <img src={link.image} alt="" className="w-16 h-16 object-cover rounded shrink-0" />}
-                          <div className="min-w-0">
-                            <p className="text-xs font-semibold text-primary truncate">{link.title}</p>
-                            {link.description && <p className="text-xs text-muted line-clamp-2 mt-0.5">{link.description}</p>}
-                          </div>
-                        </div>
+                      {(link.url || link.title) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = arr.filter((_, j) => j !== i);
+                            handleChange(field.name, JSON.stringify(updated));
+                          }}
+                          className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0 mt-2"
+                        >
+                          x
+                        </button>
                       )}
                     </div>
                   );
                 })}
-                <p className="text-xs text-muted">Paste article URLs — previews are fetched automatically</p>
+                <p className="text-xs text-muted">Add a title and URL for each media link</p>
               </div>
 
             /* Events (up to 5) */

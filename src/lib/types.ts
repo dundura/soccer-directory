@@ -26,6 +26,8 @@ export interface Club extends ProfileFields {
   state: string;
   country?: string;
   level: string;
+  league?: string;
+  leagueUrl?: string;
   ageGroups: string;
   gender: string;
   teamCount: number;

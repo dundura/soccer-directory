@@ -67,7 +67,8 @@ function mapClub(r: Record<string, unknown>): Club {
   return {
     id: r.id as string, slug: r.slug as string, name: r.name as string,
     city: r.city as string, state: r.state as string, country: r.country as string | undefined,
-    level: r.level as string, ageGroups: r.age_groups as string, gender: r.gender as string,
+    level: r.level as string, league: r.league as string | undefined, leagueUrl: r.league_url as string | undefined,
+    ageGroups: r.age_groups as string, gender: r.gender as string,
     teamCount: r.team_count as number, description: r.description as string,
     website: r.website as string | undefined, email: r.email as string | undefined,
     blogUrl: r.blog_url as string | undefined,
@@ -556,7 +557,7 @@ export async function createClubListing(data: Record<string, string>, userId: st
   const slug = slugify(data.name);
   const sm = buildSocialMedia(data);
   const pf = profileFields(data);
-  await sql`INSERT INTO clubs (id, slug, name, city, country, state, level, age_groups, gender, team_count, description, website, email, phone, social_media, logo, image_url, team_photo, photos, video_url, practice_schedule, address, media_links, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.ageGroups}, ${data.gender}, ${Number(data.teamCount) || 0}, ${data.description}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, ${pf.teamPhoto}, ${pf.photos}, ${pf.videoUrl}, ${pf.practiceSchedule}, ${pf.address}, ${pf.mediaLinks}, false, ${userId}, 'approved')`;
+  await sql`INSERT INTO clubs (id, slug, name, city, country, state, level, league, league_url, age_groups, gender, team_count, description, website, email, phone, social_media, logo, image_url, team_photo, photos, video_url, practice_schedule, address, media_links, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.league || null}, ${data.leagueUrl || null}, ${data.ageGroups}, ${data.gender}, ${Number(data.teamCount) || 0}, ${data.description}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, ${pf.teamPhoto}, ${pf.photos}, ${pf.videoUrl}, ${pf.practiceSchedule}, ${pf.address}, ${pf.mediaLinks}, false, ${userId}, 'approved')`;
   return slug;
 }
 
@@ -737,7 +738,7 @@ function profileFormFields(r: Record<string, unknown>): Record<string, string> {
 }
 function mapClubToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
-  return { name: s(r.name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), ageGroups: s(r.age_groups), gender: s(r.gender), teamCount: String(r.team_count || ""), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
+  return { name: s(r.name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), league: s(r.league), leagueUrl: s(r.league_url), ageGroups: s(r.age_groups), gender: s(r.gender), teamCount: String(r.team_count || ""), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
 }
 function mapTeamToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
@@ -790,7 +791,7 @@ export async function updateListing(type: string, id: string, data: Record<strin
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club":
-      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, league=${data.league || null}, league_url=${data.leagueUrl || null}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "team":
       rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, events=${data.events || null}, annual_tournaments=${data.annualTournaments || null}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
@@ -833,7 +834,7 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club":
-      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, league=${data.league || null}, league_url=${data.leagueUrl || null}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
     case "team":
       rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, events=${data.events || null}, annual_tournaments=${data.annualTournaments || null}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} RETURNING id`;
