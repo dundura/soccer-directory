@@ -2,6 +2,7 @@ import { getFutsalTeamBySlug, getFutsalTeamSlugs, getListingOwner } from "@/lib/
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
+import { HeroImage } from "@/components/hero-image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -158,7 +159,7 @@ export default async function FutsalDetailPage({ params }: Props) {
 
             {/* Hero */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={heroPhoto} alt={team.name} className="w-full h-[220px] object-cover block" />
+              <HeroImage src={heroPhoto} alt={team.name} id={team.id} />
               <div className="p-7 flex gap-6 items-start">
               <img
                 src={logo}

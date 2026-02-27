@@ -3,6 +3,7 @@ import { getTeamBySlug, getTeamSlugs, getClubById, getListingOwner, getSimilarTe
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
+import { HeroImage } from "@/components/hero-image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -207,7 +208,7 @@ export default async function TeamDetailPage({ params }: Props) {
 
           {/* ====== Hero ====== */}
           <div className="order-1 lg:order-none lg:col-start-2 bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={heroPhoto} alt={team.name} className="w-full h-[220px] object-cover block" />
+              <HeroImage src={heroPhoto} alt={team.name} id={team.id} />
               <div className="p-5 sm:p-7 sm:flex sm:gap-6 sm:items-start">
               <img
                 src={logo}
