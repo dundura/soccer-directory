@@ -24,6 +24,7 @@ export function ListingCard({
   details,
   featured,
   cta,
+  image,
 }: {
   href: string;
   title: string;
@@ -32,43 +33,51 @@ export function ListingCard({
   details: { label: string; value: string }[];
   featured?: boolean;
   cta?: string;
+  image?: string;
 }) {
   return (
     <a
       href={href}
-      className="group block bg-white rounded-2xl border border-border p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 relative"
+      className="group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 relative"
     >
-      {featured && (
-        <div className="absolute top-4 right-4">
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
-            ⭐ Featured
-          </span>
+      {image && (
+        <div className="w-full h-40 overflow-hidden">
+          <img src={image} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         </div>
       )}
-      <div className="flex flex-wrap gap-1.5 mb-3">
-        {badges.map((b, i) => (
-          <Badge key={i} variant={b.variant}>{b.label}</Badge>
-        ))}
-      </div>
-      <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary group-hover:text-accent-hover transition-colors mb-1">
-        {title}
-      </h3>
-      <p className="text-muted text-sm mb-4">{subtitle}</p>
-      <div className="grid grid-cols-2 gap-2">
-        {details.map((d, i) => (
-          <div key={i}>
-            <p className="text-xs text-muted">{d.label}</p>
-            <p className="text-sm font-medium">{d.value}</p>
+      <div className="p-6">
+        {featured && (
+          <div className="absolute top-4 right-4">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
+              ⭐ Featured
+            </span>
           </div>
-        ))}
-      </div>
-      {cta && (
-        <div className="mt-4 pt-4 border-t border-border">
-          <span className="text-sm font-semibold text-accent-hover group-hover:text-accent transition-colors">
-            {cta} →
-          </span>
+        )}
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {badges.map((b, i) => (
+            <Badge key={i} variant={b.variant}>{b.label}</Badge>
+          ))}
         </div>
-      )}
+        <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary group-hover:text-accent-hover transition-colors mb-1">
+          {title}
+        </h3>
+        <p className="text-muted text-sm mb-4">{subtitle}</p>
+        <div className="grid grid-cols-2 gap-2">
+          {details.map((d, i) => (
+            <div key={i}>
+              <p className="text-xs text-muted">{d.label}</p>
+              <p className="text-sm font-medium">{d.value}</p>
+            </div>
+          ))}
+        </div>
+        {cta && (
+          <div className="mt-4 pt-4 border-t border-border">
+            <span className="text-sm font-semibold text-accent-hover group-hover:text-accent transition-colors">
+              {cta} →
+            </span>
+          </div>
+        )}
+      </div>
     </a>
   );
 }
