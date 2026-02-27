@@ -108,13 +108,6 @@ export function MobileMenu() {
               </div>
             ))}
             <a
-              href="/rankings"
-              onClick={() => setOpen(false)}
-              className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
-            >
-              Rankings
-            </a>
-            <a
               href="/shop"
               onClick={() => setOpen(false)}
               className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
