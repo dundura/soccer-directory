@@ -76,6 +76,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   player: "A dedicated soccer player looking for new opportunities to compete and grow. Open to guest play, tryouts, and showcase events.",
   podcast: "A soccer podcast covering youth development, coaching insights, and the beautiful game.",
   fbgroup: "A Facebook group for soccer families to connect, share information, and support each other.",
+  service: "A soccer-related product or service available for players, coaches, and families.",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -426,6 +427,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "description", label: "About the Podcast", required: true, type: "textarea" },
     { name: "website", label: "Website" },
     { name: "rssFeedUrl", label: "RSS Feed URL (for all episodes)" },
+    { name: "followUrl", label: "Follow / Subscribe Link (e.g. Apple Podcasts, Spotify)" },
     { name: "email", label: "Contact Email", type: "email" },
     { name: "phone", label: "Phone" },
     { name: "_socials", label: "Social Media", type: "heading" },
@@ -460,6 +462,22 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
   ],
+  service: [
+    { name: "name", label: "Product / Service Name", required: true },
+    { name: "providerName", label: "Provider / Brand Name", required: true },
+    { name: "category", label: "Category", required: true, options: ["Training Equipment", "Apparel", "Nutrition", "Technology", "Photography / Video", "Recruiting Service", "Team Management", "Field Rental", "Transportation", "Other"] },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "price", label: "Price (e.g. $29.99, From $50, Free)" },
+    { name: "description", label: "Description", required: true, type: "textarea" },
+    { name: "website", label: "Website / Purchase Link" },
+    { name: "email", label: "Contact Email", type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "_profile", label: "Images", type: "heading" },
+    { name: "imageUrl", label: "Product Image", type: "image" },
+    { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
+  ],
 };
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -478,6 +496,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   player: "Player Profile",
   podcast: "Podcast",
   fbgroup: "Facebook Group",
+  service: "Product / Service",
 };
 
 // ── Shared styles ──────────────────────────────────────────────

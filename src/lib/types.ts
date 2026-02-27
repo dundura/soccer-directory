@@ -305,6 +305,7 @@ export interface Podcast extends ProfileFields {
   description?: string;
   website?: string;
   rssFeedUrl?: string;
+  followUrl?: string;
   email?: string;
   topEpisodes?: TopEpisode[];
   videoUrl2?: string;
@@ -333,7 +334,27 @@ export interface FacebookGroup extends ProfileFields {
   updatedAt?: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup";
+export interface Service extends ProfileFields {
+  id: string;
+  slug: string;
+  name: string;
+  providerName: string;
+  category: string;
+  city: string;
+  state: string;
+  country?: string;
+  price?: string;
+  description?: string;
+  website?: string;
+  email?: string;
+  featured: boolean;
+  status?: string;
+  userId?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";
