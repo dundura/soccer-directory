@@ -81,6 +81,7 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
                   href={`/trainers/${trainer.slug}`}
                   title={trainer.name}
                   subtitle={`${trainer.city}, ${trainer.state}`}
+                  image={trainer.teamPhoto || undefined}
                   badges={[{ label: trainer.specialty, variant: "green" }]}
                   details={[
                     { label: "Price", value: trainer.priceRange },
