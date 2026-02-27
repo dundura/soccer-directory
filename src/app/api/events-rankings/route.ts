@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 const GOTSPORT_URL = 'https://system.gotsport.com/api/v1/event_ranking_data';
 
 const FETCH_HEADERS = {
