@@ -1,4 +1,5 @@
 import { getPodcastBySlug, getPodcastSlugs, getListingOwner } from "@/lib/db";
+import { fetchRssEpisodes } from "@/lib/rss";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
@@ -31,6 +32,7 @@ export default async function PodcastPage({ params }: Props) {
   if (!podcast) notFound();
 
   const ownerId = await getListingOwner("podcast", slug);
+  const rssEpisodes = podcast.rssFeedUrl ? await fetchRssEpisodes(podcast.rssFeedUrl, 10) : [];
 
   const heroImage = podcast.imageUrl || podcast.teamPhoto || "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
   const sidebarImage = podcast.teamPhoto || podcast.logo || null;
@@ -114,7 +116,7 @@ export default async function PodcastPage({ params }: Props) {
             </div>
           )}
 
-          {/* Top Episodes */}
+          {/* Top Episodes (manual) */}
           {podcast.topEpisodes && podcast.topEpisodes.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-6">
               <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Top Episodes</h2>
@@ -131,6 +133,35 @@ export default async function PodcastPage({ params }: Props) {
                     <div className="min-w-0">
                       <span className="block font-semibold text-sm text-primary group-hover:text-accent-hover transition-colors">{ep.title}</span>
                       {ep.description && <span className="block text-xs text-muted mt-0.5 line-clamp-2">{ep.description}</span>}
+                    </div>
+                    <span className="shrink-0 text-muted text-xs ml-auto">↗</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recent Episodes (from RSS) */}
+          {rssEpisodes.length > 0 && (
+            <div className="bg-white rounded-2xl border border-border p-6">
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Recent Episodes</h2>
+              <div className="space-y-3">
+                {rssEpisodes.map((ep, i) => (
+                  <a
+                    key={i}
+                    href={ep.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-start gap-3 p-3 rounded-xl border border-border hover:bg-surface transition-colors group"
+                  >
+                    <span className="shrink-0 w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center text-sm font-bold">{i + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <span className="block font-semibold text-sm text-primary group-hover:text-accent-hover transition-colors">{ep.title}</span>
+                      {ep.description && <span className="block text-xs text-muted mt-0.5 line-clamp-2">{ep.description}</span>}
+                      <span className="block text-xs text-muted mt-1">
+                        {ep.pubDate && new Date(ep.pubDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        {ep.duration && <> &middot; {ep.duration}</>}
+                      </span>
                     </div>
                     <span className="shrink-0 text-muted text-xs ml-auto">↗</span>
                   </a>
