@@ -4,6 +4,7 @@ import { notifyNewListing } from "@/lib/notifications";
 import {
   getListingsByUserId,
   getListingData,
+  getUserByEmail,
   createClubListing,
   createTeamListing,
   createTrainerListing,
@@ -145,13 +146,15 @@ export async function PUT(req: Request) {
 
 export async function PATCH(req: Request) {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.id || !session?.user?.email) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
     const { type, id } = await req.json();
-    const archived = await archiveListing(type, id, session.user.id);
+    const user = await getUserByEmail(session.user.email);
+    const isAdmin = user?.role === "admin";
+    const archived = await archiveListing(type, id, session.user.id, isAdmin);
     if (!archived) {
       return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
     }
@@ -163,13 +166,15 @@ export async function PATCH(req: Request) {
 
 export async function DELETE(req: Request) {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.id || !session?.user?.email) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   try {
     const { type, id } = await req.json();
-    const deleted = await deleteListing(type, id, session.user.id);
+    const user = await getUserByEmail(session.user.email);
+    const isAdmin = user?.role === "admin";
+    const deleted = await deleteListing(type, id, session.user.id, isAdmin);
     if (!deleted) {
       return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
     }

@@ -1057,47 +1057,85 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
 }
 
 // ── Archive Listing (soft-hide) ──────────────────────────────
-export async function archiveListing(type: string, id: string, userId: string): Promise<boolean> {
+export async function archiveListing(type: string, id: string, userId: string, isAdmin = false): Promise<boolean> {
   type = normalizeType(type);
   let rows: Record<string, unknown>[];
-  switch (type) {
-    case "club": rows = await sql`UPDATE clubs SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "team": rows = await sql`UPDATE teams SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "trainer": rows = await sql`UPDATE trainers SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "camp": rows = await sql`UPDATE camps SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "guest": rows = await sql`UPDATE guest_opportunities SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "tournament": rows = await sql`UPDATE tournaments SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "futsal": rows = await sql`UPDATE futsal_teams SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "trip": rows = await sql`UPDATE international_trips SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "marketplace": rows = await sql`UPDATE marketplace SET status = 'archived' WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "player": rows = await sql`UPDATE player_profiles SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "podcast": rows = await sql`UPDATE podcasts SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "fbgroup": rows = await sql`UPDATE facebook_groups SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "service": rows = await sql`UPDATE services SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    default: return false;
+  if (isAdmin) {
+    switch (type) {
+      case "club": rows = await sql`UPDATE clubs SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "team": rows = await sql`UPDATE teams SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "trainer": rows = await sql`UPDATE trainers SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "camp": rows = await sql`UPDATE camps SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "guest": rows = await sql`UPDATE guest_opportunities SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "tournament": rows = await sql`UPDATE tournaments SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "futsal": rows = await sql`UPDATE futsal_teams SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "trip": rows = await sql`UPDATE international_trips SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "marketplace": rows = await sql`UPDATE marketplace SET status = 'archived' WHERE id = ${id} RETURNING id`; break;
+      case "player": rows = await sql`UPDATE player_profiles SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "podcast": rows = await sql`UPDATE podcasts SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "fbgroup": rows = await sql`UPDATE facebook_groups SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "service": rows = await sql`UPDATE services SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      default: return false;
+    }
+  } else {
+    switch (type) {
+      case "club": rows = await sql`UPDATE clubs SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "team": rows = await sql`UPDATE teams SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "trainer": rows = await sql`UPDATE trainers SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "camp": rows = await sql`UPDATE camps SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "guest": rows = await sql`UPDATE guest_opportunities SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "tournament": rows = await sql`UPDATE tournaments SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "futsal": rows = await sql`UPDATE futsal_teams SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "trip": rows = await sql`UPDATE international_trips SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "marketplace": rows = await sql`UPDATE marketplace SET status = 'archived' WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "player": rows = await sql`UPDATE player_profiles SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "podcast": rows = await sql`UPDATE podcasts SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "fbgroup": rows = await sql`UPDATE facebook_groups SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "service": rows = await sql`UPDATE services SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      default: return false;
+    }
   }
   return rows.length > 0;
 }
 
 // ── Delete Listing ───────────────────────────────────────────
-export async function deleteListing(type: string, id: string, userId: string): Promise<boolean> {
+export async function deleteListing(type: string, id: string, userId: string, isAdmin = false): Promise<boolean> {
   type = normalizeType(type);
   let rows: Record<string, unknown>[];
-  switch (type) {
-    case "club": rows = await sql`DELETE FROM clubs WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "team": rows = await sql`DELETE FROM teams WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "trainer": rows = await sql`DELETE FROM trainers WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "camp": rows = await sql`DELETE FROM camps WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "guest": rows = await sql`DELETE FROM guest_opportunities WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "tournament": rows = await sql`DELETE FROM tournaments WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "futsal": rows = await sql`DELETE FROM futsal_teams WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "trip": rows = await sql`DELETE FROM international_trips WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "marketplace": rows = await sql`DELETE FROM marketplace WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "player": rows = await sql`DELETE FROM player_profiles WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "podcast": rows = await sql`DELETE FROM podcasts WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "fbgroup": rows = await sql`DELETE FROM facebook_groups WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    case "service": rows = await sql`DELETE FROM services WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
-    default: return false;
+  if (isAdmin) {
+    switch (type) {
+      case "club": rows = await sql`DELETE FROM clubs WHERE id = ${id} RETURNING id`; break;
+      case "team": rows = await sql`DELETE FROM teams WHERE id = ${id} RETURNING id`; break;
+      case "trainer": rows = await sql`DELETE FROM trainers WHERE id = ${id} RETURNING id`; break;
+      case "camp": rows = await sql`DELETE FROM camps WHERE id = ${id} RETURNING id`; break;
+      case "guest": rows = await sql`DELETE FROM guest_opportunities WHERE id = ${id} RETURNING id`; break;
+      case "tournament": rows = await sql`DELETE FROM tournaments WHERE id = ${id} RETURNING id`; break;
+      case "futsal": rows = await sql`DELETE FROM futsal_teams WHERE id = ${id} RETURNING id`; break;
+      case "trip": rows = await sql`DELETE FROM international_trips WHERE id = ${id} RETURNING id`; break;
+      case "marketplace": rows = await sql`DELETE FROM marketplace WHERE id = ${id} RETURNING id`; break;
+      case "player": rows = await sql`DELETE FROM player_profiles WHERE id = ${id} RETURNING id`; break;
+      case "podcast": rows = await sql`DELETE FROM podcasts WHERE id = ${id} RETURNING id`; break;
+      case "fbgroup": rows = await sql`DELETE FROM facebook_groups WHERE id = ${id} RETURNING id`; break;
+      case "service": rows = await sql`DELETE FROM services WHERE id = ${id} RETURNING id`; break;
+      default: return false;
+    }
+  } else {
+    switch (type) {
+      case "club": rows = await sql`DELETE FROM clubs WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "team": rows = await sql`DELETE FROM teams WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "trainer": rows = await sql`DELETE FROM trainers WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "camp": rows = await sql`DELETE FROM camps WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "guest": rows = await sql`DELETE FROM guest_opportunities WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "tournament": rows = await sql`DELETE FROM tournaments WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "futsal": rows = await sql`DELETE FROM futsal_teams WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "trip": rows = await sql`DELETE FROM international_trips WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "marketplace": rows = await sql`DELETE FROM marketplace WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "player": rows = await sql`DELETE FROM player_profiles WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "podcast": rows = await sql`DELETE FROM podcasts WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "fbgroup": rows = await sql`DELETE FROM facebook_groups WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "service": rows = await sql`DELETE FROM services WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      default: return false;
+    }
   }
   return rows.length > 0;
 }

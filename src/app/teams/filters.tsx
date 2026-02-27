@@ -83,30 +83,32 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
         {sorted.length === 0 ? (
           <EmptyState message="No teams match your filters." />
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sorted.map((team) => (
-                <ListingCard
-                  key={team.id}
-                  href={`/teams/${team.slug}`}
-                  title={team.name}
-                  subtitle={`${team.clubName || ""} · ${team.city}, ${team.state}`}
-                  badges={[
-                    { label: team.level, variant: "blue" },
-                    { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
-                    ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : []),
-                  ]}
-                  details={[
-                    { label: "Birth Year", value: team.ageGroup },
-                    { label: "Coach", value: team.coach },
-                    ...(team.positionsNeeded ? [{ label: "Positions", value: team.positionsNeeded }] : []),
-                    { label: "Season", value: team.season },
-                  ]}
-                  featured={team.featured}
-                  cta="View Team"
-                />
-            ))}
-          </div>
-          <div className="mt-8"><AnytimeInlineCTA /></div>
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sorted.map((team) => (
+                  <ListingCard
+                    key={team.id}
+                    href={`/teams/${team.slug}`}
+                    title={team.name}
+                    subtitle={`${team.clubName || ""} · ${team.city}, ${team.state}`}
+                    badges={[
+                      { label: team.level, variant: "blue" },
+                      { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
+                      ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : []),
+                    ]}
+                    details={[
+                      { label: "Birth Year", value: team.ageGroup },
+                      { label: "Coach", value: team.coach },
+                      ...(team.positionsNeeded ? [{ label: "Positions", value: team.positionsNeeded }] : []),
+                      { label: "Season", value: team.season },
+                    ]}
+                    featured={team.featured}
+                    cta="View Team"
+                  />
+              ))}
+            </div>
+            <div className="mt-8"><AnytimeInlineCTA /></div>
+          </>
         )}
       </div>
     </>

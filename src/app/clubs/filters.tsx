@@ -77,27 +77,29 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
         {sorted.length === 0 ? (
           <EmptyState message="No clubs match your filters. Try broadening your search." />
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sorted.map((club) => (
-                <ListingCard
-                  key={club.id}
-                  href={`/clubs/${club.slug}`}
-                  title={club.name}
-                  subtitle={`${club.city}, ${club.state}`}
-                  badges={[
-                    { label: club.level, variant: club.level.includes("MLS") ? "purple" : "blue" },
-                    { label: club.gender },
-                  ]}
-                  details={[
-                    { label: "Teams", value: String(club.teamCount) },
-                    { label: "Ages", value: club.ageGroups },
-                  ]}
-                  featured={club.featured}
-                  cta="View Club"
-                />
-            ))}
-          </div>
-          <div className="mt-8"><AnytimeInlineCTA /></div>
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sorted.map((club) => (
+                  <ListingCard
+                    key={club.id}
+                    href={`/clubs/${club.slug}`}
+                    title={club.name}
+                    subtitle={`${club.city}, ${club.state}`}
+                    badges={[
+                      { label: club.level, variant: club.level.includes("MLS") ? "purple" : "blue" },
+                      { label: club.gender },
+                    ]}
+                    details={[
+                      { label: "Teams", value: String(club.teamCount) },
+                      { label: "Ages", value: club.ageGroups },
+                    ]}
+                    featured={club.featured}
+                    cta="View Club"
+                  />
+              ))}
+            </div>
+            <div className="mt-8"><AnytimeInlineCTA /></div>
+          </>
         )}
       </div>
     </>
