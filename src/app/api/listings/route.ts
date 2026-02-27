@@ -14,7 +14,9 @@ import {
   createTripListing,
   createMarketplaceListing,
   createPlayerProfile,
+  createPodcastListing,
   updateListing,
+  archiveListing,
   deleteListing,
 } from "@/lib/db";
 
@@ -95,6 +97,9 @@ export async function POST(req: Request) {
       case "player":
         slug = await createPlayerProfile(data, session.user.id);
         break;
+      case "podcast":
+        slug = await createPodcastListing(data, session.user.id);
+        break;
       default:
         return NextResponse.json({ error: "Invalid listing type" }, { status: 400 });
     }
@@ -127,6 +132,24 @@ export async function PUT(req: Request) {
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Failed to update listing" }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
+  try {
+    const { type, id } = await req.json();
+    const archived = await archiveListing(type, id, session.user.id);
+    if (!archived) {
+      return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
+    }
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to archive listing" }, { status: 500 });
   }
 }
 

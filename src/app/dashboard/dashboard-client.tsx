@@ -18,6 +18,7 @@ const TYPE_PATHS: Record<string, string> = {
   books: "shop",
   showcase: "camps",
   player: "guest-play/players",
+  podcast: "podcasts",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -33,6 +34,7 @@ const TYPE_LABELS: Record<string, string> = {
   books: "Equipment",
   showcase: "College Showcase",
   player: "Player Profile",
+  podcast: "Podcast",
 };
 
 type Listing = { id: string; slug: string; name: string; status: string; type: string };
@@ -294,6 +296,7 @@ function DashboardContent() {
   const [showForm, setShowForm] = useState(false);
   const [formDefaultType, setFormDefaultType] = useState<ListingType | undefined>(undefined);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [archiving, setArchiving] = useState<string | null>(null);
 
   // Edit state
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
@@ -329,8 +332,24 @@ function DashboardContent() {
     setEditLoading(false);
   }
 
+  async function handleArchive(listing: Listing) {
+    if (!confirm(`Archive "${listing.name}"? This will hide it from public view.`)) return;
+    setArchiving(listing.id);
+    try {
+      const res = await fetch("/api/listings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: listing.type, id: listing.id }),
+      });
+      if (res.ok) {
+        setListings((prev) => prev.map((l) => l.id === listing.id ? { ...l, status: "archived" } : l));
+      }
+    } catch { /* ignore */ }
+    setArchiving(null);
+  }
+
   async function handleDelete(listing: Listing) {
-    if (!confirm(`Delete "${listing.name}"? This cannot be undone.`)) return;
+    if (!confirm(`Permanently delete "${listing.name}"? This cannot be undone.`)) return;
     setDeleting(listing.id);
     try {
       const res = await fetch("/api/listings", {
@@ -458,6 +477,8 @@ function DashboardContent() {
                       ? "bg-green-50 text-green-700"
                       : listing.status === "pending"
                       ? "bg-yellow-50 text-yellow-700"
+                      : listing.status === "archived"
+                      ? "bg-gray-100 text-gray-600"
                       : "bg-red-50 text-red-700"
                   }`}>
                     {listing.status}
@@ -466,26 +487,38 @@ function DashboardContent() {
                 <h3 className="font-[family-name:var(--font-display)] font-bold text-lg truncate">{listing.name}</h3>
               </div>
               <div className="flex items-center gap-2 shrink-0 ml-4">
-                <button
-                  onClick={() => handleEdit(listing)}
-                  disabled={editLoading}
-                  className="px-4 py-2 rounded-xl bg-accent/10 text-accent-hover text-sm font-medium hover:bg-accent/20 transition-colors disabled:opacity-50"
-                >
-                  Edit
-                </button>
-                <a
-                  href={`/${TYPE_PATHS[listing.type] || listing.type}/${listing.slug}`}
-                  className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-surface transition-colors"
-                >
-                  View
-                </a>
-                <button
-                  onClick={() => handleDelete(listing)}
-                  disabled={deleting === listing.id}
-                  className="px-4 py-2 rounded-xl border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
-                >
-                  {deleting === listing.id ? "..." : "Delete"}
-                </button>
+                {listing.status !== "archived" ? (
+                  <>
+                    <button
+                      onClick={() => handleEdit(listing)}
+                      disabled={editLoading}
+                      className="px-4 py-2 rounded-xl bg-accent/10 text-accent-hover text-sm font-medium hover:bg-accent/20 transition-colors disabled:opacity-50"
+                    >
+                      Edit
+                    </button>
+                    <a
+                      href={`/${TYPE_PATHS[listing.type] || listing.type}/${listing.slug}`}
+                      className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-surface transition-colors"
+                    >
+                      View
+                    </a>
+                    <button
+                      onClick={() => handleArchive(listing)}
+                      disabled={archiving === listing.id}
+                      className="px-4 py-2 rounded-xl border border-amber-200 text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors disabled:opacity-50"
+                    >
+                      {archiving === listing.id ? "..." : "Archive"}
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => handleDelete(listing)}
+                    disabled={deleting === listing.id}
+                    className="px-4 py-2 rounded-xl border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                  >
+                    {deleting === listing.id ? "..." : "Delete"}
+                  </button>
+                )}
               </div>
             </div>
           ))}
