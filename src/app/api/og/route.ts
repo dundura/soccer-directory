@@ -23,12 +23,27 @@ export async function GET(req: Request) {
 }
 
 function extract(html: string, property: string): string | null {
-  const re = new RegExp(`<meta[^>]*(?:property|name)=["']${property}["'][^>]*content=["']([^"']*)["']`, 'i');
-  const match = html.match(re);
-  if (match) return match[1];
+  // Match quoted: property="og:title" content="value"
+  const re1 = new RegExp(`<meta[^>]*(?:property|name)=["']${property}["'][^>]*content=["']([^"']*)["']`, 'i');
+  const m1 = html.match(re1);
+  if (m1) return decodeHtmlEntities(m1[1]);
+  // Match quoted reverse order: content="value" property="og:title"
   const re2 = new RegExp(`<meta[^>]*content=["']([^"']*)["'][^>]*(?:property|name)=["']${property}["']`, 'i');
-  const match2 = html.match(re2);
-  return match2 ? match2[1] : null;
+  const m2 = html.match(re2);
+  if (m2) return decodeHtmlEntities(m2[1]);
+  // Match unquoted: property=og:title content=value or content="value with spaces"
+  const re3 = new RegExp(`<meta[^>]*(?:property|name)=${property}[\\s>][^>]*content=(?:"([^"]*)"|([^\\s>]+))`, 'i');
+  const m3 = html.match(re3);
+  if (m3) return decodeHtmlEntities(m3[1] ?? m3[2]);
+  // Match unquoted reverse: content=value property=og:title
+  const re4 = new RegExp(`<meta[^>]*content=(?:"([^"]*)"|([^\\s>]+))[^>]*(?:property|name)=${property}[\\s>]`, 'i');
+  const m4 = html.match(re4);
+  if (m4) return decodeHtmlEntities(m4[1] ?? m4[2]);
+  return null;
+}
+
+function decodeHtmlEntities(s: string): string {
+  return s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
 }
 
 function extractTag(html: string, tag: string): string | null {
