@@ -35,7 +35,7 @@ export function PhotoGallery({ photos }: { photos: string[] }) {
           key={i}
           src={url}
           alt={`Photo ${i + 1}`}
-          className="w-full aspect-square object-contain rounded-xl border border-border bg-surface"
+          className="w-full aspect-[4/3] object-cover rounded-xl border border-border"
         />
       ))}
     </div>
