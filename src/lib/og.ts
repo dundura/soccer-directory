@@ -2,8 +2,14 @@ import type { Metadata } from "next";
 
 const FALLBACK_IMAGE = "https://www.soccer-near-me.com/og-image.png";
 
+function isValidOgImage(url?: string | null): string | null {
+  if (!url) return null;
+  if (url.includes("fbcdn.net") || url.includes("facebook.com/photo")) return null;
+  return url;
+}
+
 export function ogMeta(title: string, description: string, image?: string | null, url?: string): Metadata {
-  const ogImage = image || FALLBACK_IMAGE;
+  const ogImage = isValidOgImage(image) || FALLBACK_IMAGE;
   return {
     title,
     description,
