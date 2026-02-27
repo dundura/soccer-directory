@@ -48,10 +48,10 @@ const navGroups = [
     ],
   },
   {
-    label: "Community",
+    label: "Blog",
     links: [
-      { label: "Forum", href: "/forum" },
       { label: "Blog", href: "/blog" },
+      { label: "Forum", href: "/forum" },
     ],
   },
 ];
@@ -121,7 +121,7 @@ export function MobileMenu() {
                     ))}
                   </div>
                 )}
-                {group.label === "Community" && (
+                {group.label === "Blog" && (
                   <a
                     href="/free"
                     onClick={() => setOpen(false)}
