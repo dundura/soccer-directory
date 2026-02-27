@@ -1,3 +1,10 @@
+export interface MediaLink {
+  url: string;
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
 export interface ProfileFields {
   teamPhoto?: string;
   photos?: string[];
@@ -8,6 +15,7 @@ export interface ProfileFields {
   logo?: string;
   socialMedia?: { facebook?: string; instagram?: string; youtube?: string };
   phone?: string;
+  mediaLinks?: MediaLink[];
 }
 
 export interface Club extends ProfileFields {

@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { Club, Team, TeamEvent, Trainer, Camp, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, ProfileFields, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment } from "./types";
+import type { Club, Team, TeamEvent, Trainer, Camp, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, ProfileFields, MediaLink, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment } from "./types";
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -24,6 +24,10 @@ function mapProfileFields(r: Record<string, unknown>): ProfileFields {
   if (r.social_media) {
     try { sm = JSON.parse(r.social_media as string); } catch { sm = undefined; }
   }
+  let mediaLinks: MediaLink[] | undefined;
+  if (r.media_links) {
+    try { mediaLinks = JSON.parse(r.media_links as string); } catch { mediaLinks = undefined; }
+  }
   return {
     teamPhoto: r.team_photo as string | undefined,
     photos,
@@ -34,6 +38,7 @@ function mapProfileFields(r: Record<string, unknown>): ProfileFields {
     logo: r.logo as string | undefined,
     socialMedia: sm,
     phone: r.phone as string | undefined,
+    mediaLinks,
   };
 }
 
@@ -534,6 +539,7 @@ function profileFields(data: Record<string, string>) {
     videoUrl: data.videoUrl !== undefined ? (data.videoUrl || "") : null,
     practiceSchedule: data.practiceSchedule || null,
     address: data.address || null,
+    mediaLinks: data.mediaLinks || null,
   };
 }
 
@@ -550,7 +556,7 @@ export async function createClubListing(data: Record<string, string>, userId: st
   const slug = slugify(data.name);
   const sm = buildSocialMedia(data);
   const pf = profileFields(data);
-  await sql`INSERT INTO clubs (id, slug, name, city, country, state, level, age_groups, gender, team_count, description, website, email, phone, social_media, logo, image_url, team_photo, photos, video_url, practice_schedule, address, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.ageGroups}, ${data.gender}, ${Number(data.teamCount) || 0}, ${data.description}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, ${pf.teamPhoto}, ${pf.photos}, ${pf.videoUrl}, ${pf.practiceSchedule}, ${pf.address}, false, ${userId}, 'approved')`;
+  await sql`INSERT INTO clubs (id, slug, name, city, country, state, level, age_groups, gender, team_count, description, website, email, phone, social_media, logo, image_url, team_photo, photos, video_url, practice_schedule, address, media_links, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.ageGroups}, ${data.gender}, ${Number(data.teamCount) || 0}, ${data.description}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, ${pf.teamPhoto}, ${pf.photos}, ${pf.videoUrl}, ${pf.practiceSchedule}, ${pf.address}, ${pf.mediaLinks}, false, ${userId}, 'approved')`;
   return slug;
 }
 
@@ -559,7 +565,7 @@ export async function createTeamListing(data: Record<string, string>, userId: st
   const slug = slugify(data.name);
   const sm = buildSocialMedia(data);
   const pf = profileFields(data);
-  await sql`INSERT INTO teams (id, slug, name, club_name, city, country, state, level, age_group, gender, coach, looking_for_players, positions_needed, season, description, phone, social_media, logo, image_url, team_photo, photos, video_url, practice_schedule, address, events, annual_tournaments, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.clubName || null}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.ageGroup}, ${data.gender}, ${data.coach}, ${data.lookingForPlayers === "true"}, ${data.positionsNeeded || null}, ${data.season}, ${data.description || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, ${pf.teamPhoto}, ${pf.photos}, ${pf.videoUrl}, ${pf.practiceSchedule}, ${pf.address}, ${data.events || null}, ${data.annualTournaments || null}, false, ${userId}, 'approved')`;
+  await sql`INSERT INTO teams (id, slug, name, club_name, city, country, state, level, age_group, gender, coach, looking_for_players, positions_needed, season, description, phone, social_media, logo, image_url, team_photo, photos, video_url, practice_schedule, address, events, annual_tournaments, media_links, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.clubName || null}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.level}, ${data.ageGroup}, ${data.gender}, ${data.coach}, ${data.lookingForPlayers === "true"}, ${data.positionsNeeded || null}, ${data.season}, ${data.description || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, ${pf.teamPhoto}, ${pf.photos}, ${pf.videoUrl}, ${pf.practiceSchedule}, ${pf.address}, ${data.events || null}, ${data.annualTournaments || null}, ${pf.mediaLinks}, false, ${userId}, 'approved')`;
   return slug;
 }
 
@@ -784,10 +790,10 @@ export async function updateListing(type: string, id: string, data: Record<strin
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club":
-      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "team":
-      rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, events=${data.events || null}, annual_tournaments=${data.annualTournaments || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, events=${data.events || null}, annual_tournaments=${data.annualTournaments || null}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "trainer":
       rows = await sql`UPDATE trainers SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty}, experience=${data.experience}, credentials=${data.credentials}, price_range=${data.priceRange}, service_area=${data.serviceArea}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
@@ -827,10 +833,10 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club":
-      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
     case "team":
-      rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, events=${data.events || null}, annual_tournaments=${data.annualTournaments || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, events=${data.events || null}, annual_tournaments=${data.annualTournaments || null}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
     case "trainer":
       rows = await sql`UPDATE trainers SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty}, experience=${data.experience}, credentials=${data.credentials}, price_range=${data.priceRange}, service_area=${data.serviceArea}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, updated_at=NOW() WHERE id=${id} RETURNING id`;
