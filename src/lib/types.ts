@@ -16,6 +16,7 @@ export interface ProfileFields {
   socialMedia?: { facebook?: string; instagram?: string; youtube?: string };
   phone?: string;
   mediaLinks?: MediaLink[];
+  imagePosition?: number;
 }
 
 export interface Club extends ProfileFields {
@@ -35,6 +36,9 @@ export interface Club extends ProfileFields {
   website?: string;
   email?: string;
   blogUrl?: string;
+  announcementHeading?: string;
+  announcementText?: string;
+  announcementImage?: string;
   featured: boolean;
   createdAt: string;
   updatedAt: string;
@@ -66,6 +70,9 @@ export interface Team extends ProfileFields {
   description?: string;
   events?: TeamEvent[];
   annualTournaments?: string[];
+  announcementHeading?: string;
+  announcementText?: string;
+  announcementImage?: string;
   featured: boolean;
   createdAt: string;
   updatedAt: string;

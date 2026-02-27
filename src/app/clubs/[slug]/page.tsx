@@ -5,6 +5,7 @@ import { ManageListingButton } from "@/components/manage-listing-button";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
+import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -64,6 +65,7 @@ export default async function ClubDetailPage({ params }: Props) {
   }
 
   const pageUrl = `https://www.soccer-near-me.com/clubs/${slug}`;
+  const imgPos = club.imagePosition ?? 50;
   const heroPhoto = club.imageUrl || club.teamPhoto || DEFAULT_HERO_PHOTO;
   const clubPhotos = club.photos && club.photos.length > 0 ? club.photos : DEFAULT_PHOTOS;
   const logo = club.logo || DEFAULT_LOGO;
@@ -94,7 +96,7 @@ export default async function ClubDetailPage({ params }: Props) {
 
             {/* Photo + Club ID + Contact */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={club.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={club.name} className="w-full h-[200px] object-cover block" />
+              <img src={club.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={club.name} className="w-full h-[200px] object-cover block" style={{ objectPosition: `center ${imgPos}%` }} />
               <div className="text-center py-3.5 px-4">
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{club.name}</h3>
                 <p className="text-sm text-muted mt-1">{club.city}, {club.state}</p>
@@ -183,7 +185,7 @@ export default async function ClubDetailPage({ params }: Props) {
 
           {/* ====== Hero ====== */}
           <div className="order-1 lg:order-none lg:col-start-2 bg-white rounded-2xl overflow-hidden shadow-sm">
-              <HeroImage src={heroPhoto} alt={club.name} id={club.id} />
+              <HeroImage src={heroPhoto} alt={club.name} id={club.id} imagePosition={club.imagePosition} />
               <div className="p-5 sm:p-7 sm:flex sm:gap-6 sm:items-start">
               <img
                 src={logo}
@@ -213,8 +215,15 @@ export default async function ClubDetailPage({ params }: Props) {
               </div>
           </div>
 
+          {/* ====== Special Announcement ====== */}
+          {club.announcementText && (
+            <div className="order-2 lg:order-none lg:col-start-2">
+              <AnnouncementSection heading={club.announcementHeading} text={club.announcementText} image={club.announcementImage} />
+            </div>
+          )}
+
           {/* ====== At a Glance ====== */}
-          <div className="order-2 lg:order-none lg:col-start-2 bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
+          <div className={`${club.announcementText ? "order-3" : "order-2"} lg:order-none lg:col-start-2 bg-white rounded-2xl p-4 sm:p-6 shadow-sm`}>
               <h3 className="text-[13px] sm:text-[15px] font-bold text-primary mb-2.5 sm:mb-3.5">At a Glance</h3>
               <div className="grid grid-cols-2 gap-1.5 sm:gap-2.5 mt-1">
                 <div className="flex items-center gap-1.5 sm:gap-2.5">
@@ -277,7 +286,7 @@ export default async function ClubDetailPage({ params }: Props) {
               <h3 className="text-[15px] font-bold text-primary mb-3">Photos &amp; Video</h3>
               <div className={`grid grid-cols-2 gap-1.5 ${videoUrl ? "mb-3" : ""}`}>
                 {clubPhotos.map((photo, i) => (
-                  <img key={i} src={photo} alt={`Club photo ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-lg block" />
+                  <img key={i} src={photo} alt={`Club photo ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-lg block" style={{ objectPosition: `center ${imgPos}%` }} />
                 ))}
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}

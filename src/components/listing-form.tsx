@@ -105,6 +105,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "website", label: "Website" },
     { name: "email", label: "Contact Email", type: "email" },
     { name: "phone", label: "Phone" },
+    { name: "_announcement", label: "Special Announcement", type: "heading" },
+    { name: "announcementHeading", label: "Announcement Heading (default: Special Announcement)" },
+    { name: "announcementText", label: "Announcement Text", type: "textarea" },
+    { name: "announcementImage", label: "Announcement Image", type: "image" },
     { name: "_socials", label: "Social Media", type: "heading" },
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
@@ -139,6 +143,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_tournaments", label: "Annual Tournaments", type: "heading" },
     { name: "annualTournaments", label: "Tournaments (up to 10)", type: "tournament-list" },
     { name: "phone", label: "Phone" },
+    { name: "_announcement", label: "Special Announcement", type: "heading" },
+    { name: "announcementHeading", label: "Announcement Heading (default: Special Announcement)" },
+    { name: "announcementText", label: "Announcement Text", type: "textarea" },
+    { name: "announcementImage", label: "Announcement Image", type: "image" },
     { name: "_socials", label: "Social Media", type: "heading" },
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
@@ -535,6 +543,41 @@ function ImageField({ value, defaultImage, onChange }: { value: string; defaultI
   );
 }
 
+// ── Image Position Slider ────────────────────────────────────────
+
+function ImagePositionSlider({ imageUrl, position, onChange }: { imageUrl: string; position: number; onChange: (v: number) => void }) {
+  if (!imageUrl) return null;
+  return (
+    <div className="space-y-2">
+      <label className="text-xs font-medium text-muted">Adjust Image Crop Position</label>
+      <div className="flex gap-4 items-start">
+        <div className="w-32 h-32 rounded-lg overflow-hidden border border-border shrink-0">
+          <img
+            src={imageUrl}
+            alt="Position preview"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: `center ${position}%` }}
+          />
+        </div>
+        <div className="flex flex-col items-center gap-1 py-1">
+          <span className="text-[10px] text-muted">Top</span>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={position}
+            onChange={(e) => onChange(Number(e.target.value))}
+            className="h-24 accent-accent"
+            style={{ writingMode: "vertical-lr", direction: "rtl" }}
+          />
+          <span className="text-[10px] text-muted">Bottom</span>
+        </div>
+        <span className="text-xs text-muted mt-1">{position}%</span>
+      </div>
+    </div>
+  );
+}
+
 // ── Hero Image or Color Field ────────────────────────────────────
 
 const HERO_COLORS = [
@@ -814,11 +857,20 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
 
             /* Image with default + reset */
             ) : field.type === "image" ? (
-              <ImageField
-                value={formData[field.name] || ""}
-                defaultImage={field.name === "teamPhoto" ? DEFAULT_SIDEBAR_IMAGE : DEFAULT_HERO_IMAGE}
-                onChange={(v) => handleChange(field.name, v)}
-              />
+              <div className="space-y-3">
+                <ImageField
+                  value={formData[field.name] || ""}
+                  defaultImage={field.name === "teamPhoto" ? DEFAULT_SIDEBAR_IMAGE : DEFAULT_HERO_IMAGE}
+                  onChange={(v) => handleChange(field.name, v)}
+                />
+                {field.name === "teamPhoto" && formData.teamPhoto && formData.teamPhoto !== DEFAULT_SIDEBAR_IMAGE && (
+                  <ImagePositionSlider
+                    imageUrl={formData.teamPhoto}
+                    position={Number(formData.imagePosition) || 50}
+                    onChange={(v) => handleChange("imagePosition", String(v))}
+                  />
+                )}
+              </div>
 
             /* Photos (up to 5 URLs) */
             ) : field.type === "photos" ? (
