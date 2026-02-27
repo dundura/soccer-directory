@@ -118,7 +118,6 @@ export default async function ClubDetailPage({ params }: Props) {
                 { label: "Teams", value: String(club.teamCount) },
                 { label: "Ages", value: club.ageGroups },
                 { label: "Gender", value: club.gender },
-                ...(club.practiceSchedule && club.practiceSchedule.length > 0 ? [{ label: "Practice Days", value: club.practiceSchedule.join(", ") }] : []),
                 ...(club.address ? [{ label: "Address", value: club.address }] : []),
                 ...(club.email ? [{ label: "Email", value: club.email }] : []),
               ].map((row) => (
