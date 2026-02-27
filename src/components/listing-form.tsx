@@ -74,6 +74,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   books: "Quality soccer equipment available for purchase. Great condition and ready for the next player!",
   showcase: "Join us for a competitive college showcase event! Get exposure in front of college coaches and recruiters.",
   player: "A dedicated soccer player looking for new opportunities to compete and grow. Open to guest play, tryouts, and showcase events.",
+  podcast: "A soccer podcast covering youth development, coaching insights, and the beautiful game.",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -414,6 +415,11 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl2", label: "Highlight Video 2 (YouTube/Vimeo)" },
     { name: "videoUrl3", label: "Highlight Video 3 (YouTube/Vimeo)" },
   ],
+  podcast: [
+    { name: "name", label: "Podcast Name", required: true },
+    { name: "description", label: "Description", required: true, type: "textarea" },
+    { name: "website", label: "Website" },
+  ],
 };
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -430,6 +436,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   books: "Equipment",
   marketplace: "Equipment",
   player: "Player Profile",
+  podcast: "Podcast",
 };
 
 // ── Shared styles ──────────────────────────────────────────────

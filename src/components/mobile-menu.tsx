@@ -12,13 +12,18 @@ const navGroups = [
       { label: "Futsal", href: "/futsal" },
       { label: "Camps", href: "/camps" },
       { label: "College Showcases", href: "/camps?type=College+Showcase" },
-      { label: "Coaches & Trainers", href: "/trainers" },
-      { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
       { label: "Guest Play", href: "/guest-play" },
       { label: "Player Profiles", href: "/guest-play/players" },
       { label: "Guest Player Posts", href: "/guest-play/posts" },
       { label: "US Tournaments", href: "/tournaments?region=US" },
       { label: "Int'l Tournaments", href: "/tournaments?region=International" },
+    ],
+  },
+  {
+    label: "Train",
+    links: [
+      { label: "Coaches & Trainers", href: "/trainers" },
+      { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
     ],
   },
   {

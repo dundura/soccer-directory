@@ -73,8 +73,6 @@ function Header() {
                     { label: "Teams", href: "/teams", desc: "Browse team listings", icon: "⚽" },
                     { label: "Futsal", href: "/futsal", desc: "Indoor futsal teams", icon: "🥅" },
                     { label: "Camps", href: "/camps", desc: "Soccer camps & clinics", icon: "🏕️" },
-                    { label: "Coaches & Trainers", href: "/trainers", desc: "Private & group training", icon: "🎯" },
-                    { label: "Mental Training", href: "/trainers?specialty=Mental+Training", desc: "Sports psychology", icon: "🧠" },
                   ],
                 },
                 {
@@ -88,6 +86,13 @@ function Header() {
                     { label: "Int'l Tournaments", href: "/tournaments?region=International", desc: "International events", icon: "🌎" },
                   ],
                 },
+              ]}
+            />
+            <NavDropdown
+              label="Train"
+              items={[
+                { label: "Coaches & Trainers", href: "/trainers" },
+                { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
               ]}
             />
             <a href="/shop" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Recommendations</a>
