@@ -7,6 +7,8 @@ import { ManageListingButton } from "@/components/manage-listing-button";
 import { ContactPodcastForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {

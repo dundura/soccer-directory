@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { ListingForm } from "@/components/listing-form";
 import type { ListingType } from "@/lib/types";
 
@@ -30,6 +30,7 @@ const TYPE_PATHS: Record<string, string> = {
 export default function AdminClient() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [tab, setTab] = useState<"users" | "listings">("users");
   const [users, setUsers] = useState<User[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
@@ -179,7 +180,11 @@ export default function AdminClient() {
                   editId={editingListing.id}
                   initialData={editData}
                   isAdmin
-                  onSuccess={() => { setEditingListing(null); setEditData(null); fetchData(); }}
+                  onSuccess={() => {
+                    const path = `/${TYPE_PATHS[editingListing.type] || editingListing.type}/${editingListing.slug}`;
+                    setEditingListing(null); setEditData(null);
+                    router.push(path);
+                  }}
                   onCancel={() => { setEditingListing(null); setEditData(null); }}
                 />
               </div>

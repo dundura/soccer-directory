@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { ListingForm } from "@/components/listing-form";
 import type { ListingType } from "@/lib/types";
 
@@ -295,6 +296,7 @@ function AccountSettings() {
 
 function DashboardContent() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -381,7 +383,11 @@ function DashboardContent() {
             editType={editingListing.type as ListingType}
             editId={editingListing.id}
             initialData={editData}
-            onSuccess={() => { setEditingListing(null); setEditData(null); fetchListings(); }}
+            onSuccess={() => {
+              const path = `/${TYPE_PATHS[editingListing.type] || editingListing.type}/${editingListing.slug}`;
+              setEditingListing(null); setEditData(null);
+              router.push(path);
+            }}
             onCancel={() => { setEditingListing(null); setEditData(null); }}
           />
         </div>

@@ -5,6 +5,8 @@ import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { ContactGroupForm } from "./contact-form";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
@@ -69,7 +71,7 @@ export default async function FacebookGroupPage({ params }: Props) {
                 {infoRows.map((row, i) => (
                   <tr key={row.label} className={i > 0 ? "border-t border-border" : ""}>
                     <td className="px-4 py-3 text-muted whitespace-nowrap">{row.label}</td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right break-all">
                       {"href" in row && row.href ? (
                         <a href={row.href.startsWith("http") ? row.href : `https://${row.href}`} target="_blank" rel="noopener noreferrer" className="font-bold text-accent hover:text-accent-hover transition-colors">{row.value} ↗</a>
                       ) : (
