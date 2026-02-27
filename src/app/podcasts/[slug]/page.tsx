@@ -100,7 +100,11 @@ export default async function PodcastPage({ params }: Props) {
         <div className="flex-1 min-w-0 space-y-6">
           {/* Hero Banner */}
           <div className="relative rounded-2xl overflow-hidden h-48 md:h-64">
-            <img src={heroImage} alt={podcast.name} className="w-full h-full object-cover" />
+            {heroImage.startsWith("color:") ? (
+              <div className="w-full h-full" style={{ backgroundColor: heroImage.replace("color:", "") }} />
+            ) : (
+              <img src={heroImage} alt={podcast.name} className="w-full h-full object-cover" />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
               <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1">{podcast.name}</h1>

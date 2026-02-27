@@ -24,11 +24,24 @@ function getPhrase(id: string): string {
   return OVERLAY_PHRASES[Math.abs(hash) % OVERLAY_PHRASES.length];
 }
 
+export function isHeroColor(src: string): boolean {
+  return src.startsWith("color:");
+}
+
+export function getHeroColor(src: string): string {
+  return src.replace("color:", "");
+}
+
 export function HeroImage({ src, alt, id }: { src: string; alt: string; id: string }) {
   const phrase = getPhrase(id);
+  const isColor = isHeroColor(src);
   return (
     <div className="relative h-[220px]">
-      <img src={src} alt={alt} className="w-full h-full object-cover block" />
+      {isColor ? (
+        <div className="w-full h-full" style={{ backgroundColor: getHeroColor(src) }} />
+      ) : (
+        <img src={src} alt={alt} className="w-full h-full object-cover block" />
+      )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
       <span className="absolute bottom-4 left-5 text-white text-sm font-semibold tracking-wide drop-shadow-lg">
         {phrase}

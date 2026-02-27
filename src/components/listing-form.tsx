@@ -111,7 +111,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "address", label: "Practice Address" },
     { name: "practiceSchedule", label: "Practice Days", type: "schedule" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
@@ -145,7 +145,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "address", label: "Practice Address" },
     { name: "practiceSchedule", label: "Practice Days", type: "schedule" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
@@ -174,7 +174,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "address", label: "Training Location Address" },
     { name: "practiceSchedule", label: "Availability", type: "schedule" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
@@ -203,7 +203,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
@@ -228,7 +228,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
@@ -256,7 +256,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
@@ -283,7 +283,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "address", label: "Practice Address" },
     { name: "practiceSchedule", label: "Practice Days", type: "schedule" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
@@ -312,7 +312,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
@@ -381,7 +381,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
@@ -410,7 +410,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "teamPhoto", label: "Player Photo", type: "image" },
     { name: "logo", label: "Club Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Action Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Highlight Video 1 (YouTube/Vimeo)" },
     { name: "videoUrl2", label: "Highlight Video 2 (YouTube/Vimeo)" },
@@ -437,7 +437,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "teamPhoto", label: "Cover Art / Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Episode Video 1 (YouTube/Vimeo)" },
     { name: "videoUrl2", label: "Episode Video 2 (YouTube/Vimeo)" },
@@ -457,7 +457,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_fbwarning", label: "Do not use Facebook image links — they expire and will break. Upload images to Imgur or another host instead.", type: "warning" },
     { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "image" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
   ],
 };
@@ -511,6 +511,83 @@ function ImageField({ value, defaultImage, onChange }: { value: string; defaultI
       </div>
       {value && (
         <img src={value} alt="Preview" className="rounded-lg max-h-40 object-cover border border-border" />
+      )}
+    </div>
+  );
+}
+
+// ── Hero Image or Color Field ────────────────────────────────────
+
+const HERO_COLORS = [
+  { label: "Navy", value: "#1F4E79" },
+  { label: "Forest", value: "#2D6A4F" },
+  { label: "Red", value: "#DC373E" },
+  { label: "Sky", value: "#3B82F6" },
+  { label: "Purple", value: "#7C3AED" },
+  { label: "Orange", value: "#EA580C" },
+  { label: "Charcoal", value: "#374151" },
+  { label: "Teal", value: "#0D9488" },
+];
+
+function HeroImageField({ value, defaultImage, onChange }: { value: string; defaultImage: string; onChange: (v: string) => void }) {
+  const isColor = value.startsWith("color:");
+  const selectedColor = isColor ? value.replace("color:", "") : "";
+  const imageUrl = isColor ? "" : value;
+
+  return (
+    <div className="space-y-3">
+      <input
+        type="url"
+        value={imageUrl}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Image URL"
+        className={inputClass}
+      />
+      <div className="flex items-center gap-2">
+        {value && value !== defaultImage && !isColor && (
+          <button type="button" onClick={() => onChange(defaultImage)} className="text-xs text-accent hover:underline">
+            Reset to Default
+          </button>
+        )}
+        {!value && (
+          <button type="button" onClick={() => onChange(defaultImage)} className="text-xs text-accent hover:underline">
+            Use Default Image
+          </button>
+        )}
+        {isColor && (
+          <button type="button" onClick={() => onChange(defaultImage)} className="text-xs text-accent hover:underline">
+            Use Default Image Instead
+          </button>
+        )}
+      </div>
+
+      {/* Color picker */}
+      <div>
+        <p className="text-xs text-muted mb-2">Or pick a background color:</p>
+        <div className="flex flex-wrap gap-2">
+          {HERO_COLORS.map((c) => (
+            <button
+              key={c.value}
+              type="button"
+              onClick={() => onChange(`color:${c.value}`)}
+              title={c.label}
+              className={`w-10 h-10 rounded-lg border-2 transition-all ${selectedColor === c.value ? "border-accent scale-110 ring-2 ring-accent/30" : "border-border hover:scale-105"}`}
+              style={{ backgroundColor: c.value }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Preview */}
+      {isColor && (
+        <div className="rounded-lg overflow-hidden border border-border h-24 relative">
+          <div className="w-full h-full" style={{ backgroundColor: selectedColor }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+          <span className="absolute bottom-2 left-3 text-white text-xs font-semibold drop-shadow-lg">Your title here</span>
+        </div>
+      )}
+      {!isColor && imageUrl && (
+        <img src={imageUrl} alt="Preview" className="rounded-lg max-h-40 object-cover border border-border" />
       )}
     </div>
   );
@@ -707,6 +784,14 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                   {AGE_GROUPS.filter((a) => a !== "All").map((a) => <option key={a} value={a}>{a}</option>)}
                 </select>
               </div>
+
+            /* Hero image with color picker */
+            ) : field.type === "hero-image-or-color" ? (
+              <HeroImageField
+                value={formData[field.name] || ""}
+                defaultImage={DEFAULT_HERO_IMAGE}
+                onChange={(v) => handleChange(field.name, v)}
+              />
 
             /* Image with default + reset */
             ) : field.type === "image" ? (
