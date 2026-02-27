@@ -32,7 +32,7 @@ export default async function PodcastPage({ params }: Props) {
 
   const ownerId = await getListingOwner("podcast", slug);
 
-  const heroImage = podcast.imageUrl || "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+  const heroImage = podcast.imageUrl || podcast.teamPhoto || "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
   const sidebarImage = podcast.teamPhoto || podcast.logo || null;
 
   const infoRows = [
