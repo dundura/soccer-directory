@@ -78,8 +78,7 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
           <EmptyState message="No clubs match your filters. Try broadening your search." />
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sorted.map((club, i) => (
-              <>
+            {sorted.map((club) => (
                 <ListingCard
                   key={club.id}
                   href={`/clubs/${club.slug}`}
@@ -96,14 +95,9 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
                   featured={club.featured}
                   cta="View Club"
                 />
-                {i === 5 && (
-                  <div key="cta" className="md:col-span-2 lg:col-span-3">
-                    <AnytimeInlineCTA />
-                  </div>
-                )}
-              </>
             ))}
           </div>
+          <div className="mt-8"><AnytimeInlineCTA /></div>
         )}
       </div>
     </>
