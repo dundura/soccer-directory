@@ -335,6 +335,12 @@ export default async function TeamDetailPage({ params }: Props) {
               {videoUrl && <VideoEmbed url={videoUrl} />}
           </div>
 
+          {/* ====== Media ====== */}
+          <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="text-[15px] font-bold text-primary mb-3.5">Media</h3>
+              <p className="text-sm text-muted">No media coverage yet. Check back soon for news articles, interviews, and features.</p>
+          </div>
+
           {/* ====== Upcoming Events ====== */}
           <div className="order-6 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
               <h3 className="text-[15px] font-bold text-primary mb-3.5">Upcoming Events</h3>

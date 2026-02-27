@@ -277,6 +277,12 @@ export default async function ClubDetailPage({ params }: Props) {
               {videoUrl && <VideoEmbed url={videoUrl} />}
           </div>
 
+          {/* ====== Media ====== */}
+          <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
+              <h3 className="text-[15px] font-bold text-primary mb-3.5">Media</h3>
+              <p className="text-sm text-muted">No media coverage yet. Check back soon for news articles, interviews, and features.</p>
+          </div>
+
           {/* ====== Reviews ====== */}
           <div className="order-6 lg:order-none lg:col-start-2">
             <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
