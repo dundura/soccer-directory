@@ -137,26 +137,11 @@ export default async function FacebookGroupPage({ params }: Props) {
             </div>
           )}
 
-          {/* Photos with Join overlay */}
+          {/* Photos */}
           {group.photos && group.photos.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-5">
               <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Photos</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {group.photos.map((photo, i) => (
-                  <a
-                    key={i}
-                    href={group.groupUrl?.startsWith("http") ? group.groupUrl : `https://${group.groupUrl}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative group rounded-xl overflow-hidden aspect-square"
-                  >
-                    <img src={photo} alt={`${group.name} photo ${i + 1}`} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-primary/40 flex items-center justify-center group-hover:bg-primary/60 transition-colors">
-                      <span className="text-white font-[family-name:var(--font-display)] text-sm sm:text-base font-bold drop-shadow-lg">Join Our Group</span>
-                    </div>
-                  </a>
-                ))}
-              </div>
+              <PhotoGallery photos={group.photos} />
             </div>
           )}
 
