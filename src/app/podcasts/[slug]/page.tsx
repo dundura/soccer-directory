@@ -190,17 +190,6 @@ export default async function PodcastPage({ params }: Props) {
                     Listen Now
                   </a>
                 )}
-                {podcast.rssFeedUrl && (
-                  <a
-                    href={podcast.rssFeedUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-accent text-accent font-semibold text-sm hover:bg-accent hover:text-white transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 110-2 1 1 0 010 2z" /></svg>
-                    RSS Feed
-                  </a>
-                )}
               </div>
             </div>
           )}
