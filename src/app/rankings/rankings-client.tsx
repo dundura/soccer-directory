@@ -225,6 +225,7 @@ export function RankingsClient() {
   const [gender, setGender] = useState('m');
   const [age, setAge] = useState('14');
   const [state, setState] = useState('national');
+  const [search, setSearch] = useState('');
   const [data, setData] = useState<RankingsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -336,6 +337,15 @@ export function RankingsClient() {
         }
         .rk-state-select:focus { border-color: #3B82F6; }
 
+        .rk-search {
+          padding: 7px 12px; border: 1.5px solid #E2E8F0; border-radius: 8px;
+          font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500;
+          color: #334155; background: white; outline: none;
+          transition: border-color 0.13s; min-width: 160px; max-width: 220px;
+        }
+        .rk-search:focus { border-color: #3B82F6; }
+        .rk-search::placeholder { color: #94A3B8; }
+
         .rk-main { max-width: 980px; margin: 0 auto; padding: 24px; }
 
         .results-header {
@@ -425,6 +435,13 @@ export function RankingsClient() {
             <select className="rk-state-select" value={state} onChange={e => setState(e.target.value)}>
               {US_STATES.map(s => <option key={s.code} value={s.code}>{s.name}</option>)}
             </select>
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search team or club..."
+              className="rk-search"
+            />
           </div>
         </div>
 
@@ -477,9 +494,15 @@ export function RankingsClient() {
             )}
 
             {/* Rows */}
-            {!loading && !error && data?.teams?.map((team, i) => (
-              <TeamRow key={team.teamId || i} team={team} index={i} state={state} />
-            ))}
+            {!loading && !error && data?.teams
+              ?.filter(team => {
+                if (!search) return true;
+                const q = search.toLowerCase();
+                return team.name.toLowerCase().includes(q) || team.club.toLowerCase().includes(q);
+              })
+              .map((team, i) => (
+                <TeamRow key={team.teamId || i} team={team} index={i} state={state} />
+              ))}
           </div>
 
           {/* Source footer */}
