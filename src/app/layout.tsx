@@ -96,6 +96,7 @@ function Header() {
                 },
               ]}
             />
+            <a href="/rankings" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Rankings</a>
             <a href="/shop" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Recommendations</a>
             <a href="/free" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Free</a>
             <NavDropdown
