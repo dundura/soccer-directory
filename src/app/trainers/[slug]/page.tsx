@@ -59,6 +59,7 @@ export default async function TrainerDetailPage({ params }: Props) {
   }
 
   const pageUrl = `https://www.soccer-near-me.com/trainers/${slug}`;
+  const imgPos = trainer.imagePosition ?? 50;
   const heroPhoto = trainer.imageUrl || trainer.teamPhoto || DEFAULT_HERO_PHOTO;
   const trainerPhotos = trainer.photos && trainer.photos.length > 0 ? trainer.photos : DEFAULT_PHOTOS;
   const logo = trainer.logo || DEFAULT_LOGO;
@@ -89,7 +90,7 @@ export default async function TrainerDetailPage({ params }: Props) {
 
             {/* Photo + Name + Contact */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={trainer.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={trainer.name} className="w-full h-[200px] object-cover block" />
+              <img src={trainer.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={trainer.name} className="w-full h-[200px] object-cover block" style={{ objectPosition: `center ${imgPos}%` }} />
               <div className="text-center py-3.5 px-4">
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{trainer.name}</h3>
                 <p className="text-sm text-muted mt-1">{trainer.city}, {trainer.state}</p>
@@ -172,7 +173,7 @@ export default async function TrainerDetailPage({ params }: Props) {
 
             {/* Hero */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <HeroImage src={heroPhoto} alt={trainer.name} id={trainer.id} />
+              <HeroImage src={heroPhoto} alt={trainer.name} id={trainer.id} imagePosition={trainer.imagePosition} />
               <div className="p-7 flex gap-6 items-start">
                 <img
                   src={logo}

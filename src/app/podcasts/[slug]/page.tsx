@@ -37,6 +37,7 @@ export default async function PodcastPage({ params }: Props) {
   const ownerId = await getListingOwner("podcast", slug);
   const rssEpisodes = podcast.rssFeedUrl ? await fetchRssEpisodes(podcast.rssFeedUrl, 10) : [];
 
+  const imgPos = podcast.imagePosition ?? 50;
   const heroImage = podcast.imageUrl || podcast.teamPhoto || "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
   const sidebarImage = podcast.teamPhoto || podcast.logo || null;
 
@@ -58,7 +59,7 @@ export default async function PodcastPage({ params }: Props) {
           {/* Cover Art */}
           <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
             {sidebarImage ? (
-              <img src={sidebarImage} alt={podcast.name} className="w-full aspect-square object-cover" />
+              <img src={sidebarImage} alt={podcast.name} className="w-full aspect-square object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
             ) : (
               <div className="w-full aspect-square bg-primary flex items-center justify-center">
                 <span className="text-6xl">🎙️</span>
@@ -106,7 +107,7 @@ export default async function PodcastPage({ params }: Props) {
             {heroImage.startsWith("color:") ? (
               <div className="w-full h-full" style={{ backgroundColor: heroImage.replace("color:", "") }} />
             ) : (
-              <img src={heroImage} alt={podcast.name} className="w-full h-full object-cover" />
+              <img src={heroImage} alt={podcast.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
@@ -224,7 +225,7 @@ export default async function PodcastPage({ params }: Props) {
           {podcast.photos && podcast.photos.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-5">
               <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Photos</h2>
-              <PhotoGallery photos={podcast.photos} />
+              <PhotoGallery photos={podcast.photos} imagePosition={podcast.imagePosition} />
             </div>
           )}
 

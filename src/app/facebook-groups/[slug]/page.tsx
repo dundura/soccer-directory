@@ -34,6 +34,7 @@ export default async function FacebookGroupPage({ params }: Props) {
 
   const ownerId = await getListingOwner("fbgroup", slug);
 
+  const imgPos = group.imagePosition ?? 50;
   const heroImage = group.imageUrl || "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
   const sidebarImage = group.teamPhoto || group.logo || null;
 
@@ -56,7 +57,7 @@ export default async function FacebookGroupPage({ params }: Props) {
           {/* Group Image */}
           <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
             {sidebarImage ? (
-              <img src={sidebarImage} alt={group.name} className="w-full aspect-square object-cover" />
+              <img src={sidebarImage} alt={group.name} className="w-full aspect-square object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
             ) : (
               <div className="w-full aspect-square bg-primary flex items-center justify-center">
                 <span className="text-6xl">👥</span>
@@ -101,7 +102,7 @@ export default async function FacebookGroupPage({ params }: Props) {
             {heroImage.startsWith("color:") ? (
               <div className="w-full h-full" style={{ backgroundColor: heroImage.replace("color:", "") }} />
             ) : (
-              <img src={heroImage} alt={group.name} className="w-full h-full object-cover" />
+              <img src={heroImage} alt={group.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
@@ -141,7 +142,7 @@ export default async function FacebookGroupPage({ params }: Props) {
           {group.photos && group.photos.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-5">
               <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Photos</h2>
-              <PhotoGallery photos={group.photos} />
+              <PhotoGallery photos={group.photos} imagePosition={group.imagePosition} />
             </div>
           )}
 
