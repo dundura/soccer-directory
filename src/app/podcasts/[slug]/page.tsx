@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { ContactPodcastForm } from "./contact-form";
+import { ReviewSection } from "@/components/review-section";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -241,13 +242,17 @@ export default async function PodcastPage({ params }: Props) {
             />
           )}
 
-          {/* Anytime CTA */}
-          <div className="bg-primary rounded-2xl p-6 text-center">
-            <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">Powered by</p>
-            <a href="https://anytime-soccer.com" target="_blank" rel="noopener" className="text-white font-[family-name:var(--font-display)] text-xl font-bold hover:text-accent transition-colors">
-              Anytime Soccer Training
-            </a>
-            <p className="text-white/50 text-sm mt-2">The #1 app for youth soccer development</p>
+          {/* Reviews */}
+          <ReviewSection listingType="podcast" listingId={podcast.id} />
+
+          {/* Recommended Resource CTA */}
+          <div className="bg-primary rounded-2xl p-6 flex items-center gap-6">
+            <div className="flex-1">
+              <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Recommended Resource</p>
+              <h3 className="font-[family-name:var(--font-display)] text-xl font-bold text-white mb-2">Supplement Team Training with 5,000+ Videos</h3>
+              <p className="text-white/70 text-sm mb-4">Anytime Soccer Training offers structured follow-along sessions your player can do at home, in the backyard, or at the park.</p>
+              <a href="https://anytime-soccer.com?ref=soccernearme" target="_blank" rel="noopener" className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors">Try It Free →</a>
+            </div>
           </div>
         </div>
       </div>
