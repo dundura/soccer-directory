@@ -91,6 +91,7 @@ function Header() {
                   items: [
                     { label: "Coaches & Trainers", href: "/trainers", desc: "Private & group training", icon: "🎯" },
                     { label: "Mental Training", href: "/trainers?specialty=Mental+Training", desc: "Sports psychology", icon: "🧠" },
+                    { label: "Products & Services", href: "/services", desc: "Soccer products & services", icon: "🛒" },
                   ],
                 },
               ]}
@@ -138,6 +139,7 @@ function Footer() {
               <a href="/international-trips" className="hover:text-white transition-colors">International Trips</a>
               <a href="/tournaments" className="hover:text-white transition-colors">Find Tournaments</a>
               <a href="/shop" className="hover:text-white transition-colors">Recommendations</a>
+              <a href="/services" className="hover:text-white transition-colors">Products & Services</a>
             </div>
           </div>
           <div>

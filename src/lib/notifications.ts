@@ -18,6 +18,7 @@ const TYPE_LABELS: Record<string, string> = {
   books: "Equipment",
   showcase: "College Showcase",
   player: "Player Profile",
+  service: "Product / Service",
 };
 
 // ── Email notification ──────────────────────────────────────
@@ -135,6 +136,7 @@ function typeToPath(type: string): string {
     books: "shop",
     showcase: "camps",
     player: "guest-play/players",
+    service: "services",
   };
   return paths[type] || type;
 }

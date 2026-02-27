@@ -20,6 +20,7 @@ const TYPE_PATHS: Record<string, string> = {
   player: "guest-play/players",
   podcast: "podcasts",
   fbgroup: "facebook-groups",
+  service: "services",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -37,6 +38,7 @@ const TYPE_LABELS: Record<string, string> = {
   player: "Player Profile",
   podcast: "Podcast",
   fbgroup: "Facebook Group",
+  service: "Product / Service",
 };
 
 type Listing = { id: string; slug: string; name: string; status: string; type: string };

@@ -1,0 +1,22 @@
+CREATE TABLE services (
+  id TEXT PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  provider_name TEXT NOT NULL,
+  category TEXT NOT NULL,
+  city TEXT NOT NULL,
+  state TEXT NOT NULL,
+  country TEXT DEFAULT 'United States',
+  price TEXT,
+  description TEXT,
+  website TEXT,
+  email TEXT,
+  phone TEXT,
+  image_url TEXT,
+  photos TEXT,
+  featured BOOLEAN DEFAULT FALSE,
+  status TEXT DEFAULT 'approved',
+  user_id TEXT REFERENCES users(id),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);

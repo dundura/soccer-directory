@@ -6,12 +6,13 @@ import { useParams } from "next/navigation";
 const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
   guest: "Guest Play Opportunity", tournament: "Tournament", futsal: "Futsal Team",
+  service: "Product / Service",
 };
 
 const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers", camp: "camps",
   guest: "guest-play", tournament: "tournaments", futsal: "futsal",
-  player: "guest-play/players",
+  player: "guest-play/players", service: "services",
 };
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";

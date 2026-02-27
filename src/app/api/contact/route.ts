@@ -8,13 +8,13 @@ const NOTIFY_EMAIL = "neil@anytime-soccer.com";
 const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
   guest: "Guest Play Opportunity", tournament: "Tournament", futsal: "Futsal Team",
-  player: "Player Profile",
+  player: "Player Profile", service: "Product / Service",
 };
 
 const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers", camp: "camps",
   guest: "guest-play", tournament: "tournaments", futsal: "futsal",
-  player: "guest-play/players",
+  player: "guest-play/players", service: "services",
 };
 
 export async function POST(req: Request) {

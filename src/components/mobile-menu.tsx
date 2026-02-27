@@ -19,6 +19,7 @@ const navGroups = [
       { label: "Int'l Tournaments", href: "/tournaments?region=International" },
       { label: "Coaches & Trainers", href: "/trainers" },
       { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
+      { label: "Products & Services", href: "/services" },
     ],
   },
   {

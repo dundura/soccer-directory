@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { Club, Team, TeamEvent, Trainer, Camp, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, Podcast, TopEpisode, FacebookGroup, ProfileFields, MediaLink, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment } from "./types";
+import type { Club, Team, TeamEvent, Trainer, Camp, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, Podcast, TopEpisode, FacebookGroup, Service, ProfileFields, MediaLink, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment } from "./types";
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -510,6 +510,7 @@ export async function deleteUserAccount(userId: string): Promise<void> {
   await sql`DELETE FROM international_trips WHERE user_id = ${userId}`;
   await sql`DELETE FROM marketplace WHERE user_id = ${userId}`;
   await sql`DELETE FROM player_profiles WHERE user_id = ${userId}`;
+  await sql`DELETE FROM services WHERE user_id = ${userId}`;
   await sql`DELETE FROM users WHERE id = ${userId}`;
 }
 
@@ -530,7 +531,7 @@ export async function updateUserRole(userId: string, role: string): Promise<void
 }
 
 export async function getAllListings() {
-  const [clubs, teams, trainers, camps, guests, tournaments, futsals, trips, marketplace, players, podcasts, fbgroups] = await Promise.all([
+  const [clubs, teams, trainers, camps, guests, tournaments, futsals, trips, marketplace, players, podcasts, fbgroups, services] = await Promise.all([
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'club' as type FROM clubs ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'team' as type FROM teams ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'trainer' as type FROM trainers ORDER BY created_at DESC`,
@@ -543,8 +544,9 @@ export async function getAllListings() {
     sql`SELECT id, slug, player_name as name, status, featured, user_id, created_at, 'player' as type FROM player_profiles ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'podcast' as type FROM podcasts ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'fbgroup' as type FROM facebook_groups ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'service' as type FROM services ORDER BY created_at DESC`,
   ]);
-  return [...clubs, ...teams, ...trainers, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace, ...players, ...podcasts, ...fbgroups].map((r) => ({
+  return [...clubs, ...teams, ...trainers, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace, ...players, ...podcasts, ...fbgroups, ...services].map((r) => ({
     id: r.id as string,
     slug: r.slug as string,
     name: r.name as string,
@@ -571,6 +573,7 @@ export async function updateListingStatus(type: string, id: string, status: stri
     case "player": await sql`UPDATE player_profiles SET status = ${status} WHERE id = ${id}`; break;
     case "podcast": await sql`UPDATE podcasts SET status = ${status} WHERE id = ${id}`; break;
     case "fbgroup": await sql`UPDATE facebook_groups SET status = ${status} WHERE id = ${id}`; break;
+    case "service": await sql`UPDATE services SET status = ${status} WHERE id = ${id}`; break;
   }
 }
 
@@ -589,12 +592,13 @@ export async function updateListingFeatured(type: string, id: string, featured: 
     case "player": await sql`UPDATE player_profiles SET featured = ${featured} WHERE id = ${id}`; break;
     case "podcast": await sql`UPDATE podcasts SET featured = ${featured} WHERE id = ${id}`; break;
     case "fbgroup": await sql`UPDATE facebook_groups SET featured = ${featured} WHERE id = ${id}`; break;
+    case "service": await sql`UPDATE services SET featured = ${featured} WHERE id = ${id}`; break;
   }
 }
 
 // ── Listings by User ─────────────────────────────────────────
 export async function getListingsByUserId(userId: string) {
-  const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows, podcastRows, fbgroupRows] = await Promise.all([
+  const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows, podcastRows, fbgroupRows, serviceRows] = await Promise.all([
     sql`SELECT id, slug, name, status, 'club' as type FROM clubs WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'team' as type FROM teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'trainer' as type FROM trainers WHERE user_id = ${userId} ORDER BY created_at DESC`,
@@ -607,8 +611,9 @@ export async function getListingsByUserId(userId: string) {
     sql`SELECT id, slug, player_name as name, status, 'player' as type FROM player_profiles WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'podcast' as type FROM podcasts WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'fbgroup' as type FROM facebook_groups WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, 'service' as type FROM services WHERE user_id = ${userId} ORDER BY created_at DESC`,
   ]);
-  return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows, ...playerRows, ...podcastRows, ...fbgroupRows] as { id: string; slug: string; name: string; status: string; type: string }[];
+  return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows, ...playerRows, ...podcastRows, ...fbgroupRows, ...serviceRows] as { id: string; slug: string; name: string; status: string; type: string }[];
 }
 
 // ── Create Listings ──────────────────────────────────────────
@@ -737,6 +742,44 @@ export async function createFacebookGroupListing(data: Record<string, string>, u
   return slug;
 }
 
+export async function createServiceListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  const pf = profileFields(data);
+  await sql`INSERT INTO services (id, slug, name, provider_name, category, city, country, state, price, description, website, email, phone, image_url, photos, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.providerName}, ${data.category}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.price || null}, ${data.description || null}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${data.imageUrl || null}, ${pf.photos}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
+// ── Services ─────────────────────────────────────────────────
+export async function getServices(): Promise<Service[]> {
+  const rows = await sql`SELECT * FROM services WHERE status = 'approved' ORDER BY featured DESC, name ASC`;
+  return rows.map(mapService);
+}
+
+export async function getServiceBySlug(slug: string): Promise<Service | null> {
+  const rows = await sql`SELECT * FROM services WHERE slug = ${slug} AND status = 'approved' LIMIT 1`;
+  return rows[0] ? mapService(rows[0]) : null;
+}
+
+export async function getServiceSlugs(): Promise<string[]> {
+  const rows = await sql`SELECT slug FROM services WHERE status = 'approved'`;
+  return rows.map((r) => r.slug as string);
+}
+
+function mapService(r: Record<string, unknown>): Service {
+  return {
+    id: r.id as string, slug: r.slug as string, name: r.name as string,
+    providerName: r.provider_name as string, category: r.category as string,
+    city: r.city as string, state: r.state as string, country: r.country as string | undefined,
+    price: r.price as string | undefined, description: r.description as string | undefined,
+    website: r.website as string | undefined, email: r.email as string | undefined,
+    featured: r.featured as boolean, status: r.status as string | undefined,
+    userId: r.user_id as string | undefined, createdAt: r.created_at as string,
+    updatedAt: r.updated_at as string | undefined,
+    ...mapProfileFields(r),
+  };
+}
+
 // ── Get Listing Data (for editing) ───────────────────────────
 export async function getListingData(type: string, id: string, userId: string): Promise<Record<string, string> | null> {
   type = normalizeType(type);
@@ -790,6 +833,10 @@ export async function getListingData(type: string, id: string, userId: string): 
       rows = await sql`SELECT * FROM facebook_groups WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
       return mapFacebookGroupToForm(rows[0]);
+    case "service":
+      rows = await sql`SELECT * FROM services WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapServiceToForm(rows[0]);
     default:
       return null;
   }
@@ -812,6 +859,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "player": rows = await sql`SELECT * FROM player_profiles WHERE id = ${id} LIMIT 1`; break;
     case "podcast": rows = await sql`SELECT * FROM podcasts WHERE id = ${id} LIMIT 1`; break;
     case "fbgroup": rows = await sql`SELECT * FROM facebook_groups WHERE id = ${id} LIMIT 1`; break;
+    case "service": rows = await sql`SELECT * FROM services WHERE id = ${id} LIMIT 1`; break;
     default: return null;
   }
   if (!rows[0]) return null;
@@ -828,6 +876,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "player": return mapPlayerToForm(rows[0]);
     case "podcast": return mapPodcastToForm(rows[0]);
     case "fbgroup": return mapFacebookGroupToForm(rows[0]);
+    case "service": return mapServiceToForm(rows[0]);
     default: return null;
   }
 }
@@ -894,6 +943,9 @@ function mapFacebookGroupToForm(r: Record<string, unknown>): Record<string, stri
   const sm = parseSocial(r.social_media);
   return { name: s(r.name), adminName: s(r.admin_name), category: s(r.category), groupUrl: s(r.group_url), memberCount: s(r.member_count), privacy: s(r.privacy), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), description: s(r.description), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
 }
+function mapServiceToForm(r: Record<string, unknown>): Record<string, string> {
+  return { name: s(r.name), providerName: s(r.provider_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), photos: s(r.photos) };
+}
 
 // ── Update Listing ──────────────────────────────────────────
 function buildSocialMedia(data: Record<string, string>): string | null {
@@ -942,6 +994,9 @@ export async function updateListing(type: string, id: string, data: Record<strin
       break;
     case "fbgroup":
       rows = await sql`UPDATE facebook_groups SET name=${data.name}, admin_name=${data.adminName}, category=${data.category}, group_url=${data.groupUrl}, member_count=${data.memberCount || null}, privacy=${data.privacy || 'Public'}, city=${data.city || ''}, country=${data.country || ''}, state=${data.state || ''}, description=${data.description || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "service":
+      rows = await sql`UPDATE services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, photos=${data.photos || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     default:
       return false;
@@ -992,6 +1047,9 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
     case "fbgroup":
       rows = await sql`UPDATE facebook_groups SET name=${data.name}, admin_name=${data.adminName}, category=${data.category}, group_url=${data.groupUrl}, member_count=${data.memberCount || null}, privacy=${data.privacy || 'Public'}, city=${data.city || ''}, country=${data.country || ''}, state=${data.state || ''}, description=${data.description || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, photos=${pf.photos}, video_url=${pf.videoUrl}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
+    case "service":
+      rows = await sql`UPDATE services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, photos=${data.photos || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
     default:
       return false;
   }
@@ -1015,6 +1073,7 @@ export async function archiveListing(type: string, id: string, userId: string): 
     case "player": rows = await sql`UPDATE player_profiles SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     case "podcast": rows = await sql`UPDATE podcasts SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     case "fbgroup": rows = await sql`UPDATE facebook_groups SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+    case "service": rows = await sql`UPDATE services SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     default: return false;
   }
   return rows.length > 0;
@@ -1037,6 +1096,7 @@ export async function deleteListing(type: string, id: string, userId: string): P
     case "player": rows = await sql`DELETE FROM player_profiles WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     case "podcast": rows = await sql`DELETE FROM podcasts WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     case "fbgroup": rows = await sql`DELETE FROM facebook_groups WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+    case "service": rows = await sql`DELETE FROM services WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
     default: return false;
   }
   return rows.length > 0;
@@ -1059,6 +1119,7 @@ export async function getListingContact(type: string, slug: string): Promise<{ n
     case "player": rows = await sql`SELECT player_name as name, contact_email as email, user_id FROM player_profiles WHERE slug = ${slug} LIMIT 1`; break;
     case "podcast": rows = await sql`SELECT name, email, user_id FROM podcasts WHERE slug = ${slug} LIMIT 1`; break;
     case "fbgroup": rows = await sql`SELECT name, email, user_id FROM facebook_groups WHERE slug = ${slug} LIMIT 1`; break;
+    case "service": rows = await sql`SELECT name, email, user_id FROM services WHERE slug = ${slug} LIMIT 1`; break;
     default: return null;
   }
   if (!rows[0]) return null;
@@ -1086,6 +1147,7 @@ export async function getListingOwner(type: string, slug: string): Promise<strin
     case "player": rows = await sql`SELECT user_id FROM player_profiles WHERE slug = ${slug} LIMIT 1`; break;
     case "podcast": rows = await sql`SELECT user_id FROM podcasts WHERE slug = ${slug} LIMIT 1`; break;
     case "fbgroup": rows = await sql`SELECT user_id FROM facebook_groups WHERE slug = ${slug} LIMIT 1`; break;
+    case "service": rows = await sql`SELECT user_id FROM services WHERE slug = ${slug} LIMIT 1`; break;
     default: return null;
   }
   return rows[0]?.user_id as string | null;

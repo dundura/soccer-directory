@@ -16,6 +16,7 @@ import {
   createPlayerProfile,
   createPodcastListing,
   createFacebookGroupListing,
+  createServiceListing,
   updateListing,
   archiveListing,
   deleteListing,
@@ -103,6 +104,9 @@ export async function POST(req: Request) {
         break;
       case "fbgroup":
         slug = await createFacebookGroupListing(data, session.user.id);
+        break;
+      case "service":
+        slug = await createServiceListing(data, session.user.id);
         break;
       default:
         return NextResponse.json({ error: "Invalid listing type" }, { status: 400 });
