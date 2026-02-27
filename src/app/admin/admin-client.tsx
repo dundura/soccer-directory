@@ -15,6 +15,8 @@ const TYPE_LABELS: Record<string, string> = {
   marketplace: "Equipment", equipment: "Equipment", books: "Equipment", showcase: "College Showcase",
   player: "Player Profile",
   service: "Product / Service",
+  podcast: "Podcast",
+  fbgroup: "Facebook Group",
 };
 
 const TYPE_PATHS: Record<string, string> = {
@@ -22,6 +24,7 @@ const TYPE_PATHS: Record<string, string> = {
   guest: "guest-play", tournament: "tournaments", futsal: "futsal", trip: "international-trips",
   marketplace: "shop", equipment: "shop", books: "shop", showcase: "camps",
   player: "guest-play/players", service: "services",
+  podcast: "podcasts", fbgroup: "facebook-groups",
 };
 
 export default function AdminClient() {
