@@ -354,7 +354,7 @@ export default function EventRankingsPage() {
         {/* Hero */}
         <div className="hero">
           <div className="hero-inner">
-            <div className="hero-pill"><span className="live-dot" />Live Data &middot; GotSport</div>
+            <div className="hero-pill"><span className="live-dot" />Live Data</div>
             <h1 className="hero-title">Tournament<br /><span>Event Rankings</span></h1>
             <p className="hero-sub">Top-ranked youth soccer tournaments across the US &mdash; updated weekly</p>
           </div>

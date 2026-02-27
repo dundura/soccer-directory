@@ -2,14 +2,16 @@ import { NextResponse } from 'next/server';
 
 const GOTSPORT_URL = 'https://system.gotsport.com/api/v1/event_ranking_data';
 
-const FETCH_OPTS = {
-  headers: {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    'Accept': 'application/json',
-    'Referer': 'https://rankings.gotsport.com/',
-  },
-  next: { revalidate: 86400 },
+const FETCH_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+  'Accept': 'application/json',
+  'Referer': 'https://rankings.gotsport.com/',
 };
+
+// Cache the full dataset in memory for 24 hours to avoid re-fetching 83 pages on every request
+let cachedEvents: GotSportEvent[] | null = null;
+let cacheTimestamp = 0;
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
 const REGION_NAMES: Record<string, string> = { '1':'Northeast', '2':'Midwest', '3':'South', '4':'West' };
 
@@ -56,22 +58,29 @@ export async function GET(request: Request) {
   const pageSize = 25;
 
   try {
-    const firstRes = await fetch(`${GOTSPORT_URL}?page=1`, FETCH_OPTS);
-    if (!firstRes.ok) throw new Error(`GotSport returned ${firstRes.status}`);
-    const firstJson = await firstRes.json();
-    const { total_pages } = firstJson.pagination || { total_pages: 1 };
+    // Use in-memory cache to avoid fetching 83 pages on every request
+    if (!cachedEvents || Date.now() - cacheTimestamp > CACHE_TTL) {
+      const fetchOpts = { headers: FETCH_HEADERS, cache: 'no-store' as const };
+      const firstRes = await fetch(`${GOTSPORT_URL}?page=1`, fetchOpts);
+      if (!firstRes.ok) throw new Error(`GotSport returned ${firstRes.status}`);
+      const firstJson = await firstRes.json();
+      const { total_pages } = firstJson.pagination || { total_pages: 1 };
 
-    const allPages = [firstJson];
-    const remainingPages = Array.from({ length: Math.min(total_pages - 1, 82) }, (_, i) => i + 2);
-    for (let i = 0; i < remainingPages.length; i += 10) {
-      const batch = remainingPages.slice(i, i + 10);
-      const results = await Promise.all(
-        batch.map(p => fetch(`${GOTSPORT_URL}?page=${p}`, FETCH_OPTS).then(r => r.json()).catch(() => ({})))
-      );
-      allPages.push(...results);
+      const allPages = [firstJson];
+      const remainingPages = Array.from({ length: Math.min(total_pages - 1, 82) }, (_, i) => i + 2);
+      for (let i = 0; i < remainingPages.length; i += 10) {
+        const batch = remainingPages.slice(i, i + 10);
+        const results = await Promise.all(
+          batch.map(p => fetch(`${GOTSPORT_URL}?page=${p}`, fetchOpts).then(r => r.json()).catch(() => ({})))
+        );
+        allPages.push(...results);
+      }
+
+      cachedEvents = allPages.flatMap(p => p.event_ranking_data || []);
+      cacheTimestamp = Date.now();
     }
 
-    let events: GotSportEvent[] = allPages.flatMap(p => p.event_ranking_data || []);
+    let events: GotSportEvent[] = [...cachedEvents];
 
     if (state !== 'national') {
       events = events.filter(e => e.state?.toUpperCase() === state.toUpperCase());
