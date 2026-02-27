@@ -4,6 +4,15 @@ const GOTSPORT_URL = 'https://system.gotsport.com/api/v1/team_ranking_data';
 
 const REGION_NAMES: Record<number, string> = { 1: 'Northeast', 2: 'Midwest', 3: 'South', 4: 'West' };
 
+const HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+  'Accept': 'application/json',
+  'Referer': 'https://rankings.gotsport.com/',
+};
+
+// Max pages to fetch (20 results per page)
+const MAX_PAGES = 10;
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const gender = searchParams.get('gender') || 'm';
@@ -11,35 +20,53 @@ export async function GET(request: Request) {
   const state  = searchParams.get('state') || 'national';
 
   try {
-    const res = await fetch(GOTSPORT_URL, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept': 'application/json',
-        'Referer': 'https://rankings.gotsport.com/',
-      },
-      next: { revalidate: 3600 },
-    });
-
-    if (!res.ok) throw new Error(`GotSport returned ${res.status}`);
-    const allTeams = await res.json();
-
-    let filtered = allTeams.filter((t: Record<string, unknown>) =>
-      t.gender === gender && String(t.age) === String(age)
-    );
+    // Build GotSport URL with Rails-style nested params
+    const params = new URLSearchParams();
+    params.set('search[gender]', gender);
+    params.set('search[age]', age);
+    params.set('search[team_country]', 'USA');
+    params.set('search[page]', '1');
 
     if (state !== 'national') {
-      filtered = filtered.filter((t: Record<string, unknown>) =>
-        (t.team_association as string)?.toUpperCase() === state.toUpperCase()
-      );
+      params.set('search[team_association]', state.toUpperCase());
+      params.set('search[filter_by]', 'state');
     }
 
-    filtered.sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
-      if (a.national_rank && b.national_rank) return (a.national_rank as number) - (b.national_rank as number);
-      return ((b.total_points as number) || 0) - ((a.total_points as number) || 0);
-    });
+    const url = `${GOTSPORT_URL}?${params.toString()}`;
+    const res = await fetch(url, { headers: HEADERS, next: { revalidate: 3600 } });
 
-    const teams = filtered.map((t: Record<string, unknown>, i: number) => ({
-      rank:         state !== 'national' ? ((t.association_rank as number) || i + 1) : ((t.national_rank as number) || i + 1),
+    if (!res.ok) throw new Error(`GotSport returned ${res.status}`);
+    const json = await res.json();
+
+    let allTeams = json.team_ranking_data || [];
+    const pagination = json.pagination || {};
+    const totalPages = Math.min(pagination.total_pages || 1, MAX_PAGES);
+
+    // Fetch remaining pages in parallel (up to MAX_PAGES)
+    if (totalPages > 1) {
+      const pagePromises = [];
+      for (let p = 2; p <= totalPages; p++) {
+        const pageParams = new URLSearchParams(params);
+        pageParams.set('search[page]', String(p));
+        const pageUrl = `${GOTSPORT_URL}?${pageParams.toString()}`;
+        pagePromises.push(
+          fetch(pageUrl, { headers: HEADERS, next: { revalidate: 3600 } })
+            .then(r => r.ok ? r.json() : null)
+            .catch(() => null)
+        );
+      }
+      const results = await Promise.all(pagePromises);
+      for (const r of results) {
+        if (r?.team_ranking_data) {
+          allTeams = allTeams.concat(r.team_ranking_data);
+        }
+      }
+    }
+
+    const teams = allTeams.map((t: Record<string, unknown>, i: number) => ({
+      rank:         state !== 'national'
+        ? ((t.association_rank as number) || i + 1)
+        : ((t.national_rank as number) || i + 1),
       nationalRank: t.national_rank,
       regionalRank: t.regional_rank,
       stateRank:    t.association_rank,
@@ -67,7 +94,8 @@ export async function GET(request: Request) {
       meta: {
         gender, age, state,
         total: teams.length,
-        lastUpdated: filtered[0]?.ranking_date || new Date().toISOString(),
+        totalAvailable: pagination.total_count || teams.length,
+        lastUpdated: allTeams[0]?.ranking_date || new Date().toISOString(),
         source: 'GotSport',
       },
     });

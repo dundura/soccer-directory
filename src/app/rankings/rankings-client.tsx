@@ -396,7 +396,7 @@ export function RankingsClient() {
           <div className="hero-inner">
             <div className="hero-pill">
               <span className="live-dot" />
-              Live Data &middot; GotSport
+              Live Data
             </div>
             <h1 className="hero-title">
               Youth Soccer<br /><span>Team Rankings</span>
