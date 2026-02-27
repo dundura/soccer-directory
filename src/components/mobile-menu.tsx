@@ -12,35 +12,20 @@ const navGroups = [
       { label: "Futsal", href: "/futsal" },
       { label: "Camps", href: "/camps" },
       { label: "College Showcases", href: "/camps?type=College+Showcase" },
-      { label: "Private/Group Training", href: "/trainers" },
+      { label: "Coaches & Trainers", href: "/trainers" },
       { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
-    ],
-  },
-  {
-    label: "Guest Play",
-    links: [
-      { label: "Opportunities", href: "/guest-play" },
-      { label: "Players", href: "/guest-play/players" },
+      { label: "Guest Play", href: "/guest-play" },
+      { label: "Player Profiles", href: "/guest-play/players" },
       { label: "Guest Player Posts", href: "/guest-play/posts" },
-    ],
-  },
-  {
-    label: "Tournaments",
-    links: [
       { label: "US Tournaments", href: "/tournaments?region=US" },
       { label: "Int'l Tournaments", href: "/tournaments?region=International" },
     ],
   },
   {
-    label: "Recommendations",
-    links: [
-      { label: "Equipment", href: "/shop" },
-    ],
-  },
-  {
-    label: "Blog",
+    label: "Media",
     links: [
       { label: "Blog", href: "/blog" },
+      { label: "Podcasts", href: "https://anytime-soccer.com/podcast" },
       { label: "Forum", href: "/forum" },
     ],
   },
@@ -111,17 +96,22 @@ export function MobileMenu() {
                     ))}
                   </div>
                 )}
-                {group.label === "Blog" && (
-                  <a
-                    href="/free"
-                    onClick={() => setOpen(false)}
-                    className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
-                  >
-                    Free
-                  </a>
-                )}
               </div>
             ))}
+            <a
+              href="/shop"
+              onClick={() => setOpen(false)}
+              className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
+            >
+              Recommendations
+            </a>
+            <a
+              href="/free"
+              onClick={() => setOpen(false)}
+              className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
+            >
+              Free
+            </a>
             <hr className="border-white/10 my-3" />
             <a
               href="/dashboard"
