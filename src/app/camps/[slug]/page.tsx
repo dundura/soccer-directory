@@ -184,7 +184,7 @@ export default async function CampDetailPage({ params }: Props) {
                     {camp.organizerName} {" \u00b7 "} {camp.city}, {camp.state}
                   </p>
                   {camp.description && (
-                    <p className="text-sm leading-relaxed text-gray-500">{camp.description}</p>
+                    <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{camp.description}</p>
                   )}
                   <div className="flex gap-2.5 mt-[18px] flex-wrap">
                     {camp.registrationUrl ? (
