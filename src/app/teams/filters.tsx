@@ -84,8 +84,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
           <EmptyState message="No teams match your filters." />
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sorted.map((team, i) => (
-              <>
+            {sorted.map((team) => (
                 <ListingCard
                   key={team.id}
                   href={`/teams/${team.slug}`}
@@ -105,10 +104,9 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                   featured={team.featured}
                   cta="View Team"
                 />
-                {i === 5 && <div key="cta" className="md:col-span-2 lg:col-span-3"><AnytimeInlineCTA /></div>}
-              </>
             ))}
           </div>
+          <div className="mt-8"><AnytimeInlineCTA /></div>
         )}
       </div>
     </>
