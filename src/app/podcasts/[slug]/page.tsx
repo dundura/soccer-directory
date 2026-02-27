@@ -40,7 +40,7 @@ export default async function PodcastPage({ params }: Props) {
     { label: "Category", value: podcast.category },
     { label: "Location", value: `${podcast.city}, ${podcast.state}` },
     ...(podcast.website ? [{ label: "Website", value: "Visit Website", href: podcast.website }] : []),
-    ...(podcast.rssFeedUrl ? [{ label: "All Episodes", value: "RSS Feed", href: podcast.rssFeedUrl }] : []),
+    ...(podcast.rssFeedUrl ? [{ label: "All Episodes", value: "Subscribe", href: podcast.website || podcast.rssFeedUrl }] : []),
     ...(podcast.phone ? [{ label: "Phone", value: podcast.phone }] : []),
     ...(podcast.email ? [{ label: "Email", value: podcast.email }] : []),
   ];
@@ -139,19 +139,34 @@ export default async function PodcastPage({ params }: Props) {
             </div>
           )}
 
-          {/* RSS Feed Link */}
-          {podcast.rssFeedUrl && (
+          {/* Listen & Subscribe */}
+          {(podcast.website || podcast.rssFeedUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">All Episodes</h2>
-              <a
-                href={podcast.rssFeedUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-accent text-accent font-semibold text-sm hover:bg-accent hover:text-white transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 110-2 1 1 0 010 2z" /></svg>
-                Subscribe via RSS
-              </a>
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">Listen &amp; Subscribe</h2>
+              <div className="flex flex-wrap gap-3">
+                {podcast.website && (
+                  <a
+                    href={podcast.website.startsWith("http") ? podcast.website : `https://${podcast.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Listen Now
+                  </a>
+                )}
+                {podcast.rssFeedUrl && (
+                  <a
+                    href={podcast.rssFeedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-accent text-accent font-semibold text-sm hover:bg-accent hover:text-white transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 110-2 1 1 0 010 2z" /></svg>
+                    RSS Feed
+                  </a>
+                )}
+              </div>
             </div>
           )}
 
