@@ -288,7 +288,7 @@ export default async function ClubDetailPage({ params }: Props) {
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-primary group-hover:text-accent-hover transition-colors truncate">{link.title || link.url}</p>
                         {link.description && <p className="text-xs text-muted line-clamp-2 mt-0.5">{link.description}</p>}
-                        <p className="text-[11px] text-muted/60 mt-1 truncate">{new URL(link.url).hostname}</p>
+                        <p className="text-[11px] text-muted/60 mt-1 truncate">{(() => { try { return new URL(link.url).hostname; } catch { return link.url; } })()}</p>
                       </div>
                     </a>
                   ))}
