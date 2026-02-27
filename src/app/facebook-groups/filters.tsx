@@ -14,7 +14,7 @@ export function FacebookGroupFilters({ groups }: { groups: FacebookGroup[] }) {
   const [state, setState] = useState(searchParams.get("state") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
 
-  const states = [...new Set(groups.map((g) => g.state))].sort();
+  const states = [...new Set(groups.map((g) => g.state).filter(Boolean))].sort();
 
   const filtered = groups.filter((g) => {
     if (search) {
@@ -110,7 +110,8 @@ export function FacebookGroupFilters({ groups }: { groups: FacebookGroup[] }) {
                         {group.name}
                       </h3>
                       <p className="text-muted text-sm mb-2">
-                        Admin: {group.adminName} &middot; {group.city}, {group.state}
+                        Admin: {group.adminName}
+                        {group.city && group.state && <> &middot; {group.city}, {group.state}</>}
                         {group.memberCount && <> &middot; {group.memberCount} members</>}
                       </p>
                       {group.description && (

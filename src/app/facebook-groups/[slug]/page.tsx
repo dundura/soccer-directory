@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { ogMeta } = await import("@/lib/og");
   return ogMeta(
     `${group.name} — ${group.category} Facebook Group`,
-    group.description || `${group.category} Facebook group managed by ${group.adminName} from ${group.city}, ${group.state}.`,
+    group.description || `${group.category} Facebook group managed by ${group.adminName}.`,
     group.teamPhoto || group.imageUrl,
     `/facebook-groups/${slug}`,
   );
@@ -39,7 +39,7 @@ export default async function FacebookGroupPage({ params }: Props) {
     { label: "Admin", value: group.adminName },
     { label: "Category", value: group.category },
     { label: "Privacy", value: group.privacy },
-    { label: "Location", value: `${group.city}, ${group.state}` },
+    ...(group.city && group.state ? [{ label: "Location", value: `${group.city}, ${group.state}` }] : []),
     ...(group.memberCount ? [{ label: "Members", value: group.memberCount }] : []),
     ...(group.groupUrl ? [{ label: "Facebook", value: "Visit Group", href: group.groupUrl }] : []),
     ...(group.phone ? [{ label: "Phone", value: group.phone }] : []),
@@ -100,7 +100,7 @@ export default async function FacebookGroupPage({ params }: Props) {
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
               <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1">{group.name}</h1>
-              <p className="text-white/70 text-sm">Admin: {group.adminName} &middot; {group.city}, {group.state}</p>
+              <p className="text-white/70 text-sm">Admin: {group.adminName}{group.city && group.state ? ` \u00b7 ${group.city}, ${group.state}` : ""}</p>
             </div>
           </div>
 
@@ -120,11 +120,26 @@ export default async function FacebookGroupPage({ params }: Props) {
             </div>
           )}
 
-          {/* Photos */}
+          {/* Photos with Join overlay */}
           {group.photos && group.photos.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-5">
               <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Photos</h2>
-              <PhotoGallery photos={group.photos} />
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {group.photos.map((photo, i) => (
+                  <a
+                    key={i}
+                    href={group.groupUrl?.startsWith("http") ? group.groupUrl : `https://${group.groupUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative group rounded-xl overflow-hidden aspect-square"
+                  >
+                    <img src={photo} alt={`${group.name} photo ${i + 1}`} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-primary/40 flex items-center justify-center group-hover:bg-primary/60 transition-colors">
+                      <span className="text-white font-[family-name:var(--font-display)] text-sm sm:text-base font-bold drop-shadow-lg">Join Our Group</span>
+                    </div>
+                  </a>
+                ))}
+              </div>
             </div>
           )}
 
