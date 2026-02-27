@@ -44,7 +44,7 @@ export default async function TournamentDetailPage({ params }: Props) {
   const ownerId = await getListingOwner("tournament", slug);
 
   const pageUrl = `https://www.soccer-near-me.com/tournaments/${slug}`;
-  const heroPhoto = tournament.imageUrl || DEFAULT_HERO_PHOTO;
+  const heroPhoto = tournament.imageUrl || tournament.teamPhoto || DEFAULT_HERO_PHOTO;
   const tournamentPhotos = tournament.photos && tournament.photos.length > 0 ? tournament.photos : DEFAULT_PHOTOS;
   const logo = tournament.logo || DEFAULT_LOGO;
   const videoUrl = tournament.videoUrl === undefined || tournament.videoUrl === null ? DEFAULT_VIDEO : tournament.videoUrl || null;

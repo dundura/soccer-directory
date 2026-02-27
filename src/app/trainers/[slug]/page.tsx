@@ -59,7 +59,7 @@ export default async function TrainerDetailPage({ params }: Props) {
   }
 
   const pageUrl = `https://www.soccer-near-me.com/trainers/${slug}`;
-  const heroPhoto = trainer.imageUrl || DEFAULT_HERO_PHOTO;
+  const heroPhoto = trainer.imageUrl || trainer.teamPhoto || DEFAULT_HERO_PHOTO;
   const trainerPhotos = trainer.photos && trainer.photos.length > 0 ? trainer.photos : DEFAULT_PHOTOS;
   const logo = trainer.logo || DEFAULT_LOGO;
   const videoUrl = trainer.videoUrl === undefined || trainer.videoUrl === null ? DEFAULT_VIDEO : trainer.videoUrl || null;

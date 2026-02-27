@@ -57,7 +57,7 @@ export default async function CampDetailPage({ params }: Props) {
   }
 
   const pageUrl = `https://www.soccer-near-me.com/camps/${slug}`;
-  const heroPhoto = camp.imageUrl || DEFAULT_HERO_PHOTO;
+  const heroPhoto = camp.imageUrl || camp.teamPhoto || DEFAULT_HERO_PHOTO;
   const campPhotos = camp.photos && camp.photos.length > 0 ? camp.photos : DEFAULT_PHOTOS;
   const logo = camp.logo || DEFAULT_LOGO;
   const videoUrl = camp.videoUrl === undefined || camp.videoUrl === null ? DEFAULT_VIDEO : camp.videoUrl || null;

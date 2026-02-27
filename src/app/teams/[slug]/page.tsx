@@ -83,7 +83,7 @@ export default async function TeamDetailPage({ params }: Props) {
   }
 
   const pageUrl = `https://www.soccer-near-me.com/teams/${slug}`;
-  const heroPhoto = team.imageUrl || DEFAULT_HERO_PHOTO;
+  const heroPhoto = team.imageUrl || team.teamPhoto || DEFAULT_HERO_PHOTO;
   const teamPhotos = team.photos && team.photos.length > 0 ? team.photos : DEFAULT_PHOTOS;
   const logo = team.logo || DEFAULT_LOGO;
   // undefined/null = never set → show default; "" = user cleared → no video

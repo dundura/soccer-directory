@@ -64,7 +64,7 @@ export default async function ClubDetailPage({ params }: Props) {
   }
 
   const pageUrl = `https://www.soccer-near-me.com/clubs/${slug}`;
-  const heroPhoto = club.imageUrl || DEFAULT_HERO_PHOTO;
+  const heroPhoto = club.imageUrl || club.teamPhoto || DEFAULT_HERO_PHOTO;
   const clubPhotos = club.photos && club.photos.length > 0 ? club.photos : DEFAULT_PHOTOS;
   const logo = club.logo || DEFAULT_LOGO;
   const videoUrl = club.videoUrl === undefined || club.videoUrl === null ? DEFAULT_VIDEO : club.videoUrl || null;
