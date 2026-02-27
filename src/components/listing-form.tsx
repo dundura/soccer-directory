@@ -447,20 +447,14 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "name", label: "Group Name", required: true },
     { name: "adminName", label: "Admin / Creator Name", required: true },
     { name: "groupUrl", label: "Facebook Group URL", required: true },
-    { name: "city", label: "City", required: true },
-    { name: "country", label: "Country", required: true, type: "country" },
-    { name: "state", label: "State", required: true, type: "state-select" },
     { name: "category", label: "Category", required: true, options: ["Youth Soccer", "Club / Team", "Coaching", "College Recruiting", "Soccer Moms & Dads", "Buy / Sell / Trade", "Regional", "General"] },
     { name: "privacy", label: "Privacy", required: true, options: ["Public", "Private"] },
     { name: "memberCount", label: "Approximate Members" },
     { name: "description", label: "About the Group", type: "textarea" },
     { name: "email", label: "Contact Email", type: "email" },
     { name: "phone", label: "Phone" },
-    { name: "_socials", label: "Social Media", type: "heading" },
-    { name: "facebook", label: "Facebook URL" },
-    { name: "instagram", label: "Instagram URL" },
-    { name: "youtube", label: "YouTube URL" },
     { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "_fbwarning", label: "Do not use Facebook image links — they expire and will break. Upload images to Imgur or another host instead.", type: "warning" },
     { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "logo", label: "Logo URL" },
     { name: "imageUrl", label: "Hero Banner Image", type: "image" },
@@ -613,6 +607,14 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
           return (
             <div key={field.name} className="pt-2 pb-1 border-b border-border">
               <h3 className="text-sm font-bold text-primary">{field.label}</h3>
+            </div>
+          );
+        }
+
+        if (field.type === "warning") {
+          return (
+            <div key={field.name} className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+              ⚠️ {field.label}
             </div>
           );
         }
