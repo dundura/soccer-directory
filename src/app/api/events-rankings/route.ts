@@ -64,7 +64,8 @@ export async function GET(request: Request) {
     // Use in-memory cache to avoid fetching 83 pages on every request
     if (!cachedEvents || Date.now() - cacheTimestamp > CACHE_TTL) {
       const fetchOpts = { headers: FETCH_HEADERS, cache: 'no-store' as const };
-      const firstRes = await fetch(`${GOTSPORT_URL}?page=1`, fetchOpts);
+      const cacheBust = Date.now(); // unique per fetch cycle to bypass any edge cache
+      const firstRes = await fetch(`${GOTSPORT_URL}?page=1&_t=${cacheBust}`, fetchOpts);
       if (!firstRes.ok) throw new Error(`GotSport returned ${firstRes.status}`);
       const firstJson = await firstRes.json();
       const { total_pages } = firstJson.pagination || { total_pages: 1 };
@@ -74,7 +75,7 @@ export async function GET(request: Request) {
       for (let i = 0; i < remainingPages.length; i += 10) {
         const batch = remainingPages.slice(i, i + 10);
         const results = await Promise.all(
-          batch.map(p => fetch(`${GOTSPORT_URL}?page=${p}`, fetchOpts).then(r => r.json()).catch(() => ({})))
+          batch.map(p => fetch(`${GOTSPORT_URL}?page=${p}&_t=${cacheBust}`, fetchOpts).then(r => r.json()).catch(() => ({})))
         );
         allPages.push(...results);
       }
