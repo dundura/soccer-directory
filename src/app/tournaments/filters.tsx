@@ -59,6 +59,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
                 href={`/tournaments/${tournament.slug}`}
                 title={tournament.name}
                 subtitle={`${tournament.organizer} · ${tournament.city}, ${tournament.state}`}
+                image={tournament.teamPhoto || undefined}
                 badges={[
                   { label: tournament.level, variant: "blue" },
                   { label: tournament.format, variant: "orange" },
