@@ -501,6 +501,16 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images", type: "heading" },
     { name: "imageUrl", label: "Product Image", type: "image" },
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
+    { name: "_announcement", label: "Special Offers (up to 3)", type: "heading" },
+    { name: "announcementHeading", label: "Offer 1 — Heading (default: Special Offer)" },
+    { name: "announcementText", label: "Offer 1 — Text", type: "textarea" },
+    { name: "announcementImage", label: "Offer 1 — Image", type: "image" },
+    { name: "announcementHeading2", label: "Offer 2 — Heading" },
+    { name: "announcementText2", label: "Offer 2 — Text", type: "textarea" },
+    { name: "announcementImage2", label: "Offer 2 — Image", type: "image" },
+    { name: "announcementHeading3", label: "Offer 3 — Heading" },
+    { name: "announcementText3", label: "Offer 3 — Text", type: "textarea" },
+    { name: "announcementImage3", label: "Offer 3 — Image", type: "image" },
   ],
 };
 

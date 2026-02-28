@@ -766,7 +766,7 @@ export async function createServiceListing(data: Record<string, string>, userId:
   const id = genId();
   const slug = slugify(data.name);
   const pf = profileFields(data);
-  await sql`INSERT INTO services (id, slug, name, provider_name, category, city, country, state, price, description, website, email, phone, image_url, image_position, photos, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.providerName}, ${data.category}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.price || null}, ${data.description || null}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${data.imageUrl || null}, ${Number(data.imagePosition) || 50}, ${pf.photos}, false, ${userId}, 'approved')`;
+  await sql`INSERT INTO services (id, slug, name, provider_name, category, city, country, state, price, description, website, email, phone, image_url, image_position, photos, announcement_heading, announcement_text, announcement_image, announcement_heading_2, announcement_text_2, announcement_image_2, announcement_heading_3, announcement_text_3, announcement_image_3, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.providerName}, ${data.category}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.price || null}, ${data.description || null}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${data.imageUrl || null}, ${Number(data.imagePosition) || 50}, ${pf.photos}, ${data.announcementHeading || null}, ${data.announcementText || null}, ${data.announcementImage || null}, ${data.announcementHeading2 || null}, ${data.announcementText2 || null}, ${data.announcementImage2 || null}, ${data.announcementHeading3 || null}, ${data.announcementText3 || null}, ${data.announcementImage3 || null}, false, ${userId}, 'approved')`;
   return slug;
 }
 
@@ -793,6 +793,15 @@ function mapService(r: Record<string, unknown>): Service {
     city: r.city as string, state: r.state as string, country: r.country as string | undefined,
     price: r.price as string | undefined, description: r.description as string | undefined,
     website: r.website as string | undefined, email: r.email as string | undefined,
+    announcementHeading: r.announcement_heading as string | undefined,
+    announcementText: r.announcement_text as string | undefined,
+    announcementImage: r.announcement_image as string | undefined,
+    announcementHeading2: r.announcement_heading_2 as string | undefined,
+    announcementText2: r.announcement_text_2 as string | undefined,
+    announcementImage2: r.announcement_image_2 as string | undefined,
+    announcementHeading3: r.announcement_heading_3 as string | undefined,
+    announcementText3: r.announcement_text_3 as string | undefined,
+    announcementImage3: r.announcement_image_3 as string | undefined,
     featured: r.featured as boolean, status: r.status as string | undefined,
     userId: r.user_id as string | undefined, createdAt: r.created_at as string,
     updatedAt: r.updated_at as string | undefined,
@@ -964,7 +973,7 @@ function mapFacebookGroupToForm(r: Record<string, unknown>): Record<string, stri
   return { name: s(r.name), adminName: s(r.admin_name), category: s(r.category), groupUrl: s(r.group_url), memberCount: s(r.member_count), privacy: s(r.privacy), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), description: s(r.description), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
 }
 function mapServiceToForm(r: Record<string, unknown>): Record<string, string> {
-  return { name: s(r.name), providerName: s(r.provider_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), photos: s(r.photos) };
+  return { name: s(r.name), providerName: s(r.provider_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), photos: s(r.photos), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3) };
 }
 
 // ── Update Listing ──────────────────────────────────────────
@@ -1016,7 +1025,7 @@ export async function updateListing(type: string, id: string, data: Record<strin
       rows = await sql`UPDATE facebook_groups SET name=${data.name}, admin_name=${data.adminName}, category=${data.category}, group_url=${data.groupUrl}, member_count=${data.memberCount || null}, privacy=${data.privacy || 'Public'}, city=${data.city || ''}, country=${data.country || ''}, state=${data.state || ''}, description=${data.description || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "service":
-      rows = await sql`UPDATE services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, image_position=${Number(data.imagePosition) || 50}, photos=${data.photos || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      rows = await sql`UPDATE services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, image_position=${Number(data.imagePosition) || 50}, photos=${data.photos || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     default:
       return false;
@@ -1068,7 +1077,7 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
       rows = await sql`UPDATE facebook_groups SET name=${data.name}, admin_name=${data.adminName}, category=${data.category}, group_url=${data.groupUrl}, member_count=${data.memberCount || null}, privacy=${data.privacy || 'Public'}, city=${data.city || ''}, country=${data.country || ''}, state=${data.state || ''}, description=${data.description || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
     case "service":
-      rows = await sql`UPDATE services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, image_position=${Number(data.imagePosition) || 50}, photos=${data.photos || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      rows = await sql`UPDATE services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, image_position=${Number(data.imagePosition) || 50}, photos=${data.photos || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
     default:
       return false;

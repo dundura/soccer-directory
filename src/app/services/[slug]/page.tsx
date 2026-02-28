@@ -1,6 +1,7 @@
 import { getServiceBySlug, getServiceSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { ShareButtons } from "@/components/profile-ui";
+import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -103,6 +104,21 @@ export default async function ServiceDetailPage({ params }: Props) {
               <p className="text-gray-600 leading-relaxed whitespace-pre-line mb-6">
                 {service.description}
               </p>
+            )}
+
+            {/* Special Offers */}
+            {(service.announcementText || service.announcementText2 || service.announcementText3) && (
+              <div className="space-y-4 mb-6">
+                {service.announcementText && (
+                  <AnnouncementSection heading={service.announcementHeading || "Special Offer"} text={service.announcementText} image={service.announcementImage} />
+                )}
+                {service.announcementText2 && (
+                  <AnnouncementSection heading={service.announcementHeading2 || "Special Offer"} text={service.announcementText2} image={service.announcementImage2} />
+                )}
+                {service.announcementText3 && (
+                  <AnnouncementSection heading={service.announcementHeading3 || "Special Offer"} text={service.announcementText3} image={service.announcementImage3} />
+                )}
+              </div>
             )}
 
             {/* Action Buttons */}
