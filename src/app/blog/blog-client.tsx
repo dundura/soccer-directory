@@ -101,6 +101,39 @@ export function BlogHub({ posts }: { posts: BlogPost[] }) {
             <p className="text-4xl mb-4">🔍</p>
             <p className="text-muted text-lg">No articles match your filters.</p>
           </div>
+        ) : showAll ? (
+          <div className="divide-y divide-border">
+            {filtered.map((post) => (
+              <a
+                key={post.id}
+                href={`/blog/${post.slug}`}
+                className="group flex items-center gap-4 py-4 hover:bg-surface/50 transition-colors -mx-2 px-2 rounded-lg"
+              >
+                {post.coverImage && (
+                  <img
+                    src={post.coverImage}
+                    alt={post.title}
+                    className="w-20 h-14 rounded-lg object-cover shrink-0 hidden sm:block"
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge variant="orange">{post.category}</Badge>
+                    <span className="text-xs text-muted">{post.date}</span>
+                    <span className="text-xs text-muted">&middot;</span>
+                    <span className="text-xs text-muted">{post.readTime}</span>
+                  </div>
+                  <h3 className="font-[family-name:var(--font-display)] text-sm font-bold text-primary group-hover:text-accent-hover transition-colors truncate">
+                    {post.title}
+                  </h3>
+                  <p className="text-muted text-xs line-clamp-1 mt-0.5 hidden sm:block">{post.excerpt}</p>
+                </div>
+                <svg className="w-4 h-4 text-muted group-hover:text-accent-hover transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            ))}
+          </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayPosts.map((post, i) => (
@@ -133,18 +166,6 @@ export function BlogHub({ posts }: { posts: BlogPost[] }) {
                 </div>
               </a>
             ))}
-          </div>
-        )}
-
-        {/* View All button at bottom too */}
-        {!showAll && filtered.length > 12 && (
-          <div className="text-center mt-8">
-            <button
-              onClick={() => setShowAll(true)}
-              className="inline-flex items-center px-8 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary-light transition-colors"
-            >
-              View All Articles
-            </button>
           </div>
         )}
 
