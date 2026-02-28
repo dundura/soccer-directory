@@ -80,22 +80,21 @@ export function BlogHub({ posts }: { posts: BlogPost[] }) {
           {search && (
             <p className="text-white/60 text-sm mt-3">{filtered.length} result{filtered.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;</p>
           )}
+          {filtered.length > 12 && (
+            <div className="mt-4">
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="text-sm font-semibold text-white/80 hover:text-white transition-colors"
+              >
+                {showAll ? "← Show Less" : "View All Articles →"}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16">
-        {/* View All toggle */}
-        {filtered.length > 12 && (
-          <div className="flex justify-end mb-6">
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors"
-            >
-              {showAll ? "Show Less" : "View All →"}
-            </button>
-          </div>
-        )}
 
         {filtered.length === 0 ? (
           <div className="text-center py-16">
