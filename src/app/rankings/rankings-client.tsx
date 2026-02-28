@@ -318,7 +318,7 @@ export function RankingsClient() {
           box-shadow: 0 1px 4px rgba(0,0,0,0.13);
         }
 
-        .age-scroll { display: flex; gap: 5px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; }
+        .age-scroll { display: none; gap: 5px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; }
         .age-scroll::-webkit-scrollbar { display: none; }
         .age-btn {
           padding: 5px 13px; border-radius: 20px;
@@ -328,6 +328,14 @@ export function RankingsClient() {
         }
         .age-btn.active { background: #0B2545; border-color: #0B2545; color: white; }
         .age-btn:hover:not(.active) { border-color: #93C5FD; color: #1D4ED8; }
+
+        .age-mobile-select {
+          padding: 7px 12px; border: 1.5px solid #E2E8F0; border-radius: 8px;
+          font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 600;
+          color: #334155; background: white; cursor: pointer; outline: none;
+          transition: border-color 0.13s;
+        }
+        .age-mobile-select:focus { border-color: #3B82F6; }
 
         .rk-state-select {
           padding: 7px 12px; border: 1.5px solid #E2E8F0; border-radius: 8px;
@@ -395,7 +403,11 @@ export function RankingsClient() {
 
         .hide-sm { display: none !important; }
         .hide-md { display: none !important; }
-        @media (min-width: 600px) { .hide-sm { display: flex !important; } }
+        @media (min-width: 600px) {
+          .hide-sm { display: flex !important; }
+          .age-scroll { display: flex !important; }
+          .age-mobile-select { display: none !important; }
+        }
         @media (min-width: 800px) { .hide-md { display: block !important; } }
       `}</style>
 
@@ -425,6 +437,9 @@ export function RankingsClient() {
                 </button>
               ))}
             </div>
+            <select className="age-mobile-select" value={age} onChange={e => setAge(e.target.value)}>
+              {AGE_GROUPS.map(ag => <option key={ag} value={ag}>U{ag}</option>)}
+            </select>
             <div className="age-scroll">
               {AGE_GROUPS.map(ag => (
                 <button key={ag} className={`age-btn ${age === ag ? 'active' : ''}`} onClick={() => setAge(ag)}>
