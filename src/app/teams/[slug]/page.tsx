@@ -257,15 +257,17 @@ export default async function TeamDetailPage({ params }: Props) {
               </div>
           </div>
 
-          {/* ====== Special Announcement ====== */}
-          {team.announcementText && (
-            <div className="order-2 lg:order-none lg:col-start-2">
-              <AnnouncementSection heading={team.announcementHeading} text={team.announcementText} image={team.announcementImage} />
+          {/* ====== Special Announcements ====== */}
+          {(team.announcementText || team.announcementText2 || team.announcementText3) && (
+            <div className="order-2 lg:order-none lg:col-start-2 space-y-4">
+              {team.announcementText && <AnnouncementSection heading={team.announcementHeading} text={team.announcementText} image={team.announcementImage} />}
+              {team.announcementText2 && <AnnouncementSection heading={team.announcementHeading2} text={team.announcementText2} image={team.announcementImage2} />}
+              {team.announcementText3 && <AnnouncementSection heading={team.announcementHeading3} text={team.announcementText3} image={team.announcementImage3} />}
             </div>
           )}
 
           {/* ====== At a Glance ====== */}
-          <div className={`${team.announcementText ? "order-3" : "order-2"} lg:order-none lg:col-start-2 bg-white rounded-2xl p-4 sm:p-6 shadow-sm`}>
+          <div className={`${(team.announcementText || team.announcementText2 || team.announcementText3) ? "order-3" : "order-2"} lg:order-none lg:col-start-2 bg-white rounded-2xl p-4 sm:p-6 shadow-sm`}>
               <h3 className="text-[13px] sm:text-[15px] font-bold text-primary mb-2.5 sm:mb-3.5">At a Glance</h3>
               <div className="grid grid-cols-2 gap-1.5 sm:gap-2.5 mt-1">
                 <div className="flex items-center gap-1.5 sm:gap-2.5">

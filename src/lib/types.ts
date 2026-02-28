@@ -39,6 +39,12 @@ export interface Club extends ProfileFields {
   announcementHeading?: string;
   announcementText?: string;
   announcementImage?: string;
+  announcementHeading2?: string;
+  announcementText2?: string;
+  announcementImage2?: string;
+  announcementHeading3?: string;
+  announcementText3?: string;
+  announcementImage3?: string;
   featured: boolean;
   createdAt: string;
   updatedAt: string;
@@ -73,6 +79,12 @@ export interface Team extends ProfileFields {
   announcementHeading?: string;
   announcementText?: string;
   announcementImage?: string;
+  announcementHeading2?: string;
+  announcementText2?: string;
+  announcementImage2?: string;
+  announcementHeading3?: string;
+  announcementText3?: string;
+  announcementImage3?: string;
   featured: boolean;
   createdAt: string;
   updatedAt: string;
