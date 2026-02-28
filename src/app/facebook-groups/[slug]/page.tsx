@@ -163,12 +163,13 @@ export default async function FacebookGroupPage({ params }: Props) {
           )}
 
           {/* Anytime CTA */}
-          <div className="bg-primary rounded-2xl p-6 text-center">
-            <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-2">Powered by</p>
-            <a href="https://anytime-soccer.com" target="_blank" rel="noopener" className="text-white font-[family-name:var(--font-display)] text-xl font-bold hover:text-accent transition-colors">
-              Anytime Soccer Training
+          <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-light p-6 text-white">
+            <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Recommended Resource</p>
+            <h2 className="text-[22px] font-extrabold text-white tracking-tight mb-1.5">Supplement Team Training with 5,000+ Videos</h2>
+            <p className="text-white/70 text-sm mb-4">Anytime Soccer Training offers structured follow-along sessions your player can do at home, in the backyard, or at the park.</p>
+            <a href="https://anytime-soccer.com?ref=soccernearme" target="_blank" rel="noopener" className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors">
+              Try It Free →
             </a>
-            <p className="text-white/50 text-sm mt-2">The #1 app for youth soccer development</p>
           </div>
         </div>
       </div>
