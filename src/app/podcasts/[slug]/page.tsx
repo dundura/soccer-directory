@@ -48,7 +48,6 @@ export default async function PodcastPage({ params }: Props) {
     ...(podcast.website ? [{ label: "Website", value: "Visit Website", href: podcast.website }] : []),
     ...(podcast.rssFeedUrl ? [{ label: "All Episodes", value: "Subscribe", href: podcast.website || podcast.rssFeedUrl }] : []),
     ...(podcast.phone ? [{ label: "Phone", value: podcast.phone }] : []),
-    ...(podcast.email ? [{ label: "Email", value: podcast.email }] : []),
   ];
 
   return (

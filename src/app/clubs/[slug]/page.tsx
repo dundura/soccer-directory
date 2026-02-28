@@ -123,7 +123,6 @@ export default async function ClubDetailPage({ params }: Props) {
                 { label: "Ages", value: club.ageGroups },
                 { label: "Gender", value: club.gender },
                 ...(club.address ? [{ label: "Address", value: club.address }] : []),
-                ...(club.email ? [{ label: "Email", value: club.email }] : []),
               ].map((row) => (
                 <div key={row.label} className="flex justify-between items-center px-4 py-[11px] border-b border-border last:border-b-0 text-[13.5px]">
                   <span className="text-muted font-medium">{row.label}</span>

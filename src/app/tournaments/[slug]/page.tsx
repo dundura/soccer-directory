@@ -140,12 +140,6 @@ export default async function TournamentDetailPage({ params }: Props) {
                     <p className="text-sm font-bold text-primary">{tournament.phone}</p>
                   </div>
                 )}
-                {tournament.email && (
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Email</p>
-                    <a href={`mailto:${tournament.email}`} className="text-sm font-bold text-accent-hover hover:underline">{tournament.email}</a>
-                  </div>
-                )}
               </div>
             )}
 

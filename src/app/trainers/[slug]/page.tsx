@@ -146,12 +146,6 @@ export default async function TrainerDetailPage({ params }: Props) {
                     <p className="text-sm font-bold text-primary">{trainer.phone}</p>
                   </div>
                 )}
-                {trainer.email && (
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Email</p>
-                    <a href={`mailto:${trainer.email}`} className="text-sm font-bold text-accent-hover hover:underline">{trainer.email}</a>
-                  </div>
-                )}
                 {trainer.address && (
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Location</p>

@@ -139,14 +139,6 @@ export default async function ServiceDetailPage({ params }: Props) {
                 <span className="text-muted font-medium">Location</span>
                 <p className="font-bold text-primary">{service.city}, {service.state}</p>
               </div>
-              {service.email && (
-                <div>
-                  <span className="text-muted font-medium">Email</span>
-                  <p className="font-bold text-accent-hover">
-                    <a href={`mailto:${service.email}`} className="hover:underline">{service.email}</a>
-                  </p>
-                </div>
-              )}
               {service.phone && (
                 <div>
                   <span className="text-muted font-medium">Phone</span>
