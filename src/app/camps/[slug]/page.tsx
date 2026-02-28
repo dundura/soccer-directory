@@ -152,6 +152,12 @@ export default async function CampDetailPage({ params }: Props) {
                     <p className="text-sm font-bold text-primary">{camp.phone}</p>
                   </div>
                 )}
+                {camp.email && (
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Email</p>
+                    <a href="#contact" className="text-sm font-bold text-accent-hover hover:underline">Contact</a>
+                  </div>
+                )}
               </div>
             )}
 

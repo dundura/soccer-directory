@@ -46,6 +46,7 @@ export default async function FacebookGroupPage({ params }: Props) {
     ...(group.memberCount ? [{ label: "Members", value: group.memberCount }] : []),
     ...(group.groupUrl ? [{ label: "Facebook", value: "Visit Group", href: group.groupUrl }] : []),
     ...(group.phone ? [{ label: "Phone", value: group.phone }] : []),
+    ...(group.email ? [{ label: "Email", value: "Contact", href: "#contact" }] : []),
   ];
 
   return (
