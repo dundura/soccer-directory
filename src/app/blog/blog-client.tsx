@@ -24,7 +24,8 @@ const COVER_IMAGES = [
 ];
 
 function getCover(coverImage: string | undefined, index: number) {
-  return coverImage || COVER_IMAGES[index % COVER_IMAGES.length];
+  if (coverImage && coverImage.startsWith("http")) return coverImage;
+  return COVER_IMAGES[index % COVER_IMAGES.length];
 }
 
 export function BlogHub({ posts }: { posts: BlogPost[] }) {
