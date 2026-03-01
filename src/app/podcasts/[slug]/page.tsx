@@ -38,6 +38,7 @@ export default async function PodcastPage({ params }: Props) {
   const rssEpisodes = podcast.rssFeedUrl ? await fetchRssEpisodes(podcast.rssFeedUrl, 10) : [];
 
   const imgPos = podcast.imagePosition ?? 50;
+  const heroPos = podcast.heroImagePosition ?? 50;
   const heroImage = podcast.imageUrl || podcast.teamPhoto || "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
   const sidebarImage = podcast.teamPhoto || podcast.logo || null;
 
@@ -107,7 +108,7 @@ export default async function PodcastPage({ params }: Props) {
             {heroImage.startsWith("color:") ? (
               <div className="w-full h-full" style={{ backgroundColor: heroImage.replace("color:", "") }} />
             ) : (
-              <img src={heroImage} alt={podcast.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
+              <img src={heroImage} alt={podcast.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${heroPos}%` }} />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">

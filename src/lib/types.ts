@@ -17,6 +17,7 @@ export interface ProfileFields {
   phone?: string;
   mediaLinks?: MediaLink[];
   imagePosition?: number;
+  heroImagePosition?: number;
 }
 
 export interface Club extends ProfileFields {
@@ -366,6 +367,15 @@ export interface Service extends ProfileFields {
   description?: string;
   website?: string;
   email?: string;
+  announcementHeading?: string;
+  announcementText?: string;
+  announcementImage?: string;
+  announcementHeading2?: string;
+  announcementText2?: string;
+  announcementImage2?: string;
+  announcementHeading3?: string;
+  announcementText3?: string;
+  announcementImage3?: string;
   featured: boolean;
   status?: string;
   userId?: string;

@@ -571,11 +571,11 @@ function ImageField({ value, defaultImage, onChange }: { value: string; defaultI
 
 // ── Image Position Slider ────────────────────────────────────────
 
-function ImagePositionSlider({ imageUrl, position, onChange }: { imageUrl: string; position: number; onChange: (v: number) => void }) {
+function ImagePositionSlider({ imageUrl, position, onChange, label }: { imageUrl: string; position: number; onChange: (v: number) => void; label?: string }) {
   if (!imageUrl) return null;
   return (
     <div className="space-y-2">
-      <label className="text-xs font-medium text-muted">Adjust Image Crop Position</label>
+      <label className="text-xs font-medium text-muted">{label || "Adjust Image Crop Position"}</label>
       <div className="flex gap-4 items-start">
         <div className="w-32 h-32 rounded-lg overflow-hidden border border-border shrink-0">
           <img
@@ -875,11 +875,21 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
 
             /* Hero image with color picker */
             ) : field.type === "hero-image-or-color" ? (
-              <HeroImageField
-                value={formData[field.name] || ""}
-                defaultImage={DEFAULT_HERO_IMAGE}
-                onChange={(v) => handleChange(field.name, v)}
-              />
+              <div className="space-y-3">
+                <HeroImageField
+                  value={formData[field.name] || ""}
+                  defaultImage={DEFAULT_HERO_IMAGE}
+                  onChange={(v) => handleChange(field.name, v)}
+                />
+                {formData[field.name] && !formData[field.name].startsWith("color:") && formData[field.name] !== DEFAULT_HERO_IMAGE && (
+                  <ImagePositionSlider
+                    imageUrl={formData[field.name]}
+                    position={Number(formData.heroImagePosition) || 50}
+                    onChange={(v) => handleChange("heroImagePosition", String(v))}
+                    label="Adjust Hero Banner Position"
+                  />
+                )}
+              </div>
 
             /* Image with default + reset */
             ) : field.type === "image" ? (
@@ -894,6 +904,15 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                     imageUrl={formData.teamPhoto}
                     position={Number(formData.imagePosition) || 50}
                     onChange={(v) => handleChange("imagePosition", String(v))}
+                    label="Adjust Sidebar Image Position"
+                  />
+                )}
+                {field.name === "imageUrl" && formData.imageUrl && formData.imageUrl !== DEFAULT_HERO_IMAGE && (
+                  <ImagePositionSlider
+                    imageUrl={formData.imageUrl}
+                    position={Number(formData.heroImagePosition) || 50}
+                    onChange={(v) => handleChange("heroImagePosition", String(v))}
+                    label="Adjust Hero Banner Position"
                   />
                 )}
               </div>

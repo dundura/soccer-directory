@@ -66,6 +66,7 @@ export default async function ClubDetailPage({ params }: Props) {
 
   const pageUrl = `https://www.soccer-near-me.com/clubs/${slug}`;
   const imgPos = club.imagePosition ?? 50;
+  const heroPos = club.heroImagePosition ?? 50;
   const heroPhoto = club.imageUrl || club.teamPhoto || DEFAULT_HERO_PHOTO;
   const clubPhotos = club.photos && club.photos.length > 0 ? club.photos : DEFAULT_PHOTOS;
   const logo = club.logo || DEFAULT_LOGO;
@@ -185,7 +186,7 @@ export default async function ClubDetailPage({ params }: Props) {
 
           {/* ====== Hero ====== */}
           <div className="order-1 lg:order-none lg:col-start-2 bg-white rounded-2xl overflow-hidden shadow-sm">
-              <HeroImage src={heroPhoto} alt={club.name} id={club.id} imagePosition={club.imagePosition} />
+              <HeroImage src={heroPhoto} alt={club.name} id={club.id} imagePosition={heroPos} />
               <div className="p-5 sm:p-7 sm:flex sm:gap-6 sm:items-start">
               <img
                 src={logo}

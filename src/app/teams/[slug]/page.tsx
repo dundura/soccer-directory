@@ -85,6 +85,7 @@ export default async function TeamDetailPage({ params }: Props) {
 
   const pageUrl = `https://www.soccer-near-me.com/teams/${slug}`;
   const imgPos = team.imagePosition ?? 50;
+  const heroPos = team.heroImagePosition ?? 50;
   const heroPhoto = team.imageUrl || team.teamPhoto || DEFAULT_HERO_PHOTO;
   const teamPhotos = team.photos && team.photos.length > 0 ? team.photos : DEFAULT_PHOTOS;
   const logo = team.logo || DEFAULT_LOGO;
@@ -210,7 +211,7 @@ export default async function TeamDetailPage({ params }: Props) {
 
           {/* ====== Hero ====== */}
           <div className="order-1 lg:order-none lg:col-start-2 bg-white rounded-2xl overflow-hidden shadow-sm">
-              <HeroImage src={heroPhoto} alt={team.name} id={team.id} imagePosition={team.imagePosition} />
+              <HeroImage src={heroPhoto} alt={team.name} id={team.id} imagePosition={heroPos} />
               <div className="p-5 sm:p-7 sm:flex sm:gap-6 sm:items-start">
               <img
                 src={logo}

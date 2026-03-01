@@ -60,6 +60,7 @@ export default async function TrainerDetailPage({ params }: Props) {
 
   const pageUrl = `https://www.soccer-near-me.com/trainers/${slug}`;
   const imgPos = trainer.imagePosition ?? 50;
+  const heroPos = trainer.heroImagePosition ?? 50;
   const heroPhoto = trainer.imageUrl || trainer.teamPhoto || DEFAULT_HERO_PHOTO;
   const trainerPhotos = trainer.photos && trainer.photos.length > 0 ? trainer.photos : DEFAULT_PHOTOS;
   const logo = trainer.logo || DEFAULT_LOGO;
@@ -173,7 +174,7 @@ export default async function TrainerDetailPage({ params }: Props) {
 
             {/* Hero */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <HeroImage src={heroPhoto} alt={trainer.name} id={trainer.id} imagePosition={trainer.imagePosition} />
+              <HeroImage src={heroPhoto} alt={trainer.name} id={trainer.id} imagePosition={heroPos} />
               <div className="p-7 flex gap-6 items-start">
                 <img
                   src={logo}

@@ -35,6 +35,7 @@ export default async function FacebookGroupPage({ params }: Props) {
   const ownerId = await getListingOwner("fbgroup", slug);
 
   const imgPos = group.imagePosition ?? 50;
+  const heroPos = group.heroImagePosition ?? 50;
   const heroImage = group.imageUrl || "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
   const sidebarImage = group.teamPhoto || group.logo || null;
 
@@ -102,7 +103,7 @@ export default async function FacebookGroupPage({ params }: Props) {
             {heroImage.startsWith("color:") ? (
               <div className="w-full h-full" style={{ backgroundColor: heroImage.replace("color:", "") }} />
             ) : (
-              <img src={heroImage} alt={group.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
+              <img src={heroImage} alt={group.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${heroPos}%` }} />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">

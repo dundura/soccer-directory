@@ -45,6 +45,7 @@ export default async function TournamentDetailPage({ params }: Props) {
 
   const pageUrl = `https://www.soccer-near-me.com/tournaments/${slug}`;
   const imgPos = tournament.imagePosition ?? 50;
+  const heroPos = tournament.heroImagePosition ?? 50;
   const heroPhoto = tournament.imageUrl || tournament.teamPhoto || DEFAULT_HERO_PHOTO;
   const tournamentPhotos = tournament.photos && tournament.photos.length > 0 ? tournament.photos : DEFAULT_PHOTOS;
   const logo = tournament.logo || DEFAULT_LOGO;
@@ -161,7 +162,7 @@ export default async function TournamentDetailPage({ params }: Props) {
 
             {/* Hero */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <HeroImage src={heroPhoto} alt={tournament.name} id={tournament.id} imagePosition={tournament.imagePosition} />
+              <HeroImage src={heroPhoto} alt={tournament.name} id={tournament.id} imagePosition={heroPos} />
               <div className="p-7 flex gap-6 items-start">
                 <img
                   src={logo}

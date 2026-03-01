@@ -58,6 +58,7 @@ export default async function CampDetailPage({ params }: Props) {
 
   const pageUrl = `https://www.soccer-near-me.com/camps/${slug}`;
   const imgPos = camp.imagePosition ?? 50;
+  const heroPos = camp.heroImagePosition ?? 50;
   const heroPhoto = camp.imageUrl || camp.teamPhoto || DEFAULT_HERO_PHOTO;
   const campPhotos = camp.photos && camp.photos.length > 0 ? camp.photos : DEFAULT_PHOTOS;
   const logo = camp.logo || DEFAULT_LOGO;
@@ -173,7 +174,7 @@ export default async function CampDetailPage({ params }: Props) {
 
             {/* Hero */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <HeroImage src={heroPhoto} alt={camp.name} id={camp.id} imagePosition={camp.imagePosition} />
+              <HeroImage src={heroPhoto} alt={camp.name} id={camp.id} imagePosition={heroPos} />
               <div className="p-7 flex gap-6 items-start">
                 <img
                   src={logo}
