@@ -175,14 +175,14 @@ export default async function TrainerDetailPage({ params }: Props) {
             {/* Hero */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
               <HeroImage src={heroPhoto} alt={trainer.name} id={trainer.id} imagePosition={heroPos} />
-              <div className="p-7 flex gap-6 items-start">
+              <div className="p-5 sm:p-7 sm:flex sm:gap-6 sm:items-start">
                 <img
                   src={logo}
                   alt={`${trainer.name} logo`}
-                  className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10"
+                  className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1 sm:p-1.5 bg-surface -mt-8 sm:-mt-10 relative z-10"
                 />
-                <div className="flex-1 min-w-0">
-                  <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{trainer.name}</h1>
+                <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0">
+                  <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{trainer.name}</h1>
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {trainer.specialty} {" \u00b7 "} {trainer.city}, {trainer.state}
                   </p>
