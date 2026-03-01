@@ -67,6 +67,7 @@ export default async function GuestPlayPage() {
                 href={`/guest-play/${opp.slug}`}
                 title={opp.teamName}
                 subtitle={`${opp.tournament} \u00b7 ${opp.city}, ${opp.state}`}
+                image={opp.teamPhoto || undefined}
                 badges={[
                   { label: opp.level, variant: "blue" },
                   { label: opp.gender, variant: opp.gender === "Boys" ? "blue" : "purple" },
