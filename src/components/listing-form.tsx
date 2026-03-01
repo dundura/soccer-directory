@@ -77,6 +77,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   podcast: "A soccer podcast covering youth development, coaching insights, and the beautiful game.",
   fbgroup: "A Facebook group for soccer families to connect, share information, and support each other.",
   service: "A soccer-related product or service available for players, coaches, and families.",
+  tryout: "Add your tryout to be discovered by local players and families.",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -513,6 +514,35 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "announcementText3", label: "Offer 3 — Text", type: "textarea" },
     { name: "announcementImage3", label: "Offer 3 — Image", type: "image" },
   ],
+  tryout: [
+    { name: "name", label: "Tryout Name", required: true },
+    { name: "organizerName", label: "Contact Name", required: true },
+    { name: "clubName", label: "Club Name" },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "tryoutType", label: "Tryout Type", required: true, options: ["Open Tryout", "Invite Only", "ID Session", "Combine"] },
+    { name: "ageGroup", label: "Age Group", required: true },
+    { name: "gender", label: "Gender", required: true, options: ["Boys & Girls", "Boys", "Girls"] },
+    { name: "dates", label: "Dates (e.g. March 15-16, 2026)", required: true },
+    { name: "time", label: "Time (e.g. 5:00 PM - 7:00 PM)" },
+    { name: "location", label: "Location / Venue" },
+    { name: "cost", label: "Cost (e.g. $50 or Free)" },
+    { name: "description", label: "Description", required: true, type: "textarea" },
+    { name: "registrationUrl", label: "Registration URL" },
+    { name: "email", label: "Contact Email", type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "_socials", label: "Social Media", type: "heading" },
+    { name: "facebook", label: "Facebook URL" },
+    { name: "instagram", label: "Instagram URL" },
+    { name: "youtube", label: "YouTube URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
+    { name: "logo", label: "Logo URL" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+  ],
 };
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -532,6 +562,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   podcast: "Podcast",
   fbgroup: "Facebook Group",
   service: "Product / Service",
+  tryout: "Tryout",
 };
 
 // ── Shared styles ──────────────────────────────────────────────

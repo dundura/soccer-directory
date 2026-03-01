@@ -12,6 +12,7 @@ const navGroups = [
       { label: "Futsal", href: "/futsal" },
       { label: "Camps", href: "/camps" },
       { label: "College Showcases", href: "/camps?type=College+Showcase" },
+      { label: "Tryouts", href: "/tryouts" },
       { label: "Guest Play", href: "/guest-play" },
       { label: "Player Profiles", href: "/guest-play/players" },
       { label: "Guest Player Posts", href: "/guest-play/posts" },

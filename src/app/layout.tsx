@@ -78,6 +78,7 @@ function Header() {
                 {
                   title: "Opportunities",
                   items: [
+                    { label: "Tryouts", href: "/tryouts", desc: "Find club & team tryouts", icon: "🎽" },
                     { label: "Guest Play", href: "/guest-play", desc: "Guest player opportunities", icon: "🤝" },
                     { label: "Player Profiles", href: "/guest-play/players", desc: "Browse available players", icon: "👤" },
                     { label: "Guest Player Posts", href: "/guest-play/posts", desc: "Latest guest play posts", icon: "📋" },
@@ -135,6 +136,7 @@ function Footer() {
               <a href="/futsal" className="hover:text-white transition-colors">Find Futsal Teams</a>
               <a href="/trainers" className="hover:text-white transition-colors">Find Trainers</a>
               <a href="/camps" className="hover:text-white transition-colors">Find Camps</a>
+              <a href="/tryouts" className="hover:text-white transition-colors">Find Tryouts</a>
               <a href="/guest-play" className="hover:text-white transition-colors">Guest Player Ops</a>
               <a href="/guest-play/players" className="hover:text-white transition-colors">Player Profiles</a>
               <a href="/international-trips" className="hover:text-white transition-colors">International Trips</a>

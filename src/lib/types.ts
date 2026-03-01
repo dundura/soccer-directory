@@ -135,6 +135,32 @@ export interface Camp extends ProfileFields {
   updatedAt: string;
 }
 
+export interface Tryout extends ProfileFields {
+  id: string;
+  slug: string;
+  name: string;
+  organizerName: string;
+  clubName?: string;
+  city: string;
+  state: string;
+  country?: string;
+  tryoutType: string;
+  ageGroup: string;
+  gender: string;
+  dates: string;
+  time?: string;
+  location?: string;
+  cost?: string;
+  description: string;
+  registrationUrl?: string;
+  email?: string;
+  phone?: string;
+  isPast: boolean;
+  featured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface GuestOpportunity extends ProfileFields {
   id: string;
   slug: string;
@@ -383,7 +409,7 @@ export interface Service extends ProfileFields {
   updatedAt?: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service";
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";
