@@ -49,7 +49,7 @@ export default async function PodcastPage({ params }: Props) {
     ...(podcast.website ? [{ label: "Website", value: "Visit Website", href: podcast.website }] : []),
     ...(podcast.rssFeedUrl ? [{ label: "All Episodes", value: "Subscribe", href: podcast.website || podcast.rssFeedUrl }] : []),
     ...(podcast.phone ? [{ label: "Phone", value: podcast.phone }] : []),
-    ...(podcast.email ? [{ label: "Email", value: "Contact", href: "#contact" }] : []),
+    ...(podcast.email ? [{ label: "Email", value: "Contact", href: `/contact/podcast/${slug}`, internal: true }] : []),
   ];
 
   return (
@@ -82,7 +82,11 @@ export default async function PodcastPage({ params }: Props) {
                     <td className="px-4 py-3 text-muted whitespace-nowrap">{row.label}</td>
                     <td className="px-4 py-3 text-right">
                       {"href" in row && row.href ? (
-                        <a href={row.href.startsWith("http") ? row.href : `https://${row.href}`} target="_blank" rel="noopener noreferrer" className="font-bold text-accent hover:text-accent-hover transition-colors">{row.value} ↗</a>
+                        "internal" in row && row.internal ? (
+                          <a href={row.href} className="font-bold text-accent hover:text-accent-hover transition-colors">{row.value}</a>
+                        ) : (
+                          <a href={row.href.startsWith("http") ? row.href : `https://${row.href}`} target="_blank" rel="noopener noreferrer" className="font-bold text-accent hover:text-accent-hover transition-colors">{row.value} ↗</a>
+                        )
                       ) : (
                         <span className="font-bold text-primary">{row.value}</span>
                       )}

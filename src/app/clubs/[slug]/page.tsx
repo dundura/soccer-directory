@@ -124,12 +124,16 @@ export default async function ClubDetailPage({ params }: Props) {
                 { label: "Ages", value: club.ageGroups },
                 { label: "Gender", value: club.gender },
                 ...(club.address ? [{ label: "Address", value: club.address }] : []),
-                ...(club.email ? [{ label: "Email", value: "Contact", href: "#contact" }] : []),
+                ...(club.email ? [{ label: "Email", value: "Contact", href: `/contact/club/${slug}`, internal: true }] : []),
               ].map((row) => (
                 <div key={row.label} className="flex justify-between items-center px-4 py-[11px] border-b border-border last:border-b-0 text-[13.5px]">
                   <span className="text-muted font-medium">{row.label}</span>
                   {"href" in row && row.href ? (
-                    <a href={row.href.startsWith("http") ? row.href : `https://${row.href}`} target="_blank" rel="noopener noreferrer" className="font-bold text-accent hover:text-accent-hover transition-colors text-right">{row.value} ↗</a>
+                    "internal" in row && row.internal ? (
+                      <a href={row.href} className="font-bold text-accent hover:text-accent-hover transition-colors text-right">{row.value}</a>
+                    ) : (
+                      <a href={row.href.startsWith("http") ? row.href : `https://${row.href}`} target="_blank" rel="noopener noreferrer" className="font-bold text-accent hover:text-accent-hover transition-colors text-right">{row.value} ↗</a>
+                    )
                   ) : (
                     <span className="font-bold text-primary text-right">{row.value}</span>
                   )}

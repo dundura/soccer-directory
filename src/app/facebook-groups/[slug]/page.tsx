@@ -47,7 +47,7 @@ export default async function FacebookGroupPage({ params }: Props) {
     ...(group.memberCount ? [{ label: "Members", value: group.memberCount }] : []),
     ...(group.groupUrl ? [{ label: "Facebook", value: "Visit Group", href: group.groupUrl }] : []),
     ...(group.phone ? [{ label: "Phone", value: group.phone }] : []),
-    ...(group.email ? [{ label: "Email", value: "Contact", href: "#contact" }] : []),
+    ...(group.email ? [{ label: "Email", value: "Contact", href: `/contact/fbgroup/${slug}`, internal: true }] : []),
   ];
 
   return (
@@ -75,7 +75,11 @@ export default async function FacebookGroupPage({ params }: Props) {
                     <td className="px-4 py-3 text-muted whitespace-nowrap">{row.label}</td>
                     <td className="px-4 py-3 text-right break-all">
                       {"href" in row && row.href ? (
-                        <a href={row.href.startsWith("http") ? row.href : `https://${row.href}`} target="_blank" rel="noopener noreferrer" className="font-bold text-accent hover:text-accent-hover transition-colors">{row.value} ↗</a>
+                        "internal" in row && row.internal ? (
+                          <a href={row.href} className="font-bold text-accent hover:text-accent-hover transition-colors">{row.value}</a>
+                        ) : (
+                          <a href={row.href.startsWith("http") ? row.href : `https://${row.href}`} target="_blank" rel="noopener noreferrer" className="font-bold text-accent hover:text-accent-hover transition-colors">{row.value} ↗</a>
+                        )
                       ) : (
                         <span className="font-bold text-primary">{row.value}</span>
                       )}
