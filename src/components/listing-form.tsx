@@ -618,7 +618,7 @@ const HERO_COLORS = [
   { label: "Teal", value: "#0D9488" },
 ];
 
-function HeroImageField({ value, defaultImage, onChange }: { value: string; defaultImage: string; onChange: (v: string) => void }) {
+function HeroImageField({ value, defaultImage, onChange, imagePosition }: { value: string; defaultImage: string; onChange: (v: string) => void; imagePosition?: number }) {
   const isColor = value.startsWith("color:");
   const selectedColor = isColor ? value.replace("color:", "") : "";
   const imageUrl = isColor ? "" : value;
@@ -676,7 +676,11 @@ function HeroImageField({ value, defaultImage, onChange }: { value: string; defa
         </div>
       )}
       {!isColor && imageUrl && (
-        <img src={imageUrl} alt="Preview" className="rounded-lg max-h-40 object-cover border border-border" />
+        <div className="rounded-lg overflow-hidden border border-border h-32 relative">
+          <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" style={{ objectPosition: `center ${imagePosition ?? 50}%` }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+          <span className="absolute bottom-2 left-3 text-white text-xs font-semibold drop-shadow-lg">Hero banner preview</span>
+        </div>
       )}
     </div>
   );
@@ -881,6 +885,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                   value={formData[field.name] || ""}
                   defaultImage={DEFAULT_HERO_IMAGE}
                   onChange={(v) => handleChange(field.name, v)}
+                  imagePosition={Number(formData.heroImagePosition) || 50}
                 />
                 {formData[field.name] && !formData[field.name].startsWith("color:") && formData[field.name] !== DEFAULT_HERO_IMAGE && (
                   <ImagePositionSlider
