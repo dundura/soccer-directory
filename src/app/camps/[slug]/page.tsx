@@ -179,9 +179,9 @@ export default async function CampDetailPage({ params }: Props) {
                 <img
                   src={logo}
                   alt={`${camp.name} logo`}
-                  className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10"
+                  className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10 bg-white"
                 />
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 relative z-20">
                   <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{camp.name}</h1>
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {camp.organizerName} {" \u00b7 "} {camp.city}, {camp.state}
