@@ -1,6 +1,6 @@
 import { getServiceBySlug, getServiceSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton } from "@/components/manage-listing-button";
-import { ShareButtons } from "@/components/profile-ui";
+import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -158,7 +158,7 @@ export default async function ServiceDetailPage({ params }: Props) {
               {service.email && (
                 <div>
                   <span className="text-muted font-medium">Email</span>
-                  <p className="font-bold text-accent-hover"><a href="#contact" className="hover:underline">Contact</a></p>
+                  <p className="font-bold text-accent-hover"><a href={`/contact/service/${slug}`} className="hover:underline">Contact</a></p>
                 </div>
               )}
               {service.phone && (
@@ -178,6 +178,14 @@ export default async function ServiceDetailPage({ params }: Props) {
                     <img key={i} src={photo} alt={`${service.name} photo ${i + 1}`} className="w-full aspect-square object-contain rounded-xl bg-surface" />
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Video */}
+            {service.videoUrl && (
+              <div className="border-t border-border pt-6 mt-6">
+                <h3 className="text-[15px] font-bold text-primary mb-3">Video</h3>
+                <VideoEmbed url={service.videoUrl} />
               </div>
             )}
 
