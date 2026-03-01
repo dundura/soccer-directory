@@ -97,6 +97,7 @@ export function ServiceFilters({ services }: { services: Service[] }) {
                   href={`/services/${service.slug}`}
                   title={service.name}
                   subtitle={`by ${service.providerName} · ${service.city}, ${service.state}`}
+                  image={service.imageUrl || undefined}
                   badges={[
                     { label: service.category, variant: "green" },
                     ...(service.price ? [{ label: service.price }] : []),
