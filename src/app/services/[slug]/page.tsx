@@ -106,14 +106,6 @@ export default async function ServiceDetailPage({ params }: Props) {
               </p>
             )}
 
-            {/* About the Author */}
-            {service.aboutAuthor && (
-              <div className="bg-surface rounded-xl p-5 mb-6">
-                <h2 className="text-[15px] font-bold text-primary mb-2">About the Author</h2>
-                <p className="text-gray-600 leading-relaxed whitespace-pre-line text-sm">{service.aboutAuthor}</p>
-              </div>
-            )}
-
             {/* Special Offers */}
             {(service.announcementText || service.announcementText2 || service.announcementText3) && (
               <div className="space-y-4 mb-6">
@@ -176,6 +168,14 @@ export default async function ServiceDetailPage({ params }: Props) {
                 </div>
               )}
             </div>
+
+            {/* About the Author */}
+            {service.aboutAuthor && (
+              <div className="border-t border-border pt-6 mt-6">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight mb-3">About the Author</h2>
+                <p className="text-gray-600 leading-relaxed whitespace-pre-line">{service.aboutAuthor}</p>
+              </div>
+            )}
 
             {/* Additional Photos */}
             {photos.length > 0 && (
