@@ -110,6 +110,16 @@ export default async function TryoutDetailPage({ params }: Props) {
                     Contact
                   </a>
                 )}
+                {tryout.website && (
+                  <a
+                    href={tryout.website.startsWith("http") ? tryout.website : `https://${tryout.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border border-accent text-accent px-5 py-2 rounded-lg text-sm font-bold hover:bg-accent hover:text-white transition-colors whitespace-nowrap"
+                  >
+                    Website
+                  </a>
+                )}
               </div>
             </div>
 
@@ -210,6 +220,16 @@ export default async function TryoutDetailPage({ params }: Props) {
                         className="bg-[#DC373E] text-white px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-[#C42F36] transition-colors"
                       >
                         Contact Organizer
+                      </a>
+                    )}
+                    {tryout.website && (
+                      <a
+                        href={tryout.website.startsWith("http") ? tryout.website : `https://${tryout.website}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="border border-accent text-accent px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-accent hover:text-white transition-colors"
+                      >
+                        Website
                       </a>
                     )}
                   </div>

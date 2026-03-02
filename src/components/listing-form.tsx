@@ -536,6 +536,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "cost", label: "Cost (e.g. $50 or Free)" },
     { name: "description", label: "Description", required: true, type: "textarea" },
     { name: "registrationUrl", label: "Registration URL" },
+    { name: "website", label: "Website" },
     { name: "email", label: "Contact Email", type: "email" },
     { name: "phone", label: "Phone" },
     { name: "_socials", label: "Social Media", type: "heading" },

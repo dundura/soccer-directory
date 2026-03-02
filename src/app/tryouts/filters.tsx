@@ -174,6 +174,16 @@ export function TryoutFilters({ tryouts }: { tryouts: Tryout[] }) {
                           Register
                         </a>
                       )}
+                      {tryout.website && (
+                        <a
+                          href={tryout.website.startsWith("http") ? tryout.website : `https://${tryout.website}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-4 py-2 rounded-lg border border-border text-primary text-sm font-semibold hover:bg-surface transition-colors"
+                        >
+                          Website
+                        </a>
+                      )}
                       {isAdmin && (
                         <button
                           onClick={() => togglePast(tryout.slug)}
