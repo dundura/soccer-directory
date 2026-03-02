@@ -45,6 +45,11 @@ export default function AdminClient() {
   const [listingTypeFilter, setListingTypeFilter] = useState("all");
   const [listingStatusFilter, setListingStatusFilter] = useState("all");
 
+  // Hero tagline setting
+  const [heroTagline, setHeroTagline] = useState("");
+  const [taglineSaving, setTaglineSaving] = useState(false);
+  const [taglineSaved, setTaglineSaved] = useState(false);
+
   // Edit state
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
   const [editData, setEditData] = useState<Record<string, string> | null>(null);
@@ -76,6 +81,7 @@ export default function AdminClient() {
       const data = await res.json();
       setUsers(data.users);
       setListings(data.listings);
+      setHeroTagline(data.heroTagline || "");
     } catch {
       setError("Failed to load admin data");
     }
@@ -193,6 +199,38 @@ export default function AdminClient() {
             </div>
           ) : (
           <>
+          {/* Hero Tagline Setting */}
+          <div className="bg-surface rounded-2xl p-5 mb-6">
+            <label className="block text-sm font-bold text-primary mb-2">Homepage Tagline <span className="font-normal text-muted">(leave blank for random)</span></label>
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  value={heroTagline}
+                  onChange={(e) => { if (e.target.value.length <= 120) { setHeroTagline(e.target.value); setTaglineSaved(false); } }}
+                  placeholder="e.g. Find the perfect youth soccer team, club, or coach"
+                  maxLength={120}
+                  className="w-full px-4 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent pr-16"
+                />
+                <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs ${heroTagline.length > 100 ? "text-amber-600" : "text-muted"}`}>
+                  {heroTagline.length}/120
+                </span>
+              </div>
+              <button
+                onClick={async () => {
+                  setTaglineSaving(true);
+                  await fetch("/api/admin", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "updateSetting", key: "hero_tagline", value: heroTagline }) });
+                  setTaglineSaving(false);
+                  setTaglineSaved(true);
+                }}
+                disabled={taglineSaving}
+                className="px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-light transition-colors disabled:opacity-50 shrink-0"
+              >
+                {taglineSaving ? "Saving..." : taglineSaved ? "Saved" : "Save"}
+              </button>
+            </div>
+          </div>
+
           {/* Tabs */}
           <div className="flex gap-2 mb-6">
             <button

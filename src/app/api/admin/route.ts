@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getUserByEmail, getAllUsers, getAllListings, updateUserRole, updateListingStatus, updateListingFeatured, deleteUserAccount, getListingDataAdmin, updateListingAdmin } from "@/lib/db";
+import { getUserByEmail, getAllUsers, getAllListings, updateUserRole, updateListingStatus, updateListingFeatured, deleteUserAccount, getListingDataAdmin, updateListingAdmin, getSetting, updateSetting } from "@/lib/db";
 
 async function requireAdmin() {
   const session = await auth();
@@ -25,8 +25,8 @@ export async function GET(req: Request) {
     return NextResponse.json(data);
   }
 
-  const [users, listings] = await Promise.all([getAllUsers(), getAllListings()]);
-  return NextResponse.json({ users, listings });
+  const [users, listings, heroTagline] = await Promise.all([getAllUsers(), getAllListings(), getSetting("hero_tagline")]);
+  return NextResponse.json({ users, listings, heroTagline });
 }
 
 export async function PUT(req: Request) {
@@ -51,6 +51,11 @@ export async function PUT(req: Request) {
       break;
     case "deleteUser":
       await deleteUserAccount(data.userId);
+      break;
+    case "updateSetting":
+      if (typeof data.key !== "string" || typeof data.value !== "string") return NextResponse.json({ error: "Invalid" }, { status: 400 });
+      if (data.value.length > 120) return NextResponse.json({ error: "Character limit is 120" }, { status: 400 });
+      await updateSetting(data.key, data.value);
       break;
     default:
       return NextResponse.json({ error: "Unknown action" }, { status: 400 });

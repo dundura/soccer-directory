@@ -10,6 +10,16 @@ function normalizeType(type: string): string {
   return type;
 }
 
+// ── Site Settings ────────────────────────────────────────────
+export async function getSetting(key: string): Promise<string> {
+  const rows = await sql`SELECT value FROM site_settings WHERE key = ${key} LIMIT 1`;
+  return (rows[0]?.value as string) || "";
+}
+
+export async function updateSetting(key: string, value: string) {
+  await sql`INSERT INTO site_settings (key, value) VALUES (${key}, ${value}) ON CONFLICT (key) DO UPDATE SET value = ${value}`;
+}
+
 // ── Shared profile field mapper ──────────────────────────────
 function mapProfileFields(r: Record<string, unknown>): ProfileFields {
   let photos: string[] | undefined;

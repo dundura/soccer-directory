@@ -1,13 +1,22 @@
-import { getClubs, getTeams, getTrainers, getCamps, getTournaments, getFutsalTeams, getBlogPosts } from "@/lib/db";
+import { getClubs, getTeams, getTrainers, getCamps, getTournaments, getFutsalTeams, getBlogPosts, getSetting } from "@/lib/db";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [clubs, teams, trainers, camps, tournaments, futsalTeams, blogPosts] = await Promise.all([
-    getClubs(), getTeams(), getTrainers(), getCamps(), getTournaments(), getFutsalTeams(), getBlogPosts(),
+  const [clubs, teams, trainers, camps, tournaments, futsalTeams, blogPosts, heroTagline] = await Promise.all([
+    getClubs(), getTeams(), getTrainers(), getCamps(), getTournaments(), getFutsalTeams(), getBlogPosts(), getSetting("hero_tagline"),
   ]);
+  const RANDOM_TAGLINES = [
+    "Your one-stop directory for youth soccer clubs, teams, and trainers.",
+    "Connecting players and families with the best soccer opportunities.",
+    "Find camps, tryouts, and guest play opportunities near you.",
+    "Discover top-rated clubs and coaches in your area.",
+    "Everything youth soccer — all in one place.",
+  ];
+  const tagline = heroTagline || RANDOM_TAGLINES[Math.floor(Math.random() * RANDOM_TAGLINES.length)];
+
   const featuredClubs = clubs.filter((c) => c.featured).slice(0, 3);
   const featuredTeams = teams.filter((t) => t.featured).slice(0, 3);
   const featuredTrainers = trainers.filter((t) => t.featured).slice(0, 3);
@@ -107,6 +116,13 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── Tagline Strip ──────────────────────────── */}
+      <div className="bg-accent/10 border-b border-accent/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 text-center">
+          <p className="text-sm font-semibold text-accent-hover">{tagline}</p>
+        </div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
