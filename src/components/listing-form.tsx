@@ -370,6 +370,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
   books: [
     { name: "name", label: "Item Name", required: true },
     { name: "description", label: "Description", required: true, type: "textarea" },
+    { name: "aboutAuthor", label: "About the Author (optional)", type: "textarea" },
     { name: "price", label: "Price (e.g. $25)", required: true },
     { name: "condition", label: "Condition", required: true, options: ["New", "Like New", "Used"] },
     { name: "city", label: "City", required: true },

@@ -276,6 +276,7 @@ export interface MarketplaceItem {
   phone?: string;
   imageUrl?: string;
   photos?: string[];
+  aboutAuthor?: string;
   featured: boolean;
   createdAt: string;
 }

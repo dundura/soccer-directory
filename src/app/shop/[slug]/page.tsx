@@ -95,6 +95,16 @@ export default async function ShopDetailPage({ params }: Props) {
               </div>
             </div>
 
+            {/* About the Author */}
+            {item.aboutAuthor && (
+              <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About the Author</h2>
+                <div className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap">
+                  {item.aboutAuthor}
+                </div>
+              </div>
+            )}
+
             {/* Photos */}
             {item.photos && item.photos.length > 0 && (
               <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
