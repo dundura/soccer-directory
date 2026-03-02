@@ -153,6 +153,7 @@ export interface Tryout extends ProfileFields {
   cost?: string;
   description: string;
   registrationUrl?: string;
+  website?: string;
   email?: string;
   phone?: string;
   isPast: boolean;
