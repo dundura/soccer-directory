@@ -25,12 +25,12 @@ export async function POST(req: Request) {
     const stars = "\u2605".repeat(rating) + "\u2606".repeat(5 - rating);
 
     if (resend) {
-      const recipients = [NOTIFY_EMAIL];
-      if (ownerEmail && ownerEmail !== NOTIFY_EMAIL) recipients.push(ownerEmail);
+      const to = ownerEmail || NOTIFY_EMAIL;
 
       await resend.emails.send({
         from: "Soccer Near Me <notifications@soccer-near-me.com>",
-        to: recipients,
+        to: [to],
+        bcc: to !== NOTIFY_EMAIL ? [NOTIFY_EMAIL] : undefined,
         subject: `New Review for ${listingName || "a listing"}: ${stars}`,
         html: `
           <div style="font-family:sans-serif;max-width:600px;">
