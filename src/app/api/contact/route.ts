@@ -44,14 +44,12 @@ export async function POST(req: Request) {
     const listingUrl = `https://www.soccer-near-me.com/${TYPE_PATHS[type] || type}/${slug}`;
 
     if (resend) {
-      const recipients = [NOTIFY_EMAIL];
-      if (listing.email && listing.email !== NOTIFY_EMAIL) {
-        recipients.push(listing.email);
-      }
+      const to = listing.email || NOTIFY_EMAIL;
 
       await resend.emails.send({
         from: "Soccer Near Me <notifications@soccer-near-me.com>",
-        to: recipients,
+        to: [to],
+        bcc: to !== NOTIFY_EMAIL ? [NOTIFY_EMAIL] : undefined,
         replyTo: senderEmail,
         subject: `New inquiry for ${listing.name} (${label})`,
         html: `
