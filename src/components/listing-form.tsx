@@ -731,6 +731,22 @@ interface ListingFormProps {
   isAdmin?: boolean;
 }
 
+// ── Section grouping helper ──────────────────────────────────────
+function groupFieldsIntoSections(fields: FieldDef[]) {
+  const sections: { title: string; fields: FieldDef[] }[] = [];
+  let current: { title: string; fields: FieldDef[] } = { title: "Basic Information", fields: [] };
+  for (const field of fields) {
+    if (field.type === "heading") {
+      if (current.fields.length > 0) sections.push(current);
+      current = { title: field.label, fields: [] };
+    } else {
+      current.fields.push(field);
+    }
+  }
+  if (current.fields.length > 0) sections.push(current);
+  return sections;
+}
+
 export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType, editType, editId, initialData, isAdmin }: ListingFormProps) {
   const isEdit = mode === "edit";
   const startType = editType || defaultType || "club";
@@ -740,6 +756,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [openSections, setOpenSections] = useState<Set<number>>(new Set());
 
   const fields = FIELDS[type];
 
@@ -750,12 +767,31 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
   function handleTypeSwitch(t: ListingType) {
     setType(t);
     setFormData({ description: DEFAULT_DESCRIPTIONS[t], imageUrl: DEFAULT_HERO_IMAGE, teamPhoto: DEFAULT_SIDEBAR_IMAGE, country: "United States" });
+    setOpenSections(new Set());
   }
+
+  function toggleSection(index: number) {
+    setOpenSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  }
+
+  const sections = groupFieldsIntoSections(fields);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitting(true);
     setError("");
+    // Validate required fields (native required won't work for hidden sections)
+    const missing = fields.filter((f) => f.required && f.type !== "heading" && !formData[f.name]);
+    if (missing.length > 0) {
+      setOpenSections(new Set(sections.map((_, i) => i)));
+      setError(`Please fill in: ${missing.map((f) => f.label).join(", ")}`);
+      return;
+    }
+    setSubmitting(true);
 
     try {
       const url = isAdmin && isEdit ? "/api/admin" : "/api/listings";
@@ -802,161 +838,165 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
         </div>
       )}
 
-      {/* Dynamic fields */}
-      {fields.map((field) => {
-        // Section heading
-        if (field.type === "heading") {
-          return (
-            <div key={field.name} className="pt-2 pb-1 border-b border-border">
-              <h3 className="text-sm font-bold text-primary">{field.label}</h3>
-            </div>
-          );
-        }
-
-        if (field.type === "warning") {
-          return (
-            <div key={field.name} className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
-              ⚠️ {field.label}
-            </div>
-          );
-        }
-
+      {/* Dynamic fields in collapsible sections */}
+      {sections.map((section, si) => {
+        const isOpen = openSections.has(si);
         return (
-          <div key={field.name}>
-            <label className="block text-sm font-medium mb-1">
-              {field.label} {field.required && <span className="text-accent">*</span>}
-            </label>
+          <div key={si} className="rounded-2xl border border-border bg-white overflow-hidden">
+            <button
+              type="button"
+              onClick={() => toggleSection(si)}
+              className="w-full px-5 py-4 flex items-center justify-between bg-white hover:bg-slate-50 transition-colors"
+            >
+              <h3 className="font-[family-name:var(--font-display)] text-base font-bold text-primary">{section.title}</h3>
+              <svg className={`w-5 h-5 text-muted shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <div className={`px-5 pb-5 space-y-4 border-t border-border ${isOpen ? "" : "hidden"}`}>
+                {section.fields.map((field) => {
+                  if (field.type === "warning") {
+                    return (
+                      <div key={field.name} className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+                        {field.label}
+                      </div>
+                    );
+                  }
 
-            {/* Select with options */}
-            {field.options ? (
-              <select
-                value={formData[field.name] || ""}
-                onChange={(e) => handleChange(field.name, e.target.value)}
-                required={field.required}
-                className={selectClass}
-              >
-                <option value="">Select...</option>
-                {field.options.map((opt) => (
-                  <option key={opt} value={opt}>{opt === "true" ? "Yes" : opt === "false" ? "No" : opt}</option>
-                ))}
-              </select>
+                  return (
+                    <div key={field.name}>
+                      <label className="block text-sm font-medium mb-1">
+                        {field.label} {field.required && <span className="text-accent">*</span>}
+                      </label>
 
-            /* Country with searchable datalist */
-            ) : field.type === "country" ? (
-              <>
-                <input
-                  list="countries-list"
-                  value={formData[field.name] || ""}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  required={field.required}
-                  placeholder="Start typing a country..."
-                  className={inputClass}
-                />
-                <datalist id="countries-list">
-                  {COUNTRIES.map((c) => <option key={c} value={c} />)}
-                </datalist>
-              </>
+                      {/* Select with options */}
+                      {field.options ? (
+                        <select
+                          value={formData[field.name] || ""}
+                          onChange={(e) => handleChange(field.name, e.target.value)}
+                          required={field.required}
+                          className={selectClass}
+                        >
+                          <option value="">Select...</option>
+                          {field.options.map((opt) => (
+                            <option key={opt} value={opt}>{opt === "true" ? "Yes" : opt === "false" ? "No" : opt}</option>
+                          ))}
+                        </select>
 
-            /* State dropdown */
-            ) : field.type === "state-select" ? (
-              <select
-                value={formData[field.name] || ""}
-                onChange={(e) => handleChange(field.name, e.target.value)}
-                required={field.required}
-                className={selectClass}
-              >
-                <option value="">Select state...</option>
-                {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+                      /* Country with searchable datalist */
+                      ) : field.type === "country" ? (
+                        <>
+                          <input
+                            list="countries-list"
+                            value={formData[field.name] || ""}
+                            onChange={(e) => handleChange(field.name, e.target.value)}
+                            required={field.required}
+                            placeholder="Start typing a country..."
+                            className={inputClass}
+                          />
+                          <datalist id="countries-list">
+                            {COUNTRIES.map((c) => <option key={c} value={c} />)}
+                          </datalist>
+                        </>
 
-            /* Single age select */
-            ) : field.type === "age-select" ? (
-              <select
-                value={formData[field.name] || ""}
-                onChange={(e) => handleChange(field.name, e.target.value)}
-                required={field.required}
-                className={selectClass}
-              >
-                <option value="">Select age group...</option>
-                {AGE_GROUPS.map((a) => <option key={a} value={a}>{a}</option>)}
-              </select>
+                      /* State dropdown */
+                      ) : field.type === "state-select" ? (
+                        <select
+                          value={formData[field.name] || ""}
+                          onChange={(e) => handleChange(field.name, e.target.value)}
+                          required={field.required}
+                          className={selectClass}
+                        >
+                          <option value="">Select state...</option>
+                          {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                        </select>
 
-            /* Age range (min–max) */
-            ) : field.type === "age-multi" ? (
-              <div className="grid grid-cols-2 gap-3">
-                <select
-                  value={(formData[field.name] || "").split("–")[0] || ""}
-                  onChange={(e) => {
-                    const max = (formData[field.name] || "").split("–")[1] || "";
-                    handleChange(field.name, max ? `${e.target.value}–${max}` : e.target.value);
-                  }}
-                  required={field.required}
-                  className={selectClass}
-                >
-                  <option value="">From...</option>
-                  {AGE_GROUPS.filter((a) => a !== "All").map((a) => <option key={a} value={a}>{a}</option>)}
-                </select>
-                <select
-                  value={(formData[field.name] || "").split("–")[1] || ""}
-                  onChange={(e) => {
-                    const min = (formData[field.name] || "").split("–")[0] || "";
-                    handleChange(field.name, min ? `${min}–${e.target.value}` : e.target.value);
-                  }}
-                  required={field.required}
-                  className={selectClass}
-                >
-                  <option value="">To...</option>
-                  {AGE_GROUPS.filter((a) => a !== "All").map((a) => <option key={a} value={a}>{a}</option>)}
-                </select>
-              </div>
+                      /* Single age select */
+                      ) : field.type === "age-select" ? (
+                        <select
+                          value={formData[field.name] || ""}
+                          onChange={(e) => handleChange(field.name, e.target.value)}
+                          required={field.required}
+                          className={selectClass}
+                        >
+                          <option value="">Select age group...</option>
+                          {AGE_GROUPS.map((a) => <option key={a} value={a}>{a}</option>)}
+                        </select>
 
-            /* Hero image with color picker */
-            ) : field.type === "hero-image-or-color" ? (
-              <div className="space-y-3">
-                <HeroImageField
-                  value={formData[field.name] || ""}
-                  defaultImage={DEFAULT_HERO_IMAGE}
-                  onChange={(v) => handleChange(field.name, v)}
-                  imagePosition={Number(formData.heroImagePosition) || 50}
-                />
-                {formData[field.name] && !formData[field.name].startsWith("color:") && formData[field.name] !== DEFAULT_HERO_IMAGE && (
-                  <ImagePositionSlider
-                    imageUrl={formData[field.name]}
-                    position={Number(formData.heroImagePosition) || 50}
-                    onChange={(v) => handleChange("heroImagePosition", String(v))}
-                    label="Adjust Hero Banner Position"
-                  />
-                )}
-              </div>
+                      /* Age range (min–max) */
+                      ) : field.type === "age-multi" ? (
+                        <div className="grid grid-cols-2 gap-3">
+                          <select
+                            value={(formData[field.name] || "").split("–")[0] || ""}
+                            onChange={(e) => {
+                              const max = (formData[field.name] || "").split("–")[1] || "";
+                              handleChange(field.name, max ? `${e.target.value}–${max}` : e.target.value);
+                            }}
+                            required={field.required}
+                            className={selectClass}
+                          >
+                            <option value="">From...</option>
+                            {AGE_GROUPS.filter((a) => a !== "All").map((a) => <option key={a} value={a}>{a}</option>)}
+                          </select>
+                          <select
+                            value={(formData[field.name] || "").split("–")[1] || ""}
+                            onChange={(e) => {
+                              const min = (formData[field.name] || "").split("–")[0] || "";
+                              handleChange(field.name, min ? `${min}–${e.target.value}` : e.target.value);
+                            }}
+                            required={field.required}
+                            className={selectClass}
+                          >
+                            <option value="">To...</option>
+                            {AGE_GROUPS.filter((a) => a !== "All").map((a) => <option key={a} value={a}>{a}</option>)}
+                          </select>
+                        </div>
 
-            /* Image with default + reset */
-            ) : field.type === "image" ? (
-              <div className="space-y-3">
-                <ImageField
-                  value={formData[field.name] || ""}
-                  defaultImage={field.name === "teamPhoto" ? DEFAULT_SIDEBAR_IMAGE : DEFAULT_HERO_IMAGE}
-                  onChange={(v) => handleChange(field.name, v)}
-                />
-                {field.name === "teamPhoto" && formData.teamPhoto && formData.teamPhoto !== DEFAULT_SIDEBAR_IMAGE && (
-                  <ImagePositionSlider
-                    imageUrl={formData.teamPhoto}
-                    position={Number(formData.imagePosition) || 50}
-                    onChange={(v) => handleChange("imagePosition", String(v))}
-                    label="Adjust Sidebar Image Position"
-                  />
-                )}
-                {field.name === "imageUrl" && formData.imageUrl && formData.imageUrl !== DEFAULT_HERO_IMAGE && (
-                  <ImagePositionSlider
-                    imageUrl={formData.imageUrl}
-                    position={Number(formData.heroImagePosition) || 50}
-                    onChange={(v) => handleChange("heroImagePosition", String(v))}
-                    label="Adjust Hero Banner Position"
-                  />
-                )}
-              </div>
+                      /* Hero image with color picker */
+                      ) : field.type === "hero-image-or-color" ? (
+                        <div className="space-y-3">
+                          <HeroImageField
+                            value={formData[field.name] || ""}
+                            defaultImage={DEFAULT_HERO_IMAGE}
+                            onChange={(v) => handleChange(field.name, v)}
+                            imagePosition={Number(formData.heroImagePosition) || 50}
+                          />
+                          {formData[field.name] && !formData[field.name].startsWith("color:") && formData[field.name] !== DEFAULT_HERO_IMAGE && (
+                            <ImagePositionSlider
+                              imageUrl={formData[field.name]}
+                              position={Number(formData.heroImagePosition) || 50}
+                              onChange={(v) => handleChange("heroImagePosition", String(v))}
+                              label="Adjust Hero Banner Position"
+                            />
+                          )}
+                        </div>
 
-            /* Photos (up to 5 URLs) */
-            ) : field.type === "photos" ? (
+                      /* Image with default + reset */
+                      ) : field.type === "image" ? (
+                        <div className="space-y-3">
+                          <ImageField
+                            value={formData[field.name] || ""}
+                            defaultImage={field.name === "teamPhoto" ? DEFAULT_SIDEBAR_IMAGE : DEFAULT_HERO_IMAGE}
+                            onChange={(v) => handleChange(field.name, v)}
+                          />
+                          {field.name === "teamPhoto" && formData.teamPhoto && formData.teamPhoto !== DEFAULT_SIDEBAR_IMAGE && (
+                            <ImagePositionSlider
+                              imageUrl={formData.teamPhoto}
+                              position={Number(formData.imagePosition) || 50}
+                              onChange={(v) => handleChange("imagePosition", String(v))}
+                              label="Adjust Sidebar Image Position"
+                            />
+                          )}
+                          {field.name === "imageUrl" && formData.imageUrl && formData.imageUrl !== DEFAULT_HERO_IMAGE && (
+                            <ImagePositionSlider
+                              imageUrl={formData.imageUrl}
+                              position={Number(formData.heroImagePosition) || 50}
+                              onChange={(v) => handleChange("heroImagePosition", String(v))}
+                              label="Adjust Hero Banner Position"
+                            />
+                          )}
+                        </div>
+
+                      /* Photos (up to 5 URLs) */
+                      ) : field.type === "photos" ? (
               <div className="space-y-2">
                 {Array.from({ length: Math.min(5, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
                   let arr: string[] = [];
@@ -1256,16 +1296,20 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                 )}
               </div>
 
-            /* Default text/email/number input */
-            ) : (
-              <input
-                type={field.type || "text"}
-                value={formData[field.name] || ""}
-                onChange={(e) => handleChange(field.name, e.target.value)}
-                required={field.required}
-                className={inputClass}
-              />
-            )}
+                      /* Default text/email/number input */
+                      ) : (
+                        <input
+                          type={field.type || "text"}
+                          value={formData[field.name] || ""}
+                          onChange={(e) => handleChange(field.name, e.target.value)}
+                          required={field.required}
+                          className={inputClass}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
           </div>
         );
       })}
