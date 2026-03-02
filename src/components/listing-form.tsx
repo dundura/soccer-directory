@@ -497,6 +497,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "state", label: "State", required: true, type: "state-select" },
     { name: "price", label: "Price (e.g. $29.99, From $50, Free)" },
     { name: "description", label: "Description", required: true, type: "textarea" },
+    { name: "aboutAuthor", label: "About the Author (optional)", type: "textarea" },
     { name: "website", label: "Website / Purchase Link" },
     { name: "email", label: "Contact Email", type: "email" },
     { name: "phone", label: "Phone" },
@@ -721,7 +722,7 @@ function HeroImageField({ value, defaultImage, onChange, imagePosition }: { valu
 // ── Component ──────────────────────────────────────────────────
 
 interface ListingFormProps {
-  onSuccess: () => void;
+  onSuccess: (newSlug?: string, newType?: string) => void;
   onCancel: () => void;
   mode?: "create" | "edit";
   defaultType?: ListingType;
@@ -766,7 +767,9 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
 
   function handleTypeSwitch(t: ListingType) {
     setType(t);
-    setFormData({ description: DEFAULT_DESCRIPTIONS[t], imageUrl: DEFAULT_HERO_IMAGE, teamPhoto: DEFAULT_SIDEBAR_IMAGE, country: "United States" });
+    if (!isEdit) {
+      setFormData({ description: DEFAULT_DESCRIPTIONS[t], imageUrl: DEFAULT_HERO_IMAGE, teamPhoto: DEFAULT_SIDEBAR_IMAGE, country: "United States" });
+    }
     setOpenSections(new Set());
   }
 
@@ -794,18 +797,40 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
     setSubmitting(true);
 
     try {
-      const url = isAdmin && isEdit ? "/api/admin" : "/api/listings";
-      const method = isEdit ? "PUT" : "POST";
-      const body = isAdmin && isEdit
-        ? JSON.stringify({ action: "updateListing", type, id: editId, data: formData })
-        : isEdit
-        ? JSON.stringify({ type, id: editId, data: formData })
-        : JSON.stringify({ type, data: formData });
+      const typeChanged = isEdit && editType && type !== editType;
 
-      const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error);
-      onSuccess();
+      if (typeChanged) {
+        // Create new listing with the new type
+        const createRes = await fetch("/api/listings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type, data: formData }),
+        });
+        const createJson = await createRes.json();
+        if (!createRes.ok) throw new Error(createJson.error);
+
+        // Delete old listing
+        await fetch("/api/listings", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: editType, id: editId }),
+        });
+
+        onSuccess(createJson.slug, type);
+      } else {
+        const url = isAdmin && isEdit ? "/api/admin" : "/api/listings";
+        const method = isEdit ? "PUT" : "POST";
+        const body = isAdmin && isEdit
+          ? JSON.stringify({ action: "updateListing", type, id: editId, data: formData })
+          : isEdit
+          ? JSON.stringify({ type, id: editId, data: formData })
+          : JSON.stringify({ type, data: formData });
+
+        const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error);
+        onSuccess();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save listing");
     } finally {
@@ -815,10 +840,15 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Listing type selector (hidden in edit mode) */}
-      {!isEdit && (
+      {/* Listing type selector */}
+      {(!isEdit || (isEdit && !isAdmin)) && (
         <div>
           <label className="block text-sm font-medium mb-2">Listing Type</label>
+          {isEdit && type !== editType && (
+            <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-2">
+              Changing the listing type will move your listing to a new category. Your common info (name, location, description, etc.) will be preserved.
+            </p>
+          )}
           <div className="grid grid-cols-3 gap-2">
             {(Object.keys(TYPE_LABELS) as ListingType[]).filter((t) => t !== "marketplace" && t !== "books").map((t) => (
               <button

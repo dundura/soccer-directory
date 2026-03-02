@@ -385,10 +385,16 @@ function DashboardContent() {
             editType={editingListing.type as ListingType}
             editId={editingListing.id}
             initialData={editData}
-            onSuccess={() => {
-              const path = `/${TYPE_PATHS[editingListing.type] || editingListing.type}/${editingListing.slug}`;
-              setEditingListing(null); setEditData(null);
-              router.push(path);
+            onSuccess={(newSlug?: string, newType?: string) => {
+              if (newSlug && newType) {
+                const path = `/${TYPE_PATHS[newType] || newType}/${newSlug}`;
+                setEditingListing(null); setEditData(null);
+                router.push(path);
+              } else {
+                const path = `/${TYPE_PATHS[editingListing.type] || editingListing.type}/${editingListing.slug}`;
+                setEditingListing(null); setEditData(null);
+                router.push(path);
+              }
             }}
             onCancel={() => { setEditingListing(null); setEditData(null); }}
           />

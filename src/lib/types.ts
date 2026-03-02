@@ -403,6 +403,7 @@ export interface Service extends ProfileFields {
   announcementHeading3?: string;
   announcementText3?: string;
   announcementImage3?: string;
+  aboutAuthor?: string;
   featured: boolean;
   status?: string;
   userId?: string;
