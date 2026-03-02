@@ -85,7 +85,7 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
                     href={`/clubs/${club.slug}`}
                     title={club.name}
                     subtitle={`${club.city}, ${club.state}`}
-                    image={club.teamPhoto || undefined}
+                    image={club.teamPhoto && !club.teamPhoto.includes("idf.webp") ? club.teamPhoto : club.logo || undefined}
                     badges={[
                       { label: club.level, variant: club.level.includes("MLS") ? "purple" : "blue" },
                       { label: club.gender },

@@ -121,7 +121,7 @@ export function TryoutFilters({ tryouts }: { tryouts: Tryout[] }) {
                     className="sm:w-48 shrink-0"
                   >
                     <img
-                      src={tryout.teamPhoto || tryout.imageUrl || tryout.logo || fallbackImage}
+                      src={tryout.teamPhoto && !tryout.teamPhoto.includes("idf.webp") ? tryout.teamPhoto : tryout.logo || tryout.imageUrl || fallbackImage}
                       alt={tryout.name}
                       className="w-full h-40 sm:h-full object-cover"
                       style={{ objectPosition: `center ${tryout.imagePosition ?? 50}%` }}

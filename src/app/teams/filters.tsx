@@ -91,7 +91,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                     href={`/teams/${team.slug}`}
                     title={team.name}
                     subtitle={`${team.clubName || ""} · ${team.city}, ${team.state}`}
-                    image={team.teamPhoto || undefined}
+                    image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || undefined}
                     badges={[
                       { label: team.level, variant: "blue" },
                       { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },

@@ -126,6 +126,7 @@ export default async function HomePage() {
                 href={`/clubs/${club.slug}`}
                 title={club.name}
                 subtitle={`${club.city}, ${club.state}`}
+                image={club.teamPhoto && !club.teamPhoto.includes("idf.webp") ? club.teamPhoto : club.logo || undefined}
                 badges={[
                   { label: club.level, variant: club.level.includes("MLS") ? "purple" : "blue" },
                   { label: club.gender },
@@ -157,6 +158,7 @@ export default async function HomePage() {
                 href={`/teams/${team.slug}`}
                 title={team.name}
                 subtitle={`${team.clubName} · ${team.city}, ${team.state}`}
+                image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || undefined}
                 badges={[
                   { label: team.level, variant: "blue" },
                   { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
@@ -192,6 +194,7 @@ export default async function HomePage() {
                   href={`/futsal/${team.slug}`}
                   title={team.name}
                   subtitle={`${team.clubName || ""} · ${team.city}, ${team.state}`}
+                  image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || undefined}
                   badges={[
                     { label: team.level, variant: "blue" },
                     { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
@@ -232,6 +235,7 @@ export default async function HomePage() {
                 href={`/trainers/${trainer.slug}`}
                 title={trainer.name}
                 subtitle={`${trainer.city}, ${trainer.state}`}
+                image={trainer.teamPhoto && !trainer.teamPhoto.includes("idf.webp") ? trainer.teamPhoto : trainer.logo || undefined}
                 badges={[
                   { label: trainer.specialty, variant: "green" },
                 ]}
@@ -264,6 +268,7 @@ export default async function HomePage() {
                 href={`/camps/${camp.slug}`}
                 title={camp.name}
                 subtitle={`${camp.organizerName} · ${camp.city}, ${camp.state}`}
+                image={camp.teamPhoto && !camp.teamPhoto.includes("idf.webp") ? camp.teamPhoto : camp.logo || undefined}
                 badges={[
                   { label: camp.campType, variant: "orange" },
                   { label: camp.gender },
@@ -296,6 +301,7 @@ export default async function HomePage() {
                 href={`/tournaments/${tournament.slug}`}
                 title={tournament.name}
                 subtitle={`${tournament.organizer} · ${tournament.city}, ${tournament.state}`}
+                image={tournament.teamPhoto && !tournament.teamPhoto.includes("idf.webp") ? tournament.teamPhoto : tournament.logo || undefined}
                 badges={[
                   { label: tournament.level, variant: "blue" },
                   { label: tournament.format, variant: "orange" },
