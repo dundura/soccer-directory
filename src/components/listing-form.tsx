@@ -491,7 +491,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
   service: [
     { name: "name", label: "Product / Service Name", required: true },
     { name: "providerName", label: "Provider / Brand Name", required: true },
-    { name: "category", label: "Category", required: true, options: ["Training Equipment", "Apparel", "Nutrition", "Technology", "Photography / Video", "Recruiting Service", "Team Management", "Field Rental", "Transportation", "Other"] },
+    { name: "category", label: "Category", required: true, options: ["Training Equipment", "Apparel", "Nutrition", "Technology", "Photography / Video", "Recruiting Service", "Team Management", "Field Rental", "Transportation", "Book", "Other"] },
     { name: "city", label: "City", required: true },
     { name: "country", label: "Country", required: true, type: "country" },
     { name: "state", label: "State", required: true, type: "state-select" },
