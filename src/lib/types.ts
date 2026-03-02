@@ -357,6 +357,9 @@ export interface Podcast extends ProfileFields {
   topEpisodes?: TopEpisode[];
   videoUrl2?: string;
   videoUrl3?: string;
+  hostHeading?: string;
+  hostImage?: string;
+  hostBio?: string;
   featured: boolean;
   createdAt: string;
   updatedAt?: string;
