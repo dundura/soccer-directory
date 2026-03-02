@@ -700,5 +700,5 @@ UPDATE blog_posts SET
   date = 'Feb 26, 2026',
   read_time = '12 min',
   featured = true,
-  cover_image = 'https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp'
+  cover_image = 'https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp'
 WHERE slug = 'best-soccer-camps-north-carolina-2026';

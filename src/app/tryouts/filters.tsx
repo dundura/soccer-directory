@@ -42,7 +42,7 @@ export function TryoutFilters({ tryouts }: { tryouts: Tryout[] }) {
     window.location.reload();
   }
 
-  const fallbackImage = "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+  const fallbackImage = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 
   return (
     <>

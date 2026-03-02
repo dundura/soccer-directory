@@ -5,8 +5,8 @@ import type { ListingType } from "@/lib/types";
 
 // ── Constants ──────────────────────────────────────────────────
 
-const DEFAULT_HERO_IMAGE = "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
-const DEFAULT_SIDEBAR_IMAGE = "http://anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
+const DEFAULT_HERO_IMAGE = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+const DEFAULT_SIDEBAR_IMAGE = "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
 
 const US_STATES = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",

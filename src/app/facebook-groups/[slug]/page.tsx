@@ -36,7 +36,7 @@ export default async function FacebookGroupPage({ params }: Props) {
 
   const imgPos = group.imagePosition ?? 50;
   const heroPos = group.heroImagePosition ?? 50;
-  const heroImage = group.imageUrl || "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+  const heroImage = group.imageUrl || "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
   const sidebarImage = group.teamPhoto || group.logo || null;
 
   const infoRows = [

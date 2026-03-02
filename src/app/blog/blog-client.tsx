@@ -16,11 +16,11 @@ interface BlogPost {
 }
 
 const COVER_IMAGES = [
-  "https://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp",
-  "http://anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg",
-  "http://anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg",
-  "http://anytime-soccer.com/wp-content/uploads/2026/01/idf.webp",
-  "http://anytime-soccer.com/wp-content/uploads/2026/02/futsal-scaled.jpg",
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp",
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg",
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg",
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp",
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/02/futsal-scaled.jpg",
 ];
 
 function getCover(coverImage: string | undefined, index: number) {

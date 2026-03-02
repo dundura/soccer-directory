@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-const DEFAULT_IMAGE = "http://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+const DEFAULT_IMAGE = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 
 type Props = { params: Promise<{ slug: string }> };
 

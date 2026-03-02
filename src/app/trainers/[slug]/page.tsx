@@ -9,13 +9,13 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-const DEFAULT_SIDEBAR_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
-const DEFAULT_HERO_PHOTO = "http://anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+const DEFAULT_SIDEBAR_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
+const DEFAULT_HERO_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 const DEFAULT_PHOTOS = [
-  "http://anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg",
-  "http://anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg",
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg",
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg",
 ];
-const DEFAULT_LOGO = "https://anytime-soccer.com/wp-content/uploads/2026/02/ast_logo_shield_only_blue.png";
+const DEFAULT_LOGO = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ast_logo_shield_only_blue.png";
 const DEFAULT_VIDEO = "https://youtu.be/JqombeGBALU";
 
 const ALL_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];

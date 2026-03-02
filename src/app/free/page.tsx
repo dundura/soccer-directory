@@ -31,7 +31,7 @@ const ebooks = [
     title: "The Most Important Skill Never Taught",
     description: "This powerful (yet simple) tip will change your child\u2019s game forever.",
     href: "https://anytime-soccer.com/the-most-important-skill-in-youth-soccer/",
-    image: "https://anytime-soccer.com/wp-content/uploads/2021/01/ast_facebook_image_3.jpg",
+    image: "https://media.anytime-soccer.com/wp-content/uploads/2021/01/ast_facebook_image_3.jpg",
   },
   {
     title: "Must-Have Guide to In-Home Training",
@@ -61,19 +61,19 @@ const ebooks = [
     title: "Monopoly: Issues Facing US Youth Soccer",
     description: "A candid look at what\u2019s holding back American soccer from one parent\u2019s perspective.",
     href: "https://anytime-soccer.com/monopoly-addressing-issues-facing-youth-soccer-ebook/",
-    image: "https://anytime-soccer.com/wp-content/uploads/2024/07/us_soccer-768x596.png",
+    image: "https://media.anytime-soccer.com/wp-content/uploads/2024/07/us_soccer-768x596.png",
   },
   {
     title: "The Parent Trainer\u2019s Playbook",
     description: "20 unconventional tips for raising a competitive soccer player from one soccer dad\u2019s journey.",
     href: "https://anytime-soccer.com/the-parent-trainers-playbook/",
-    image: "https://anytime-soccer.com/wp-content/uploads/2024/08/the-playbook-20-unconventional-tips-for-raising-a-compeitive-soccer-player-thus-far-1024x789.png",
+    image: "https://media.anytime-soccer.com/wp-content/uploads/2024/08/the-playbook-20-unconventional-tips-for-raising-a-compeitive-soccer-player-thus-far-1024x789.png",
   },
   {
     title: "Player Cards Guide",
     description: "Stay informed about eligibility requirements and avoid missed tournament opportunities.",
     href: "https://anytime-soccer.com/everything-you-need-to-know-about-player-cards/",
-    image: "https://anytime-soccer.com/wp-content/uploads/2024/11/pro-tips-for-college-showcases-1.png",
+    image: "https://media.anytime-soccer.com/wp-content/uploads/2024/11/pro-tips-for-college-showcases-1.png",
   },
 ];
 
@@ -82,19 +82,19 @@ const communities = [
     title: "Anytime Soccer Training Group",
     description: "A safe space for soccer parents to ask questions, share wins, and support each other.",
     href: "https://www.facebook.com/groups/anytimesoccerparents",
-    image: "https://anytime-soccer.com/wp-content/uploads/2021/04/anytime_facebook_group_770_445.jpg",
+    image: "https://media.anytime-soccer.com/wp-content/uploads/2021/04/anytime_facebook_group_770_445.jpg",
   },
   {
     title: "Youth Soccer Coach Group",
     description: "Tips, resources, and support for youth soccer coaches at every level.",
     href: "https://www.facebook.com/groups/youthsoccercoach",
-    image: "https://anytime-soccer.com/wp-content/uploads/2021/04/youth_soccer_coach_770_445.jpg",
+    image: "https://media.anytime-soccer.com/wp-content/uploads/2021/04/youth_soccer_coach_770_445.jpg",
   },
   {
     title: "Guest Player Opportunities",
     description: "Find and post guest playing opportunities. Get your player on the field.",
     href: "https://www.facebook.com/groups/guestplayers",
-    image: "https://anytime-soccer.com/wp-content/uploads/2021/04/youth_soccer_guest_players_770_445.jpg",
+    image: "https://media.anytime-soccer.com/wp-content/uploads/2021/04/youth_soccer_guest_players_770_445.jpg",
   },
 ];
 
