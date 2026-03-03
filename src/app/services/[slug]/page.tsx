@@ -113,13 +113,13 @@ export default async function ServiceDetailPage({ params }: Props) {
             {(service.announcementText || service.announcementText2 || service.announcementText3) && (
               <div className="space-y-4 mb-6">
                 {service.announcementText && (
-                  <AnnouncementSection heading={service.announcementHeading || "Special Offer"} text={service.announcementText} image={service.announcementImage} />
+                  <AnnouncementSection heading={service.announcementHeading || "Special Offer"} text={service.announcementText} image={service.announcementImage} ctaUrl={service.website ? (service.website.startsWith("http") ? service.website : `https://${service.website}`) : undefined} ctaLabel="Learn More →" />
                 )}
                 {service.announcementText2 && (
-                  <AnnouncementSection heading={service.announcementHeading2 || "Special Offer"} text={service.announcementText2} image={service.announcementImage2} />
+                  <AnnouncementSection heading={service.announcementHeading2 || "Special Offer"} text={service.announcementText2} image={service.announcementImage2} ctaUrl={service.website ? (service.website.startsWith("http") ? service.website : `https://${service.website}`) : undefined} ctaLabel="Learn More →" />
                 )}
                 {service.announcementText3 && (
-                  <AnnouncementSection heading={service.announcementHeading3 || "Special Offer"} text={service.announcementText3} image={service.announcementImage3} />
+                  <AnnouncementSection heading={service.announcementHeading3 || "Special Offer"} text={service.announcementText3} image={service.announcementImage3} ctaUrl={service.website ? (service.website.startsWith("http") ? service.website : `https://${service.website}`) : undefined} ctaLabel="Learn More →" />
                 )}
               </div>
             )}
