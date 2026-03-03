@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
+function normalizeUrl(url?: string) { return url ? (url.startsWith("http") ? url : `https://${url}`) : undefined; }
 const DEFAULT_SIDEBAR_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
 const DEFAULT_HERO_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 const DEFAULT_PHOTOS = [
@@ -264,9 +265,9 @@ export default async function TeamDetailPage({ params }: Props) {
           {/* ====== Special Announcements ====== */}
           {(team.announcementText || team.announcementText2 || team.announcementText3) && (
             <div className="order-2 lg:order-none lg:col-start-2 space-y-4">
-              {team.announcementText && <AnnouncementSection heading={team.announcementHeading} text={team.announcementText} image={team.announcementImage} ctaUrl={club?.website ? (club.website.startsWith("http") ? club.website : `https://${club.website}`) : undefined} ctaLabel={team.announcementCta || "Learn More →"} />}
-              {team.announcementText2 && <AnnouncementSection heading={team.announcementHeading2} text={team.announcementText2} image={team.announcementImage2} ctaUrl={club?.website ? (club.website.startsWith("http") ? club.website : `https://${club.website}`) : undefined} ctaLabel={team.announcementCta2 || "Learn More →"} />}
-              {team.announcementText3 && <AnnouncementSection heading={team.announcementHeading3} text={team.announcementText3} image={team.announcementImage3} ctaUrl={club?.website ? (club.website.startsWith("http") ? club.website : `https://${club.website}`) : undefined} ctaLabel={team.announcementCta3 || "Learn More →"} />}
+              {team.announcementText && <AnnouncementSection heading={team.announcementHeading} text={team.announcementText} image={team.announcementImage} ctaUrl={normalizeUrl(team.announcementCtaUrl || club?.website)} ctaLabel={team.announcementCta || "Learn More →"} />}
+              {team.announcementText2 && <AnnouncementSection heading={team.announcementHeading2} text={team.announcementText2} image={team.announcementImage2} ctaUrl={normalizeUrl(team.announcementCtaUrl2 || club?.website)} ctaLabel={team.announcementCta2 || "Learn More →"} />}
+              {team.announcementText3 && <AnnouncementSection heading={team.announcementHeading3} text={team.announcementText3} image={team.announcementImage3} ctaUrl={normalizeUrl(team.announcementCtaUrl3 || club?.website)} ctaLabel={team.announcementCta3 || "Learn More →"} />}
             </div>
           )}
 

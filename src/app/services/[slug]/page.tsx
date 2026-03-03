@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
+function normalizeUrl(url?: string) { return url ? (url.startsWith("http") ? url : `https://${url}`) : undefined; }
 const DEFAULT_IMAGE = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -113,13 +114,13 @@ export default async function ServiceDetailPage({ params }: Props) {
             {(service.announcementText || service.announcementText2 || service.announcementText3) && (
               <div className="space-y-4 mb-6">
                 {service.announcementText && (
-                  <AnnouncementSection heading={service.announcementHeading || "Special Offer"} text={service.announcementText} image={service.announcementImage} ctaUrl={service.website ? (service.website.startsWith("http") ? service.website : `https://${service.website}`) : undefined} ctaLabel={service.announcementCta || "Learn More →"} />
+                  <AnnouncementSection heading={service.announcementHeading || "Special Offer"} text={service.announcementText} image={service.announcementImage} ctaUrl={normalizeUrl(service.announcementCtaUrl || service.website)} ctaLabel={service.announcementCta || "Learn More →"} />
                 )}
                 {service.announcementText2 && (
-                  <AnnouncementSection heading={service.announcementHeading2 || "Special Offer"} text={service.announcementText2} image={service.announcementImage2} ctaUrl={service.website ? (service.website.startsWith("http") ? service.website : `https://${service.website}`) : undefined} ctaLabel={service.announcementCta2 || "Learn More →"} />
+                  <AnnouncementSection heading={service.announcementHeading2 || "Special Offer"} text={service.announcementText2} image={service.announcementImage2} ctaUrl={normalizeUrl(service.announcementCtaUrl2 || service.website)} ctaLabel={service.announcementCta2 || "Learn More →"} />
                 )}
                 {service.announcementText3 && (
-                  <AnnouncementSection heading={service.announcementHeading3 || "Special Offer"} text={service.announcementText3} image={service.announcementImage3} ctaUrl={service.website ? (service.website.startsWith("http") ? service.website : `https://${service.website}`) : undefined} ctaLabel={service.announcementCta3 || "Learn More →"} />
+                  <AnnouncementSection heading={service.announcementHeading3 || "Special Offer"} text={service.announcementText3} image={service.announcementImage3} ctaUrl={normalizeUrl(service.announcementCtaUrl3 || service.website)} ctaLabel={service.announcementCta3 || "Learn More →"} />
                 )}
               </div>
             )}

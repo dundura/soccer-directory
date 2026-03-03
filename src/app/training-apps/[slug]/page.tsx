@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
+function normalizeUrl(url?: string) { return url ? (url.startsWith("http") ? url : `https://${url}`) : undefined; }
 const DEFAULT_IMAGE = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -133,13 +134,13 @@ export default async function TrainingAppDetailPage({ params }: Props) {
             {(app.announcementText || app.announcementText2 || app.announcementText3) && (
               <div className="space-y-4 mb-6">
                 {app.announcementText && (
-                  <AnnouncementSection heading={app.announcementHeading || "Special Offer"} text={app.announcementText} image={app.announcementImage} ctaUrl={app.website ? (app.website.startsWith("http") ? app.website : `https://${app.website}`) : undefined} ctaLabel={app.announcementCta || "Learn More →"} />
+                  <AnnouncementSection heading={app.announcementHeading || "Special Offer"} text={app.announcementText} image={app.announcementImage} ctaUrl={normalizeUrl(app.announcementCtaUrl || app.website)} ctaLabel={app.announcementCta || "Learn More →"} />
                 )}
                 {app.announcementText2 && (
-                  <AnnouncementSection heading={app.announcementHeading2 || "Special Offer"} text={app.announcementText2} image={app.announcementImage2} ctaUrl={app.website ? (app.website.startsWith("http") ? app.website : `https://${app.website}`) : undefined} ctaLabel={app.announcementCta2 || "Learn More →"} />
+                  <AnnouncementSection heading={app.announcementHeading2 || "Special Offer"} text={app.announcementText2} image={app.announcementImage2} ctaUrl={normalizeUrl(app.announcementCtaUrl2 || app.website)} ctaLabel={app.announcementCta2 || "Learn More →"} />
                 )}
                 {app.announcementText3 && (
-                  <AnnouncementSection heading={app.announcementHeading3 || "Special Offer"} text={app.announcementText3} image={app.announcementImage3} ctaUrl={app.website ? (app.website.startsWith("http") ? app.website : `https://${app.website}`) : undefined} ctaLabel={app.announcementCta3 || "Learn More →"} />
+                  <AnnouncementSection heading={app.announcementHeading3 || "Special Offer"} text={app.announcementText3} image={app.announcementImage3} ctaUrl={normalizeUrl(app.announcementCtaUrl3 || app.website)} ctaLabel={app.announcementCta3 || "Learn More →"} />
                 )}
               </div>
             )}
