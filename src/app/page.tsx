@@ -17,6 +17,14 @@ export default async function HomePage() {
   const featuredFutsal = futsalTeams.filter((t) => t.featured).slice(0, 3);
   const featuredPosts = blogPosts.filter((p) => p.featured).slice(0, 3);
 
+  const BLOG_COVER_IMAGES = [
+    "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp",
+    "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg",
+    "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg",
+    "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp",
+    "https://media.anytime-soccer.com/wp-content/uploads/2026/02/futsal-scaled.jpg",
+  ];
+
   return (
     <>
       {/* ── Hero ──────────────────────────────────── */}
@@ -329,21 +337,33 @@ export default async function HomePage() {
             <a href="/blog" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">All articles →</a>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {featuredPosts.map((post) => (
+            {featuredPosts.map((post, i) => (
               <a
                 key={post.id}
                 href={`/blog/${post.slug}`}
-                className="group block bg-white rounded-2xl border border-border p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                className="group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all"
               >
-                <Badge variant="orange">{post.category}</Badge>
-                <h3 className="font-[family-name:var(--font-display)] text-lg font-bold mt-3 mb-2 group-hover:text-accent-hover transition-colors">
-                  {post.title}
-                </h3>
-                <p className="text-muted text-sm mb-4 line-clamp-2">{post.excerpt}</p>
-                <div className="flex items-center gap-3 text-xs text-muted">
-                  <span>{post.date}</span>
-                  <span>·</span>
-                  <span>{post.readTime} read</span>
+                <div className="relative">
+                  <img
+                    src={post.coverImage && post.coverImage.startsWith("http") ? post.coverImage : BLOG_COVER_IMAGES[i % BLOG_COVER_IMAGES.length]}
+                    alt={post.title}
+                    className="w-full h-44 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <Badge variant="orange">{post.category}</Badge>
+                    <h3 className="font-[family-name:var(--font-display)] text-base font-bold mt-1.5 text-white leading-snug line-clamp-2 drop-shadow-sm">
+                      {post.title}
+                    </h3>
+                  </div>
+                </div>
+                <div className="p-4 pt-3">
+                  <p className="text-muted text-sm line-clamp-2">{post.excerpt}</p>
+                  <div className="flex items-center gap-3 text-xs text-muted mt-2">
+                    <span>{post.date}</span>
+                    <span>&middot;</span>
+                    <span>{post.readTime} read</span>
+                  </div>
                 </div>
               </a>
             ))}
