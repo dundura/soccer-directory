@@ -1,5 +1,5 @@
 import { getTournamentBySlug, getTournamentSlugs, getListingOwner } from "@/lib/db";
-import { ManageListingButton } from "@/components/manage-listing-button";
+import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
@@ -170,7 +170,10 @@ export default async function TournamentDetailPage({ params }: Props) {
                   className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10"
                 />
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{tournament.name}</h1>
+                  <div className="flex items-center justify-between gap-2">
+                    <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{tournament.name}</h1>
+                    <EditSectionLink ownerId={ownerId} listingType="tournament" listingId={tournament.id} />
+                  </div>
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {tournament.organizer} {" \u00b7 "} {tournament.city}, {tournament.state}
                   </p>
@@ -201,7 +204,10 @@ export default async function TournamentDetailPage({ params }: Props) {
 
             {/* At a Glance */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">At a Glance</h3>
+              <div className="flex items-center justify-between mb-3.5">
+                <h3 className="text-[15px] font-bold text-primary">At a Glance</h3>
+                <EditSectionLink ownerId={ownerId} listingType="tournament" listingId={tournament.id} />
+              </div>
               <div className="grid grid-cols-2 gap-2.5 mt-1">
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg leading-none">&#127942;</span>
@@ -238,7 +244,10 @@ export default async function TournamentDetailPage({ params }: Props) {
 
             {/* Photos & Video */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
+              <div className="flex items-center justify-between mb-3.5">
+                <h3 className="text-[15px] font-bold text-primary">Photos &amp; Video</h3>
+                <EditSectionLink ownerId={ownerId} listingType="tournament" listingId={tournament.id} />
+              </div>
               <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
                 {tournamentPhotos.map((photo, i) => (
                   <img key={i} src={photo} alt={`Tournament photo ${i + 1}`} className="w-full aspect-square object-contain rounded-xl block bg-surface" />

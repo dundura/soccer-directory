@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { getClubBySlug, getClubSlugs, getTeamsByClubId, getListingOwner } from "@/lib/db";
 import { ListingCard } from "@/components/ui";
-import { ManageListingButton } from "@/components/manage-listing-button";
+import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
@@ -198,7 +198,10 @@ export default async function ClubDetailPage({ params }: Props) {
                 className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1 sm:p-1.5 bg-surface -mt-8 sm:-mt-10 relative z-10"
               />
               <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0">
-                <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{club.name}</h1>
+                <div className="flex items-center justify-between gap-2">
+                  <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{club.name}</h1>
+                  <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
+                </div>
                 <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                   {club.city}, {club.state}
                 </p>
@@ -231,7 +234,10 @@ export default async function ClubDetailPage({ params }: Props) {
 
           {/* ====== At a Glance ====== */}
           <div className={`${(club.announcementText || club.announcementText2 || club.announcementText3) ? "order-3" : "order-2"} lg:order-none lg:col-start-2 bg-white rounded-2xl p-4 sm:p-6 shadow-sm`}>
-              <h3 className="text-[13px] sm:text-[15px] font-bold text-primary mb-2.5 sm:mb-3.5">At a Glance</h3>
+              <div className="flex items-center justify-between mb-2.5 sm:mb-3.5">
+                <h3 className="text-[13px] sm:text-[15px] font-bold text-primary">At a Glance</h3>
+                <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
+              </div>
               <div className="grid grid-cols-2 gap-1.5 sm:gap-2.5 mt-1">
                 <div className="flex items-center gap-1.5 sm:gap-2.5">
                   <span className="text-sm sm:text-lg leading-none">&#127942;</span>
@@ -267,7 +273,10 @@ export default async function ClubDetailPage({ params }: Props) {
 
           {/* ====== Practice Schedule ====== */}
           <div className="order-3 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">Practice Schedule</h3>
+              <div className="flex items-center justify-between mb-3.5">
+                <h3 className="text-[15px] font-bold text-primary">Practice Schedule</h3>
+                <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
+              </div>
               <div className="flex gap-2 flex-wrap">
                 {ALL_DAYS.map((day) => (
                   <span
@@ -290,7 +299,10 @@ export default async function ClubDetailPage({ params }: Props) {
 
           {/* ====== Photos & Video ====== */}
           <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-5 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3">Photos &amp; Video</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[15px] font-bold text-primary">Photos &amp; Video</h3>
+                <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
+              </div>
               <div className={`grid grid-cols-2 gap-1.5 ${videoUrl ? "mb-3" : ""}`}>
                 {clubPhotos.map((photo, i) => (
                   <img key={i} src={photo} alt={`Club photo ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-lg block" style={{ objectPosition: `center ${imgPos}%` }} />
@@ -302,7 +314,10 @@ export default async function ClubDetailPage({ params }: Props) {
           {/* ====== Media ====== */}
           {club.mediaLinks && club.mediaLinks.length > 0 && (
           <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-5 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3">Media</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[15px] font-bold text-primary">Media</h3>
+                <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
+              </div>
               <div className="space-y-2">
                 {club.mediaLinks.map((link, i) => (
                   <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-accent hover:text-accent-hover transition-colors group">
@@ -324,7 +339,10 @@ export default async function ClubDetailPage({ params }: Props) {
           {/* ====== Teams ====== */}
           {clubTeams.length > 0 && (
               <div className="order-7 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
-                <h3 className="text-[15px] font-bold text-primary mb-3.5">Teams ({clubTeams.length})</h3>
+                <div className="flex items-center justify-between mb-3.5">
+                  <h3 className="text-[15px] font-bold text-primary">Teams ({clubTeams.length})</h3>
+                  <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   {clubTeams.map((t) => (
                     <a

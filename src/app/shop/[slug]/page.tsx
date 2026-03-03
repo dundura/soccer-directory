@@ -1,6 +1,6 @@
 import { getMarketplaceItemBySlug, getListingOwner } from "@/lib/db";
 import { Badge } from "@/components/ui";
-import { ManageListingButton } from "@/components/manage-listing-button";
+import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { PhotoGallery } from "@/components/profile-ui";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -43,7 +43,10 @@ export default async function ShopDetailPage({ params }: Props) {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{item.name}</h1>
+              <div className="flex items-center gap-2 mb-2">
+                <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold">{item.name}</h1>
+                <EditSectionLink ownerId={ownerId} listingType="marketplace" listingId={item.id} />
+              </div>
               <p className="text-white/60 text-lg">{item.city}, {item.state}</p>
             </div>
             <ManageListingButton ownerId={ownerId} listingType="marketplace" listingId={item.id} />
@@ -89,7 +92,10 @@ export default async function ShopDetailPage({ params }: Props) {
           <div className="flex-1 min-w-0">
             {/* Description */}
             <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
-              <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Description</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Description</h2>
+                <EditSectionLink ownerId={ownerId} listingType="marketplace" listingId={item.id} />
+              </div>
               <div className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap">
                 {item.description}
               </div>
@@ -98,7 +104,10 @@ export default async function ShopDetailPage({ params }: Props) {
             {/* About the Author */}
             {item.aboutAuthor && (
               <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About the Author</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">About the Author</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="marketplace" listingId={item.id} />
+                </div>
                 <div className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap">
                   {item.aboutAuthor}
                 </div>
@@ -108,7 +117,10 @@ export default async function ShopDetailPage({ params }: Props) {
             {/* Photos */}
             {item.photos && item.photos.length > 0 && (
               <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Photos</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Photos</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="marketplace" listingId={item.id} />
+                </div>
                 <PhotoGallery photos={item.photos} />
               </div>
             )}

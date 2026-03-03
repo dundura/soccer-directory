@@ -3,7 +3,7 @@ import { fetchRssEpisodes } from "@/lib/rss";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
-import { ManageListingButton } from "@/components/manage-listing-button";
+import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { ContactPodcastForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 
@@ -116,7 +116,10 @@ export default async function PodcastPage({ params }: Props) {
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
-              <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1">{podcast.name}</h1>
+              <div className="flex items-center justify-between mb-1">
+                <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white">{podcast.name}</h1>
+                <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
+              </div>
               <p className="text-white/70 text-sm">Hosted by {podcast.hostName} &middot; {podcast.city}, {podcast.state}</p>
             </div>
           </div>
@@ -124,7 +127,10 @@ export default async function PodcastPage({ params }: Props) {
           {/* About the Show */}
           {(podcast.description || podcast.website || podcast.followUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">About the Show</h2>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">About the Show</h2>
+                <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
+              </div>
               {podcast.description && <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{podcast.description}</p>}
               <div className="flex flex-wrap gap-3 mt-4">
                 {podcast.website && (
@@ -163,7 +169,10 @@ export default async function PodcastPage({ params }: Props) {
           {/* Meet the Host */}
           {podcast.hostBio && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">{podcast.hostHeading || "Meet the Host"}</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">{podcast.hostHeading || "Meet the Host"}</h2>
+                <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
+              </div>
               <div className="flex flex-col sm:flex-row gap-5">
                 {podcast.hostImage && (
                   <img src={podcast.hostImage} alt={podcast.hostHeading || "Meet the Host"} className="w-32 h-32 rounded-xl object-cover shrink-0" />
@@ -176,7 +185,10 @@ export default async function PodcastPage({ params }: Props) {
           {/* Top Episodes (manual) */}
           {podcast.topEpisodes && podcast.topEpisodes.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Top Episodes</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Top Episodes</h2>
+                <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
+              </div>
               <div className="space-y-3">
                 {podcast.topEpisodes.map((ep, i) => (
                   <a
@@ -201,7 +213,10 @@ export default async function PodcastPage({ params }: Props) {
           {/* Recent Episodes (from RSS) */}
           {rssEpisodes.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Recent Episodes</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Recent Episodes</h2>
+                <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
+              </div>
               <div className="space-y-3">
                 {rssEpisodes.map((ep, i) => (
                   <a
@@ -230,7 +245,10 @@ export default async function PodcastPage({ params }: Props) {
           {/* Episode Videos */}
           {(podcast.videoUrl || podcast.videoUrl2 || podcast.videoUrl3) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Episode Videos</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Episode Videos</h2>
+                <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
+              </div>
               <div className="space-y-4">
                 {podcast.videoUrl && <VideoEmbed url={podcast.videoUrl} />}
                 {podcast.videoUrl2 && <VideoEmbed url={podcast.videoUrl2} />}
@@ -242,14 +260,20 @@ export default async function PodcastPage({ params }: Props) {
           {/* Photos */}
           {podcast.photos && podcast.photos.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-5">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Photos</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Photos</h2>
+                <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
+              </div>
               <PhotoGallery photos={podcast.photos} imagePosition={podcast.imagePosition} />
             </div>
           )}
 
           {/* Be a Guest Form */}
           <div id="be-a-guest" className="bg-white rounded-2xl border-2 border-accent/20 p-6">
-            <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-1">Be a Guest on This Podcast</h2>
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Be a Guest on This Podcast</h2>
+              <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
+            </div>
             <p className="text-muted text-sm mb-5">Have a story to share or expertise to offer? Reach out to appear on {podcast.name}.</p>
             <ContactPodcastForm podcastName={podcast.name} slug={slug} />
           </div>

@@ -2,7 +2,7 @@ import { getFacebookGroupBySlug, getFacebookGroupSlugs, getListingOwner } from "
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { VideoEmbed, PhotoGallery } from "@/components/profile-ui";
-import { ManageListingButton } from "@/components/manage-listing-button";
+import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { ContactGroupForm } from "./contact-form";
 
 export const dynamic = "force-dynamic";
@@ -112,7 +112,10 @@ export default async function FacebookGroupPage({ params }: Props) {
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
-              <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1">{group.name}</h1>
+              <div className="flex items-center justify-between mb-1">
+                <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white">{group.name}</h1>
+                <EditSectionLink ownerId={ownerId} listingType="fbgroup" listingId={group.id} />
+              </div>
               <p className="text-white/70 text-sm">Admin: {group.adminName}{group.city && group.state ? ` \u00b7 ${group.city}, ${group.state}` : ""}</p>
             </div>
           </div>
@@ -120,7 +123,10 @@ export default async function FacebookGroupPage({ params }: Props) {
           {/* About */}
           {(group.description || group.groupUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">About This Group</h2>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">About This Group</h2>
+                <EditSectionLink ownerId={ownerId} listingType="fbgroup" listingId={group.id} />
+              </div>
               {group.description && <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{group.description}</p>}
               {group.groupUrl && (
                 <a
@@ -139,7 +145,10 @@ export default async function FacebookGroupPage({ params }: Props) {
           {/* Videos */}
           {group.videoUrl && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Videos</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Videos</h2>
+                <EditSectionLink ownerId={ownerId} listingType="fbgroup" listingId={group.id} />
+              </div>
               <VideoEmbed url={group.videoUrl} />
             </div>
           )}
@@ -147,7 +156,10 @@ export default async function FacebookGroupPage({ params }: Props) {
           {/* Photos */}
           {group.photos && group.photos.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-5">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">Photos</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Photos</h2>
+                <EditSectionLink ownerId={ownerId} listingType="fbgroup" listingId={group.id} />
+              </div>
               <PhotoGallery photos={group.photos} imagePosition={group.imagePosition} />
             </div>
           )}

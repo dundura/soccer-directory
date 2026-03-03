@@ -1,6 +1,6 @@
 import { getPlayerProfileBySlug, getPlayerProfileSlugs, getListingOwner } from "@/lib/db";
 import { Badge } from "@/components/ui";
-import { ManageListingButton } from "@/components/manage-listing-button";
+import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { PlayerAvatar } from "@/components/player-avatar";
 import { ContactPlayerForm } from "./contact-form";
@@ -75,7 +75,10 @@ export default async function PlayerDetailPage({ params }: Props) {
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold text-white mb-1">{player.playerName}</h1>
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold text-white">{player.playerName}</h1>
+                  <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
+                </div>
                 <p className="text-white/60 text-lg">
                   {player.currentClub && <>{player.currentClub} &middot; </>}
                   {player.city}, {player.state}
@@ -160,20 +163,29 @@ export default async function PlayerDetailPage({ params }: Props) {
           <div className="lg:col-span-2 space-y-8">
             {player.lookingFor && (
               <section className="bg-white rounded-2xl border-2 border-accent/20 p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Looking For</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Looking For</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
+                </div>
                 <p className="text-muted leading-relaxed whitespace-pre-line">{player.lookingFor}</p>
               </section>
             )}
 
             {player.description && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">About</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
+                </div>
                 <p className="text-muted leading-relaxed whitespace-pre-line">{player.description}</p>
               </section>
             )}
 
             <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-              <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Player Details</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Player Details</h2>
+                <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
+              </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div><p className="text-xs text-muted mb-1">Position</p><p className="font-medium">{player.position}{player.secondaryPosition ? ` / ${player.secondaryPosition}` : ""}</p></div>
                 <div><p className="text-xs text-muted mb-1">Birth Year</p><p className="font-medium">{player.birthYear}</p></div>
@@ -188,7 +200,10 @@ export default async function PlayerDetailPage({ params }: Props) {
 
             {(player.videoUrl || player.videoUrl2 || player.videoUrl3) && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Highlights</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Highlights</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
+                </div>
                 <div className="space-y-6">
                   {player.videoUrl && <VideoEmbed url={player.videoUrl} />}
                   {player.videoUrl2 && <VideoEmbed url={player.videoUrl2} />}
@@ -199,7 +214,10 @@ export default async function PlayerDetailPage({ params }: Props) {
 
             {player.photos && player.photos.length > 0 && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Photos</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Photos</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
+                </div>
                 <PhotoGallery photos={player.photos} />
               </section>
             )}

@@ -1,6 +1,6 @@
 import { getGuestBySlug, getGuestSlugs, getListingOwner } from "@/lib/db";
 import { Badge } from "@/components/ui";
-import { ManageListingButton } from "@/components/manage-listing-button";
+import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { RequestSpotForm } from "./request-spot-form";
 import { notFound } from "next/navigation";
@@ -47,7 +47,10 @@ export default async function GuestDetailPage({ params }: Props) {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2">{opp.teamName}</h1>
+              <div className="flex items-center gap-2 mb-2">
+                <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold">{opp.teamName}</h1>
+                <EditSectionLink ownerId={ownerId} listingType="guest" listingId={opp.id} />
+              </div>
               <p className="text-white/60 text-lg">{opp.tournament} &middot; {opp.city}, {opp.state}</p>
             </div>
             <ManageListingButton ownerId={ownerId} listingType="guest" listingId={opp.id} />
@@ -108,13 +111,19 @@ export default async function GuestDetailPage({ params }: Props) {
           <div className="lg:col-span-2 space-y-8">
             {opp.description && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About This Opportunity</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">About This Opportunity</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="guest" listingId={opp.id} />
+                </div>
                 <p className="text-muted leading-relaxed whitespace-pre-line">{opp.description}</p>
               </section>
             )}
 
             <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-              <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Opportunity Details</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Opportunity Details</h2>
+                <EditSectionLink ownerId={ownerId} listingType="guest" listingId={opp.id} />
+              </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div><p className="text-xs text-muted mb-1">Tournament</p><p className="font-medium">{opp.tournament}</p></div>
                 <div><p className="text-xs text-muted mb-1">Dates</p><p className="font-medium">{opp.dates}</p></div>
@@ -128,14 +137,20 @@ export default async function GuestDetailPage({ params }: Props) {
 
             {opp.videoUrl && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Video</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Video</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="guest" listingId={opp.id} />
+                </div>
                 <VideoEmbed url={opp.videoUrl} />
               </section>
             )}
 
             {opp.photos && opp.photos.length > 0 && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Photos</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Photos</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="guest" listingId={opp.id} />
+                </div>
                 <PhotoGallery photos={opp.photos} />
               </section>
             )}

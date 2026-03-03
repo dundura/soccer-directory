@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { getTryoutBySlug, getTryoutSlugs, getListingOwner } from "@/lib/db";
-import { ManageListingButton } from "@/components/manage-listing-button";
+import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
@@ -196,7 +196,10 @@ export default async function TryoutDetailPage({ params }: Props) {
                   className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-8 sm:-mt-10 relative z-10 bg-white"
                 />
                 <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0 relative z-20">
-                  <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{tryout.name}</h1>
+                  <div className="flex items-center justify-between">
+                    <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{tryout.name}</h1>
+                    <EditSectionLink ownerId={ownerId} listingType="tryout" listingId={tryout.id} />
+                  </div>
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {tryout.organizerName}
                     {tryout.clubName && <> {" \u00b7 "} {tryout.clubName}</>}
@@ -239,7 +242,10 @@ export default async function TryoutDetailPage({ params }: Props) {
 
             {/* At a Glance */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">At a Glance</h3>
+              <div className="flex items-center justify-between mb-3.5">
+                <h3 className="text-[15px] font-bold text-primary">At a Glance</h3>
+                <EditSectionLink ownerId={ownerId} listingType="tryout" listingId={tryout.id} />
+              </div>
               <div className="grid grid-cols-2 gap-2.5 mt-1">
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg leading-none">&#127939;</span>
@@ -285,7 +291,10 @@ export default async function TryoutDetailPage({ params }: Props) {
 
             {/* Photos & Video */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
+              <div className="flex items-center justify-between mb-3.5">
+                <h3 className="text-[15px] font-bold text-primary">Photos &amp; Video</h3>
+                <EditSectionLink ownerId={ownerId} listingType="tryout" listingId={tryout.id} />
+              </div>
               <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
                 {tryoutPhotos.map((photo, i) => (
                   <img key={i} src={photo} alt={`Tryout photo ${i + 1}`} className="w-full aspect-square object-contain rounded-xl block bg-surface" />

@@ -1,5 +1,5 @@
 import { getServiceBySlug, getServiceSlugs, getListingOwner } from "@/lib/db";
-import { ManageListingButton } from "@/components/manage-listing-button";
+import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
@@ -86,9 +86,12 @@ export default async function ServiceDetailPage({ params }: Props) {
                 <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold mb-2">
                   {service.category}
                 </span>
-                <h1 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight">
-                  {service.name}
-                </h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight">
+                    {service.name}
+                  </h1>
+                  <EditSectionLink ownerId={ownerId} listingType="service" listingId={service.id} />
+                </div>
                 <p className="text-sm text-muted mt-1">
                   by {service.providerName} &middot; {service.city}, {service.state}
                 </p>
@@ -172,7 +175,10 @@ export default async function ServiceDetailPage({ params }: Props) {
             {/* About the Author */}
             {service.aboutAuthor && (
               <div className="border-t border-border pt-6 mt-6">
-                <h2 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight mb-3">About the Author</h2>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight">About the Author</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="service" listingId={service.id} />
+                </div>
                 <p className="text-gray-600 leading-relaxed whitespace-pre-line">{service.aboutAuthor}</p>
               </div>
             )}
@@ -180,7 +186,10 @@ export default async function ServiceDetailPage({ params }: Props) {
             {/* Additional Photos */}
             {photos.length > 0 && (
               <div className="border-t border-border pt-6 mt-6">
-                <h3 className="text-[15px] font-bold text-primary mb-3">Photos</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-[15px] font-bold text-primary">Photos</h3>
+                  <EditSectionLink ownerId={ownerId} listingType="service" listingId={service.id} />
+                </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {photos.map((photo, i) => (
                     <img key={i} src={photo} alt={`${service.name} photo ${i + 1}`} className="w-full aspect-square object-contain rounded-xl bg-surface" />
@@ -192,7 +201,10 @@ export default async function ServiceDetailPage({ params }: Props) {
             {/* Video */}
             {service.videoUrl && (
               <div className="border-t border-border pt-6 mt-6">
-                <h3 className="text-[15px] font-bold text-primary mb-3">Video</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-[15px] font-bold text-primary">Video</h3>
+                  <EditSectionLink ownerId={ownerId} listingType="service" listingId={service.id} />
+                </div>
                 <VideoEmbed url={service.videoUrl} />
               </div>
             )}
