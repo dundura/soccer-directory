@@ -1,6 +1,7 @@
 import { getClubs, getTeams, getTrainers, getCamps, getTournaments, getFutsalTeams, getBlogPosts } from "@/lib/db";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
+import { RotatingText } from "@/components/rotating-text";
 
 export const dynamic = "force-dynamic";
 
@@ -40,8 +41,7 @@ export default async function HomePage() {
                   Welcome to Soccer Near Me
                 </p>
                 <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-                  Find the perfect youth soccer
-                  <span className="text-accent"> team, club, or coach</span>
+                  Find the perfect youth soccer<RotatingText />
                 </h1>
                 <p className="text-white/70 text-lg md:text-xl mb-8 max-w-2xl">
                   Search our directory of verified clubs, teams, private trainers, camps, and guest player opportunities. All in one place.
@@ -90,7 +90,7 @@ export default async function HomePage() {
                   />
 
                   {/* Floating Card 1 — top-left */}
-                  <div className="absolute -top-4 -left-8 bg-white rounded-xl shadow-xl p-4 w-52 rotate-[-3deg]">
+                  <div className="absolute -top-4 -left-8 bg-white rounded-xl shadow-xl p-4 w-52 animate-float">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-bold text-primary">Charlotte FC 2012</span>
                       <span className="text-[10px] font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full">2012</span>
@@ -101,7 +101,7 @@ export default async function HomePage() {
                   </div>
 
                   {/* Floating Card 2 — bottom-right */}
-                  <div className="absolute -bottom-4 -right-6 bg-white rounded-xl shadow-xl p-4 w-52 rotate-[3deg]">
+                  <div className="absolute -bottom-4 -right-6 bg-white rounded-xl shadow-xl p-4 w-52 animate-float-alt">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-bold text-primary">NC Fusion ECNL</span>
                       <span className="text-[10px] font-semibold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded-full">2011</span>
