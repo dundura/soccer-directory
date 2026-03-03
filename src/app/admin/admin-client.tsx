@@ -420,7 +420,7 @@ export default function AdminClient() {
                                 </button>
                               )}
                               <button
-                                onClick={() => adminAction({ action: "updateFeatured", type: listing.type, id: listing.id, featured: !listing.featured })}
+                                onClick={() => adminAction({ action: "updateFeatured", type: listing.type, id: listing.id, featured: !listing.featured, name: listing.name, slug: listing.slug })}
                                 disabled={actionLoading !== null}
                                 className="text-xs px-2.5 py-1 rounded-lg border border-border hover:bg-surface transition-colors disabled:opacity-50"
                               >

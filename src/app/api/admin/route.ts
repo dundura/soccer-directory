@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getUserByEmail, getAllUsers, getAllListings, updateUserRole, updateListingStatus, updateListingFeatured, deleteUserAccount, getListingDataAdmin, updateListingAdmin, getSetting, updateSetting } from "@/lib/db";
+import { getUserByEmail, getAllUsers, getAllListings, updateUserRole, updateListingStatus, updateListingFeatured, deleteUserAccount, getListingDataAdmin, updateListingAdmin, getSetting, updateSetting, getListingOwnerEmailById } from "@/lib/db";
+import { notifyListingFeatured } from "@/lib/notifications";
 
 async function requireAdmin() {
   const session = await auth();
@@ -44,6 +45,12 @@ export async function PUT(req: Request) {
       break;
     case "updateFeatured":
       await updateListingFeatured(data.type, data.id, data.featured);
+      if (data.featured && data.name && data.slug) {
+        const ownerEmail = await getListingOwnerEmailById(data.type, data.id);
+        if (ownerEmail) {
+          notifyListingFeatured(data.type, data.name, data.slug, ownerEmail).catch(() => {});
+        }
+      }
       break;
     case "updateListing":
       const updated = await updateListingAdmin(data.type, data.id, data.data);

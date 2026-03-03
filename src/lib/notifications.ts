@@ -19,6 +19,11 @@ const TYPE_LABELS: Record<string, string> = {
   showcase: "College Showcase",
   player: "Player Profile",
   service: "Product / Service",
+  podcast: "Podcast",
+  fbgroup: "Facebook Group",
+  tryout: "Tryout",
+  trainingapp: "Training App",
+  blog: "Blog",
 };
 
 // ── Email notification ──────────────────────────────────────
@@ -137,6 +142,52 @@ function typeToPath(type: string): string {
     showcase: "camps",
     player: "guest-play/players",
     service: "services",
+    podcast: "podcasts",
+    fbgroup: "facebook-groups",
+    tryout: "tryouts",
+    trainingapp: "training-apps",
+    blog: "blogs",
   };
   return paths[type] || type;
+}
+
+// ── Featured listing notification ───────────────────────────
+
+export async function notifyListingFeatured(type: string, listingName: string, slug: string, ownerEmail: string) {
+  if (!resend || !ownerEmail) return;
+
+  const label = TYPE_LABELS[type] || type;
+  const listingUrl = `https://www.soccer-near-me.com/${typeToPath(type)}/${slug}`;
+
+  try {
+    await resend.emails.send({
+      from: "Soccer Near Me <notifications@soccer-near-me.com>",
+      to: [ownerEmail],
+      bcc: [NOTIFY_EMAIL],
+      subject: `Your ${label} has been featured on Soccer Near Me!`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px;">
+          <div style="background: #FEF3C7; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+            <span style="font-size: 48px;">&#11088;</span>
+            <h1 style="color: #1a365d; margin: 12px 0 4px;">Congratulations!</h1>
+            <p style="color: #92400E; font-size: 16px; margin: 0;">Your listing has been featured</p>
+          </div>
+          <p style="color: #333; font-size: 15px; line-height: 1.6;">
+            Great news! <strong>${listingName}</strong> has been selected as a <strong>Featured ${label}</strong> on Soccer Near Me.
+          </p>
+          <p style="color: #666; font-size: 14px; line-height: 1.6;">
+            Featured listings appear at the top of search results and are highlighted with a special badge, giving you greater visibility to families and players looking for soccer resources in your area.
+          </p>
+          <div style="text-align: center; margin: 28px 0;">
+            <a href="${listingUrl}" style="display: inline-block; padding: 14px 32px; background: #DC373E; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 15px;">View Your Listing</a>
+          </div>
+          <p style="color: #999; font-size: 13px; text-align: center;">
+            Thank you for being part of the Soccer Near Me community!
+          </p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error("Failed to send featured notification email:", err);
+  }
 }
