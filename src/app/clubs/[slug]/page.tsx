@@ -226,9 +226,9 @@ export default async function ClubDetailPage({ params }: Props) {
           {/* ====== Special Announcements ====== */}
           {(club.announcementText || club.announcementText2 || club.announcementText3) && (
             <div className="order-2 lg:order-none lg:col-start-2 space-y-4">
-              {club.announcementText && <AnnouncementSection heading={club.announcementHeading} text={club.announcementText} image={club.announcementImage} ctaUrl={club.website ? (club.website.startsWith("http") ? club.website : `https://${club.website}`) : undefined} ctaLabel="Learn More →" />}
-              {club.announcementText2 && <AnnouncementSection heading={club.announcementHeading2} text={club.announcementText2} image={club.announcementImage2} ctaUrl={club.website ? (club.website.startsWith("http") ? club.website : `https://${club.website}`) : undefined} ctaLabel="Learn More →" />}
-              {club.announcementText3 && <AnnouncementSection heading={club.announcementHeading3} text={club.announcementText3} image={club.announcementImage3} ctaUrl={club.website ? (club.website.startsWith("http") ? club.website : `https://${club.website}`) : undefined} ctaLabel="Learn More →" />}
+              {club.announcementText && <AnnouncementSection heading={club.announcementHeading} text={club.announcementText} image={club.announcementImage} ctaUrl={club.website ? (club.website.startsWith("http") ? club.website : `https://${club.website}`) : undefined} ctaLabel={club.announcementCta || "Learn More →"} />}
+              {club.announcementText2 && <AnnouncementSection heading={club.announcementHeading2} text={club.announcementText2} image={club.announcementImage2} ctaUrl={club.website ? (club.website.startsWith("http") ? club.website : `https://${club.website}`) : undefined} ctaLabel={club.announcementCta2 || "Learn More →"} />}
+              {club.announcementText3 && <AnnouncementSection heading={club.announcementHeading3} text={club.announcementText3} image={club.announcementImage3} ctaUrl={club.website ? (club.website.startsWith("http") ? club.website : `https://${club.website}`) : undefined} ctaLabel={club.announcementCta3 || "Learn More →"} />}
             </div>
           )}
 
