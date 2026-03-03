@@ -81,7 +81,7 @@ export function CampFilters({ camps }: { camps: Camp[] }) {
                   href={`/camps/${camp.slug}`}
                   title={camp.name}
                   subtitle={`${camp.organizerName} · ${camp.city}, ${camp.state}`}
-                  image={camp.teamPhoto && !camp.teamPhoto.includes("idf.webp") ? camp.teamPhoto : camp.logo || camp.imageUrl || undefined}
+                  image={camp.teamPhoto && !camp.teamPhoto.includes("idf.webp") ? camp.teamPhoto : camp.logo || camp.imageUrl || "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp"}
                   badges={[
                     { label: camp.campType, variant: "orange" },
                     { label: camp.gender },
