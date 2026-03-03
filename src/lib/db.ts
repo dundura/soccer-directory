@@ -1557,14 +1557,27 @@ export async function getListingOwnerEmailById(type: string, id: string): Promis
     case "club": rows = await sql`SELECT user_id FROM clubs WHERE id = ${id} LIMIT 1`; break;
     case "team": rows = await sql`SELECT user_id FROM teams WHERE id = ${id} LIMIT 1`; break;
     case "trainer": rows = await sql`SELECT user_id FROM trainers WHERE id = ${id} LIMIT 1`; break;
-    case "camp": rows = await sql`SELECT user_id FROM camps WHERE id = ${id} LIMIT 1`; break;
+    case "camp":
+    case "showcase": rows = await sql`SELECT user_id FROM camps WHERE id = ${id} LIMIT 1`; break;
     case "tryout": rows = await sql`SELECT user_id FROM tryouts WHERE id = ${id} LIMIT 1`; break;
-    case "trainingapp": rows = await sql`SELECT u.email FROM training_apps t JOIN users u ON t.user_id = u.id WHERE t.id = ${id} LIMIT 1`; break;
-    case "blog": rows = await sql`SELECT u.email FROM blogs b JOIN users u ON b.user_id = u.id WHERE b.id = ${id} LIMIT 1`; break;
+    case "tournament": rows = await sql`SELECT user_id FROM tournaments WHERE id = ${id} LIMIT 1`; break;
+    case "futsal": rows = await sql`SELECT user_id FROM futsal_teams WHERE id = ${id} LIMIT 1`; break;
+    case "trip": rows = await sql`SELECT user_id FROM international_trips WHERE id = ${id} LIMIT 1`; break;
+    case "marketplace":
+    case "equipment":
+    case "books": rows = await sql`SELECT user_id FROM marketplace WHERE id = ${id} LIMIT 1`; break;
+    case "guest": rows = await sql`SELECT user_id FROM guest_opportunities WHERE id = ${id} LIMIT 1`; break;
+    case "player": rows = await sql`SELECT user_id FROM player_profiles WHERE id = ${id} LIMIT 1`; break;
+    case "service": rows = await sql`SELECT user_id FROM services WHERE id = ${id} LIMIT 1`; break;
+    case "podcast": rows = await sql`SELECT user_id FROM podcasts WHERE id = ${id} LIMIT 1`; break;
+    case "fbgroup": rows = await sql`SELECT user_id FROM facebook_groups WHERE id = ${id} LIMIT 1`; break;
+    case "trainingapp": rows = await sql`SELECT user_id FROM training_apps WHERE id = ${id} LIMIT 1`; break;
+    case "blog": rows = await sql`SELECT user_id FROM blogs WHERE id = ${id} LIMIT 1`; break;
     default: return null;
   }
-  if (!rows[0]?.user_id) return null;
-  const userRows = await sql`SELECT email FROM users WHERE id = ${rows[0].user_id} LIMIT 1`;
+  const userId = rows[0]?.user_id;
+  if (!userId) return null;
+  const userRows = await sql`SELECT email FROM users WHERE id = ${userId} LIMIT 1`;
   return (userRows[0]?.email as string) || null;
 }
 
