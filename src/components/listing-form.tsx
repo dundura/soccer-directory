@@ -977,8 +977,9 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
 
         const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body });
         const text = await res.text();
-        const json = text ? JSON.parse(text) : {};
-        if (!res.ok) throw new Error(json.error || "Failed to save listing");
+        let json: Record<string, unknown> = {};
+        try { json = text ? JSON.parse(text) : {}; } catch { /* response wasn't JSON */ }
+        if (!res.ok) throw new Error((json.error as string) || `Server error (${res.status}). Please try again.`);
         onSuccess();
       }
     } catch (err) {

@@ -34,39 +34,44 @@ export async function PUT(req: Request) {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { action, ...data } = await req.json();
+  try {
+    const { action, ...data } = await req.json();
 
-  switch (action) {
-    case "updateRole":
-      await updateUserRole(data.userId, data.role);
-      break;
-    case "updateStatus":
-      await updateListingStatus(data.type, data.id, data.status);
-      break;
-    case "updateFeatured":
-      await updateListingFeatured(data.type, data.id, data.featured);
-      if (data.featured && data.name && data.slug) {
-        const ownerEmail = await getListingOwnerEmailById(data.type, data.id);
-        if (ownerEmail) {
-          notifyListingFeatured(data.type, data.name, data.slug, ownerEmail).catch(() => {});
+    switch (action) {
+      case "updateRole":
+        await updateUserRole(data.userId, data.role);
+        break;
+      case "updateStatus":
+        await updateListingStatus(data.type, data.id, data.status);
+        break;
+      case "updateFeatured":
+        await updateListingFeatured(data.type, data.id, data.featured);
+        if (data.featured && data.name && data.slug) {
+          const ownerEmail = await getListingOwnerEmailById(data.type, data.id);
+          if (ownerEmail) {
+            notifyListingFeatured(data.type, data.name, data.slug, ownerEmail).catch(() => {});
+          }
         }
-      }
-      break;
-    case "updateListing":
-      const updated = await updateListingAdmin(data.type, data.id, data.data);
-      if (!updated) return NextResponse.json({ error: "Listing not found" }, { status: 404 });
-      break;
-    case "deleteUser":
-      await deleteUserAccount(data.userId);
-      break;
-    case "updateSetting":
-      if (typeof data.key !== "string" || typeof data.value !== "string") return NextResponse.json({ error: "Invalid" }, { status: 400 });
-      if (data.value.length > 120) return NextResponse.json({ error: "Character limit is 120" }, { status: 400 });
-      await updateSetting(data.key, data.value);
-      break;
-    default:
-      return NextResponse.json({ error: "Unknown action" }, { status: 400 });
-  }
+        break;
+      case "updateListing":
+        const updated = await updateListingAdmin(data.type, data.id, data.data);
+        if (!updated) return NextResponse.json({ error: "Listing not found" }, { status: 404 });
+        break;
+      case "deleteUser":
+        await deleteUserAccount(data.userId);
+        break;
+      case "updateSetting":
+        if (typeof data.key !== "string" || typeof data.value !== "string") return NextResponse.json({ error: "Invalid" }, { status: 400 });
+        if (data.value.length > 120) return NextResponse.json({ error: "Character limit is 120" }, { status: 400 });
+        await updateSetting(data.key, data.value);
+        break;
+      default:
+        return NextResponse.json({ error: "Unknown action" }, { status: 400 });
+    }
 
-  return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("Admin PUT error:", err);
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to save" }, { status: 500 });
+  }
 }
