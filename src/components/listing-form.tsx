@@ -954,8 +954,9 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ type, data: formData }),
         });
-        const createJson = await createRes.json();
-        if (!createRes.ok) throw new Error(createJson.error);
+        const createText = await createRes.text();
+        const createJson = createText ? JSON.parse(createText) : {};
+        if (!createRes.ok) throw new Error(createJson.error || "Failed to create listing");
 
         // Delete old listing
         await fetch("/api/listings", {
@@ -975,8 +976,9 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
           : JSON.stringify({ type, data: formData });
 
         const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error);
+        const text = await res.text();
+        const json = text ? JSON.parse(text) : {};
+        if (!res.ok) throw new Error(json.error || "Failed to save listing");
         onSuccess();
       }
     } catch (err) {
