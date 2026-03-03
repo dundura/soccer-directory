@@ -6,6 +6,7 @@ import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { ContactBlogForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
+import { AnytimeInlineCTA } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -173,11 +174,12 @@ export default async function BlogPage({ params }: Props) {
                 <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">{blog.authorHeading || "About the Author"}</h2>
                 <EditSectionLink ownerId={ownerId} listingType="blog" listingId={blog.id} />
               </div>
-              <div className="flex flex-col sm:flex-row gap-5">
+              <div>
                 {blog.authorImage && (
-                  <img src={blog.authorImage} alt={blog.authorHeading || "About the Author"} className="w-32 h-32 rounded-xl object-cover shrink-0" />
+                  <img src={blog.authorImage} alt={blog.authorHeading || "About the Author"} className="float-left mr-4 mb-3 w-32 h-32 sm:w-40 sm:h-40 rounded-xl object-cover" />
                 )}
                 <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{blog.authorBio}</p>
+                <div className="clear-both" />
               </div>
             </div>
           )}
@@ -290,14 +292,7 @@ export default async function BlogPage({ params }: Props) {
           <ReviewSection listingType="blog" listingId={blog.id} />
 
           {/* Recommended Resource CTA */}
-          <div className="bg-primary rounded-2xl p-6 flex items-center gap-6">
-            <div className="flex-1">
-              <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Recommended Resource</p>
-              <h3 className="font-[family-name:var(--font-display)] text-xl font-bold text-white mb-2">Supplement Team Training with 5,000+ Videos</h3>
-              <p className="text-white/70 text-sm mb-4">Anytime Soccer Training offers structured follow-along sessions your player can do at home, in the backyard, or at the park.</p>
-              <a href="https://anytime-soccer.com?ref=soccernearme" target="_blank" rel="noopener" className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors">Try It Free &rarr;</a>
-            </div>
-          </div>
+          <AnytimeInlineCTA />
         </div>
       </div>
     </div>
