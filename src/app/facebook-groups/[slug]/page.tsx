@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { VideoEmbed, PhotoGallery } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { ContactGroupForm } from "./contact-form";
+import { AnytimeInlineCTA } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -172,14 +173,7 @@ export default async function FacebookGroupPage({ params }: Props) {
           </div>
 
           {/* Anytime CTA */}
-          <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-light p-6 text-white">
-            <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Recommended Resource</p>
-            <h2 className="text-[22px] font-extrabold text-white tracking-tight mb-1.5">Supplement Team Training with 5,000+ Videos</h2>
-            <p className="text-white/70 text-sm mb-4">Anytime Soccer Training offers structured follow-along sessions your player can do at home, in the backyard, or at the park.</p>
-            <a href="https://anytime-soccer.com?ref=soccernearme" target="_blank" rel="noopener" className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors">
-              Try It Free →
-            </a>
-          </div>
+          <AnytimeInlineCTA />
         </div>
       </div>
     </div>

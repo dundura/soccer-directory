@@ -12,29 +12,34 @@ async function requireAdmin() {
 }
 
 export async function GET(req: Request) {
-  const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  try {
+    const admin = await requireAdmin();
+    if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { searchParams } = new URL(req.url);
-  const type = searchParams.get("type");
-  const id = searchParams.get("id");
+    const { searchParams } = new URL(req.url);
+    const type = searchParams.get("type");
+    const id = searchParams.get("id");
 
-  // Return single listing data for admin editing
-  if (type && id) {
-    const data = await getListingDataAdmin(type, id);
-    if (!data) return NextResponse.json({ error: "Listing not found" }, { status: 404 });
-    return NextResponse.json(data);
+    // Return single listing data for admin editing
+    if (type && id) {
+      const data = await getListingDataAdmin(type, id);
+      if (!data) return NextResponse.json({ error: "Listing not found" }, { status: 404 });
+      return NextResponse.json(data);
+    }
+
+    const [users, listings, heroTagline] = await Promise.all([getAllUsers(), getAllListings(), getSetting("hero_tagline")]);
+    return NextResponse.json({ users, listings, heroTagline });
+  } catch (err) {
+    console.error("Admin GET error:", err);
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to load" }, { status: 500 });
   }
-
-  const [users, listings, heroTagline] = await Promise.all([getAllUsers(), getAllListings(), getSetting("hero_tagline")]);
-  return NextResponse.json({ users, listings, heroTagline });
 }
 
 export async function PUT(req: Request) {
-  const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-
   try {
+    const admin = await requireAdmin();
+    if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
     const { action, ...data } = await req.json();
 
     switch (action) {
@@ -53,10 +58,11 @@ export async function PUT(req: Request) {
           }
         }
         break;
-      case "updateListing":
+      case "updateListing": {
         const updated = await updateListingAdmin(data.type, data.id, data.data);
         if (!updated) return NextResponse.json({ error: "Listing not found" }, { status: 404 });
         break;
+      }
       case "deleteUser":
         await deleteUserAccount(data.userId);
         break;

@@ -1,6 +1,7 @@
 import { getFutsalTeamBySlug, getFutsalTeamSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
+import { AnytimeInlineCTA } from "@/components/ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { notFound } from "next/navigation";
@@ -280,31 +281,7 @@ export default async function FutsalDetailPage({ params }: Props) {
             {/* Reviews */}
             <ReviewSection listingType="futsal" listingId={team.id} />
 
-            {/* CTA Banner */}
-            <div className="bg-primary rounded-2xl px-10 py-8 flex flex-col md:flex-row items-center justify-between gap-6 mt-2">
-              <div>
-                <h2 className="text-[22px] font-extrabold text-white tracking-tight mb-1.5">
-                  Supplement Team Training with 5,000+ Videos
-                </h2>
-                <p className="text-sm text-white/60 leading-relaxed">
-                  Structured follow-along sessions your player can do at home, in the backyard, or at the park.
-                </p>
-              </div>
-              <div className="flex items-center gap-6 shrink-0">
-                <img
-                  src="/ast-shield.png"
-                  alt="Anytime Soccer Training"
-                  className="h-20 opacity-90 hidden md:block"
-                />
-                <a
-                  href="https://anytime-soccer.com"
-                  target="_blank"
-                  className="bg-[#DC373E] text-white px-7 py-3.5 rounded-xl text-[15px] font-bold whitespace-nowrap hover:bg-[#C42F36] transition-colors"
-                >
-                  Try It Free &rarr;
-                </a>
-              </div>
-            </div>
+            <AnytimeInlineCTA />
 
           </main>
         </div>
