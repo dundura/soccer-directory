@@ -44,7 +44,7 @@ export function HeroImage({ src, alt, id, imagePosition }: { src: string; alt: s
         <img src={src} alt={alt} className="w-full h-full object-cover block" style={{ objectPosition: `center ${pos}%` }} />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-      <span className="absolute bottom-20 left-5 text-white text-sm font-semibold tracking-wide drop-shadow-lg">
+      <span className="absolute bottom-14 left-5 right-5 text-white text-sm font-semibold tracking-wide drop-shadow-lg">
         {phrase}
       </span>
     </div>
