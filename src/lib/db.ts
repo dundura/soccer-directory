@@ -1,11 +1,11 @@
 import { neon } from "@neondatabase/serverless";
-import type { Club, Team, TeamEvent, Trainer, Camp, Tryout, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, Podcast, TopEpisode, FacebookGroup, Service, ProfileFields, MediaLink, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment } from "./types";
+import type { Club, Team, TeamEvent, Trainer, Camp, Tryout, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, Podcast, TopEpisode, FacebookGroup, Service, TrainingApp, ProfileFields, MediaLink, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment } from "./types";
 
 const sql = neon(process.env.DATABASE_URL!);
 
 // ── Type normalization (virtual → DB) ────────────────────────
 function normalizeType(type: string): string {
-  if (type === "equipment" || type === "books") return "marketplace";
+  if (type === "equipment" || type === "books" || type === "ebook" || type === "giveaway") return "marketplace";
   if (type === "showcase") return "camp";
   return type;
 }
@@ -648,6 +648,7 @@ export async function updateListingStatus(type: string, id: string, status: stri
     case "fbgroup": await sql`UPDATE facebook_groups SET status = ${status} WHERE id = ${id}`; break;
     case "service": await sql`UPDATE services SET status = ${status} WHERE id = ${id}`; break;
     case "tryout": await sql`UPDATE tryouts SET status = ${status} WHERE id = ${id}`; break;
+    case "trainingapp": await sql`UPDATE training_apps SET status = ${status} WHERE id = ${id}`; break;
   }
 }
 
@@ -668,12 +669,13 @@ export async function updateListingFeatured(type: string, id: string, featured: 
     case "fbgroup": await sql`UPDATE facebook_groups SET featured = ${featured} WHERE id = ${id}`; break;
     case "service": await sql`UPDATE services SET featured = ${featured} WHERE id = ${id}`; break;
     case "tryout": await sql`UPDATE tryouts SET featured = ${featured} WHERE id = ${id}`; break;
+    case "trainingapp": await sql`UPDATE training_apps SET featured = ${featured} WHERE id = ${id}`; break;
   }
 }
 
 // ── Listings by User ─────────────────────────────────────────
 export async function getListingsByUserId(userId: string) {
-  const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows, podcastRows, fbgroupRows, serviceRows, tryoutRows] = await Promise.all([
+  const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows, podcastRows, fbgroupRows, serviceRows, tryoutRows, trainingAppRows] = await Promise.all([
     sql`SELECT id, slug, name, status, 'club' as type FROM clubs WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'team' as type FROM teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'trainer' as type FROM trainers WHERE user_id = ${userId} ORDER BY created_at DESC`,
@@ -682,14 +684,15 @@ export async function getListingsByUserId(userId: string) {
     sql`SELECT id, slug, name, status, 'tournament' as type FROM tournaments WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'futsal' as type FROM futsal_teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, trip_name as name, status, 'trip' as type FROM international_trips WHERE user_id = ${userId} ORDER BY created_at DESC`,
-    sql`SELECT id, slug, name, status, CASE WHEN category = 'Books' THEN 'books' ELSE 'equipment' END as type FROM marketplace WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, CASE WHEN category = 'Books' THEN 'books' WHEN category = 'Ebook' THEN 'ebook' WHEN category = 'Giveaway' THEN 'giveaway' ELSE 'equipment' END as type FROM marketplace WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, player_name as name, status, 'player' as type FROM player_profiles WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'podcast' as type FROM podcasts WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'fbgroup' as type FROM facebook_groups WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'service' as type FROM services WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'tryout' as type FROM tryouts WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, 'trainingapp' as type FROM training_apps WHERE user_id = ${userId} ORDER BY created_at DESC`,
   ]);
-  return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows, ...playerRows, ...podcastRows, ...fbgroupRows, ...serviceRows, ...tryoutRows] as { id: string; slug: string; name: string; status: string; type: string }[];
+  return [...clubRows, ...teamRows, ...trainerRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows, ...playerRows, ...podcastRows, ...fbgroupRows, ...serviceRows, ...tryoutRows, ...trainingAppRows] as { id: string; slug: string; name: string; status: string; type: string }[];
 }
 
 // ── Create Listings ──────────────────────────────────────────
@@ -837,6 +840,13 @@ export async function createServiceListing(data: Record<string, string>, userId:
   return slug;
 }
 
+export async function createTrainingAppListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  await sql`INSERT INTO training_apps (id, slug, name, provider_name, category, city, country, state, price, description, website, email, phone, image_url, video_url, image_position, hero_image_position, photos, announcement_heading, announcement_text, announcement_image, announcement_heading_2, announcement_text_2, announcement_image_2, announcement_heading_3, announcement_text_3, announcement_image_3, about_author, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.providerName}, ${data.category}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.price || null}, ${data.description || null}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${data.imageUrl || null}, ${data.videoUrl || null}, ${Number(data.imagePosition) || 50}, ${Number(data.heroImagePosition) || 50}, ${data.photos || null}, ${data.announcementHeading || null}, ${data.announcementText || null}, ${data.announcementImage || null}, ${data.announcementHeading2 || null}, ${data.announcementText2 || null}, ${data.announcementImage2 || null}, ${data.announcementHeading3 || null}, ${data.announcementText3 || null}, ${data.announcementImage3 || null}, ${data.aboutAuthor || null}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
 // ── Services ─────────────────────────────────────────────────
 export async function getServices(): Promise<Service[]> {
   const rows = await sql`SELECT * FROM services WHERE status = 'approved' ORDER BY featured DESC, name ASC`;
@@ -875,6 +885,68 @@ function mapService(r: Record<string, unknown>): Service {
     updatedAt: r.updated_at as string | undefined,
     ...mapProfileFields(r),
   };
+}
+
+// ── Training Apps ─────────────────────────────────────────────
+export async function getTrainingApps(): Promise<TrainingApp[]> {
+  const rows = await sql`SELECT * FROM training_apps WHERE status = 'approved' ORDER BY featured DESC, name ASC`;
+  return rows.map(mapTrainingApp);
+}
+
+export async function getTrainingAppBySlug(slug: string): Promise<TrainingApp | null> {
+  const rows = await sql`SELECT * FROM training_apps WHERE slug = ${slug} AND status = 'approved' LIMIT 1`;
+  return rows[0] ? mapTrainingApp(rows[0]) : null;
+}
+
+export async function getTrainingAppSlugs(): Promise<string[]> {
+  const rows = await sql`SELECT slug FROM training_apps WHERE status = 'approved'`;
+  return rows.map((r) => r.slug as string);
+}
+
+function mapTrainingApp(r: Record<string, unknown>): TrainingApp {
+  return {
+    id: r.id as string, slug: r.slug as string, name: r.name as string,
+    providerName: r.provider_name as string, category: r.category as string,
+    city: r.city as string, state: r.state as string, country: r.country as string | undefined,
+    price: r.price as string | undefined, description: r.description as string | undefined,
+    website: r.website as string | undefined, email: r.email as string | undefined,
+    announcementHeading: r.announcement_heading as string | undefined,
+    announcementText: r.announcement_text as string | undefined,
+    announcementImage: r.announcement_image as string | undefined,
+    announcementHeading2: r.announcement_heading_2 as string | undefined,
+    announcementText2: r.announcement_text_2 as string | undefined,
+    announcementImage2: r.announcement_image_2 as string | undefined,
+    announcementHeading3: r.announcement_heading_3 as string | undefined,
+    announcementText3: r.announcement_text_3 as string | undefined,
+    announcementImage3: r.announcement_image_3 as string | undefined,
+    aboutAuthor: r.about_author as string | undefined,
+    featured: r.featured as boolean, status: r.status as string | undefined,
+    userId: r.user_id as string | undefined, createdAt: r.created_at as string,
+    updatedAt: r.updated_at as string | undefined,
+    ...mapProfileFields(r),
+  };
+}
+
+// ── Ebooks ─────────────────────────────────────────────
+export async function getEbooks(): Promise<MarketplaceItem[]> {
+  const rows = await sql`SELECT * FROM marketplace WHERE category = 'Ebook' AND status = 'approved' ORDER BY featured DESC, created_at DESC`;
+  return rows.map(mapMarketplaceItem);
+}
+
+export async function getEbookSlugs(): Promise<string[]> {
+  const rows = await sql`SELECT slug FROM marketplace WHERE category = 'Ebook' AND status = 'approved'`;
+  return rows.map((r) => r.slug as string);
+}
+
+// ── Giveaways ─────────────────────────────────────────────
+export async function getGiveaways(): Promise<MarketplaceItem[]> {
+  const rows = await sql`SELECT * FROM marketplace WHERE category = 'Giveaway' AND status = 'approved' ORDER BY featured DESC, created_at DESC`;
+  return rows.map(mapMarketplaceItem);
+}
+
+export async function getGiveawaySlugs(): Promise<string[]> {
+  const rows = await sql`SELECT slug FROM marketplace WHERE category = 'Giveaway' AND status = 'approved'`;
+  return rows.map((r) => r.slug as string);
 }
 
 // ── Get Listing Data (for editing) ───────────────────────────
@@ -938,6 +1010,10 @@ export async function getListingData(type: string, id: string, userId: string): 
       rows = await sql`SELECT * FROM tryouts WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
       return mapTryoutToForm(rows[0]);
+    case "trainingapp":
+      rows = await sql`SELECT * FROM training_apps WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapTrainingAppToForm(rows[0]);
     default:
       return null;
   }
@@ -962,6 +1038,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "fbgroup": rows = await sql`SELECT * FROM facebook_groups WHERE id = ${id} LIMIT 1`; break;
     case "service": rows = await sql`SELECT * FROM services WHERE id = ${id} LIMIT 1`; break;
     case "tryout": rows = await sql`SELECT * FROM tryouts WHERE id = ${id} LIMIT 1`; break;
+    case "trainingapp": rows = await sql`SELECT * FROM training_apps WHERE id = ${id} LIMIT 1`; break;
     default: return null;
   }
   if (!rows[0]) return null;
@@ -980,6 +1057,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "fbgroup": return mapFacebookGroupToForm(rows[0]);
     case "service": return mapServiceToForm(rows[0]);
     case "tryout": return mapTryoutToForm(rows[0]);
+    case "trainingapp": return mapTrainingAppToForm(rows[0]);
     default: return null;
   }
 }
@@ -1053,6 +1131,9 @@ function mapFacebookGroupToForm(r: Record<string, unknown>): Record<string, stri
 function mapServiceToForm(r: Record<string, unknown>): Record<string, string> {
   return { name: s(r.name), providerName: s(r.provider_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), videoUrl: s(r.video_url), photos: s(r.photos), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), aboutAuthor: s(r.about_author) };
 }
+function mapTrainingAppToForm(r: Record<string, unknown>): Record<string, string> {
+  return { name: s(r.name), providerName: s(r.provider_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), videoUrl: s(r.video_url), photos: s(r.photos), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), aboutAuthor: s(r.about_author) };
+}
 
 // ── Update Listing ──────────────────────────────────────────
 function buildSocialMedia(data: Record<string, string>): string | null {
@@ -1107,6 +1188,9 @@ export async function updateListing(type: string, id: string, data: Record<strin
       break;
     case "tryout":
       rows = await sql`UPDATE tryouts SET name=${data.name}, organizer_name=${data.organizerName}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, tryout_type=${data.tryoutType}, age_group=${data.ageGroup}, gender=${data.gender}, dates=${data.dates}, time=${data.time || null}, location=${data.location || null}, cost=${data.cost || null}, description=${data.description}, registration_url=${data.registrationUrl || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "trainingapp":
+      rows = await sql`UPDATE training_apps SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${data.photos || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, about_author=${data.aboutAuthor || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     default:
       return false;
@@ -1163,6 +1247,9 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
     case "tryout":
       rows = await sql`UPDATE tryouts SET name=${data.name}, organizer_name=${data.organizerName}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, tryout_type=${data.tryoutType}, age_group=${data.ageGroup}, gender=${data.gender}, dates=${data.dates}, time=${data.time || null}, location=${data.location || null}, cost=${data.cost || null}, description=${data.description}, registration_url=${data.registrationUrl || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
+    case "trainingapp":
+      rows = await sql`UPDATE training_apps SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${data.photos || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, about_author=${data.aboutAuthor || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
     default:
       return false;
   }
@@ -1189,6 +1276,7 @@ export async function archiveListing(type: string, id: string, userId: string, i
       case "fbgroup": rows = await sql`UPDATE facebook_groups SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "service": rows = await sql`UPDATE services SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "tryout": rows = await sql`UPDATE tryouts SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "trainingapp": rows = await sql`UPDATE training_apps SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       default: return false;
     }
   } else {
@@ -1207,6 +1295,7 @@ export async function archiveListing(type: string, id: string, userId: string, i
       case "fbgroup": rows = await sql`UPDATE facebook_groups SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "service": rows = await sql`UPDATE services SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "tryout": rows = await sql`UPDATE tryouts SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "trainingapp": rows = await sql`UPDATE training_apps SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       default: return false;
     }
   }
@@ -1233,6 +1322,7 @@ export async function deleteListing(type: string, id: string, userId: string, is
       case "fbgroup": rows = await sql`DELETE FROM facebook_groups WHERE id = ${id} RETURNING id`; break;
       case "service": rows = await sql`DELETE FROM services WHERE id = ${id} RETURNING id`; break;
       case "tryout": rows = await sql`DELETE FROM tryouts WHERE id = ${id} RETURNING id`; break;
+      case "trainingapp": rows = await sql`DELETE FROM training_apps WHERE id = ${id} RETURNING id`; break;
       default: return false;
     }
   } else {
@@ -1251,6 +1341,7 @@ export async function deleteListing(type: string, id: string, userId: string, is
       case "fbgroup": rows = await sql`DELETE FROM facebook_groups WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "service": rows = await sql`DELETE FROM services WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "tryout": rows = await sql`DELETE FROM tryouts WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "trainingapp": rows = await sql`DELETE FROM training_apps WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       default: return false;
     }
   }
@@ -1276,6 +1367,7 @@ export async function getListingContact(type: string, slug: string): Promise<{ n
     case "fbgroup": rows = await sql`SELECT name, email, user_id FROM facebook_groups WHERE slug = ${slug} LIMIT 1`; break;
     case "service": rows = await sql`SELECT name, email, user_id FROM services WHERE slug = ${slug} LIMIT 1`; break;
     case "tryout": rows = await sql`SELECT name, email, user_id FROM tryouts WHERE slug = ${slug} LIMIT 1`; break;
+    case "trainingapp": rows = await sql`SELECT name, email, user_id FROM training_apps WHERE slug = ${slug} LIMIT 1`; break;
     default: return null;
   }
   if (!rows[0]) return null;
@@ -1305,6 +1397,7 @@ export async function getListingOwner(type: string, slug: string): Promise<strin
     case "fbgroup": rows = await sql`SELECT user_id FROM facebook_groups WHERE slug = ${slug} LIMIT 1`; break;
     case "service": rows = await sql`SELECT user_id FROM services WHERE slug = ${slug} LIMIT 1`; break;
     case "tryout": rows = await sql`SELECT user_id FROM tryouts WHERE slug = ${slug} LIMIT 1`; break;
+    case "trainingapp": rows = await sql`SELECT user_id FROM training_apps WHERE slug = ${slug} LIMIT 1`; break;
     default: return null;
   }
   return rows[0]?.user_id as string | null;
@@ -1363,6 +1456,7 @@ export async function getListingOwnerEmailById(type: string, id: string): Promis
     case "trainer": rows = await sql`SELECT user_id FROM trainers WHERE id = ${id} LIMIT 1`; break;
     case "camp": rows = await sql`SELECT user_id FROM camps WHERE id = ${id} LIMIT 1`; break;
     case "tryout": rows = await sql`SELECT user_id FROM tryouts WHERE id = ${id} LIMIT 1`; break;
+    case "trainingapp": rows = await sql`SELECT u.email FROM training_apps t JOIN users u ON t.user_id = u.id WHERE t.id = ${id} LIMIT 1`; break;
     default: return null;
   }
   if (!rows[0]?.user_id) return null;

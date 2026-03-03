@@ -19,6 +19,7 @@ import {
   createFacebookGroupListing,
   createServiceListing,
   createTryoutListing,
+  createTrainingAppListing,
   updateListing,
   archiveListing,
   deleteListing,
@@ -112,6 +113,17 @@ export async function POST(req: Request) {
         break;
       case "tryout":
         slug = await createTryoutListing(data, session.user.id);
+        break;
+      case "trainingapp":
+        slug = await createTrainingAppListing(data, session.user.id);
+        break;
+      case "ebook":
+        data.category = "Ebook";
+        slug = await createMarketplaceListing(data, session.user.id);
+        break;
+      case "giveaway":
+        data.category = "Giveaway";
+        slug = await createMarketplaceListing(data, session.user.id);
         break;
       default:
         return NextResponse.json({ error: "Invalid listing type" }, { status: 400 });

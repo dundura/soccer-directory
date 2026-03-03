@@ -23,6 +23,9 @@ const TYPE_PATHS: Record<string, string> = {
   fbgroup: "facebook-groups",
   service: "services",
   tryout: "tryouts",
+  trainingapp: "training-apps",
+  ebook: "ebooks",
+  giveaway: "giveaways",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -42,6 +45,9 @@ const TYPE_LABELS: Record<string, string> = {
   fbgroup: "Facebook Group",
   service: "Product / Service",
   tryout: "Tryout",
+  trainingapp: "Training App",
+  ebook: "Ebook",
+  giveaway: "Free Giveaway",
 };
 
 type Listing = { id: string; slug: string; name: string; status: string; type: string };

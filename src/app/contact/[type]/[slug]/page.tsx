@@ -8,6 +8,9 @@ const TYPE_LABELS: Record<string, string> = {
   guest: "Guest Play Opportunity", tournament: "Tournament", futsal: "Futsal Team",
   service: "Product / Service",
   tryout: "Tryout",
+  trainingapp: "Training App",
+  ebook: "Ebook",
+  giveaway: "Free Giveaway",
 };
 
 const TYPE_PATHS: Record<string, string> = {
@@ -15,6 +18,7 @@ const TYPE_PATHS: Record<string, string> = {
   guest: "guest-play", tournament: "tournaments", futsal: "futsal",
   player: "guest-play/players", service: "services",
   tryout: "tryouts",
+  trainingapp: "training-apps", ebook: "ebooks", giveaway: "giveaways",
 };
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";

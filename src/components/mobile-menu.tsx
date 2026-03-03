@@ -20,7 +20,16 @@ const navGroups = [
       { label: "Int'l Tournaments", href: "/tournaments?region=International" },
       { label: "Coaches & Trainers", href: "/trainers" },
       { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
+      { label: "Training Apps", href: "/training-apps" },
       { label: "Products & Services", href: "/services" },
+    ],
+  },
+  {
+    label: "Free",
+    links: [
+      { label: "Free Resources", href: "/free" },
+      { label: "Ebooks", href: "/ebooks" },
+      { label: "Free Giveaways", href: "/giveaways" },
     ],
   },
   {
@@ -114,13 +123,6 @@ export function MobileMenu() {
               className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
             >
               Recommendations
-            </a>
-            <a
-              href="/free"
-              onClick={() => setOpen(false)}
-              className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
-            >
-              Free
             </a>
             <hr className="border-white/10 my-3" />
             <a

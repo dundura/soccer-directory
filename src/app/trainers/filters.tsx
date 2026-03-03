@@ -86,7 +86,7 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
                   details={[
                     { label: "Price", value: trainer.priceRange },
                     { label: "Rating", value: `⭐ ${trainer.rating} (${trainer.reviewCount})` },
-                    { label: "Experience", value: trainer.experience },
+                    { label: "Experience", value: trainer.experience.length > 50 ? trainer.experience.slice(0, 50) + "…" : trainer.experience },
                     { label: "Area", value: trainer.serviceArea },
                   ]}
                   featured={trainer.featured}

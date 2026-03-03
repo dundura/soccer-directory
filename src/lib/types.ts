@@ -416,7 +416,37 @@ export interface Service extends ProfileFields {
   updatedAt?: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout";
+export interface TrainingApp extends ProfileFields {
+  id: string;
+  slug: string;
+  name: string;
+  providerName: string;
+  category: string;
+  city: string;
+  state: string;
+  country?: string;
+  price?: string;
+  description?: string;
+  website?: string;
+  email?: string;
+  announcementHeading?: string;
+  announcementText?: string;
+  announcementImage?: string;
+  announcementHeading2?: string;
+  announcementText2?: string;
+  announcementImage2?: string;
+  announcementHeading3?: string;
+  announcementText3?: string;
+  announcementImage3?: string;
+  aboutAuthor?: string;
+  featured: boolean;
+  status?: string;
+  userId?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";
