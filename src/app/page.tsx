@@ -41,7 +41,7 @@ export default async function HomePage() {
                   Welcome to Soccer Near Me
                 </p>
                 <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-                  Find the perfect youth soccer<RotatingText />
+                  Find the perfect youth soccer<RotatingText /> near you
                 </h1>
                 <p className="text-white/70 text-lg md:text-xl mb-8 max-w-2xl">
                   Search our directory of verified clubs, teams, private trainers, camps, and guest player opportunities. All in one place.
