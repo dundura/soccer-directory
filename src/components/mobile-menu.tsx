@@ -3,25 +3,49 @@
 import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 
-const navGroups = [
+type NavLink = { label: string; href: string };
+type NavSubgroup = { label: string; links: NavLink[] };
+type NavGroup = { label: string; links?: NavLink[]; subgroups?: NavSubgroup[] };
+
+const navGroups: NavGroup[] = [
   {
     label: "Find",
-    links: [
-      { label: "Clubs", href: "/clubs" },
-      { label: "Teams", href: "/teams" },
-      { label: "Futsal", href: "/futsal" },
-      { label: "Camps", href: "/camps" },
-      { label: "College Showcases", href: "/camps?type=College+Showcase" },
-      { label: "Tryouts", href: "/tryouts" },
-      { label: "Guest Play", href: "/guest-play" },
-      { label: "Player Profiles", href: "/guest-play/players" },
-      { label: "Guest Player Posts", href: "/guest-play/posts" },
-      { label: "US Tournaments", href: "/tournaments?region=US" },
-      { label: "Int'l Tournaments", href: "/tournaments?region=International" },
-      { label: "Coaches & Trainers", href: "/trainers" },
-      { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
-      { label: "Training Apps", href: "/training-apps" },
-      { label: "Products & Services", href: "/services" },
+    subgroups: [
+      {
+        label: "Clubs & Teams",
+        links: [
+          { label: "Clubs", href: "/clubs" },
+          { label: "Teams", href: "/teams" },
+          { label: "Futsal", href: "/futsal" },
+        ],
+      },
+      {
+        label: "Events",
+        links: [
+          { label: "Camps", href: "/camps" },
+          { label: "College Showcases", href: "/camps?type=College+Showcase" },
+          { label: "Tryouts", href: "/tryouts" },
+          { label: "US Tournaments", href: "/tournaments?region=US" },
+          { label: "Int'l Tournaments", href: "/tournaments?region=International" },
+        ],
+      },
+      {
+        label: "Guest Play",
+        links: [
+          { label: "Guest Play", href: "/guest-play" },
+          { label: "Player Profiles", href: "/guest-play/players" },
+          { label: "Guest Player Posts", href: "/guest-play/posts" },
+        ],
+      },
+      {
+        label: "Training & Services",
+        links: [
+          { label: "Coaches & Trainers", href: "/trainers" },
+          { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
+          { label: "Training Apps", href: "/training-apps" },
+          { label: "Products & Services", href: "/services" },
+        ],
+      },
     ],
   },
   {
@@ -46,7 +70,18 @@ const navGroups = [
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const [openSub, setOpenSub] = useState<string | null>(null);
   const { data: session } = useSession();
+
+  function toggleGroup(label: string) {
+    if (openGroup === label) {
+      setOpenGroup(null);
+      setOpenSub(null);
+    } else {
+      setOpenGroup(label);
+      setOpenSub(null);
+    }
+  }
 
   return (
     <>
@@ -83,10 +118,10 @@ export function MobileMenu() {
 
           {/* Nav Links */}
           <nav className="flex-1 flex flex-col px-6 pt-6 gap-1 overflow-y-auto">
-            {navGroups.map((group, idx) => (
+            {navGroups.map((group) => (
               <div key={group.label}>
                 <button
-                  onClick={() => setOpenGroup(openGroup === group.label ? null : group.label)}
+                  onClick={() => toggleGroup(group.label)}
                   className="w-full flex items-center justify-between text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors"
                 >
                   {group.label}
@@ -94,7 +129,8 @@ export function MobileMenu() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                {openGroup === group.label && (
+
+                {openGroup === group.label && group.links && (
                   <div className="flex flex-col gap-1 pl-4 mb-2">
                     {group.links.map((link) => (
                       <a
@@ -105,6 +141,38 @@ export function MobileMenu() {
                       >
                         {link.label}
                       </a>
+                    ))}
+                  </div>
+                )}
+
+                {openGroup === group.label && group.subgroups && (
+                  <div className="flex flex-col gap-1 pl-4 mb-2">
+                    {group.subgroups.map((sub) => (
+                      <div key={sub.label}>
+                        <button
+                          onClick={() => setOpenSub(openSub === sub.label ? null : sub.label)}
+                          className="w-full flex items-center justify-between text-white/80 text-base font-semibold py-2 px-4 rounded-xl hover:bg-white/10 transition-colors"
+                        >
+                          {sub.label}
+                          <svg className={`w-3.5 h-3.5 transition-transform ${openSub === sub.label ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                        {openSub === sub.label && (
+                          <div className="flex flex-col gap-1 pl-4 mb-1">
+                            {sub.links.map((link) => (
+                              <a
+                                key={link.href}
+                                href={link.href}
+                                onClick={() => setOpen(false)}
+                                className="text-white/60 text-sm font-medium py-2 px-4 rounded-xl hover:bg-white/10 transition-colors"
+                              >
+                                {link.label}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
                 )}
