@@ -12,6 +12,7 @@ const TYPE_LABELS: Record<string, string> = {
   trainingapp: "Training App",
   ebook: "Ebook",
   giveaway: "Free Giveaway",
+  blog: "Blog",
 };
 
 const TYPE_PATHS: Record<string, string> = {
@@ -20,6 +21,7 @@ const TYPE_PATHS: Record<string, string> = {
   player: "guest-play/players", service: "services",
   tryout: "tryouts",
   trainingapp: "training-apps", ebook: "ebooks", giveaway: "giveaways",
+  blog: "blogs",
 };
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";

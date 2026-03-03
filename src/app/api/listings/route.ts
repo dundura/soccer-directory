@@ -20,6 +20,7 @@ import {
   createServiceListing,
   createTryoutListing,
   createTrainingAppListing,
+  createBlogListing,
   updateListing,
   archiveListing,
   deleteListing,
@@ -116,6 +117,9 @@ export async function POST(req: Request) {
         break;
       case "trainingapp":
         slug = await createTrainingAppListing(data, session.user.id);
+        break;
+      case "blog":
+        slug = await createBlogListing(data, session.user.id);
         break;
       case "ebook":
         data.category = "Ebook";

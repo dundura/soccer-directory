@@ -21,6 +21,7 @@ const TYPE_LABELS: Record<string, string> = {
   trainingapp: "Training App",
   ebook: "Ebook",
   giveaway: "Free Giveaway",
+  blog: "Blog",
 };
 
 const TYPE_PATHS: Record<string, string> = {
@@ -31,6 +32,7 @@ const TYPE_PATHS: Record<string, string> = {
   podcast: "podcasts", fbgroup: "facebook-groups",
   tryout: "tryouts",
   trainingapp: "training-apps", ebook: "ebooks", giveaway: "giveaways",
+  blog: "blogs",
 };
 
 export default function AdminClient() {
