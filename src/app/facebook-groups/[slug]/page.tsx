@@ -1,7 +1,7 @@
 import { getFacebookGroupBySlug, getFacebookGroupSlugs, getListingOwner } from "@/lib/db";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
+import { VideoEmbed, PhotoGallery } from "@/components/profile-ui";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { ContactGroupForm } from "./contact-form";
 
@@ -46,6 +46,7 @@ export default async function FacebookGroupPage({ params }: Props) {
     ...(group.city && group.state ? [{ label: "Location", value: `${group.city}, ${group.state}` }] : []),
     ...(group.memberCount ? [{ label: "Members", value: group.memberCount }] : []),
     ...(group.groupUrl ? [{ label: "Facebook", value: "Visit Group", href: group.groupUrl }] : []),
+    ...(group.website ? [{ label: "Website", value: "Visit Website", href: group.website }] : []),
     ...(group.phone ? [{ label: "Phone", value: group.phone }] : []),
     ...(group.email ? [{ label: "Email", value: "Contact", href: `/contact/fbgroup/${slug}`, internal: true }] : []),
   ];
@@ -157,15 +158,6 @@ export default async function FacebookGroupPage({ params }: Props) {
             <p className="text-muted text-sm mb-5">Have a question about {group.name}? Send a message to the group admin.</p>
             <ContactGroupForm groupName={group.name} slug={slug} />
           </div>
-
-          {/* Social Links */}
-          {group.socialMedia && (
-            <SocialLinks
-              website={group.groupUrl}
-              facebook={group.socialMedia.facebook}
-              instagram={group.socialMedia.instagram}
-            />
-          )}
 
           {/* Anytime CTA */}
           <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-light p-6 text-white">

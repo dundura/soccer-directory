@@ -479,6 +479,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "privacy", label: "Privacy", required: true, options: ["Public", "Private"] },
     { name: "memberCount", label: "Approximate Members" },
     { name: "description", label: "About the Group", type: "textarea" },
+    { name: "website", label: "Website" },
     { name: "email", label: "Contact Email", type: "email" },
     { name: "phone", label: "Phone" },
     { name: "_socials", label: "Social Media", type: "heading" },

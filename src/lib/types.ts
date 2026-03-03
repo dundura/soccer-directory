@@ -379,6 +379,7 @@ export interface FacebookGroup extends ProfileFields {
   state: string;
   country?: string;
   description?: string;
+  website?: string;
   email?: string;
   featured: boolean;
   createdAt: string;
