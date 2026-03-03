@@ -725,7 +725,7 @@ function parsePhotos(raw: string | undefined | null): string[] | null {
 function profileFields(data: Record<string, string>) {
   return {
     teamPhoto: data.teamPhoto || null,
-    photos: parsePhotos(data.photos),
+    photos: data.photos || null,
     videoUrl: data.videoUrl !== undefined ? (data.videoUrl || "") : null,
     practiceSchedule: data.practiceSchedule || null,
     address: data.address || null,
