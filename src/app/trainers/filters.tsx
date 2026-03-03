@@ -87,7 +87,7 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
                     { label: "Price", value: trainer.priceRange },
                     { label: "Rating", value: `⭐ ${trainer.rating} (${trainer.reviewCount})` },
                     { label: "Experience", value: trainer.experience.length > 50 ? trainer.experience.slice(0, 50) + "…" : trainer.experience },
-                    { label: "Area", value: trainer.serviceArea },
+                    { label: "Area", value: trainer.serviceArea.length > 50 ? trainer.serviceArea.slice(0, 50) + "…" : trainer.serviceArea },
                   ]}
                   featured={trainer.featured}
                   cta="View Trainer"

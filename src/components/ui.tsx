@@ -42,7 +42,7 @@ export function ListingCard({
     >
       {image && (
         <div className="w-full h-40 overflow-hidden bg-surface flex items-center justify-center">
-          <img src={image} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <img src={image} alt={title} className="w-full h-full object-cover object-[center_30%] group-hover:scale-105 transition-transform duration-300" />
         </div>
       )}
       <div className="p-6">
@@ -66,7 +66,7 @@ export function ListingCard({
           {details.map((d, i) => (
             <div key={i}>
               <p className="text-xs text-muted">{d.label}</p>
-              <p className="text-sm font-medium">{d.value}</p>
+              <p className="text-sm font-medium line-clamp-2">{d.value}</p>
             </div>
           ))}
         </div>
