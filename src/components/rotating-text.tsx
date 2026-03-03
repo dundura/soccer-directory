@@ -23,7 +23,7 @@ export function RotatingText() {
     <span
       className={`text-accent inline-block transition-all duration-300 ${fade ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}
     >
-      {" "}{WORDS[index]}
+      &nbsp;{WORDS[index]}
     </span>
   );
 }
