@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { Turnstile } from "@/components/turnstile";
 
 const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
@@ -33,6 +34,7 @@ export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [loadedAt] = useState(Date.now());
+  const [captchaToken, setCaptchaToken] = useState("");
 
   const label = TYPE_LABELS[type] || type;
   const backPath = `/${TYPE_PATHS[type] || type}/${slug}`;
@@ -46,7 +48,7 @@ export default function ContactPage() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, slug, senderName: form.senderName, senderEmail: form.senderEmail, message: form.message, website: form.website, _t: loadedAt }),
+        body: JSON.stringify({ type, slug, senderName: form.senderName, senderEmail: form.senderEmail, message: form.message, website: form.website, _t: loadedAt, captchaToken }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
@@ -142,11 +144,13 @@ export default function ContactPage() {
             />
           </div>
 
+          <Turnstile onSuccess={setCaptchaToken} />
+
           {error && <p className="text-accent text-sm">{error}</p>}
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || !captchaToken}
             className="w-full py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50"
           >
             {submitting ? "Sending..." : "Send Message"}

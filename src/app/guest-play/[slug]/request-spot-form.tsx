@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Turnstile } from "@/components/turnstile";
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";
 
@@ -29,6 +30,7 @@ export function RequestSpotForm({ teamName, tournament, slug }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
 
   function update(field: string, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -43,7 +45,7 @@ export function RequestSpotForm({ teamName, tournament, slug }: Props) {
       const res = await fetch("/api/guest-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, teamName, tournament, ...form }),
+        body: JSON.stringify({ slug, teamName, tournament, ...form, captchaToken }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
@@ -154,11 +156,13 @@ export function RequestSpotForm({ teamName, tournament, slug }: Props) {
         />
       </div>
 
+      <Turnstile onSuccess={setCaptchaToken} />
+
       {error && <p className="text-accent text-sm">{error}</p>}
 
       <button
         type="submit"
-        disabled={submitting}
+        disabled={submitting || !captchaToken}
         className="w-full py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50"
       >
         {submitting ? "Sending..." : "Submit Request"}

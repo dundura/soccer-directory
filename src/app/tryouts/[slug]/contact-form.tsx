@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Turnstile } from "@/components/turnstile";
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";
 
@@ -10,6 +11,7 @@ export function ContactTryoutForm({ tryoutName, slug }: { tryoutName: string; sl
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [loadedAt] = useState(Date.now());
+  const [captchaToken, setCaptchaToken] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,7 +23,7 @@ export function ContactTryoutForm({ tryoutName, slug }: { tryoutName: string; sl
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "tryout", slug, ...form }),
+        body: JSON.stringify({ type: "tryout", slug, ...form, captchaToken }),
       });
       if (!res.ok) {
         const json = await res.json();
@@ -62,8 +64,9 @@ export function ContactTryoutForm({ tryoutName, slug }: { tryoutName: string; sl
       <div className="hidden">
         <input type="text" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} tabIndex={-1} autoComplete="off" />
       </div>
+      <Turnstile onSuccess={setCaptchaToken} />
       {error && <p className="text-accent text-sm">{error}</p>}
-      <button type="submit" disabled={submitting} className="w-full py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
+      <button type="submit" disabled={submitting || !captchaToken} className="w-full py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
         {submitting ? "Sending..." : "Send Message"}
       </button>
     </form>

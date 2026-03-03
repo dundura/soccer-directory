@@ -1,16 +1,21 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { getListingContact } from "@/lib/db";
+import { verifyCaptcha } from "@/lib/captcha";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const NOTIFY_EMAIL = "neil@anytime-soccer.com";
 
 export async function POST(req: Request) {
   try {
-    const { slug, tripName, destination, parentName, playerName, email, phone, playerAge, message, website, _t } = await req.json();
+    const { slug, tripName, destination, parentName, playerName, email, phone, playerAge, message, website, _t, captchaToken } = await req.json();
 
     if (website) return NextResponse.json({ success: true });
     if (_t && Date.now() - _t < 3000) return NextResponse.json({ success: true });
+
+    if (!(await verifyCaptcha(captchaToken))) {
+      return NextResponse.json({ error: "Captcha verification failed" }, { status: 400 });
+    }
 
     if (!slug || !parentName || !playerName || !email) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });

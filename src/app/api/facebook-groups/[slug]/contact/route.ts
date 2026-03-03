@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { getListingContact } from "@/lib/db";
+import { verifyCaptcha } from "@/lib/captcha";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const NOTIFY_EMAIL = "neil@anytime-soccer.com";
@@ -10,7 +11,11 @@ type Props = { params: Promise<{ slug: string }> };
 export async function POST(req: Request, { params }: Props) {
   try {
     const { slug } = await params;
-    const { name, email, message } = await req.json();
+    const { name, email, message, captchaToken } = await req.json();
+
+    if (!(await verifyCaptcha(captchaToken))) {
+      return NextResponse.json({ error: "Captcha verification failed" }, { status: 400 });
+    }
 
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Turnstile } from "@/components/turnstile";
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";
 
@@ -9,6 +10,7 @@ export function ContactPlayerForm({ playerName, slug }: { playerName: string; sl
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -18,7 +20,7 @@ export function ContactPlayerForm({ playerName, slug }: { playerName: string; sl
       const res = await fetch(`/api/guest-play/players/${slug}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, captchaToken }),
       });
       if (!res.ok) {
         const json = await res.json();
@@ -60,8 +62,9 @@ export function ContactPlayerForm({ playerName, slug }: { playerName: string; sl
         <label className="block text-sm font-medium mb-1">Message <span className="text-accent">*</span></label>
         <textarea required rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={inputClass + " resize-none"} placeholder="Tell the player about the opportunity..." />
       </div>
+      <Turnstile onSuccess={setCaptchaToken} />
       {error && <p className="text-accent text-sm">{error}</p>}
-      <button type="submit" disabled={submitting} className="w-full py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
+      <button type="submit" disabled={submitting || !captchaToken} className="w-full py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
         {submitting ? "Sending..." : "Send Message"}
       </button>
     </form>
