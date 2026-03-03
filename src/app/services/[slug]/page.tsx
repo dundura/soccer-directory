@@ -194,7 +194,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {photos.map((photo, i) => (
-                    <img key={i} src={photo} alt={`${service.name} photo ${i + 1}`} className="w-full aspect-square object-contain rounded-xl bg-surface" />
+                    <img key={i} src={photo} alt={`${service.name} photo ${i + 1}`} className="w-full aspect-square object-cover rounded-xl" />
                   ))}
                 </div>
               </div>

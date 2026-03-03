@@ -251,7 +251,7 @@ export default async function TournamentDetailPage({ params }: Props) {
               </div>
               <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
                 {tournamentPhotos.map((photo, i) => (
-                  <img key={i} src={photo} alt={`Tournament photo ${i + 1}`} className="w-full aspect-square object-contain rounded-xl block bg-surface" />
+                  <img key={i} src={photo} alt={`Tournament photo ${i + 1}`} className="w-full aspect-square object-cover rounded-xl block" />
                 ))}
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
