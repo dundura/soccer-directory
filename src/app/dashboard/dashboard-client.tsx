@@ -424,15 +424,6 @@ function DashboardContent() {
   if (showForm) {
     return (
       <div className="max-w-2xl mx-auto">
-        <button
-          onClick={() => { setShowForm(false); setFormDefaultType(undefined); }}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-hover hover:text-accent transition-colors mb-4"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to My Listings
-        </button>
         <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
           <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-6">
             {formDefaultType === "player" ? "Create Guest Player Profile" : "Create New Listing"}
