@@ -84,7 +84,7 @@ export default async function TrainerDetailPage({ params }: Props) {
       </div>
 
       <div className="max-w-[1100px] mx-auto px-6 pb-16">
-        <div className="grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5 lg:gap-6 items-start">
 
           {/* ====== LEFT SIDEBAR ====== */}
           <aside className="flex flex-col gap-4 order-2 lg:order-1">
@@ -110,16 +110,14 @@ export default async function TrainerDetailPage({ params }: Props) {
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
               {[
                 { label: "Specialty", value: trainer.specialty },
-                { label: "Experience", value: trainer.experience },
-                { label: "Credentials", value: trainer.credentials },
                 { label: "Pricing", value: trainer.priceRange },
                 { label: "Service Area", value: trainer.serviceArea },
                 ...(trainer.practiceSchedule && trainer.practiceSchedule.length > 0 ? [{ label: "Available Days", value: trainer.practiceSchedule.join(", ") }] : []),
                 ...(trainer.address ? [{ label: "Address", value: trainer.address }] : []),
               ].map((row) => (
-                <div key={row.label} className="flex justify-between items-center px-4 py-[11px] border-b border-border last:border-b-0 text-[13.5px]">
-                  <span className="text-muted font-medium">{row.label}</span>
-                  <span className="font-bold text-primary text-right">{row.value}</span>
+                <div key={row.label} className="flex justify-between items-start px-4 py-[11px] border-b border-border last:border-b-0 text-[13.5px]">
+                  <span className="text-muted font-medium shrink-0 mr-3">{row.label}</span>
+                  <span className="font-bold text-primary text-right max-w-[60%] break-words leading-snug">{row.value}</span>
                 </div>
               ))}
               {trainer.socialMedia && (trainer.socialMedia.facebook || trainer.socialMedia.instagram) && (
@@ -187,7 +185,7 @@ export default async function TrainerDetailPage({ params }: Props) {
                     {trainer.specialty} {" \u00b7 "} {trainer.city}, {trainer.state}
                   </p>
                   {trainer.description && (
-                    <p className="text-sm leading-relaxed text-gray-500">{trainer.description}</p>
+                    <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{trainer.description}</p>
                   )}
                   <div className="flex gap-2.5 mt-[18px] flex-wrap">
                     <a
@@ -212,42 +210,59 @@ export default async function TrainerDetailPage({ params }: Props) {
 
             {/* At a Glance */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">At a Glance</h3>
-              <div className="grid grid-cols-2 gap-2.5 mt-1">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#9917;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Specialty</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{trainer.specialty}</span>
+              <h3 className="text-[15px] font-bold text-primary mb-4">At a Glance</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="bg-surface rounded-xl p-3.5 text-center">
+                  <span className="text-xl leading-none block mb-1.5">&#9917;</span>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Specialty</p>
+                  <p className="text-sm font-bold text-primary leading-snug">{trainer.specialty}</p>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#127942;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Experience</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{trainer.experience}</span>
+                <div className="bg-surface rounded-xl p-3.5 text-center">
+                  <span className="text-xl leading-none block mb-1.5">&#128176;</span>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Pricing</p>
+                  <p className="text-sm font-bold text-primary leading-snug">{trainer.priceRange}</p>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#128176;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Pricing</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{trainer.priceRange}</span>
+                <div className="bg-surface rounded-xl p-3.5 text-center">
+                  <span className="text-xl leading-none block mb-1.5">&#128205;</span>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Service Area</p>
+                  <p className="text-sm font-bold text-primary leading-snug">{trainer.serviceArea}</p>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#128205;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Service Area</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{trainer.serviceArea}</span>
-                </div>
-                {trainer.rating > 0 && (
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-lg leading-none">&#11088;</span>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Rating</span>
-                    <span className="text-sm font-bold text-primary ml-auto">{trainer.rating} ({trainer.reviewCount})</span>
+                {trainer.rating > 0 ? (
+                  <div className="bg-surface rounded-xl p-3.5 text-center">
+                    <span className="text-xl leading-none block mb-1.5">&#11088;</span>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Rating</p>
+                    <p className="text-sm font-bold text-primary leading-snug">{trainer.rating} ({trainer.reviewCount})</p>
+                  </div>
+                ) : (
+                  <div className="bg-surface rounded-xl p-3.5 text-center">
+                    <span className="text-xl leading-none block mb-1.5">&#128205;</span>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Location</p>
+                    <p className="text-sm font-bold text-primary leading-snug">{trainer.city}, {trainer.state}</p>
                   </div>
                 )}
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#127891;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Credentials</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{trainer.credentials}</span>
-                </div>
               </div>
             </div>
+
+            {/* Background & Credentials */}
+            {(trainer.experience || trainer.credentials) && (
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 className="text-[15px] font-bold text-primary mb-4">Background &amp; Credentials</h3>
+                <div className="space-y-4">
+                  {trainer.experience && (
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Experience</p>
+                      <p className="text-sm text-primary leading-relaxed whitespace-pre-line">{trainer.experience}</p>
+                    </div>
+                  )}
+                  {trainer.credentials && (
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Credentials</p>
+                      <p className="text-sm text-primary leading-relaxed whitespace-pre-line">{trainer.credentials}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Availability Schedule */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -275,9 +290,9 @@ export default async function TrainerDetailPage({ params }: Props) {
             {/* Photos & Video */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
-              <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
+              <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
                 {trainerPhotos.map((photo, i) => (
-                  <img key={i} src={photo} alt={`Trainer photo ${i + 1}`} className="w-full aspect-square object-contain rounded-xl block bg-surface" />
+                  <img key={i} src={photo} alt={`Trainer photo ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-xl block" style={{ objectPosition: `center ${imgPos}%` }} />
                 ))}
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
