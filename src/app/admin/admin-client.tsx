@@ -48,6 +48,7 @@ export default function AdminClient() {
   // Filter state
   const [listingTypeFilter, setListingTypeFilter] = useState("all");
   const [listingStatusFilter, setListingStatusFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Hero tagline setting
   const [heroTagline, setHeroTagline] = useState("");
@@ -66,7 +67,7 @@ export default function AdminClient() {
     const editId = searchParams.get("editId");
     if (editType && editId) {
       setAutoEditDone(true);
-      const listing = listings.find((l) => l.type === editType && (l.id === editId || l.slug === editId));
+      const listing = listings.find((l) => l.type === editType && (String(l.id) === editId || l.slug === editId));
       if (listing) handleEdit(listing);
     }
   }, [loading, listings, autoEditDone, searchParams]);
@@ -156,6 +157,7 @@ export default function AdminClient() {
   const filteredListings = listings.filter((l) => {
     if (listingTypeFilter !== "all" && l.type !== listingTypeFilter) return false;
     if (listingStatusFilter !== "all" && l.status !== listingStatusFilter) return false;
+    if (searchQuery && !l.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
@@ -316,6 +318,18 @@ export default function AdminClient() {
             <>
               {/* Filters */}
               <div className="flex gap-3 mb-4 flex-wrap">
+                <div className="relative flex-1 min-w-[200px] max-w-sm">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search listings..."
+                    className="w-full px-4 py-2 pl-9 rounded-xl border border-border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+                  />
+                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
                 <select
                   value={listingTypeFilter}
                   onChange={(e) => setListingTypeFilter(e.target.value)}

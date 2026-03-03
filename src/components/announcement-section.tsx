@@ -6,10 +6,14 @@ export function AnnouncementSection({
   heading,
   text,
   image,
+  ctaUrl,
+  ctaLabel,
 }: {
   heading?: string;
   text: string;
   image?: string;
+  ctaUrl?: string;
+  ctaLabel?: string;
 }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
@@ -33,23 +37,34 @@ export function AnnouncementSection({
             </h3>
           </div>
 
-          {/* Content: image left + text right, or just text */}
-          <div className={`flex ${image ? "flex-col sm:flex-row gap-4" : ""}`}>
+          {/* Content: image floats left, text wraps around it */}
+          <div>
             {image && (
               <button
                 onClick={() => setLightboxOpen(true)}
-                className="flex-shrink-0 rounded-xl overflow-hidden border border-red-200/60 hover:border-red-400 transition-colors cursor-zoom-in group"
+                className="float-left mr-4 mb-3 rounded-xl overflow-hidden border border-red-200/60 hover:border-red-400 transition-colors cursor-zoom-in group flex-shrink-0"
               >
                 <img
                   src={image}
                   alt={heading || "Announcement"}
-                  className="w-full sm:w-40 sm:h-40 h-48 object-cover group-hover:scale-[1.02] transition-transform"
+                  className="w-32 h-32 sm:w-40 sm:h-40 object-cover group-hover:scale-[1.02] transition-transform"
                 />
               </button>
             )}
             <p className="text-sm sm:text-base leading-relaxed text-red-900/80 whitespace-pre-line">
               {text}
             </p>
+            {ctaUrl && (
+              <a
+                href={ctaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-4 px-5 py-2.5 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-colors shadow-sm"
+              >
+                {ctaLabel || "Learn More →"}
+              </a>
+            )}
+            <div className="clear-both" />
           </div>
         </div>
       </div>

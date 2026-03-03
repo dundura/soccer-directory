@@ -603,7 +603,7 @@ export async function updateUserRole(userId: string, role: string): Promise<void
 }
 
 export async function getAllListings() {
-  const [clubs, teams, trainers, camps, guests, tournaments, futsals, trips, marketplace, players, podcasts, fbgroups, services, tryouts] = await Promise.all([
+  const [clubs, teams, trainers, camps, guests, tournaments, futsals, trips, marketplace, players, podcasts, fbgroups, services, tryouts, trainingApps] = await Promise.all([
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'club' as type FROM clubs ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'team' as type FROM teams ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'trainer' as type FROM trainers ORDER BY created_at DESC`,
@@ -618,8 +618,9 @@ export async function getAllListings() {
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'fbgroup' as type FROM facebook_groups ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'service' as type FROM services ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'tryout' as type FROM tryouts ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'trainingapp' as type FROM training_apps ORDER BY created_at DESC`,
   ]);
-  return [...clubs, ...teams, ...trainers, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace, ...players, ...podcasts, ...fbgroups, ...services, ...tryouts].map((r) => ({
+  return [...clubs, ...teams, ...trainers, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace, ...players, ...podcasts, ...fbgroups, ...services, ...tryouts, ...trainingApps].map((r) => ({
     id: r.id as string,
     slug: r.slug as string,
     name: r.name as string,

@@ -109,21 +109,6 @@ export default async function TrainingAppDetailPage({ params }: Props) {
               </p>
             )}
 
-            {/* Special Offers */}
-            {(app.announcementText || app.announcementText2 || app.announcementText3) && (
-              <div className="space-y-4 mb-6">
-                {app.announcementText && (
-                  <AnnouncementSection heading={app.announcementHeading || "Special Offer"} text={app.announcementText} image={app.announcementImage} />
-                )}
-                {app.announcementText2 && (
-                  <AnnouncementSection heading={app.announcementHeading2 || "Special Offer"} text={app.announcementText2} image={app.announcementImage2} />
-                )}
-                {app.announcementText3 && (
-                  <AnnouncementSection heading={app.announcementHeading3 || "Special Offer"} text={app.announcementText3} image={app.announcementImage3} />
-                )}
-              </div>
-            )}
-
             {/* Action Buttons */}
             <div className="flex gap-3 flex-wrap mb-6">
               {app.website && (
@@ -143,6 +128,21 @@ export default async function TrainingAppDetailPage({ params }: Props) {
                 Contact Provider
               </a>
             </div>
+
+            {/* Special Offers */}
+            {(app.announcementText || app.announcementText2 || app.announcementText3) && (
+              <div className="space-y-4 mb-6">
+                {app.announcementText && (
+                  <AnnouncementSection heading={app.announcementHeading || "Special Offer"} text={app.announcementText} image={app.announcementImage} ctaUrl={app.website ? (app.website.startsWith("http") ? app.website : `https://${app.website}`) : undefined} ctaLabel="Get Your Free 7-Day Plan →" />
+                )}
+                {app.announcementText2 && (
+                  <AnnouncementSection heading={app.announcementHeading2 || "Special Offer"} text={app.announcementText2} image={app.announcementImage2} />
+                )}
+                {app.announcementText3 && (
+                  <AnnouncementSection heading={app.announcementHeading3 || "Special Offer"} text={app.announcementText3} image={app.announcementImage3} />
+                )}
+              </div>
+            )}
 
             {/* Details */}
             <div className="border-t border-border pt-6 grid grid-cols-2 gap-4 text-sm">
