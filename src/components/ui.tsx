@@ -139,6 +139,25 @@ export function FilterBar({
 
 // ── Inline Anytime CTA (for use within listing pages) ───────
 export function AnytimeInlineCTA() {
+  const variant = Math.random() < 0.5 ? "text" : "image";
+
+  if (variant === "image") {
+    return (
+      <a
+        href="https://hustleos.io/soccer?via=anytimesoccer#free-guides"
+        target="_blank"
+        rel="noopener"
+        className="block rounded-2xl overflow-hidden hover:shadow-lg transition-shadow"
+      >
+        <img
+          src="https://d2vm0l3c6tu9qp.cloudfront.net/Homepage_Hero_Banner_No_Logo_1200x300.png"
+          alt="Anytime Soccer Training"
+          className="w-full h-auto"
+        />
+      </a>
+    );
+  }
+
   return (
     <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-light p-6 md:p-8 text-white flex items-center gap-6">
       <div className="flex-1">

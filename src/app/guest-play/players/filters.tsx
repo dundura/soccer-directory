@@ -8,6 +8,7 @@ import { PlayerAvatar } from "@/components/player-avatar";
 
 const POSITIONS = ["GK", "CB", "FB/WB", "CDM", "CM", "CAM", "Winger", "ST"];
 const LEVELS = ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club Travel", "Rec Select", "Recreational / Grassroots"];
+const PER_PAGE = 10;
 
 export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
   const searchParams = useSearchParams();
@@ -16,6 +17,8 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
   const [state, setState] = useState(searchParams.get("state") || "");
   const [gender, setGender] = useState(searchParams.get("gender") || "");
   const [level, setLevel] = useState(searchParams.get("level") || "");
+  const [page, setPage] = useState(1);
+  const [viewAll, setViewAll] = useState(false);
 
   const states = [...new Set(players.map((p) => p.state))].sort();
 
@@ -37,6 +40,8 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
   });
 
   const sorted = [...filtered].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+  const totalPages = Math.ceil(sorted.length / PER_PAGE);
+  const visible = viewAll ? sorted : sorted.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   return (
     <>
@@ -52,13 +57,13 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
             <input
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search by player name, city, state, or club..."
               className="flex-1 px-5 py-4 rounded-xl text-primary text-base placeholder:text-muted focus:outline-none"
             />
             <select
               value={state}
-              onChange={(e) => setState(e.target.value)}
+              onChange={(e) => { setState(e.target.value); setPage(1); }}
               className="px-4 py-4 rounded-xl border border-border text-sm font-medium text-primary bg-surface focus:outline-none cursor-pointer sm:w-48"
             >
               <option value="">All States</option>
@@ -77,71 +82,113 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <FilterBar
           filters={[
-            { label: "All Positions", options: POSITIONS, value: position, onChange: setPosition },
-            { label: "All Genders", options: ["Boys", "Girls"], value: gender, onChange: setGender },
-            { label: "All Levels", options: LEVELS, value: level, onChange: setLevel },
+            { label: "All Positions", options: POSITIONS, value: position, onChange: (v: string) => { setPosition(v); setPage(1); } },
+            { label: "All Genders", options: ["Boys", "Girls"], value: gender, onChange: (v: string) => { setGender(v); setPage(1); } },
+            { label: "All Levels", options: LEVELS, value: level, onChange: (v: string) => { setLevel(v); setPage(1); } },
           ]}
         />
+
+        {/* View All / result count */}
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm text-muted">
+            {sorted.length} player{sorted.length !== 1 ? "s" : ""} found
+            {!viewAll && sorted.length > PER_PAGE && <> &middot; Page {page} of {totalPages}</>}
+          </p>
+          {sorted.length > PER_PAGE && (
+            <button
+              onClick={() => { setViewAll(!viewAll); setPage(1); }}
+              className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors"
+            >
+              {viewAll ? "Show Pages" : "View All"}
+            </button>
+          )}
+        </div>
 
         {sorted.length === 0 ? (
           <EmptyState message="No player profiles match your filters. Try broadening your search." />
         ) : (
           <div className="space-y-4">
-            {sorted.map((player, i) => (
-              <div key={player.id}>
-                <a
-                  href={`/guest-play/players/${player.slug}`}
-                  className="group block bg-white rounded-2xl border border-border p-4 md:p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 relative"
-                >
-                  {player.featured && (
-                    <div className="absolute top-4 right-4">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
-                        Featured
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex gap-4 md:gap-6">
-                    <div className="shrink-0">
-                      <PlayerAvatar
-                        src={player.teamPhoto}
-                        name={player.playerName}
-                        className="w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover border border-border"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap gap-1.5 mb-2">
-                        <Badge variant="blue">{player.position}</Badge>
-                        {player.secondaryPosition && <Badge variant="default">{player.secondaryPosition}</Badge>}
-                        <Badge variant={player.gender === "Boys" ? "blue" : "purple"}>{player.gender}</Badge>
-                        <Badge variant="default">{player.birthYear}</Badge>
-                      </div>
-                      <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary group-hover:text-accent-hover transition-colors mb-1">
-                        {player.playerName}
-                      </h3>
-                      <p className="text-muted text-sm mb-2">
-                        {player.currentClub && <>{player.currentClub} &middot; </>}
-                        {player.city}, {player.state}
-                        {player.height && <> &middot; {player.height}</>}
-                        {player.preferredFoot && <> &middot; {player.preferredFoot} foot</>}
-                      </p>
-                      <p className="text-sm text-muted/80 mb-2">{player.level}</p>
-                      {player.lookingFor && (
-                        <p className="text-sm text-muted line-clamp-2">
-                          <span className="font-medium text-primary">Looking for:</span> {player.lookingFor}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </a>
-                {i === 5 && (
-                  <div className="mt-4">
-                    <AnytimeInlineCTA />
+            {visible.map((player) => (
+              <a
+                key={player.id}
+                href={`/guest-play/players/${player.slug}`}
+                className="group block bg-white rounded-2xl border border-border p-4 md:p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 relative"
+              >
+                {player.featured && (
+                  <div className="absolute top-4 right-4">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
+                      Featured
+                    </span>
                   </div>
                 )}
-              </div>
+                <div className="flex gap-4 md:gap-6">
+                  <div className="shrink-0">
+                    <PlayerAvatar
+                      src={player.teamPhoto}
+                      name={player.playerName}
+                      className="w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover border border-border"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      <Badge variant="blue">{player.position}</Badge>
+                      {player.secondaryPosition && <Badge variant="default">{player.secondaryPosition}</Badge>}
+                      <Badge variant={player.gender === "Boys" ? "blue" : "purple"}>{player.gender}</Badge>
+                      <Badge variant="default">{player.birthYear}</Badge>
+                    </div>
+                    <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary group-hover:text-accent-hover transition-colors mb-1">
+                      {player.playerName}
+                    </h3>
+                    <p className="text-muted text-sm mb-2">
+                      {player.currentClub && <>{player.currentClub} &middot; </>}
+                      {player.city}, {player.state}
+                      {player.height && <> &middot; {player.height}</>}
+                      {player.preferredFoot && <> &middot; {player.preferredFoot} foot</>}
+                    </p>
+                    <p className="text-sm text-muted/80 mb-2">{player.level}</p>
+                    {player.lookingFor && (
+                      <p className="text-sm text-muted line-clamp-2">
+                        <span className="font-medium text-primary">Looking for:</span> {player.lookingFor}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </a>
             ))}
           </div>
         )}
+
+        {/* Pagination */}
+        {!viewAll && totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8">
+            <button
+              onClick={() => { setPage(Math.max(1, page - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+              disabled={page === 1}
+              className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-surface transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              &larr; Prev
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                className={`w-10 h-10 rounded-xl text-sm font-medium transition-colors ${
+                  p === page ? "bg-primary text-white" : "border border-border hover:bg-surface"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+            <button
+              onClick={() => { setPage(Math.min(totalPages, page + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+              disabled={page === totalPages}
+              className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-surface transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Next &rarr;
+            </button>
+          </div>
+        )}
+
         <div className="mt-12"><AnytimeInlineCTA /></div>
       </div>
     </>
