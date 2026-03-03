@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { getTrainerBySlug, getTrainerSlugs, getListingOwner } from "@/lib/db";
-import { ManageListingButton } from "@/components/manage-listing-button";
+import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
@@ -180,7 +180,10 @@ export default async function TrainerDetailPage({ params }: Props) {
                   className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1 sm:p-1.5 bg-surface -mt-8 sm:-mt-10 relative z-10"
                 />
                 <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0">
-                  <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{trainer.name}</h1>
+                  <div className="flex items-center justify-between gap-2">
+                    <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{trainer.name}</h1>
+                    <EditSectionLink ownerId={ownerId} listingType="trainer" listingId={trainer.id} />
+                  </div>
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {trainer.specialty} {" \u00b7 "} {trainer.city}, {trainer.state}
                   </p>
@@ -210,7 +213,10 @@ export default async function TrainerDetailPage({ params }: Props) {
 
             {/* At a Glance */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-4">At a Glance</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[15px] font-bold text-primary">At a Glance</h3>
+                <EditSectionLink ownerId={ownerId} listingType="trainer" listingId={trainer.id} />
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-surface rounded-xl p-3.5 text-center">
                   <span className="text-xl leading-none block mb-1.5">&#9917;</span>
@@ -246,7 +252,10 @@ export default async function TrainerDetailPage({ params }: Props) {
             {/* Background & Credentials */}
             {(trainer.experience || trainer.credentials) && (
               <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 className="text-[15px] font-bold text-primary mb-4">Background &amp; Credentials</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-[15px] font-bold text-primary">Background &amp; Credentials</h3>
+                  <EditSectionLink ownerId={ownerId} listingType="trainer" listingId={trainer.id} />
+                </div>
                 <div className="space-y-4">
                   {trainer.experience && (
                     <div>
@@ -266,7 +275,10 @@ export default async function TrainerDetailPage({ params }: Props) {
 
             {/* Availability Schedule */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">Availability</h3>
+              <div className="flex items-center justify-between mb-3.5">
+                <h3 className="text-[15px] font-bold text-primary">Availability</h3>
+                <EditSectionLink ownerId={ownerId} listingType="trainer" listingId={trainer.id} />
+              </div>
               <div className="flex gap-2 flex-wrap">
                 {ALL_DAYS.map((day) => (
                   <span
@@ -289,7 +301,10 @@ export default async function TrainerDetailPage({ params }: Props) {
 
             {/* Photos & Video */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[15px] font-bold text-primary mb-3.5">Photos &amp; Video</h3>
+              <div className="flex items-center justify-between mb-3.5">
+                <h3 className="text-[15px] font-bold text-primary">Photos &amp; Video</h3>
+                <EditSectionLink ownerId={ownerId} listingType="trainer" listingId={trainer.id} />
+              </div>
               <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
                 {trainerPhotos.map((photo, i) => (
                   <img key={i} src={photo} alt={`Trainer photo ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-xl block" style={{ objectPosition: `center ${imgPos}%` }} />

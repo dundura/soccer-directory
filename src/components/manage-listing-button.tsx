@@ -90,3 +90,17 @@ export function ManageListingButton({ ownerId, listingType, listingId }: { owner
     </div>
   );
 }
+
+export function EditSectionLink({ ownerId, listingType, listingId }: { ownerId: string | null; listingType: string; listingId: string }) {
+  const { data: session } = useSession();
+  if (!session?.user?.id) return null;
+  const isOwner = session.user.id === ownerId;
+  const isAdmin = (session.user as { role?: string }).role === "admin";
+  if (!isOwner && !isAdmin) return null;
+  const href = isAdmin ? `/admin?editType=${listingType}&editId=${listingId}` : "/dashboard";
+  return (
+    <a href={href} className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors">
+      Edit
+    </a>
+  );
+}
