@@ -10,7 +10,7 @@ export function AnnouncementSection({
   ctaLabel,
 }: {
   heading?: string;
-  text: string;
+  text?: string;
   image?: string;
   ctaUrl?: string;
   ctaLabel?: string;
@@ -51,9 +51,11 @@ export function AnnouncementSection({
                 />
               </button>
             )}
-            <p className="text-sm sm:text-base leading-relaxed text-red-900/80 whitespace-pre-line">
-              {text}
-            </p>
+            {text && (
+              <p className="text-sm sm:text-base leading-relaxed text-red-900/80 whitespace-pre-line">
+                {text}
+              </p>
+            )}
             {ctaUrl && (
               <a
                 href={ctaUrl}

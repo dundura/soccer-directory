@@ -113,15 +113,15 @@ export default async function ServiceDetailPage({ params }: Props) {
             )}
 
             {/* Special Offers */}
-            {(service.announcementText || service.announcementText2 || service.announcementText3) && (
+            {(service.announcementHeading || service.announcementText || service.announcementImage || service.announcementHeading2 || service.announcementText2 || service.announcementImage2 || service.announcementHeading3 || service.announcementText3 || service.announcementImage3) && (
               <div className="space-y-4 mb-6">
-                {service.announcementText && (
+                {(service.announcementHeading || service.announcementText || service.announcementImage) && (
                   <AnnouncementSection heading={service.announcementHeading || "Special Offer"} text={service.announcementText} image={service.announcementImage} ctaUrl={normalizeUrl(service.announcementCtaUrl || service.website)} ctaLabel={service.announcementCta || "Learn More →"} />
                 )}
-                {service.announcementText2 && (
+                {(service.announcementHeading2 || service.announcementText2 || service.announcementImage2) && (
                   <AnnouncementSection heading={service.announcementHeading2 || "Special Offer"} text={service.announcementText2} image={service.announcementImage2} ctaUrl={normalizeUrl(service.announcementCtaUrl2 || service.website)} ctaLabel={service.announcementCta2 || "Learn More →"} />
                 )}
-                {service.announcementText3 && (
+                {(service.announcementHeading3 || service.announcementText3 || service.announcementImage3) && (
                   <AnnouncementSection heading={service.announcementHeading3 || "Special Offer"} text={service.announcementText3} image={service.announcementImage3} ctaUrl={normalizeUrl(service.announcementCtaUrl3 || service.website)} ctaLabel={service.announcementCta3 || "Learn More →"} />
                 )}
               </div>

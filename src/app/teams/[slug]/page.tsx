@@ -265,16 +265,16 @@ export default async function TeamDetailPage({ params }: Props) {
           </div>
 
           {/* ====== Special Announcements ====== */}
-          {(team.announcementText || team.announcementText2 || team.announcementText3) && (
+          {(team.announcementHeading || team.announcementText || team.announcementImage || team.announcementHeading2 || team.announcementText2 || team.announcementImage2 || team.announcementHeading3 || team.announcementText3 || team.announcementImage3) && (
             <div className="order-2 lg:order-none lg:col-start-2 space-y-4">
-              {team.announcementText && <AnnouncementSection heading={team.announcementHeading} text={team.announcementText} image={team.announcementImage} ctaUrl={normalizeUrl(team.announcementCtaUrl || club?.website)} ctaLabel={team.announcementCta || "Learn More →"} />}
-              {team.announcementText2 && <AnnouncementSection heading={team.announcementHeading2} text={team.announcementText2} image={team.announcementImage2} ctaUrl={normalizeUrl(team.announcementCtaUrl2 || club?.website)} ctaLabel={team.announcementCta2 || "Learn More →"} />}
-              {team.announcementText3 && <AnnouncementSection heading={team.announcementHeading3} text={team.announcementText3} image={team.announcementImage3} ctaUrl={normalizeUrl(team.announcementCtaUrl3 || club?.website)} ctaLabel={team.announcementCta3 || "Learn More →"} />}
+              {(team.announcementHeading || team.announcementText || team.announcementImage) && <AnnouncementSection heading={team.announcementHeading} text={team.announcementText} image={team.announcementImage} ctaUrl={normalizeUrl(team.announcementCtaUrl || club?.website)} ctaLabel={team.announcementCta || "Learn More →"} />}
+              {(team.announcementHeading2 || team.announcementText2 || team.announcementImage2) && <AnnouncementSection heading={team.announcementHeading2} text={team.announcementText2} image={team.announcementImage2} ctaUrl={normalizeUrl(team.announcementCtaUrl2 || club?.website)} ctaLabel={team.announcementCta2 || "Learn More →"} />}
+              {(team.announcementHeading3 || team.announcementText3 || team.announcementImage3) && <AnnouncementSection heading={team.announcementHeading3} text={team.announcementText3} image={team.announcementImage3} ctaUrl={normalizeUrl(team.announcementCtaUrl3 || club?.website)} ctaLabel={team.announcementCta3 || "Learn More →"} />}
             </div>
           )}
 
           {/* ====== At a Glance ====== */}
-          <div className={`${(team.announcementText || team.announcementText2 || team.announcementText3) ? "order-3" : "order-2"} lg:order-none lg:col-start-2 bg-white rounded-2xl p-4 sm:p-6 shadow-sm`}>
+          <div className={`${(team.announcementHeading || team.announcementText || team.announcementImage || team.announcementHeading2 || team.announcementText2 || team.announcementImage2 || team.announcementHeading3 || team.announcementText3 || team.announcementImage3) ? "order-3" : "order-2"} lg:order-none lg:col-start-2 bg-white rounded-2xl p-4 sm:p-6 shadow-sm`}>
               <div className="flex items-center justify-between mb-2.5 sm:mb-3.5">
                 <h3 className="text-[13px] sm:text-[15px] font-bold text-primary">At a Glance</h3>
                 <EditSectionLink ownerId={ownerId} listingType="team" listingId={team.id} />

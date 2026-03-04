@@ -133,15 +133,15 @@ export default async function TrainingAppDetailPage({ params }: Props) {
             </div>
 
             {/* Special Offers */}
-            {(app.announcementText || app.announcementText2 || app.announcementText3) && (
+            {(app.announcementHeading || app.announcementText || app.announcementImage || app.announcementHeading2 || app.announcementText2 || app.announcementImage2 || app.announcementHeading3 || app.announcementText3 || app.announcementImage3) && (
               <div className="space-y-4 mb-6">
-                {app.announcementText && (
+                {(app.announcementHeading || app.announcementText || app.announcementImage) && (
                   <AnnouncementSection heading={app.announcementHeading || "Special Offer"} text={app.announcementText} image={app.announcementImage} ctaUrl={normalizeUrl(app.announcementCtaUrl || app.website)} ctaLabel={app.announcementCta || "Learn More →"} />
                 )}
-                {app.announcementText2 && (
+                {(app.announcementHeading2 || app.announcementText2 || app.announcementImage2) && (
                   <AnnouncementSection heading={app.announcementHeading2 || "Special Offer"} text={app.announcementText2} image={app.announcementImage2} ctaUrl={normalizeUrl(app.announcementCtaUrl2 || app.website)} ctaLabel={app.announcementCta2 || "Learn More →"} />
                 )}
-                {app.announcementText3 && (
+                {(app.announcementHeading3 || app.announcementText3 || app.announcementImage3) && (
                   <AnnouncementSection heading={app.announcementHeading3 || "Special Offer"} text={app.announcementText3} image={app.announcementImage3} ctaUrl={normalizeUrl(app.announcementCtaUrl3 || app.website)} ctaLabel={app.announcementCta3 || "Learn More →"} />
                 )}
               </div>
