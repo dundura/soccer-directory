@@ -40,7 +40,7 @@ export default function AdminClient() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [tab, setTab] = useState<"users" | "listings">("users");
+  const [tab, setTab] = useState<"users" | "listings" | "food">("users");
   const [users, setUsers] = useState<User[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -263,6 +263,12 @@ export default function AdminClient() {
             >
               Listings ({listings.length})
             </button>
+            <button
+              onClick={() => setTab("food")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "food" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
+            >
+              Food Tracker
+            </button>
           </div>
 
           {/* Users Tab */}
@@ -456,7 +462,7 @@ export default function AdminClient() {
           </>
           )}
 
-          <FoodTracker />
+          {tab === "food" && <FoodTracker />}
         </div>
       </div>
     </>
