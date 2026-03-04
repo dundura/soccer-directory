@@ -1517,6 +1517,12 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
             /* Logo URL with preview */
             ) : field.name === "logo" ? (
               <div className="space-y-2">
+                <ImageUpload onUploaded={(url) => handleChange(field.name, url)} />
+                <div className="flex items-center gap-2 text-xs text-muted">
+                  <span className="border-t border-border flex-1" />
+                  <span>or paste a URL</span>
+                  <span className="border-t border-border flex-1" />
+                </div>
                 <input
                   type="url"
                   value={formData[field.name] || ""}
