@@ -190,6 +190,7 @@ export default async function TrainerDetailPage({ params }: Props) {
                     <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{trainer.name}</h1>
                     <EditSectionLink ownerId={ownerId} listingType="trainer" listingId={trainer.id} />
                   </div>
+                  {trainer.tagline && <p className="text-sm text-accent font-medium mt-1">{trainer.tagline}</p>}
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {trainer.specialty} {" \u00b7 "} {trainer.city}, {trainer.state}
                   </p>

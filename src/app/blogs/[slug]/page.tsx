@@ -121,6 +121,7 @@ export default async function BlogPage({ params }: Props) {
                 <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white">{blog.name}</h1>
                 <EditSectionLink ownerId={ownerId} listingType="blog" listingId={blog.id} />
               </div>
+              {blog.tagline && <p className="text-white/80 text-sm font-medium">{blog.tagline}</p>}
               <p className="text-white/70 text-sm">By {blog.authorName} &middot; {blog.city}, {blog.state}</p>
             </div>
           </div>

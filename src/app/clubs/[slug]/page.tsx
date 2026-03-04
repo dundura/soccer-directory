@@ -203,6 +203,7 @@ export default async function ClubDetailPage({ params }: Props) {
                   <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{club.name}</h1>
                   <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
                 </div>
+                {club.tagline && <p className="text-sm text-accent font-medium mt-1">{club.tagline}</p>}
                 <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                   {club.city}, {club.state}
                 </p>

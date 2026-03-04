@@ -79,6 +79,7 @@ export default async function PlayerDetailPage({ params }: Props) {
                   <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold text-white">{player.playerName}</h1>
                   <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
                 </div>
+                {player.tagline && <p className="text-white/80 text-sm font-medium">{player.tagline}</p>}
                 <p className="text-white/60 text-lg">
                   {player.currentClub && <>{player.currentClub} &middot; </>}
                   {player.city}, {player.state}

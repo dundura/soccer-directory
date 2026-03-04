@@ -52,6 +52,7 @@ export default async function EbookDetailPage({ params }: Props) {
                 <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold">{item.name}</h1>
                 <EditSectionLink ownerId={ownerId} listingType="ebook" listingId={item.id} />
               </div>
+              {item.tagline && <p className="text-white/80 text-sm font-medium">{item.tagline}</p>}
               <p className="text-white/60 text-lg">{item.city}, {item.state}</p>
             </div>
             <ManageListingButton ownerId={ownerId} listingType="ebook" listingId={item.id} />

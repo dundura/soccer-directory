@@ -94,6 +94,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                   </h1>
                   <EditSectionLink ownerId={ownerId} listingType="service" listingId={service.id} />
                 </div>
+                {service.tagline && <p className="text-sm text-accent font-medium mt-1">{service.tagline}</p>}
                 <p className="text-sm text-muted mt-1">
                   by {service.providerName} &middot; {service.city}, {service.state}
                 </p>

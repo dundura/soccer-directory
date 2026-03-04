@@ -907,7 +907,8 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
   const [error, setError] = useState("");
   const [openSections, setOpenSections] = useState<Set<number>>(new Set());
 
-  const fields = FIELDS[type];
+  const baseFields = FIELDS[type];
+  const fields = [baseFields[0], { name: "tagline", label: "Tagline (short subtitle shown on listing page)" } as FieldDef, ...baseFields.slice(1)];
 
   function handleChange(name: string, value: string) {
     setFormData((prev) => ({ ...prev, [name]: value }));

@@ -117,6 +117,7 @@ export default async function FacebookGroupPage({ params }: Props) {
                 <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white">{group.name}</h1>
                 <EditSectionLink ownerId={ownerId} listingType="fbgroup" listingId={group.id} />
               </div>
+              {group.tagline && <p className="text-white/80 text-sm font-medium">{group.tagline}</p>}
               <p className="text-white/70 text-sm">Admin: {group.adminName}{group.city && group.state ? ` \u00b7 ${group.city}, ${group.state}` : ""}</p>
             </div>
           </div>

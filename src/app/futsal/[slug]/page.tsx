@@ -172,6 +172,7 @@ export default async function FutsalDetailPage({ params }: Props) {
                   <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{team.name}</h1>
                   <EditSectionLink ownerId={ownerId} listingType="futsal" listingId={team.id} />
                 </div>
+                {team.tagline && <p className="text-sm text-accent font-medium mt-1">{team.tagline}</p>}
                 <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                   {team.clubName ? `${team.clubName} \u00b7 ` : ""}{team.city}, {team.state}
                 </p>

@@ -121,6 +121,7 @@ export default async function PodcastPage({ params }: Props) {
                 <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white">{podcast.name}</h1>
                 <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
               </div>
+              {podcast.tagline && <p className="text-white/80 text-sm font-medium">{podcast.tagline}</p>}
               <p className="text-white/70 text-sm">Hosted by {podcast.hostName} &middot; {podcast.city}, {podcast.state}</p>
             </div>
           </div>

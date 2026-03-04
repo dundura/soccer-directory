@@ -201,6 +201,7 @@ export default async function TryoutDetailPage({ params }: Props) {
                     <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{tryout.name}</h1>
                     <EditSectionLink ownerId={ownerId} listingType="tryout" listingId={tryout.id} />
                   </div>
+                  {tryout.tagline && <p className="text-sm text-accent font-medium mt-1">{tryout.tagline}</p>}
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {tryout.organizerName}
                     {tryout.clubName && <> {" \u00b7 "} {tryout.clubName}</>}

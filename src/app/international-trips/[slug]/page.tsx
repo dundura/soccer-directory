@@ -50,6 +50,7 @@ export default async function TripDetailPage({ params }: Props) {
                 <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold">{trip.tripName}</h1>
                 <EditSectionLink ownerId={ownerId} listingType="trip" listingId={trip.id} />
               </div>
+              {trip.tagline && <p className="text-white/80 text-sm font-medium">{trip.tagline}</p>}
               <p className="text-white/60 text-lg">{trip.destination} &middot; {trip.organizer}</p>
             </div>
             <ManageListingButton ownerId={ownerId} listingType="trip" listingId={trip.id} />

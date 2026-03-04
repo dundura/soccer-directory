@@ -51,6 +51,7 @@ export default async function GuestDetailPage({ params }: Props) {
                 <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold">{opp.teamName}</h1>
                 <EditSectionLink ownerId={ownerId} listingType="guest" listingId={opp.id} />
               </div>
+              {opp.tagline && <p className="text-white/80 text-sm font-medium">{opp.tagline}</p>}
               <p className="text-white/60 text-lg">{opp.tournament} &middot; {opp.city}, {opp.state}</p>
             </div>
             <ManageListingButton ownerId={ownerId} listingType="guest" listingId={opp.id} />

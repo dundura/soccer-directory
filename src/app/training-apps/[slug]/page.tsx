@@ -94,6 +94,7 @@ export default async function TrainingAppDetailPage({ params }: Props) {
                   </h1>
                   <EditSectionLink ownerId={ownerId} listingType="trainingapp" listingId={app.id} />
                 </div>
+                {app.tagline && <p className="text-sm text-accent font-medium mt-1">{app.tagline}</p>}
                 <p className="text-sm text-muted mt-1">
                   by {app.providerName} &middot; {app.city}, {app.state}
                 </p>

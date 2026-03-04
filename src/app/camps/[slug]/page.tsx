@@ -192,6 +192,7 @@ export default async function CampDetailPage({ params }: Props) {
                     <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{camp.name}</h1>
                     <EditSectionLink ownerId={ownerId} listingType="camp" listingId={camp.id} />
                   </div>
+                  {camp.tagline && <p className="text-sm text-accent font-medium mt-1">{camp.tagline}</p>}
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {camp.organizerName} {" \u00b7 "} {camp.city}, {camp.state}
                   </p>

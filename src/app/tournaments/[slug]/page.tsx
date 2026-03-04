@@ -175,6 +175,7 @@ export default async function TournamentDetailPage({ params }: Props) {
                     <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{tournament.name}</h1>
                     <EditSectionLink ownerId={ownerId} listingType="tournament" listingId={tournament.id} />
                   </div>
+                  {tournament.tagline && <p className="text-sm text-accent font-medium mt-1">{tournament.tagline}</p>}
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {tournament.organizer} {" \u00b7 "} {tournament.city}, {tournament.state}
                   </p>
