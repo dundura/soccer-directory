@@ -27,6 +27,7 @@ const TYPE_LABELS: Record<string, string> = {
   ebook: "Ebook",
   giveaway: "Free Giveaway",
   blog: "Blog",
+  youtube: "YouTube Channel",
 };
 
 const TYPE_PATHS: Record<string, string> = {
@@ -38,6 +39,7 @@ const TYPE_PATHS: Record<string, string> = {
   tryout: "tryouts",
   trainingapp: "training-apps", ebook: "ebooks", giveaway: "giveaways",
   blog: "blogs",
+  youtube: "youtube-channels",
 };
 
 export default function AdminClient() {

@@ -24,6 +24,7 @@ const TYPE_LABELS: Record<string, string> = {
   tryout: "Tryout",
   trainingapp: "Training App",
   blog: "Blog",
+  youtube: "YouTube Channel",
 };
 
 // ── Email notification ──────────────────────────────────────
@@ -147,6 +148,7 @@ function typeToPath(type: string): string {
     tryout: "tryouts",
     trainingapp: "training-apps",
     blog: "blogs",
+    youtube: "youtube-channels",
   };
   return paths[type] || type;
 }

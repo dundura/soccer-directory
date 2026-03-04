@@ -27,6 +27,7 @@ const TYPE_PATHS: Record<string, string> = {
   ebook: "ebooks",
   giveaway: "giveaways",
   blog: "blogs",
+  youtube: "youtube-channels",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -50,6 +51,7 @@ const TYPE_LABELS: Record<string, string> = {
   ebook: "Ebook",
   giveaway: "Free Giveaway",
   blog: "Blog",
+  youtube: "YouTube Channel",
 };
 
 type Listing = { id: string; slug: string; name: string; status: string; type: string };

@@ -21,6 +21,7 @@ import {
   createTryoutListing,
   createTrainingAppListing,
   createBlogListing,
+  createYoutubeChannelListing,
   updateListing,
   archiveListing,
   deleteListing,
@@ -128,6 +129,9 @@ export async function POST(req: Request) {
       case "giveaway":
         data.category = "Giveaway";
         slug = await createMarketplaceListing(data, session.user.id);
+        break;
+      case "youtube":
+        slug = await createYoutubeChannelListing(data, session.user.id);
         break;
       default:
         return NextResponse.json({ error: "Invalid listing type" }, { status: 400 });

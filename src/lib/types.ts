@@ -355,6 +355,12 @@ export interface TopEpisode {
   url: string;
 }
 
+export interface FeaturedVideo {
+  title: string;
+  description?: string;
+  url: string;
+}
+
 export interface Podcast extends ProfileFields {
   id: string;
   slug: string;
@@ -503,7 +509,32 @@ export interface Blog extends ProfileFields {
   updatedAt?: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog";
+export interface YoutubeChannel extends ProfileFields {
+  id: string;
+  slug: string;
+  name: string;
+  creatorName: string;
+  category: string;
+  city: string;
+  state: string;
+  country?: string;
+  description?: string;
+  website?: string;
+  channelUrl?: string;
+  subscribeUrl?: string;
+  email?: string;
+  featuredVideos?: FeaturedVideo[];
+  videoUrl2?: string;
+  videoUrl3?: string;
+  creatorHeading?: string;
+  creatorImage?: string;
+  creatorBio?: string;
+  featured: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";

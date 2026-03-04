@@ -61,6 +61,7 @@ const navGroups: NavGroup[] = [
     links: [
       { label: "Blog", href: "/blog" },
       { label: "Podcasts", href: "/podcasts" },
+      { label: "YouTube Channels", href: "/youtube-channels" },
       { label: "Soccer Blogs", href: "/blogs" },
       { label: "Facebook Groups", href: "/facebook-groups" },
       { label: "Forum", href: "/forum" },

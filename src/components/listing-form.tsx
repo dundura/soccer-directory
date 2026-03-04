@@ -82,6 +82,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   ebook: "A free soccer ebook for players, coaches, or parents.",
   giveaway: "A free soccer giveaway for the community.",
   blog: "A soccer blog covering youth development, coaching insights, and the beautiful game.",
+  youtube: "A soccer YouTube channel covering skills tutorials, match analysis, coaching tips, and the beautiful game.",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -534,6 +535,39 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl2", label: "Video 2 (YouTube/Vimeo)" },
     { name: "videoUrl3", label: "Video 3 (YouTube/Vimeo)" },
   ],
+  youtube: [
+    { name: "name", label: "Channel Name", required: true },
+    { name: "creatorName", label: "Creator Name", required: true },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "category", label: "Category", required: true, options: ["Youth Soccer", "Coaching", "Skills & Tutorials", "Match Analysis", "College Recruiting", "Professional Soccer", "Soccer Culture", "Fitness & Training", "Other"] },
+    { name: "description", label: "About the Channel", required: true, type: "textarea" },
+    { name: "website", label: "Website" },
+    { name: "channelUrl", label: "YouTube Channel URL" },
+    { name: "subscribeUrl", label: "Subscribe Link" },
+    { name: "email", label: "Contact Email", type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "_socials", label: "Social Media", type: "heading" },
+    { name: "facebook", label: "Facebook URL" },
+    { name: "instagram", label: "Instagram URL" },
+    { name: "youtube", label: "YouTube URL" },
+    { name: "_creator", label: "Meet the Creator", type: "heading" },
+    { name: "creatorHeading", label: "Section Title (default: Meet the Creator)" },
+    { name: "creatorImage", label: "Creator Photo", type: "image" },
+    { name: "creatorBio", label: "Creator Bio", type: "textarea" },
+    { name: "_videos", label: "Featured Videos", type: "heading" },
+    { name: "featuredVideos", label: "Featured Videos (up to 10)", type: "top-episodes" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
+    { name: "teamPhoto", label: "Channel Art / Sidebar Image", type: "image" },
+    { name: "logo", label: "Logo URL" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video 1 (YouTube/Vimeo)" },
+    { name: "videoUrl2", label: "Video 2 (YouTube/Vimeo)" },
+    { name: "videoUrl3", label: "Video 3 (YouTube/Vimeo)" },
+  ],
   fbgroup: [
     { name: "name", label: "Group Name", required: true },
     { name: "adminName", label: "Admin / Creator Name", required: true },
@@ -713,6 +747,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   ebook: "Ebook",
   giveaway: "Free Giveaway",
   blog: "Blog",
+  youtube: "YouTube Channel",
 };
 
 // ── Shared styles ──────────────────────────────────────────────
