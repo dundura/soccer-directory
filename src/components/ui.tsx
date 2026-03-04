@@ -25,6 +25,7 @@ export function ListingCard({
   featured,
   cta,
   image,
+  imagePosition,
 }: {
   href: string;
   title: string;
@@ -34,6 +35,7 @@ export function ListingCard({
   featured?: boolean;
   cta?: string;
   image?: string;
+  imagePosition?: number;
 }) {
   return (
     <a
@@ -42,7 +44,7 @@ export function ListingCard({
     >
       {image && (
         <div className="w-full h-40 overflow-hidden bg-surface flex items-center justify-center">
-          <img src={image} alt={title} className="w-full h-full object-cover object-[center_30%] group-hover:scale-105 transition-transform duration-300" />
+          <img src={image} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={{ objectPosition: `center ${imagePosition ?? 30}%` }} />
         </div>
       )}
       <div className="p-6">

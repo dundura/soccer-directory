@@ -95,6 +95,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
                   { label: "Entry Fee", value: tournament.entryFee },
                 ]}
                 featured={tournament.featured}
+                imagePosition={tournament.imagePosition}
                 cta="View Tournament"
               />
             ))}

@@ -145,6 +145,7 @@ export default async function HomePage() {
                   { label: "Ages", value: club.ageGroups },
                 ]}
                 featured
+                imagePosition={club.imagePosition}
                 cta="View Club"
               />
             ))}
@@ -180,6 +181,7 @@ export default async function HomePage() {
                   { label: "Season", value: team.season },
                 ]}
                 featured
+                imagePosition={team.imagePosition}
                 cta="View Team"
               />
             ))}
@@ -216,6 +218,7 @@ export default async function HomePage() {
                     { label: "Season", value: team.season },
                   ]}
                   featured
+                  imagePosition={team.imagePosition}
                   cta="View Team"
                 />
               ))}
@@ -255,6 +258,7 @@ export default async function HomePage() {
                   { label: "Area", value: trainer.serviceArea },
                 ]}
                 featured={trainer.featured}
+                imagePosition={trainer.imagePosition}
                 cta="View Trainer"
               />
             ))}
@@ -288,6 +292,7 @@ export default async function HomePage() {
                   { label: "Price", value: camp.price },
                 ]}
                 featured={camp.featured}
+                imagePosition={camp.imagePosition}
                 cta="View Camp"
               />
             ))}
@@ -321,6 +326,7 @@ export default async function HomePage() {
                   { label: "Entry Fee", value: tournament.entryFee },
                 ]}
                 featured={tournament.featured}
+                imagePosition={tournament.imagePosition}
                 cta="View Tournament"
               />
             ))}

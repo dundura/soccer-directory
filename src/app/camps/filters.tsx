@@ -115,6 +115,7 @@ export function CampFilters({ camps }: { camps: Camp[] }) {
                     { label: "Price", value: camp.price },
                   ]}
                   featured={camp.featured}
+                  imagePosition={camp.imagePosition}
                   cta="View Camp"
                 />
               ))}

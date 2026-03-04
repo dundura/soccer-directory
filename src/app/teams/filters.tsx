@@ -127,6 +127,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                       { label: "Season", value: team.season },
                     ]}
                     featured={team.featured}
+                    imagePosition={team.imagePosition}
                     cta="View Team"
                   />
               ))}

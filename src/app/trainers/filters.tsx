@@ -113,6 +113,7 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
                     { label: "Area", value: trainer.serviceArea.length > 50 ? trainer.serviceArea.slice(0, 50) + "…" : trainer.serviceArea },
                   ]}
                   featured={trainer.featured}
+                  imagePosition={trainer.imagePosition}
                   cta="View Trainer"
                 />
               ))}

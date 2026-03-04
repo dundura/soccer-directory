@@ -79,6 +79,7 @@ export default async function GuestPlayPage() {
                   { label: "Positions Needed", value: opp.positionsNeeded },
                 ]}
                 featured={opp.featured}
+                imagePosition={opp.imagePosition}
                 cta="View Details"
               />
             ))}

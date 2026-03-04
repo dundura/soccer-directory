@@ -125,6 +125,7 @@ export function TrainingAppFilters({ apps }: { apps: TrainingApp[] }) {
                     { label: "Location", value: `${app.city}, ${app.state}` },
                   ]}
                   featured={app.featured}
+                  imagePosition={app.imagePosition}
                   cta="View Details"
                 />
               ))}

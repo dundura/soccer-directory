@@ -95,6 +95,7 @@ export function FutsalFilters({ teams }: { teams: FutsalTeam[] }) {
                   { label: "Season", value: team.season },
                 ]}
                 featured={team.featured}
+                imagePosition={team.imagePosition}
                 cta="View Team"
               />
             ))}

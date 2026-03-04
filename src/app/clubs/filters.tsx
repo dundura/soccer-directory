@@ -117,6 +117,7 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
                       { label: "Ages", value: club.ageGroups },
                     ]}
                     featured={club.featured}
+                    imagePosition={club.imagePosition}
                     cta="View Club"
                   />
               ))}

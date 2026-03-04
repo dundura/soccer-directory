@@ -66,6 +66,7 @@ export default async function InternationalTripsPage() {
                   ...(trip.spotsAvailable ? [{ label: "Spots Available", value: trip.spotsAvailable }] : []),
                 ]}
                 featured={trip.featured}
+                imagePosition={trip.imagePosition}
                 cta="View Details"
               />
             ))}

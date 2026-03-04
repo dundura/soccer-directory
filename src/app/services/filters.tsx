@@ -127,6 +127,7 @@ export function ServiceFilters({ services }: { services: Service[] }) {
                     { label: "Location", value: `${service.city}, ${service.state}` },
                   ]}
                   featured={service.featured}
+                  imagePosition={service.imagePosition}
                   cta="View Details"
                 />
               ))}

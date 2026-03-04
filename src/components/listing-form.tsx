@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ListingType } from "@/lib/types";
+import { ImageUpload } from "@/components/image-upload";
 
 // ── Constants ──────────────────────────────────────────────────
 
@@ -760,6 +761,12 @@ const selectClass = inputClass + " bg-white";
 function ImageField({ value, defaultImage, onChange }: { value: string; defaultImage: string; onChange: (v: string) => void }) {
   return (
     <div className="space-y-2">
+      <ImageUpload onUploaded={onChange} />
+      <div className="flex items-center gap-2 text-xs text-muted">
+        <span className="border-t border-border flex-1" />
+        <span>or paste a URL</span>
+        <span className="border-t border-border flex-1" />
+      </div>
       <input
         type="url"
         value={value}
@@ -841,6 +848,12 @@ function HeroImageField({ value, defaultImage, onChange, imagePosition }: { valu
 
   return (
     <div className="space-y-3">
+      <ImageUpload onUploaded={onChange} />
+      <div className="flex items-center gap-2 text-xs text-muted">
+        <span className="border-t border-border flex-1" />
+        <span>or paste a URL</span>
+        <span className="border-t border-border flex-1" />
+      </div>
       <input
         type="url"
         value={imageUrl}
@@ -1246,7 +1259,14 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                     </div>
                   );
                 })}
-                <p className="text-xs text-muted">Add up to 5 photo URLs</p>
+                <ImageUpload onUploaded={(url) => {
+                  let arr: string[] = [];
+                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  if (arr.length < 5) {
+                    handleChange(field.name, JSON.stringify([...arr, url]));
+                  }
+                }} />
+                <p className="text-xs text-muted">Upload or paste up to 5 photo URLs</p>
               </div>
 
             /* Media Links (up to 5 — title + URL) */
