@@ -18,6 +18,7 @@ export interface ProfileFields {
   mediaLinks?: MediaLink[];
   imagePosition?: number;
   heroImagePosition?: number;
+  tagline?: string;
 }
 
 export interface Club extends ProfileFields {
@@ -290,6 +291,7 @@ export interface MarketplaceItem {
   imageUrl?: string;
   photos?: string[];
   aboutAuthor?: string;
+  tagline?: string;
   featured: boolean;
   createdAt: string;
 }
