@@ -1785,13 +1785,13 @@ export async function deleteCrmGroup(id: number) {
 
 // ── Admin Todos ──────────────────────────────────────────────
 export async function getAdminTodos() {
-  return await sql`SELECT * FROM admin_todos ORDER BY created_at DESC`;
+  return await sql`SELECT * FROM admin_todos ORDER BY project ASC, created_at DESC`;
 }
-export async function addAdminTodo(item: string, notes: string) {
-  await sql`INSERT INTO admin_todos (item, notes) VALUES (${item}, ${notes || ''})`;
+export async function addAdminTodo(item: string, notes: string, project: string) {
+  await sql`INSERT INTO admin_todos (item, notes, project) VALUES (${item}, ${notes || ''}, ${project || ''})`;
 }
 export async function updateAdminTodo(id: number, data: Record<string, string>) {
-  await sql`UPDATE admin_todos SET item=${data.item}, notes=${data.notes || ''}, status=${data.status || 'pending'} WHERE id=${id}`;
+  await sql`UPDATE admin_todos SET item=${data.item}, notes=${data.notes || ''}, status=${data.status || 'pending'}, project=${data.project ?? ''} WHERE id=${id}`;
 }
 export async function deleteAdminTodo(id: number) {
   await sql`DELETE FROM admin_todos WHERE id = ${id}`;

@@ -22,9 +22,9 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     if (!(await requireAdmin())) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    const { item, notes } = await req.json();
+    const { item, notes, project } = await req.json();
     if (!item) return NextResponse.json({ error: "Item required" }, { status: 400 });
-    await addAdminTodo(item, notes || "");
+    await addAdminTodo(item, notes || "", project || "");
     return NextResponse.json({ success: true });
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : "Failed" }, { status: 500 });
