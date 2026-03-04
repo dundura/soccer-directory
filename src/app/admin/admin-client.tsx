@@ -5,6 +5,10 @@ import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ListingForm } from "@/components/listing-form";
 import { FoodTracker } from "@/components/food-tracker";
+import { AdminCRM } from "@/components/admin-crm";
+import { AdminTodos } from "@/components/admin-todos";
+import { AdminResources } from "@/components/admin-resources";
+import { AdminContacts } from "@/components/admin-contacts";
 import type { ListingType } from "@/lib/types";
 
 type User = { id: string; name: string; email: string; role: string; createdAt: string };
@@ -40,7 +44,7 @@ export default function AdminClient() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [tab, setTab] = useState<"users" | "listings" | "food">("users");
+  const [tab, setTab] = useState<"users" | "listings" | "crm" | "contacts" | "todos" | "resources" | "food">("users");
   const [users, setUsers] = useState<User[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -217,40 +221,8 @@ export default function AdminClient() {
             </div>
           ) : (
           <>
-          {/* Hero Tagline Setting */}
-          <div className="bg-surface rounded-2xl p-5 mb-6">
-            <label className="block text-sm font-bold text-primary mb-2">Homepage Tagline <span className="font-normal text-muted">(leave blank for random)</span></label>
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  value={heroTagline}
-                  onChange={(e) => { if (e.target.value.length <= 120) { setHeroTagline(e.target.value); setTaglineSaved(false); } }}
-                  placeholder="e.g. Find the perfect youth soccer team, club, or coach"
-                  maxLength={120}
-                  className="w-full px-4 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent pr-16"
-                />
-                <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs ${heroTagline.length > 100 ? "text-amber-600" : "text-muted"}`}>
-                  {heroTagline.length}/120
-                </span>
-              </div>
-              <button
-                onClick={async () => {
-                  setTaglineSaving(true);
-                  await fetch("/api/admin", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "updateSetting", key: "hero_tagline", value: heroTagline }) });
-                  setTaglineSaving(false);
-                  setTaglineSaved(true);
-                }}
-                disabled={taglineSaving}
-                className="px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-light transition-colors disabled:opacity-50 shrink-0"
-              >
-                {taglineSaving ? "Saving..." : taglineSaved ? "Saved" : "Save"}
-              </button>
-            </div>
-          </div>
-
           {/* Tabs */}
-          <div className="flex gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-6">
             <button
               onClick={() => setTab("users")}
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "users" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
@@ -262,6 +234,30 @@ export default function AdminClient() {
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "listings" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
             >
               Listings ({listings.length})
+            </button>
+            <button
+              onClick={() => setTab("crm")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "crm" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
+            >
+              CRM
+            </button>
+            <button
+              onClick={() => setTab("contacts")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "contacts" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
+            >
+              Contacts
+            </button>
+            <button
+              onClick={() => setTab("todos")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "todos" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
+            >
+              Todo List
+            </button>
+            <button
+              onClick={() => setTab("resources")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "resources" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
+            >
+              Resources
             </button>
             <button
               onClick={() => setTab("food")}
@@ -462,6 +458,10 @@ export default function AdminClient() {
           </>
           )}
 
+          {tab === "crm" && <AdminCRM />}
+          {tab === "contacts" && <AdminContacts />}
+          {tab === "todos" && <AdminTodos />}
+          {tab === "resources" && <AdminResources />}
           {tab === "food" && <FoodTracker />}
         </div>
       </div>
