@@ -736,6 +736,51 @@ export async function updateListingFeatured(type: string, id: string, featured: 
   }
 }
 
+// ── Inline Patch (single field) ──────────────────────────────
+
+const TYPE_TO_TABLE: Record<string, string> = {
+  club: "clubs", team: "teams", trainer: "trainers", camp: "camps",
+  guest: "guest_opportunities", tournament: "tournaments", futsal: "futsal_teams",
+  trip: "international_trips", marketplace: "marketplace", player: "player_profiles",
+  podcast: "podcasts", fbgroup: "facebook_groups", service: "services",
+  tryout: "tryouts", trainingapp: "training_apps", blog: "blogs", youtube: "youtube_channels",
+};
+
+const FIELD_TO_COLUMN: Record<string, string> = {
+  name: "name", description: "description", tagline: "tagline",
+  aboutAuthor: "about_author", price: "price", website: "website",
+  email: "email", phone: "phone", providerName: "provider_name",
+  hostName: "host_name", creatorName: "creator_name",
+  organizerName: "organizer_name", organizer: "organizer",
+  coach: "coach", specialty: "specialty", experience: "experience",
+  credentials: "credentials", priceRange: "price_range",
+  serviceArea: "service_area", category: "category",
+  teamName: "team_name", tripName: "trip_name", playerName: "player_name",
+  hostBio: "host_bio", creatorBio: "creator_bio", authorBio: "author_bio",
+  hostHeading: "host_heading", creatorHeading: "creator_heading",
+};
+
+export async function patchListingField(
+  type: string, id: string, field: string, value: string, userId?: string
+): Promise<boolean> {
+  type = normalizeType(type);
+  const table = TYPE_TO_TABLE[type];
+  const column = FIELD_TO_COLUMN[field];
+  if (!table || !column) return false;
+
+  const val = value || null;
+  // table and column come from hardcoded maps — safe to build tagged template
+  // neon() only supports tagged templates, so we construct TemplateStringsArray manually
+  const strings = userId
+    ? [`UPDATE ${table} SET ${column} = `, `, updated_at = NOW() WHERE id = `, ` AND user_id = `, ` RETURNING id`]
+    : [`UPDATE ${table} SET ${column} = `, `, updated_at = NOW() WHERE id = `, ` RETURNING id`];
+  Object.defineProperty(strings, "raw", { value: strings });
+  const rows = userId
+    ? await sql(strings as unknown as TemplateStringsArray, val, id, userId)
+    : await sql(strings as unknown as TemplateStringsArray, val, id);
+  return rows.length > 0;
+}
+
 // ── Listings by User ─────────────────────────────────────────
 export async function getListingsByUserId(userId: string) {
   const [clubRows, teamRows, trainerRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows, podcastRows, fbgroupRows, serviceRows, tryoutRows, trainingAppRows, blogRows, youtubeRows] = await Promise.all([

@@ -1,5 +1,6 @@
 import { getTrainingAppBySlug, getTrainingAppSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { AnnouncementSection } from "@/components/announcement-section";
@@ -88,13 +89,10 @@ export default async function TrainingAppDetailPage({ params }: Props) {
                 <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold mb-2">
                   {app.category}
                 </span>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight">
-                    {app.name}
-                  </h1>
-                  <EditSectionLink ownerId={ownerId} listingType="trainingapp" listingId={app.id} />
-                </div>
-                {app.tagline && <p className="text-sm text-accent font-medium mt-1">{app.tagline}</p>}
+                <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="name" value={app.name} tag="h1" className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight" />
+                {app.tagline && (
+                  <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="tagline" value={app.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                )}
                 <p className="text-sm text-muted mt-1">
                   by {app.providerName} &middot; {app.city}, {app.state}
                 </p>
@@ -107,9 +105,9 @@ export default async function TrainingAppDetailPage({ params }: Props) {
             </div>
 
             {app.description && (
-              <p className="text-gray-600 leading-relaxed whitespace-pre-line mb-6">
-                {app.description}
-              </p>
+              <div className="mb-6">
+                <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="description" value={app.description} tag="p" className="text-gray-600 leading-relaxed whitespace-pre-line" multiline />
+              </div>
             )}
 
             {/* Action Buttons */}
@@ -178,11 +176,8 @@ export default async function TrainingAppDetailPage({ params }: Props) {
             {/* About the Author */}
             {app.aboutAuthor && (
               <div className="border-t border-border pt-6 mt-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight">About the Author</h2>
-                  <EditSectionLink ownerId={ownerId} listingType="trainingapp" listingId={app.id} />
-                </div>
-                <p className="text-gray-600 leading-relaxed whitespace-pre-line">{app.aboutAuthor}</p>
+                <h2 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight mb-3">About the Author</h2>
+                <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="aboutAuthor" value={app.aboutAuthor} tag="p" className="text-gray-600 leading-relaxed whitespace-pre-line" multiline />
               </div>
             )}
 

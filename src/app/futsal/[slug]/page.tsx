@@ -1,5 +1,6 @@
 import { getFutsalTeamBySlug, getFutsalTeamSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { ReviewSection } from "@/components/review-section";
@@ -168,16 +169,17 @@ export default async function FutsalDetailPage({ params }: Props) {
                 className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10"
               />
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{team.name}</h1>
-                  <EditSectionLink ownerId={ownerId} listingType="futsal" listingId={team.id} />
-                </div>
-                {team.tagline && <p className="text-sm text-accent font-medium mt-1">{team.tagline}</p>}
+                <InlineEditField ownerId={ownerId} listingType="futsal" listingId={team.id} field="name" value={team.name} tag="h1" className="text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+                {team.tagline && (
+                  <InlineEditField ownerId={ownerId} listingType="futsal" listingId={team.id} field="tagline" value={team.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                )}
                 <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                   {team.clubName ? `${team.clubName} \u00b7 ` : ""}{team.city}, {team.state}
                 </p>
                 {team.description && (
-                  <p className="text-sm leading-relaxed text-gray-500">{team.description}</p>
+                  <div className="mb-0">
+                    <InlineEditField ownerId={ownerId} listingType="futsal" listingId={team.id} field="description" value={team.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                  </div>
                 )}
                 <div className="flex gap-2.5 mt-[18px] flex-wrap">
                   {team.lookingForPlayers && (

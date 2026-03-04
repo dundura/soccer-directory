@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getCampBySlug, getCampSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
@@ -188,16 +189,17 @@ export default async function CampDetailPage({ params }: Props) {
                   className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10 bg-white"
                 />
                 <div className="flex-1 min-w-0 relative z-20">
-                  <div className="flex items-center justify-between gap-2">
-                    <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{camp.name}</h1>
-                    <EditSectionLink ownerId={ownerId} listingType="camp" listingId={camp.id} />
-                  </div>
-                  {camp.tagline && <p className="text-sm text-accent font-medium mt-1">{camp.tagline}</p>}
+                  <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="name" value={camp.name} tag="h1" className="text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+                  {camp.tagline && (
+                    <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="tagline" value={camp.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                  )}
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {camp.organizerName} {" \u00b7 "} {camp.city}, {camp.state}
                   </p>
                   {camp.description && (
-                    <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{camp.description}</p>
+                    <div className="mb-0">
+                      <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="description" value={camp.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                    </div>
                   )}
                   <div className="flex gap-2.5 mt-[18px] flex-wrap">
                     {camp.registrationUrl ? (

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getTryoutBySlug, getTryoutSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { ReviewSection } from "@/components/review-section";
@@ -197,18 +198,19 @@ export default async function TryoutDetailPage({ params }: Props) {
                   className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-8 sm:-mt-10 relative z-10 bg-white"
                 />
                 <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0 relative z-20">
-                  <div className="flex items-center justify-between">
-                    <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{tryout.name}</h1>
-                    <EditSectionLink ownerId={ownerId} listingType="tryout" listingId={tryout.id} />
-                  </div>
-                  {tryout.tagline && <p className="text-sm text-accent font-medium mt-1">{tryout.tagline}</p>}
+                  <InlineEditField ownerId={ownerId} listingType="tryout" listingId={tryout.id} field="name" value={tryout.name} tag="h1" className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+                  {tryout.tagline && (
+                    <InlineEditField ownerId={ownerId} listingType="tryout" listingId={tryout.id} field="tagline" value={tryout.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                  )}
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {tryout.organizerName}
                     {tryout.clubName && <> {" \u00b7 "} {tryout.clubName}</>}
                     {" \u00b7 "} {tryout.city}, {tryout.state}
                   </p>
                   {tryout.description && (
-                    <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{tryout.description}</p>
+                    <div className="mb-0">
+                      <InlineEditField ownerId={ownerId} listingType="tryout" listingId={tryout.id} field="description" value={tryout.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                    </div>
                   )}
                   <div className="flex gap-2.5 mt-[18px] flex-wrap">
                     {tryout.registrationUrl ? (

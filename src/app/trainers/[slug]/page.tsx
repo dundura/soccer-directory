@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getTrainerBySlug, getTrainerSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
@@ -186,16 +187,17 @@ export default async function TrainerDetailPage({ params }: Props) {
                   className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1 sm:p-1.5 bg-surface -mt-8 sm:-mt-10 relative z-10"
                 />
                 <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <h1 className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight">{trainer.name}</h1>
-                    <EditSectionLink ownerId={ownerId} listingType="trainer" listingId={trainer.id} />
-                  </div>
-                  {trainer.tagline && <p className="text-sm text-accent font-medium mt-1">{trainer.tagline}</p>}
+                  <InlineEditField ownerId={ownerId} listingType="trainer" listingId={trainer.id} field="name" value={trainer.name} tag="h1" className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+                  {trainer.tagline && (
+                    <InlineEditField ownerId={ownerId} listingType="trainer" listingId={trainer.id} field="tagline" value={trainer.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                  )}
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {trainer.specialty} {" \u00b7 "} {trainer.city}, {trainer.state}
                   </p>
                   {trainer.description && (
-                    <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{trainer.description}</p>
+                    <div className="mb-0">
+                      <InlineEditField ownerId={ownerId} listingType="trainer" listingId={trainer.id} field="description" value={trainer.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                    </div>
                   )}
                   <div className="flex gap-2.5 mt-[18px] flex-wrap">
                     <a
@@ -264,21 +266,18 @@ export default async function TrainerDetailPage({ params }: Props) {
             {/* Background & Credentials */}
             {(trainer.experience || trainer.credentials) && (
               <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[15px] font-bold text-primary">Background &amp; Credentials</h3>
-                  <EditSectionLink ownerId={ownerId} listingType="trainer" listingId={trainer.id} />
-                </div>
+                <h3 className="text-[15px] font-bold text-primary mb-4">Background &amp; Credentials</h3>
                 <div className="space-y-4">
                   {trainer.experience && (
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Experience</p>
-                      <p className="text-sm text-primary leading-relaxed whitespace-pre-line">{trainer.experience}</p>
+                      <InlineEditField ownerId={ownerId} listingType="trainer" listingId={trainer.id} field="experience" value={trainer.experience} tag="p" className="text-sm text-primary leading-relaxed whitespace-pre-line" multiline />
                     </div>
                   )}
                   {trainer.credentials && (
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Credentials</p>
-                      <p className="text-sm text-primary leading-relaxed whitespace-pre-line">{trainer.credentials}</p>
+                      <InlineEditField ownerId={ownerId} listingType="trainer" listingId={trainer.id} field="credentials" value={trainer.credentials} tag="p" className="text-sm text-primary leading-relaxed whitespace-pre-line" multiline />
                     </div>
                   )}
                 </div>

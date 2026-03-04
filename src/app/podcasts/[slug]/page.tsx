@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { ContactPodcastForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
@@ -117,11 +118,10 @@ export default async function PodcastPage({ params }: Props) {
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
-              <div className="flex items-center justify-between mb-1">
-                <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white">{podcast.name}</h1>
-                <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
-              </div>
-              {podcast.tagline && <p className="text-white/80 text-sm font-medium">{podcast.tagline}</p>}
+              <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="name" value={podcast.name} tag="h1" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1" />
+              {podcast.tagline && (
+                <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="tagline" value={podcast.tagline} tag="p" className="text-white/80 text-sm font-medium" />
+              )}
               <p className="text-white/70 text-sm">Hosted by {podcast.hostName} &middot; {podcast.city}, {podcast.state}</p>
             </div>
           </div>
@@ -129,11 +129,10 @@ export default async function PodcastPage({ params }: Props) {
           {/* About the Show */}
           {(podcast.description || podcast.website || podcast.followUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">About the Show</h2>
-                <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
-              </div>
-              {podcast.description && <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{podcast.description}</p>}
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">About the Show</h2>
+              {podcast.description && (
+                <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="description" value={podcast.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+              )}
               <div className="flex flex-wrap gap-3 mt-4">
                 {podcast.website && (
                   <a
@@ -171,15 +170,12 @@ export default async function PodcastPage({ params }: Props) {
           {/* Meet the Host */}
           {podcast.hostBio && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">{podcast.hostHeading || "Meet the Host"}</h2>
-                <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
-              </div>
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">{podcast.hostHeading || "Meet the Host"}</h2>
               <div className="flex flex-col sm:flex-row gap-5">
                 {podcast.hostImage && (
                   <img src={podcast.hostImage} alt={podcast.hostHeading || "Meet the Host"} className="w-32 h-32 rounded-xl object-cover shrink-0" />
                 )}
-                <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{podcast.hostBio}</p>
+                <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="hostBio" value={podcast.hostBio} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
               </div>
             </div>
           )}

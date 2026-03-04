@@ -1,5 +1,6 @@
 import { getTournamentBySlug, getTournamentSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { ReviewSection } from "@/components/review-section";
@@ -171,16 +172,17 @@ export default async function TournamentDetailPage({ params }: Props) {
                   className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10"
                 />
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <h1 className="text-[26px] font-extrabold text-primary leading-tight tracking-tight">{tournament.name}</h1>
-                    <EditSectionLink ownerId={ownerId} listingType="tournament" listingId={tournament.id} />
-                  </div>
-                  {tournament.tagline && <p className="text-sm text-accent font-medium mt-1">{tournament.tagline}</p>}
+                  <InlineEditField ownerId={ownerId} listingType="tournament" listingId={tournament.id} field="name" value={tournament.name} tag="h1" className="text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+                  {tournament.tagline && (
+                    <InlineEditField ownerId={ownerId} listingType="tournament" listingId={tournament.id} field="tagline" value={tournament.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                  )}
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
                     {tournament.organizer} {" \u00b7 "} {tournament.city}, {tournament.state}
                   </p>
                   {tournament.description && (
-                    <p className="text-sm leading-relaxed text-gray-500">{tournament.description}</p>
+                    <div className="mb-0">
+                      <InlineEditField ownerId={ownerId} listingType="tournament" listingId={tournament.id} field="description" value={tournament.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                    </div>
                   )}
                   <div className="flex gap-2.5 mt-[18px] flex-wrap">
                     {tournament.registrationUrl ? (

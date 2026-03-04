@@ -1,6 +1,7 @@
 import { getPlayerProfileBySlug, getPlayerProfileSlugs, getListingOwner } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { PlayerAvatar } from "@/components/player-avatar";
 import { ContactPlayerForm } from "./contact-form";
@@ -75,11 +76,10 @@ export default async function PlayerDetailPage({ params }: Props) {
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold text-white">{player.playerName}</h1>
-                  <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
-                </div>
-                {player.tagline && <p className="text-white/80 text-sm font-medium">{player.tagline}</p>}
+                <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="playerName" value={player.playerName} tag="h1" className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold text-white mb-1" />
+                {player.tagline && (
+                  <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="tagline" value={player.tagline} tag="p" className="text-white/80 text-sm font-medium" />
+                )}
                 <p className="text-white/60 text-lg">
                   {player.currentClub && <>{player.currentClub} &middot; </>}
                   {player.city}, {player.state}
@@ -174,11 +174,8 @@ export default async function PlayerDetailPage({ params }: Props) {
 
             {player.description && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">About</h2>
-                  <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
-                </div>
-                <p className="text-muted leading-relaxed whitespace-pre-line">{player.description}</p>
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About</h2>
+                <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="description" value={player.description} tag="p" className="text-muted leading-relaxed whitespace-pre-line" multiline />
               </section>
             )}
 

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { ContactYoutubeForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
@@ -115,11 +116,10 @@ export default async function YoutubeChannelPage({ params }: Props) {
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
-              <div className="flex items-center justify-between mb-1">
-                <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white">{channel.name}</h1>
-                <EditSectionLink ownerId={ownerId} listingType="youtube" listingId={channel.id} />
-              </div>
-              {channel.tagline && <p className="text-white/80 text-sm font-medium">{channel.tagline}</p>}
+              <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="name" value={channel.name} tag="h1" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1" />
+              {channel.tagline && (
+                <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="tagline" value={channel.tagline} tag="p" className="text-white/80 text-sm font-medium" />
+              )}
               <p className="text-white/70 text-sm">Created by {channel.creatorName} &middot; {channel.city}, {channel.state}</p>
             </div>
           </div>
@@ -127,11 +127,10 @@ export default async function YoutubeChannelPage({ params }: Props) {
           {/* About the Channel */}
           {(channel.description || channel.channelUrl || channel.subscribeUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">About the Channel</h2>
-                <EditSectionLink ownerId={ownerId} listingType="youtube" listingId={channel.id} />
-              </div>
-              {channel.description && <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{channel.description}</p>}
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">About the Channel</h2>
+              {channel.description && (
+                <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="description" value={channel.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+              )}
               <div className="flex flex-wrap gap-3 mt-4">
                 {channel.channelUrl && (
                   <a
@@ -169,15 +168,12 @@ export default async function YoutubeChannelPage({ params }: Props) {
           {/* Meet the Creator */}
           {channel.creatorBio && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">{channel.creatorHeading || "Meet the Creator"}</h2>
-                <EditSectionLink ownerId={ownerId} listingType="youtube" listingId={channel.id} />
-              </div>
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">{channel.creatorHeading || "Meet the Creator"}</h2>
               <div className="flex flex-col sm:flex-row gap-5">
                 {channel.creatorImage && (
                   <img src={channel.creatorImage} alt={channel.creatorHeading || "Meet the Creator"} className="w-32 h-32 rounded-xl object-cover shrink-0" />
                 )}
-                <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{channel.creatorBio}</p>
+                <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="creatorBio" value={channel.creatorBio} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
               </div>
             </div>
           )}

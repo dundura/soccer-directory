@@ -1,6 +1,7 @@
 import { getMarketplaceItemBySlug, getListingOwner } from "@/lib/db";
 import { Badge } from "@/components/ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { PhotoGallery } from "@/components/profile-ui";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -43,11 +44,10 @@ export default async function ShopDetailPage({ params }: Props) {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold">{item.name}</h1>
-                <EditSectionLink ownerId={ownerId} listingType="marketplace" listingId={item.id} />
-              </div>
-              {item.tagline && <p className="text-white/80 text-sm font-medium">{item.tagline}</p>}
+              <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="name" value={item.name} tag="h1" className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2" />
+              {item.tagline && (
+                <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="tagline" value={item.tagline} tag="p" className="text-white/80 text-sm font-medium" />
+              )}
               <p className="text-white/60 text-lg">{item.city}, {item.state}</p>
             </div>
             <ManageListingButton ownerId={ownerId} listingType="marketplace" listingId={item.id} />
@@ -93,25 +93,15 @@ export default async function ShopDetailPage({ params }: Props) {
           <div className="flex-1 min-w-0">
             {/* Description */}
             <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Description</h2>
-                <EditSectionLink ownerId={ownerId} listingType="marketplace" listingId={item.id} />
-              </div>
-              <div className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap">
-                {item.description}
-              </div>
+              <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Description</h2>
+              <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="description" value={item.description} tag="p" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap" multiline />
             </div>
 
             {/* About the Author */}
             {item.aboutAuthor && (
               <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">About the Author</h2>
-                  <EditSectionLink ownerId={ownerId} listingType="marketplace" listingId={item.id} />
-                </div>
-                <div className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap">
-                  {item.aboutAuthor}
-                </div>
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About the Author</h2>
+                <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="aboutAuthor" value={item.aboutAuthor} tag="p" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap" multiline />
               </div>
             )}
 

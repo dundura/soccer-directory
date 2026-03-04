@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { VideoEmbed, PhotoGallery } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { ContactGroupForm } from "./contact-form";
 import { AnytimeInlineCTA } from "@/components/ui";
 
@@ -113,11 +114,10 @@ export default async function FacebookGroupPage({ params }: Props) {
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
-              <div className="flex items-center justify-between mb-1">
-                <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white">{group.name}</h1>
-                <EditSectionLink ownerId={ownerId} listingType="fbgroup" listingId={group.id} />
-              </div>
-              {group.tagline && <p className="text-white/80 text-sm font-medium">{group.tagline}</p>}
+              <InlineEditField ownerId={ownerId} listingType="fbgroup" listingId={group.id} field="name" value={group.name} tag="h1" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1" />
+              {group.tagline && (
+                <InlineEditField ownerId={ownerId} listingType="fbgroup" listingId={group.id} field="tagline" value={group.tagline} tag="p" className="text-white/80 text-sm font-medium" />
+              )}
               <p className="text-white/70 text-sm">Admin: {group.adminName}{group.city && group.state ? ` \u00b7 ${group.city}, ${group.state}` : ""}</p>
             </div>
           </div>
@@ -125,11 +125,10 @@ export default async function FacebookGroupPage({ params }: Props) {
           {/* About */}
           {(group.description || group.groupUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">About This Group</h2>
-                <EditSectionLink ownerId={ownerId} listingType="fbgroup" listingId={group.id} />
-              </div>
-              {group.description && <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{group.description}</p>}
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">About This Group</h2>
+              {group.description && (
+                <InlineEditField ownerId={ownerId} listingType="fbgroup" listingId={group.id} field="description" value={group.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+              )}
               {group.groupUrl && (
                 <a
                   href={group.groupUrl.startsWith("http") ? group.groupUrl : `https://${group.groupUrl}`}

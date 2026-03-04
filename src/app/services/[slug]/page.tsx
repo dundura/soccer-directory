@@ -1,5 +1,6 @@
 import { getServiceBySlug, getServiceSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { AnnouncementSection } from "@/components/announcement-section";
@@ -88,13 +89,10 @@ export default async function ServiceDetailPage({ params }: Props) {
                 <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold mb-2">
                   {service.category}
                 </span>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight">
-                    {service.name}
-                  </h1>
-                  <EditSectionLink ownerId={ownerId} listingType="service" listingId={service.id} />
-                </div>
-                {service.tagline && <p className="text-sm text-accent font-medium mt-1">{service.tagline}</p>}
+                <InlineEditField ownerId={ownerId} listingType="service" listingId={service.id} field="name" value={service.name} tag="h1" className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight" />
+                {service.tagline && (
+                  <InlineEditField ownerId={ownerId} listingType="service" listingId={service.id} field="tagline" value={service.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                )}
                 <p className="text-sm text-muted mt-1">
                   by {service.providerName} &middot; {service.city}, {service.state}
                 </p>
@@ -107,9 +105,9 @@ export default async function ServiceDetailPage({ params }: Props) {
             </div>
 
             {service.description && (
-              <p className="text-gray-600 leading-relaxed whitespace-pre-line mb-6">
-                {service.description}
-              </p>
+              <div className="mb-6">
+                <InlineEditField ownerId={ownerId} listingType="service" listingId={service.id} field="description" value={service.description} tag="p" className="text-gray-600 leading-relaxed whitespace-pre-line" multiline />
+              </div>
             )}
 
             {/* Special Offers */}
@@ -178,11 +176,8 @@ export default async function ServiceDetailPage({ params }: Props) {
             {/* About the Author */}
             {service.aboutAuthor && (
               <div className="border-t border-border pt-6 mt-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight">About the Author</h2>
-                  <EditSectionLink ownerId={ownerId} listingType="service" listingId={service.id} />
-                </div>
-                <p className="text-gray-600 leading-relaxed whitespace-pre-line">{service.aboutAuthor}</p>
+                <h2 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight mb-3">About the Author</h2>
+                <InlineEditField ownerId={ownerId} listingType="service" listingId={service.id} field="aboutAuthor" value={service.aboutAuthor} tag="p" className="text-gray-600 leading-relaxed whitespace-pre-line" multiline />
               </div>
             )}
 

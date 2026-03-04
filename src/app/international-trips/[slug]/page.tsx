@@ -1,6 +1,7 @@
 import { getTripBySlug, getTripSlugs, getListingOwner } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { TripInquiryForm } from "./inquiry-form";
 import { notFound } from "next/navigation";
@@ -46,11 +47,10 @@ export default async function TripDetailPage({ params }: Props) {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold">{trip.tripName}</h1>
-                <EditSectionLink ownerId={ownerId} listingType="trip" listingId={trip.id} />
-              </div>
-              {trip.tagline && <p className="text-white/80 text-sm font-medium">{trip.tagline}</p>}
+              <InlineEditField ownerId={ownerId} listingType="trip" listingId={trip.id} field="tripName" value={trip.tripName} tag="h1" className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2" />
+              {trip.tagline && (
+                <InlineEditField ownerId={ownerId} listingType="trip" listingId={trip.id} field="tagline" value={trip.tagline} tag="p" className="text-white/80 text-sm font-medium" />
+              )}
               <p className="text-white/60 text-lg">{trip.destination} &middot; {trip.organizer}</p>
             </div>
             <ManageListingButton ownerId={ownerId} listingType="trip" listingId={trip.id} />
@@ -118,11 +118,8 @@ export default async function TripDetailPage({ params }: Props) {
           <div className="lg:col-span-2 space-y-8">
             {trip.description && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">About This Trip</h2>
-                  <EditSectionLink ownerId={ownerId} listingType="trip" listingId={trip.id} />
-                </div>
-                <p className="text-muted leading-relaxed whitespace-pre-line">{trip.description}</p>
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About This Trip</h2>
+                <InlineEditField ownerId={ownerId} listingType="trip" listingId={trip.id} field="description" value={trip.description} tag="p" className="text-muted leading-relaxed whitespace-pre-line" multiline />
               </section>
             )}
 

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
+import { InlineEditField } from "@/components/inline-edit";
 import { ContactBlogForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
@@ -117,11 +118,10 @@ export default async function BlogPage({ params }: Props) {
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
-              <div className="flex items-center justify-between mb-1">
-                <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white">{blog.name}</h1>
-                <EditSectionLink ownerId={ownerId} listingType="blog" listingId={blog.id} />
-              </div>
-              {blog.tagline && <p className="text-white/80 text-sm font-medium">{blog.tagline}</p>}
+              <InlineEditField ownerId={ownerId} listingType="blog" listingId={blog.id} field="name" value={blog.name} tag="h1" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1" />
+              {blog.tagline && (
+                <InlineEditField ownerId={ownerId} listingType="blog" listingId={blog.id} field="tagline" value={blog.tagline} tag="p" className="text-white/80 text-sm font-medium" />
+              )}
               <p className="text-white/70 text-sm">By {blog.authorName} &middot; {blog.city}, {blog.state}</p>
             </div>
           </div>
@@ -129,11 +129,10 @@ export default async function BlogPage({ params }: Props) {
           {/* About the Blog */}
           {(blog.description || blog.website || blog.subscribeUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">About the Blog</h2>
-                <EditSectionLink ownerId={ownerId} listingType="blog" listingId={blog.id} />
-              </div>
-              {blog.description && <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{blog.description}</p>}
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">About the Blog</h2>
+              {blog.description && (
+                <InlineEditField ownerId={ownerId} listingType="blog" listingId={blog.id} field="description" value={blog.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+              )}
               <div className="flex flex-wrap gap-3 mt-4">
                 {blog.website && (
                   <a
@@ -171,15 +170,12 @@ export default async function BlogPage({ params }: Props) {
           {/* About the Author */}
           {blog.authorBio && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">{blog.authorHeading || "About the Author"}</h2>
-                <EditSectionLink ownerId={ownerId} listingType="blog" listingId={blog.id} />
-              </div>
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">{blog.authorHeading || "About the Author"}</h2>
               <div>
                 {blog.authorImage && (
                   <img src={blog.authorImage} alt={blog.authorHeading || "About the Author"} className="float-left mr-4 mb-3 w-32 h-32 sm:w-40 sm:h-40 rounded-xl object-cover" />
                 )}
-                <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">{blog.authorBio}</p>
+                <InlineEditField ownerId={ownerId} listingType="blog" listingId={blog.id} field="authorBio" value={blog.authorBio} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
                 <div className="clear-both" />
               </div>
             </div>
