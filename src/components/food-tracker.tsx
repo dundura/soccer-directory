@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 
 type FoodEntry = { id: number; meal_type: string; kind: string; description: string; created_at: string };
 
-const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"];
+const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack", "activity"];
 
 export function FoodTracker() {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
