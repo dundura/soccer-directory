@@ -126,6 +126,28 @@ export interface Trainer extends ProfileFields {
   updatedAt: string;
 }
 
+export interface Recruiter extends ProfileFields {
+  id: string;
+  slug: string;
+  name: string;
+  city: string;
+  state: string;
+  country?: string;
+  specialty: string;
+  experience: string;
+  credentials: string;
+  priceRange: string;
+  serviceArea: string;
+  description?: string;
+  rating: number;
+  reviewCount: number;
+  website?: string;
+  email?: string;
+  featured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Camp extends ProfileFields {
   id: string;
   slug: string;
@@ -561,7 +583,7 @@ export interface YoutubeChannel extends ProfileFields {
   updatedAt?: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube" | "specialevent";
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube" | "specialevent" | "recruiter";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";

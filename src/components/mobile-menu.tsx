@@ -42,9 +42,15 @@ const navGroups: NavGroup[] = [
         label: "Training & Services",
         links: [
           { label: "Coaches & Trainers", href: "/trainers" },
-          { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
           { label: "Training Apps", href: "/training-apps" },
           { label: "Products & Services", href: "/services" },
+        ],
+      },
+      {
+        label: "Consultants",
+        links: [
+          { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
+          { label: "College Recruiting", href: "/college-recruiting" },
         ],
       },
     ],

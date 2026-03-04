@@ -92,9 +92,15 @@ function Header() {
                   title: "Train",
                   items: [
                     { label: "Coaches & Trainers", href: "/trainers", desc: "Private & group training", icon: "🎯" },
-                    { label: "Mental Training", href: "/trainers?specialty=Mental+Training", desc: "Sports psychology", icon: "🧠" },
                     { label: "Training Apps", href: "/training-apps", desc: "Soccer training apps", icon: "📱" },
                     { label: "Products & Services", href: "/services", desc: "Soccer products & services", icon: "🛒" },
+                  ],
+                },
+                {
+                  title: "Consultants",
+                  items: [
+                    { label: "Mental Training", href: "/trainers?specialty=Mental+Training", desc: "Sports psychology", icon: "🧠" },
+                    { label: "College Recruiting", href: "/college-recruiting", desc: "Recruiting advisors", icon: "🎓" },
                   ],
                 },
               ]}
@@ -149,6 +155,7 @@ function Footer() {
               <a href="/camps" className="hover:text-white transition-colors">Find Camps</a>
               <a href="/special-events" className="hover:text-white transition-colors">Special Events</a>
               <a href="/tryouts" className="hover:text-white transition-colors">Find Tryouts</a>
+              <a href="/college-recruiting" className="hover:text-white transition-colors">College Recruiting</a>
               <a href="/guest-play" className="hover:text-white transition-colors">Guest Player Ops</a>
               <a href="/guest-play/players" className="hover:text-white transition-colors">Player Profiles</a>
               <a href="/international-trips" className="hover:text-white transition-colors">International Trips</a>
