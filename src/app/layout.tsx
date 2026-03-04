@@ -89,7 +89,7 @@ function Header() {
                   ],
                 },
                 {
-                  title: "Train",
+                  title: "Training & Services",
                   items: [
                     { label: "Coaches & Trainers", href: "/trainers", desc: "Private & group training", icon: "🎯" },
                     { label: "Training Apps", href: "/training-apps", desc: "Soccer training apps", icon: "📱" },
