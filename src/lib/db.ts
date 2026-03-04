@@ -1736,3 +1736,17 @@ function mapGuestPostComment(r: Record<string, unknown>): GuestPostComment {
     createdAt: r.created_at as string, updatedAt: r.updated_at as string,
   };
 }
+
+// ── Food Tracker ─────────────────────────────────────────────
+export async function getFoodLog(date: string) {
+  const rows = await sql`SELECT id, entry_date, meal_type, kind, description, created_at FROM food_log WHERE entry_date = ${date} ORDER BY created_at ASC`;
+  return rows as { id: number; entry_date: string; meal_type: string; kind: string; description: string; created_at: string }[];
+}
+
+export async function addFoodEntry(date: string, mealType: string, kind: string, description: string) {
+  await sql`INSERT INTO food_log (entry_date, meal_type, kind, description) VALUES (${date}, ${mealType}, ${kind}, ${description})`;
+}
+
+export async function deleteFoodEntry(id: number) {
+  await sql`DELETE FROM food_log WHERE id = ${id}`;
+}

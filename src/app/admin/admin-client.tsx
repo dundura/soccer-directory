@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ListingForm } from "@/components/listing-form";
+import { FoodTracker } from "@/components/food-tracker";
 import type { ListingType } from "@/lib/types";
 
 type User = { id: string; name: string; email: string; role: string; createdAt: string };
@@ -454,6 +455,8 @@ export default function AdminClient() {
           )}
           </>
           )}
+
+          <FoodTracker />
         </div>
       </div>
     </>
