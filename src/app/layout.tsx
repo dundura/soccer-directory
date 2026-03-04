@@ -73,6 +73,7 @@ function Header() {
                     { label: "Teams", href: "/teams", desc: "Browse team listings", icon: "⚽" },
                     { label: "Futsal", href: "/futsal", desc: "Indoor futsal teams", icon: "🥅" },
                     { label: "Camps", href: "/camps", desc: "Soccer camps & clinics", icon: "🏕️" },
+                    { label: "Special Events", href: "/special-events", desc: "Clinics, festivals & more", icon: "🎉" },
                   ],
                 },
                 {
@@ -146,6 +147,7 @@ function Footer() {
               <a href="/futsal" className="hover:text-white transition-colors">Find Futsal Teams</a>
               <a href="/trainers" className="hover:text-white transition-colors">Find Trainers</a>
               <a href="/camps" className="hover:text-white transition-colors">Find Camps</a>
+              <a href="/special-events" className="hover:text-white transition-colors">Special Events</a>
               <a href="/tryouts" className="hover:text-white transition-colors">Find Tryouts</a>
               <a href="/guest-play" className="hover:text-white transition-colors">Guest Player Ops</a>
               <a href="/guest-play/players" className="hover:text-white transition-colors">Player Profiles</a>

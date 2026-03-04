@@ -175,6 +175,33 @@ export interface Tryout extends ProfileFields {
   updatedAt: string;
 }
 
+export interface SpecialEvent extends ProfileFields {
+  id: string;
+  slug: string;
+  name: string;
+  organizerName: string;
+  clubName?: string;
+  city: string;
+  state: string;
+  country?: string;
+  eventType: string;
+  ageGroup: string;
+  gender: string;
+  dates: string;
+  time?: string;
+  location?: string;
+  cost?: string;
+  description: string;
+  registrationUrl?: string;
+  website?: string;
+  email?: string;
+  phone?: string;
+  isPast: boolean;
+  featured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface GuestOpportunity extends ProfileFields {
   id: string;
   slug: string;
@@ -534,7 +561,7 @@ export interface YoutubeChannel extends ProfileFields {
   updatedAt?: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube";
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube" | "specialevent";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";

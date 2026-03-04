@@ -19,6 +19,7 @@ import {
   createFacebookGroupListing,
   createServiceListing,
   createTryoutListing,
+  createSpecialEventListing,
   createTrainingAppListing,
   createBlogListing,
   createYoutubeChannelListing,
@@ -115,6 +116,9 @@ export async function POST(req: Request) {
         break;
       case "tryout":
         slug = await createTryoutListing(data, session.user.id);
+        break;
+      case "specialevent":
+        slug = await createSpecialEventListing(data, session.user.id);
         break;
       case "trainingapp":
         slug = await createTrainingAppListing(data, session.user.id);

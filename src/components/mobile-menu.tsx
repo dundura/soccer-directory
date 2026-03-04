@@ -23,6 +23,7 @@ const navGroups: NavGroup[] = [
         label: "Events",
         links: [
           { label: "Camps", href: "/camps" },
+          { label: "Special Events", href: "/special-events" },
           { label: "College Showcases", href: "/camps?type=College+Showcase" },
           { label: "Tryouts", href: "/tryouts" },
           { label: "US Tournaments", href: "/tournaments?region=US" },
