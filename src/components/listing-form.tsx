@@ -1015,6 +1015,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [missingFields, setMissingFields] = useState<Set<string>>(new Set());
   const [openSections, setOpenSections] = useState<Set<number>>(new Set());
 
   const baseFields = FIELDS[type];
@@ -1022,6 +1023,9 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
 
   function handleChange(name: string, value: string) {
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (missingFields.has(name) && value) {
+      setMissingFields((prev) => { const next = new Set(prev); next.delete(name); return next; });
+    }
   }
 
   function handleTypeSwitch(t: ListingType) {
@@ -1046,11 +1050,17 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    setMissingFields(new Set());
     // Validate required fields (native required won't work for hidden sections)
     const missing = fields.filter((f) => f.required && f.type !== "heading" && !formData[f.name]);
     if (missing.length > 0) {
       setOpenSections(new Set(sections.map((_, i) => i)));
+      setMissingFields(new Set(missing.map((f) => f.name)));
       setError(`Please fill in: ${missing.map((f) => f.label).join(", ")}`);
+      setTimeout(() => {
+        const el = document.querySelector(`[data-field="${missing[0].name}"]`);
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
       return;
     }
     setSubmitting(true);
@@ -1153,10 +1163,12 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                     );
                   }
 
+                  const isMissing = missingFields.has(field.name);
                   return (
-                    <div key={field.name}>
-                      <label className="block text-sm font-medium mb-1">
-                        {field.label} {field.required && <span className="text-accent">*</span>}
+                    <div key={field.name} data-field={field.name}>
+                      <label className={`block text-sm font-medium mb-1 ${isMissing ? "text-red-600" : ""}`}>
+                        {field.label} {field.required && <span className={isMissing ? "text-red-600" : "text-accent"}>*</span>}
+                        {isMissing && <span className="text-red-500 text-xs ml-2">Required</span>}
                       </label>
 
                       {/* Select with options */}
@@ -1619,7 +1631,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
         );
       })}
 
-      {error && <p className="text-accent text-sm">{error}</p>}
+      {error && <p className="text-red-600 text-sm font-medium bg-red-50 border border-red-200 rounded-lg px-4 py-3">{error}</p>}
 
       <div className="flex gap-3">
         <button
