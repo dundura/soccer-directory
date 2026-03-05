@@ -588,7 +588,7 @@ export interface YoutubeChannel extends ProfileFields {
   updatedAt?: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube" | "specialevent" | "recruiter";
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube" | "specialevent" | "recruiter" | "fundraiser";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";

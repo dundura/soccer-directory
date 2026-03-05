@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ListingForm } from "@/components/listing-form";
 import type { ListingType } from "@/lib/types";
 
@@ -30,6 +30,7 @@ const TYPE_PATHS: Record<string, string> = {
   giveaway: "giveaways",
   blog: "blogs",
   youtube: "youtube-channels",
+  fundraiser: "fundraiser",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -56,6 +57,7 @@ const TYPE_LABELS: Record<string, string> = {
   giveaway: "Free Giveaway",
   blog: "Blog",
   youtube: "YouTube Channel",
+  fundraiser: "Fundraiser",
 };
 
 type Listing = { id: string; slug: string; name: string; status: string; type: string };
@@ -313,10 +315,12 @@ function AccountSettings() {
 function DashboardContent() {
   const { data: session } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get("type") as ListingType | null;
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [formDefaultType, setFormDefaultType] = useState<ListingType | undefined>(undefined);
+  const [showForm, setShowForm] = useState(!!typeParam);
+  const [formDefaultType, setFormDefaultType] = useState<ListingType | undefined>(typeParam || undefined);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [archiving, setArchiving] = useState<string | null>(null);
 

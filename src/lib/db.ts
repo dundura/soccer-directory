@@ -863,7 +863,7 @@ export async function patchListingField(
 
 // ── Listings by User ─────────────────────────────────────────
 export async function getListingsByUserId(userId: string) {
-  const [clubRows, teamRows, trainerRows, recruiterRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows, podcastRows, fbgroupRows, serviceRows, tryoutRows, specialEventRows, trainingAppRows, blogRows, youtubeRows] = await Promise.all([
+  const [clubRows, teamRows, trainerRows, recruiterRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows, podcastRows, fbgroupRows, serviceRows, tryoutRows, specialEventRows, trainingAppRows, blogRows, youtubeRows, fundraiserRows] = await Promise.all([
     sql`SELECT id, slug, name, status, 'club' as type FROM clubs WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'team' as type FROM teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'trainer' as type FROM trainers WHERE user_id = ${userId} ORDER BY created_at DESC`,
@@ -883,8 +883,9 @@ export async function getListingsByUserId(userId: string) {
     sql`SELECT id, slug, name, status, 'trainingapp' as type FROM training_apps WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'blog' as type FROM blogs WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'youtube' as type FROM youtube_channels WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, title as name, CASE WHEN active THEN 'approved' ELSE 'archived' END as status, 'fundraiser' as type FROM fundraisers WHERE user_id = ${userId} ORDER BY created_at DESC`,
   ]);
-  return [...clubRows, ...teamRows, ...trainerRows, ...recruiterRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows, ...playerRows, ...podcastRows, ...fbgroupRows, ...serviceRows, ...tryoutRows, ...specialEventRows, ...trainingAppRows, ...blogRows, ...youtubeRows] as { id: string; slug: string; name: string; status: string; type: string }[];
+  return [...clubRows, ...teamRows, ...trainerRows, ...recruiterRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows, ...playerRows, ...podcastRows, ...fbgroupRows, ...serviceRows, ...tryoutRows, ...specialEventRows, ...trainingAppRows, ...blogRows, ...youtubeRows, ...fundraiserRows] as { id: string; slug: string; name: string; status: string; type: string }[];
 }
 
 // ── Create Listings ──────────────────────────────────────────
@@ -1322,6 +1323,10 @@ export async function getListingData(type: string, id: string, userId: string): 
       rows = await sql`SELECT * FROM youtube_channels WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
       return mapYoutubeChannelToForm(rows[0]);
+    case "fundraiser":
+      rows = await sql`SELECT * FROM fundraisers WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapFundraiserToForm(rows[0]);
     default:
       return null;
   }
@@ -1351,6 +1356,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "trainingapp": rows = await sql`SELECT * FROM training_apps WHERE id = ${id} LIMIT 1`; break;
     case "blog": rows = await sql`SELECT * FROM blogs WHERE id = ${id} LIMIT 1`; break;
     case "youtube": rows = await sql`SELECT * FROM youtube_channels WHERE id = ${id} LIMIT 1`; break;
+    case "fundraiser": rows = await sql`SELECT * FROM fundraisers WHERE id = ${id} LIMIT 1`; break;
     default: return null;
   }
   if (!rows[0]) return null;
@@ -1374,8 +1380,24 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "trainingapp": return mapTrainingAppToForm(rows[0]);
     case "blog": return mapBlogToForm(rows[0]);
     case "youtube": return mapYoutubeChannelToForm(rows[0]);
+    case "fundraiser": return mapFundraiserToForm(rows[0]);
     default: return null;
   }
+}
+
+function mapFundraiserToForm(r: Record<string, unknown>): Record<string, string> {
+  return {
+    name: String(r.title || ""),
+    description: String(r.description || ""),
+    goal: r.goal ? String(Number(r.goal) / 100) : "",
+    coachName: String(r.coach_name || ""),
+    contactEmail: String(r.coach_email || ""),
+    phone: String(r.coach_phone || ""),
+    website: String(r.website_url || ""),
+    facebookUrl: String(r.facebook_url || ""),
+    instagramUrl: String(r.instagram_url || ""),
+    imageUrl: String(r.hero_image_url || ""),
+  };
 }
 
 function parseSocial(raw: unknown): { facebook: string; instagram: string; youtube: string } {
@@ -1537,6 +1559,9 @@ export async function updateListing(type: string, id: string, data: Record<strin
     case "youtube":
       rows = await sql`UPDATE youtube_channels SET name=${data.name}, creator_name=${data.creatorName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, description=${data.description || null}, website=${data.website || null}, channel_url=${data.channelUrl || null}, subscribe_url=${data.subscribeUrl || null}, email=${data.email || null}, phone=${data.phone || null}, featured_videos=${data.featuredVideos || null}, creator_heading=${data.creatorHeading || null}, creator_image=${data.creatorImage || null}, creator_bio=${data.creatorBio || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, video_url_2=${data.videoUrl2 || null}, video_url_3=${data.videoUrl3 || null}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
+    case "fundraiser":
+      rows = await sql`UPDATE fundraisers SET title=${data.name}, description=${data.description || null}, goal=${data.goal ? Math.round(Number(data.goal) * 100) : null}, coach_name=${data.coachName || null}, coach_email=${data.contactEmail || null}, coach_phone=${data.phone || null}, website_url=${data.website || null}, facebook_url=${data.facebookUrl || null}, instagram_url=${data.instagramUrl || null}, hero_image_url=${data.imageUrl || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
     default:
       return false;
   }
@@ -1638,6 +1663,7 @@ export async function archiveListing(type: string, id: string, userId: string, i
       case "trainingapp": rows = await sql`UPDATE training_apps SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "blog": rows = await sql`UPDATE blogs SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "youtube": rows = await sql`UPDATE youtube_channels SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "fundraiser": rows = await sql`UPDATE fundraisers SET active = false, updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       default: return false;
     }
   } else {
@@ -1661,6 +1687,7 @@ export async function archiveListing(type: string, id: string, userId: string, i
       case "trainingapp": rows = await sql`UPDATE training_apps SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "blog": rows = await sql`UPDATE blogs SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "youtube": rows = await sql`UPDATE youtube_channels SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "fundraiser": rows = await sql`UPDATE fundraisers SET active = false, updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       default: return false;
     }
   }
@@ -1692,6 +1719,7 @@ export async function deleteListing(type: string, id: string, userId: string, is
       case "trainingapp": rows = await sql`DELETE FROM training_apps WHERE id = ${id} RETURNING id`; break;
       case "blog": rows = await sql`DELETE FROM blogs WHERE id = ${id} RETURNING id`; break;
       case "youtube": rows = await sql`DELETE FROM youtube_channels WHERE id = ${id} RETURNING id`; break;
+      case "fundraiser": rows = await sql`DELETE FROM fundraisers WHERE id = ${id} RETURNING id`; break;
       default: return false;
     }
   } else {
@@ -1715,6 +1743,7 @@ export async function deleteListing(type: string, id: string, userId: string, is
       case "trainingapp": rows = await sql`DELETE FROM training_apps WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "blog": rows = await sql`DELETE FROM blogs WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "youtube": rows = await sql`DELETE FROM youtube_channels WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "fundraiser": rows = await sql`DELETE FROM fundraisers WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       default: return false;
     }
   }
@@ -2124,6 +2153,15 @@ function mapFundraiser(r: Record<string, unknown>): Fundraiser {
     totalRaised: r.total_raised ? Number(r.total_raised) : undefined,
     donorCount: r.donor_count ? Number(r.donor_count) : undefined,
   };
+}
+
+export async function getActiveFundraisers(): Promise<Fundraiser[]> {
+  const rows = await sql`
+    SELECT f.*,
+      COALESCE((SELECT SUM(amount) FROM donations WHERE fundraiser_id = f.id AND status = 'completed'), 0) as total_raised,
+      COALESCE((SELECT COUNT(*) FROM donations WHERE fundraiser_id = f.id AND status = 'completed'), 0) as donor_count
+    FROM fundraisers f WHERE f.active = true ORDER BY f.created_at DESC`;
+  return rows.map(mapFundraiser);
 }
 
 export async function getFundraiserBySlug(slug: string): Promise<Fundraiser | null> {

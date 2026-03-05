@@ -27,6 +27,7 @@ import {
   updateListing,
   archiveListing,
   deleteListing,
+  createFundraiser,
 } from "@/lib/db";
 
 export async function GET(req: Request) {
@@ -140,6 +141,20 @@ export async function POST(req: Request) {
         break;
       case "youtube":
         slug = await createYoutubeChannelListing(data, session.user.id);
+        break;
+      case "fundraiser":
+        slug = await createFundraiser({
+          title: data.name,
+          description: data.description,
+          goal: data.goal ? String(Math.round(Number(data.goal) * 100)) : "",
+          coachName: data.coachName,
+          coachEmail: data.contactEmail,
+          coachPhone: data.phone,
+          websiteUrl: data.website,
+          facebookUrl: data.facebookUrl,
+          instagramUrl: data.instagramUrl,
+          heroImageUrl: data.imageUrl,
+        }, session.user.id);
         break;
       default:
         return NextResponse.json({ error: "Invalid listing type" }, { status: 400 });

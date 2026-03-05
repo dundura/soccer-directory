@@ -86,6 +86,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   youtube: "A soccer YouTube channel covering skills tutorials, match analysis, coaching tips, and the beautiful game.",
   specialevent: "Add your special event to be discovered by local players and families.",
   recruiter: "I am a college recruiting advisor helping student-athletes navigate the college soccer recruiting process, from building highlight reels to communicating with coaches.",
+  fundraiser: "Help our team reach its fundraising goal! Every donation makes a difference and supports our players.",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -794,6 +795,23 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Main Photo", type: "image" },
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
   ],
+  fundraiser: [
+    { name: "_howitworks", label: "How it works: Donations are processed securely via Stripe. Proceeds are sent to the fundraiser creator, less a 10% platform fee. Donors can contribute between $5 and $500 per donation.", type: "warning" },
+    { name: "name", label: "Fundraiser Title", required: true },
+    { name: "description", label: "Description — Tell supporters what this fundraiser is for", type: "textarea" },
+    { name: "goal", label: "Fundraising Goal ($) — Leave blank if no goal" },
+    { name: "_contact", label: "Contact Information", type: "heading" },
+    { name: "coachName", label: "Contact Name" },
+    { name: "contactEmail", label: "Contact Email", type: "email" },
+    { name: "phone", label: "Contact Phone" },
+    { name: "_social", label: "Social Links", type: "heading" },
+    { name: "website", label: "Website URL" },
+    { name: "facebookUrl", label: "Facebook URL" },
+    { name: "instagramUrl", label: "Instagram URL" },
+    { name: "_profile", label: "Hero Image", type: "heading" },
+    { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
+    { name: "imageUrl", label: "Hero Image", type: "image" },
+  ],
 };
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -821,6 +839,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   giveaway: "Free Giveaway",
   blog: "Blog",
   youtube: "YouTube Channel",
+  fundraiser: "Fundraiser",
 };
 
 // ── Shared styles ──────────────────────────────────────────────
