@@ -73,6 +73,7 @@ const navGroups: NavGroup[] = [
       { label: "YouTube Channels", href: "/youtube-channels" },
       { label: "Soccer Blogs", href: "/blogs" },
       { label: "Facebook Groups", href: "/facebook-groups" },
+      { label: "Club Reviews", href: "/club-reviews" },
       { label: "Forum", href: "/forum" },
     ],
   },

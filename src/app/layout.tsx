@@ -136,6 +136,7 @@ function Header() {
                 { label: "YouTube Channels", href: "/youtube-channels" },
                 { label: "Soccer Blogs", href: "/blogs" },
                 { label: "Facebook Groups", href: "/facebook-groups" },
+                { label: "Club Reviews", href: "/club-reviews" },
                 { label: "Forum", href: "/forum" },
               ]}
             />
@@ -169,6 +170,7 @@ function Footer() {
               <a href="/special-events" className="hover:text-white transition-colors">Special Events</a>
               <a href="/tryouts" className="hover:text-white transition-colors">Find Tryouts</a>
               <a href="/college-recruiting" className="hover:text-white transition-colors">College Recruiting</a>
+              <a href="/club-reviews" className="hover:text-white transition-colors">Club Reviews</a>
               <a href="/guest-play" className="hover:text-white transition-colors">Guest Player Ops</a>
               <a href="/guest-play/players" className="hover:text-white transition-colors">Player Profiles</a>
               <a href="/international-trips" className="hover:text-white transition-colors">International Trips</a>

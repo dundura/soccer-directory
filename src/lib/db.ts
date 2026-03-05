@@ -1935,6 +1935,65 @@ function mapReview(r: Record<string, unknown>): Review {
   };
 }
 
+// ── Club Reviews ────────────────────────────────────────────
+
+export interface ClubReview {
+  id: string;
+  clubName: string;
+  city: string;
+  state: string;
+  ratingPrice: number;
+  ratingQuality: number;
+  ratingCoaching: number;
+  overallRating: number;
+  reviewerName: string;
+  reviewerRole: string;
+  reviewText: string;
+  status: string;
+  createdAt: string;
+}
+
+export async function createClubReview(data: {
+  clubName: string; city: string; state: string;
+  ratingPrice: number; ratingQuality: number; ratingCoaching: number;
+  reviewerName: string; reviewerRole: string; reviewText: string;
+}): Promise<{ id: string; approvalToken: string }> {
+  const id = genId();
+  const approvalToken = id + "-" + Math.random().toString(36).slice(2, 10);
+  const overall = Number(((data.ratingPrice + data.ratingQuality + data.ratingCoaching) / 3).toFixed(1));
+  await sql`INSERT INTO club_reviews (id, club_name, city, state, rating_price, rating_quality, rating_coaching, overall_rating, reviewer_name, reviewer_role, review_text, status, approval_token)
+    VALUES (${id}, ${data.clubName}, ${data.city || null}, ${data.state || null}, ${data.ratingPrice}, ${data.ratingQuality}, ${data.ratingCoaching}, ${overall}, ${data.reviewerName}, ${data.reviewerRole || null}, ${data.reviewText || null}, 'pending', ${approvalToken})`;
+  return { id, approvalToken };
+}
+
+export async function getApprovedClubReviews(): Promise<ClubReview[]> {
+  const rows = await sql`SELECT * FROM club_reviews WHERE status = 'approved' ORDER BY created_at DESC`;
+  return rows.map(mapClubReview);
+}
+
+export async function getClubReviewByToken(token: string): Promise<{ id: string; status: string } | null> {
+  const rows = await sql`SELECT id, status FROM club_reviews WHERE approval_token = ${token} LIMIT 1`;
+  if (!rows[0]) return null;
+  return { id: rows[0].id as string, status: rows[0].status as string };
+}
+
+export async function updateClubReviewStatus(token: string, status: string): Promise<boolean> {
+  const rows = await sql`UPDATE club_reviews SET status = ${status} WHERE approval_token = ${token} RETURNING id`;
+  return rows.length > 0;
+}
+
+function mapClubReview(r: Record<string, unknown>): ClubReview {
+  return {
+    id: r.id as string, clubName: r.club_name as string,
+    city: r.city as string || "", state: r.state as string || "",
+    ratingPrice: Number(r.rating_price), ratingQuality: Number(r.rating_quality),
+    ratingCoaching: Number(r.rating_coaching), overallRating: Number(r.overall_rating),
+    reviewerName: r.reviewer_name as string, reviewerRole: r.reviewer_role as string || "",
+    reviewText: r.review_text as string || "", status: r.status as string,
+    createdAt: r.created_at as string,
+  };
+}
+
 // ── Forum ───────────────────────────────────────────────────
 
 export async function createForumTopic(title: string, category: string, body: string, userId: string): Promise<string> {
