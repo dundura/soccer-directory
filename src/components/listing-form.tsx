@@ -1693,16 +1693,19 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                   const TAG_EMOJIS = ["⚽", "📍", "☀️"];
                   const TAG_PLACEHOLDERS = ["Youth Soccer", "Cary, NC", "Summer 2026"];
                   const TAG_MAX = 30;
-                  let tags: string[] = [];
-                  try { tags = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  let allTags: string[] = [];
+                  try { allTags = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
                   // Strip emoji prefix if stored with it
                   const stripEmoji = (t: string, emoji: string) => t.startsWith(emoji) ? t.slice(emoji.length).trimStart() : t;
-                  const vals = TAG_EMOJIS.map((em, i) => stripEmoji(tags[i] || "", em));
+                  // Map stored tags back to 3 slots by matching emoji prefix
+                  const vals = TAG_EMOJIS.map((em) => {
+                    const match = allTags.find(t => t.startsWith(em));
+                    return match ? stripEmoji(match, em) : "";
+                  });
                   const updateTag = (i: number, val: string) => {
-                    const trimmed = val.slice(0, TAG_MAX);
                     const updated = [...vals];
-                    updated[i] = trimmed;
-                    const result = updated.map((v, j) => v.trim() ? `${TAG_EMOJIS[j]} ${v.trim()}` : "").filter(Boolean);
+                    updated[i] = val.slice(0, TAG_MAX);
+                    const result = updated.map((v, j) => v ? `${TAG_EMOJIS[j]} ${v}` : "").filter(Boolean);
                     handleChange(field.name, JSON.stringify(result));
                   };
                   return TAG_EMOJIS.map((emoji, i) => (
