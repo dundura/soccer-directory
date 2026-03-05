@@ -206,8 +206,9 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
     }
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Failed to update listing" }, { status: 500 });
+  } catch (err) {
+    console.error("Failed to update listing:", err);
+    return NextResponse.json({ error: "Failed to update listing", detail: err instanceof Error ? err.message : "Unknown" }, { status: 500 });
   }
 }
 
