@@ -66,6 +66,13 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    label: "Reviews",
+    links: [
+      { label: "Club Reviews", href: "/club-reviews" },
+      { label: "Forum", href: "/forum" },
+    ],
+  },
+  {
     label: "Media",
     links: [
       { label: "Blog", href: "/blog" },
@@ -73,8 +80,6 @@ const navGroups: NavGroup[] = [
       { label: "YouTube Channels", href: "/youtube-channels" },
       { label: "Soccer Blogs", href: "/blogs" },
       { label: "Facebook Groups", href: "/facebook-groups" },
-      { label: "Club Reviews", href: "/club-reviews" },
-      { label: "Forum", href: "/forum" },
     ],
   },
 ];

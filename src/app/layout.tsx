@@ -129,6 +129,13 @@ function Header() {
               ]}
             />
             <NavDropdown
+              label="Reviews"
+              items={[
+                { label: "Club Reviews", href: "/club-reviews" },
+                { label: "Forum", href: "/forum" },
+              ]}
+            />
+            <NavDropdown
               label="Media"
               items={[
                 { label: "Blog", href: "/blog" },
@@ -136,8 +143,6 @@ function Header() {
                 { label: "YouTube Channels", href: "/youtube-channels" },
                 { label: "Soccer Blogs", href: "/blogs" },
                 { label: "Facebook Groups", href: "/facebook-groups" },
-                { label: "Club Reviews", href: "/club-reviews" },
-                { label: "Forum", href: "/forum" },
               ]}
             />
           </nav>

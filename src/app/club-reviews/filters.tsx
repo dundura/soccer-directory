@@ -296,7 +296,7 @@ export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubRe
                   </div>
 
                   {review.reviewText && (
-                    <p className="text-sm text-muted leading-relaxed mb-3">{review.reviewText}</p>
+                    <p className="text-sm text-muted leading-relaxed mb-3 whitespace-pre-wrap">{review.reviewText}</p>
                   )}
 
                   <div className="flex items-center gap-2 text-xs text-muted">
