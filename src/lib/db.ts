@@ -2033,6 +2033,31 @@ export async function getClubReviewComments(reviewId: string): Promise<ClubRevie
   }));
 }
 
+export interface AdminClubReviewComment {
+  id: string;
+  reviewId: string;
+  clubName: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  accountName: string;
+  body: string;
+  createdAt: string;
+}
+
+export async function getAllClubReviewComments(): Promise<AdminClubReviewComment[]> {
+  const rows = await sql`SELECT c.*, cr.club_name, u.email as user_email, u.name as account_name
+    FROM club_review_comments c
+    LEFT JOIN club_reviews cr ON c.review_id = cr.id
+    LEFT JOIN users u ON c.user_id = u.id
+    ORDER BY c.created_at DESC`;
+  return rows.map((r) => ({
+    id: r.id as string, reviewId: r.review_id as string, clubName: r.club_name as string || "",
+    userId: r.user_id as string, userName: r.user_name as string, userEmail: r.user_email as string || "",
+    accountName: r.account_name as string || "", body: r.body as string, createdAt: r.created_at as string,
+  }));
+}
+
 export async function createClubReviewComment(reviewId: string, userId: string, userName: string, body: string): Promise<string> {
   const id = genId();
   await sql`INSERT INTO club_review_comments (id, review_id, user_id, user_name, body) VALUES (${id}, ${reviewId}, ${userId}, ${userName}, ${body})`;
@@ -2041,6 +2066,11 @@ export async function createClubReviewComment(reviewId: string, userId: string, 
 
 export async function deleteClubReviewComment(commentId: string, userId: string): Promise<boolean> {
   const rows = await sql`DELETE FROM club_review_comments WHERE id = ${commentId} AND user_id = ${userId} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function adminDeleteClubReviewComment(commentId: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM club_review_comments WHERE id = ${commentId} RETURNING id`;
   return rows.length > 0;
 }
 

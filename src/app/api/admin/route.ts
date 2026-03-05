@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getUserByEmail, getAllUsers, getAllListings, updateUserRole, updateListingStatus, updateListingFeatured, deleteUserAccount, getListingDataAdmin, updateListingAdmin, getSetting, updateSetting, getListingOwnerEmailById } from "@/lib/db";
+import { getUserByEmail, getAllUsers, getAllListings, updateUserRole, updateListingStatus, updateListingFeatured, deleteUserAccount, getListingDataAdmin, updateListingAdmin, getSetting, updateSetting, getListingOwnerEmailById, getAllClubReviewComments, adminDeleteClubReviewComment } from "@/lib/db";
 import { notifyListingFeatured } from "@/lib/notifications";
 
 async function requireAdmin() {
@@ -27,8 +27,8 @@ export async function GET(req: Request) {
       return NextResponse.json(data);
     }
 
-    const [users, listings, heroTagline] = await Promise.all([getAllUsers(), getAllListings(), getSetting("hero_tagline")]);
-    return NextResponse.json({ users, listings, heroTagline });
+    const [users, listings, heroTagline, clubReviewComments] = await Promise.all([getAllUsers(), getAllListings(), getSetting("hero_tagline"), getAllClubReviewComments()]);
+    return NextResponse.json({ users, listings, heroTagline, clubReviewComments });
   } catch (err) {
     console.error("Admin GET error:", err);
     return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to load" }, { status: 500 });
@@ -65,6 +65,9 @@ export async function PUT(req: Request) {
       }
       case "deleteUser":
         await deleteUserAccount(data.userId);
+        break;
+      case "deleteClubReviewComment":
+        await adminDeleteClubReviewComment(data.commentId);
         break;
       case "updateSetting":
         if (typeof data.key !== "string" || typeof data.value !== "string") return NextResponse.json({ error: "Invalid" }, { status: 400 });

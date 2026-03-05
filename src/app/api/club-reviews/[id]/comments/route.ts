@@ -29,19 +29,20 @@ export async function POST(req: Request, { params }: Props) {
   try {
     const commentId = await createClubReviewComment(reviewId, session.user.id, displayName, body.trim());
 
-    // Send email to review owner and admin
     if (resend) {
       const review = await getClubReviewById(reviewId);
       if (review) {
-        const recipients: string[] = [NOTIFY_EMAIL];
-        if (review.userId && review.userId !== session.user.id) {
-          const ownerEmail = await getUserEmailById(review.userId);
-          if (ownerEmail && ownerEmail !== NOTIFY_EMAIL) recipients.push(ownerEmail);
-        }
+        const commentHtml = `
+          <div style="background:#f7f7f7;padding:16px;border-radius:8px;margin:16px 0;">
+            <p style="color:#333;line-height:1.6;margin:0;white-space:pre-wrap;">${body.trim()}</p>
+          </div>
+          <a href="https://www.soccer-near-me.com/club-reviews" style="display:inline-block;padding:12px 24px;background:#0F3154;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">View Reviews</a>
+        `;
 
+        // Admin email — includes account details
         await resend.emails.send({
           from: "Soccer Near Me <notifications@soccer-near-me.com>",
-          to: recipients,
+          to: [NOTIFY_EMAIL],
           subject: `New comment on review: ${review.clubName}`,
           html: `
             <div style="font-family:sans-serif;max-width:600px;">
@@ -53,13 +54,29 @@ export async function POST(req: Request, { params }: Props) {
                 <tr><td style="padding:4px 0;color:#666;">Display Name</td><td style="padding:4px 0;">${displayName}</td></tr>
                 <tr><td style="padding:4px 0;color:#666;">User ID</td><td style="padding:4px 0;font-size:12px;color:#999;">${session.user.id}</td></tr>
               </table>
-              <div style="background:#f7f7f7;padding:16px;border-radius:8px;margin:16px 0;">
-                <p style="color:#333;line-height:1.6;margin:0;white-space:pre-wrap;">${body.trim()}</p>
-              </div>
-              <a href="https://www.soccer-near-me.com/club-reviews" style="display:inline-block;padding:12px 24px;background:#0F3154;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">View Reviews</a>
+              ${commentHtml}
             </div>
           `,
         }).catch(() => {});
+
+        // Review owner email — no account details
+        if (review.userId && review.userId !== session.user.id) {
+          const ownerEmail = await getUserEmailById(review.userId);
+          if (ownerEmail && ownerEmail !== NOTIFY_EMAIL) {
+            await resend.emails.send({
+              from: "Soccer Near Me <notifications@soccer-near-me.com>",
+              to: [ownerEmail],
+              subject: `New comment on your review: ${review.clubName}`,
+              html: `
+                <div style="font-family:sans-serif;max-width:600px;">
+                  <h2 style="color:#1a365d;">New Comment on Your Club Review</h2>
+                  <p><strong>${displayName}</strong> commented on your review for <strong>${review.clubName}</strong>:</p>
+                  ${commentHtml}
+                </div>
+              `,
+            }).catch(() => {});
+          }
+        }
       }
     }
 

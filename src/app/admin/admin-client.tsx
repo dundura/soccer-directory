@@ -13,6 +13,7 @@ import type { ListingType } from "@/lib/types";
 
 type User = { id: string; name: string; email: string; role: string; createdAt: string };
 type Listing = { id: string; slug: string; name: string; status: string; featured: boolean; userId: string; createdAt: string; type: string };
+type ReviewComment = { id: string; reviewId: string; clubName: string; userId: string; userName: string; userEmail: string; accountName: string; body: string; createdAt: string };
 
 const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
@@ -48,7 +49,7 @@ export default function AdminClient() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const TABS = ["users", "listings", "crm", "contacts", "todos", "resources", "food"] as const;
+  const TABS = ["users", "listings", "comments", "crm", "contacts", "todos", "resources", "food"] as const;
   type Tab = typeof TABS[number];
   const [tab, setTab] = useState<Tab>(() => {
     const hash = typeof window !== "undefined" ? window.location.hash.replace("#", "") : "";
@@ -56,6 +57,7 @@ export default function AdminClient() {
   });
   const [users, setUsers] = useState<User[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
+  const [reviewComments, setReviewComments] = useState<ReviewComment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -107,6 +109,7 @@ export default function AdminClient() {
       const data = await res.json();
       setUsers(data.users);
       setListings(data.listings);
+      setReviewComments(data.clubReviewComments || []);
       setHeroTagline(data.heroTagline || "");
     } catch {
       setError("Failed to load admin data");
@@ -248,6 +251,12 @@ export default function AdminClient() {
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "listings" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
             >
               Listings ({listings.length})
+            </button>
+            <button
+              onClick={() => switchTab("comments")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "comments" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
+            >
+              Comments ({reviewComments.length})
             </button>
             <button
               onClick={() => switchTab("crm")}
@@ -470,6 +479,53 @@ export default function AdminClient() {
             </>
           )}
           </>
+          )}
+
+          {/* Comments Tab */}
+          {tab === "comments" && (
+            <div className="overflow-x-auto">
+              <p className="text-sm text-muted mb-4">All comments on club reviews, with account info for moderation.</p>
+              {reviewComments.length === 0 ? (
+                <p className="text-muted text-center py-8">No comments yet.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b-2 border-border text-left">
+                      <th className="py-3 px-3 font-bold text-primary">Club</th>
+                      <th className="py-3 px-3 font-bold text-primary">Display Name</th>
+                      <th className="py-3 px-3 font-bold text-primary">Account Name</th>
+                      <th className="py-3 px-3 font-bold text-primary">Email</th>
+                      <th className="py-3 px-3 font-bold text-primary">Comment</th>
+                      <th className="py-3 px-3 font-bold text-primary">Date</th>
+                      <th className="py-3 px-3 font-bold text-primary">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reviewComments.map((c) => (
+                      <tr key={c.id} className="border-b border-border hover:bg-surface/50">
+                        <td className="py-3 px-3 font-medium">{c.clubName}</td>
+                        <td className="py-3 px-3">{c.userName}</td>
+                        <td className="py-3 px-3 text-muted">{c.accountName || "—"}</td>
+                        <td className="py-3 px-3 text-muted">{c.userEmail || "—"}</td>
+                        <td className="py-3 px-3 max-w-xs">
+                          <p className="truncate" title={c.body}>{c.body}</p>
+                        </td>
+                        <td className="py-3 px-3 text-muted whitespace-nowrap">{new Date(c.createdAt).toLocaleDateString()}</td>
+                        <td className="py-3 px-3">
+                          <button
+                            onClick={() => { if (confirm(`Delete comment by ${c.userName}?`)) adminAction({ action: "deleteClubReviewComment", commentId: c.id }); }}
+                            disabled={actionLoading !== null}
+                            className="text-xs px-2.5 py-1 rounded-lg border border-red-200 text-[#DC373E] hover:bg-red-50 transition-colors disabled:opacity-50"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
           )}
 
           {tab === "crm" && <AdminCRM />}
