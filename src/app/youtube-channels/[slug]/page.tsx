@@ -180,23 +180,41 @@ export default async function YoutubeChannelPage({ params }: Props) {
           )}
 
           {/* Featured Videos */}
-          {channel.featuredVideos && channel.featuredVideos.length > 0 && (
-            <div className="bg-white rounded-2xl border border-border p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Featured Videos</h2>
-                <EditSectionLink ownerId={ownerId} listingType="youtube" listingId={channel.id} />
-              </div>
-              <div className="space-y-5">
-                {channel.featuredVideos.map((vid, i) => (
-                  <div key={i}>
-                    {vid.title && <h3 className="font-semibold text-sm text-primary mb-1.5">{vid.title}</h3>}
-                    {vid.description && <p className="text-xs text-muted mb-2">{vid.description}</p>}
-                    <VideoEmbed url={vid.url} />
+          {channel.featuredVideos && channel.featuredVideos.length > 0 && (() => {
+            const [main, ...rest] = channel.featuredVideos;
+            return (
+              <div className="bg-white rounded-2xl border border-border p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Featured Videos</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="youtube" listingId={channel.id} />
+                </div>
+
+                {/* Main featured video — full width */}
+                <div className="mb-6">
+                  {main.title && <h3 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary mb-2">{main.title}</h3>}
+                  {main.description && <p className="text-sm text-muted mb-3">{main.description}</p>}
+                  <VideoEmbed url={main.url} />
+                </div>
+
+                {/* Remaining videos — table layout */}
+                {rest.length > 0 && (
+                  <div className="space-y-4 border-t border-border pt-4">
+                    {rest.map((vid, i) => (
+                      <div key={i} className="flex gap-4">
+                        <div className="w-56 shrink-0 rounded-lg overflow-hidden">
+                          <VideoEmbed url={vid.url} />
+                        </div>
+                        <div className="flex-1 min-w-0 py-1">
+                          {vid.title && <h3 className="font-[family-name:var(--font-display)] text-base font-bold text-primary mb-1">{vid.title}</h3>}
+                          {vid.description && <p className="text-sm text-muted line-clamp-3">{vid.description}</p>}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Channel Videos */}
           {(channel.videoUrl || channel.videoUrl2 || channel.videoUrl3) && (

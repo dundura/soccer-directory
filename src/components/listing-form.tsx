@@ -97,6 +97,7 @@ type FieldDef = {
   required?: boolean;
   type?: string;
   options?: string[];
+  max?: number;
 };
 
 const FIELDS: Record<ListingType, FieldDef[]> = {
@@ -598,7 +599,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "creatorImage", label: "Creator Photo", type: "image" },
     { name: "creatorBio", label: "Creator Bio", type: "textarea" },
     { name: "_videos", label: "Featured Videos", type: "heading" },
-    { name: "featuredVideos", label: "Featured Videos (up to 10)", type: "top-episodes" },
+    { name: "featuredVideos", label: "Featured Videos (up to 5 — first is featured large)", type: "top-episodes", max: 5 },
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
     { name: "teamPhoto", label: "Channel Art / Sidebar Image", type: "image" },
@@ -1447,7 +1448,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
             /* Open Positions (up to 10 — title + description + apply URL) */
             ) : field.type === "open-positions" ? (
               <div className="space-y-3">
-                {Array.from({ length: Math.min(10, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                {Array.from({ length: Math.min(field.max || 10, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
                   let arr: { title: string; description?: string; applyUrl?: string }[] = [];
                   try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
                   const pos = arr[i] || { title: "", description: "", applyUrl: "" };
@@ -1504,7 +1505,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
             /* Top Episodes (up to 10 — title + description + URL) */
             ) : field.type === "top-episodes" ? (
               <div className="space-y-3">
-                {Array.from({ length: Math.min(10, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                {Array.from({ length: Math.min(field.max || 10, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
                   let arr: { title: string; description?: string; url: string }[] = [];
                   try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
                   const ep = arr[i] || { title: "", description: "", url: "" };
@@ -1593,7 +1594,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
             /* Tournament list (up to 10 names) */
             ) : field.type === "tournament-list" ? (
               <div className="space-y-2">
-                {Array.from({ length: Math.min(10, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                {Array.from({ length: Math.min(field.max || 10, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
                   let arr: string[] = [];
                   try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
                   return (
