@@ -1431,8 +1431,9 @@ function parseSocial(raw: unknown): { facebook: string; instagram: string; youtu
 
 function s(v: unknown): string { return (v as string) || ""; }
 
+function jsonOrStr(v: unknown): string { return !v ? "" : typeof v === "object" ? JSON.stringify(v) : String(v); }
 function profileFormFields(r: Record<string, unknown>): Record<string, string> {
-  return { teamPhoto: s(r.team_photo), photos: s(r.photos), videoUrl: s(r.video_url), practiceSchedule: s(r.practice_schedule), address: s(r.address), imagePosition: String(r.image_position ?? 50), heroImagePosition: String(r.hero_image_position ?? 50), tagline: s(r.tagline) };
+  return { teamPhoto: s(r.team_photo), photos: jsonOrStr(r.photos), videoUrl: s(r.video_url), practiceSchedule: jsonOrStr(r.practice_schedule), address: s(r.address), imagePosition: String(r.image_position ?? 50), heroImagePosition: String(r.hero_image_position ?? 50), tagline: s(r.tagline), mediaLinks: jsonOrStr(r.media_links) };
 }
 function mapClubToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
@@ -1508,7 +1509,7 @@ function mapBlogToForm(r: Record<string, unknown>): Record<string, string> {
 }
 function mapYoutubeChannelToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
-  return { name: s(r.name), creatorName: s(r.creator_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), description: s(r.description), website: s(r.website), channelUrl: s(r.channel_url), subscribeUrl: s(r.subscribe_url), email: s(r.email), phone: s(r.phone), featuredVideos: s(r.featured_videos), creatorHeading: s(r.creator_heading), creatorImage: s(r.creator_image), creatorBio: s(r.creator_bio), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), videoUrl2: s(r.video_url_2), videoUrl3: s(r.video_url_3), ...profileFormFields(r) };
+  return { name: s(r.name), creatorName: s(r.creator_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), description: s(r.description), website: s(r.website), channelUrl: s(r.channel_url), subscribeUrl: s(r.subscribe_url), email: s(r.email), phone: s(r.phone), featuredVideos: r.featured_videos ? JSON.stringify(r.featured_videos) : "", creatorHeading: s(r.creator_heading), creatorImage: s(r.creator_image), creatorBio: s(r.creator_bio), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), videoUrl2: s(r.video_url_2), videoUrl3: s(r.video_url_3), ...profileFormFields(r) };
 }
 
 // ── Update Listing ──────────────────────────────────────────
