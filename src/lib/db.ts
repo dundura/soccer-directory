@@ -647,7 +647,7 @@ function mapFutsalTeam(r: Record<string, unknown>): FutsalTeam {
 
 // ── Blog Posts ───────────────────────────────────────────────
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  const rows = await sql`SELECT * FROM blog_posts ORDER BY date DESC`;
+  const rows = await sql`SELECT * FROM blog_posts ORDER BY created_at DESC`;
   return rows.map(mapBlogPost);
 }
 
