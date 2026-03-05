@@ -36,22 +36,27 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const { searchParams } = new URL(req.url);
-  const type = searchParams.get("type");
-  const id = searchParams.get("id");
+  try {
+    const { searchParams } = new URL(req.url);
+    const type = searchParams.get("type");
+    const id = searchParams.get("id");
 
-  // Return single listing data for editing
-  if (type && id) {
-    const data = await getListingData(type, id, session.user.id);
-    if (!data) {
-      return NextResponse.json({ error: "Listing not found" }, { status: 404 });
+    // Return single listing data for editing
+    if (type && id) {
+      const data = await getListingData(type, id, session.user.id);
+      if (!data) {
+        return NextResponse.json({ error: "Listing not found" }, { status: 404 });
+      }
+      return NextResponse.json(data);
     }
-    return NextResponse.json(data);
-  }
 
-  // Return all listings for dashboard
-  const listings = await getListingsByUserId(session.user.id);
-  return NextResponse.json(listings);
+    // Return all listings for dashboard
+    const listings = await getListingsByUserId(session.user.id);
+    return NextResponse.json(listings);
+  } catch (err) {
+    console.error("Failed to fetch listings:", err);
+    return NextResponse.json({ error: "Failed to fetch listings", detail: err instanceof Error ? err.message : "Unknown" }, { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
