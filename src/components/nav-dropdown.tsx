@@ -79,7 +79,7 @@ export function NavDropdown({ label, items, sections, wide }: NavDropdownProps) 
         </svg>
       </button>
       {open && (
-        <div className={`absolute top-full left-0 mt-1 bg-white rounded-xl shadow-lg border border-border z-50 ${wide ? "p-3 min-w-[700px] grid grid-cols-4 gap-3" : "py-2 min-w-[200px]"}`}>
+        <div className={`absolute top-full left-0 mt-1 bg-white rounded-xl shadow-lg border border-border z-50 ${wide ? "p-3 min-w-[920px] grid grid-cols-6 gap-3" : "py-2 min-w-[200px]"}`}>
           {sections?.map((section, si) => (
             <div key={si} className={wide ? "" : `${si > 0 ? "border-t border-border mt-1 pt-1" : ""}`}>
               {section.title && (

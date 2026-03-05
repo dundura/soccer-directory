@@ -83,11 +83,14 @@ function Header() {
                     { label: "Guest Play", href: "/guest-play", desc: "Guest player opportunities", icon: "🤝" },
                     { label: "Player Profiles", href: "/guest-play/players", desc: "Browse available players", icon: "👤" },
                     { label: "Guest Player Posts", href: "/guest-play/posts", desc: "Latest guest play posts", icon: "📋" },
+                    /* { label: "Fundraisers", href: "/fundraiser", desc: "Support local teams", icon: "💚" }, */
+                  ],
+                },
+                {
+                  title: "Player ID Camps",
+                  items: [
                     { label: "College Showcases", href: "/camps?type=College+Showcase", desc: "Get recruited", icon: "🎓" },
                     { label: "Player ID Camps", href: "/camps?type=Player+ID+Camp", desc: "Get identified by scouts", icon: "🆔" },
-                    /* { label: "Fundraisers", href: "/fundraiser", desc: "Support local teams", icon: "💚" }, */
-                    { label: "US Tournaments", href: "/tournaments?region=US", desc: "Domestic tournaments", icon: "🇺🇸" },
-                    { label: "Int'l Tournaments", href: "/tournaments?region=International", desc: "International events", icon: "🌎" },
                   ],
                 },
                 {
@@ -96,6 +99,13 @@ function Header() {
                     { label: "Coaches & Trainers", href: "/trainers", desc: "Private & group training", icon: "🎯" },
                     { label: "Training Apps", href: "/training-apps", desc: "Soccer training apps", icon: "📱" },
                     { label: "Products & Services", href: "/services", desc: "Soccer products & services", icon: "🛒" },
+                  ],
+                },
+                {
+                  title: "Tournaments",
+                  items: [
+                    { label: "US Tournaments", href: "/tournaments?region=US", desc: "Domestic tournaments", icon: "🇺🇸" },
+                    { label: "Int'l Tournaments", href: "/tournaments?region=International", desc: "International events", icon: "🌎" },
                   ],
                 },
                 {
