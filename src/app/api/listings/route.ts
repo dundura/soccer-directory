@@ -150,9 +150,8 @@ export async function POST(req: Request) {
       case "fundraiser":
         slug = await createFundraiser({
           title: data.name,
-          tagline: data.tagline,
           description: data.description,
-          goal: data.goal ? String(Math.round(Number(data.goal) * 100)) : "",
+          goal: data.goal && !isNaN(Number(data.goal)) ? String(Math.round(Number(data.goal) * 100)) : "",
           coachName: data.coachName,
           coachEmail: data.contactEmail,
           coachPhone: data.phone,
