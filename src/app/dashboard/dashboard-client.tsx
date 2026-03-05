@@ -337,10 +337,10 @@ function DashboardContent() {
 
   // Auto-open edit form when editType and editId params are present
   useEffect(() => {
-    if (editTypeParam && editIdParam && !editingListing) {
+    if (editTypeParam && editIdParam && !editingListing && !loading && session?.user?.id) {
       handleEdit({ id: editIdParam, slug: "", type: editTypeParam, name: "", status: "approved" });
     }
-  }, [editTypeParam, editIdParam]);
+  }, [editTypeParam, editIdParam, loading, session]);
 
   async function fetchListings() {
     setLoading(true);
