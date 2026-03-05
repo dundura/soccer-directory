@@ -207,7 +207,7 @@ export function MobileMenu() {
               onClick={() => setOpen(false)}
               className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
             >
-              Fundraising
+              Fundraisers
             </a>
             <hr className="border-white/10 my-3" />
             <a
