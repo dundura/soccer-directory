@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
-import { getFundraiserBySlug, createDonation } from "@/lib/db";
+import { getFundraiserBySlug, createDonation, getRosterByFundraiserId } from "@/lib/db";
 
 type Ctx = { params: Promise<{ slug: string }> };
 
@@ -10,7 +10,7 @@ export async function POST(req: Request, { params }: Ctx) {
   if (!fundraiser) return NextResponse.json({ error: "Fundraiser not found" }, { status: 404 });
   if (!fundraiser.active) return NextResponse.json({ error: "This fundraiser is no longer accepting donations" }, { status: 400 });
 
-  const { amount, donorName, donorEmail, donorMessage, onBehalfOf } = await req.json();
+  const { amount, donorName, donorEmail, donorMessage, onBehalfOf, playerId } = await req.json();
   const cents = Math.round(Number(amount) * 100);
   if (!cents || cents < 500 || cents > 50000) {
     return NextResponse.json({ error: "Amount must be between $5 and $500" }, { status: 400 });
@@ -56,13 +56,24 @@ export async function POST(req: Request, { params }: Ctx) {
     stripeSessionId: session.id,
     donorMessage: donorMessage || undefined,
     onBehalfOf: onBehalfOf || undefined,
+    playerId: playerId || undefined,
   });
 
   return NextResponse.json({ clientSecret: session.client_secret });
 }
 
-export async function GET(req: Request) {
+export async function GET(req: Request, { params }: Ctx) {
   const url = new URL(req.url);
+
+  // Return roster for the donation form dropdown
+  if (url.searchParams.get("roster")) {
+    const { slug } = await params;
+    const fundraiser = await getFundraiserBySlug(slug);
+    if (!fundraiser) return NextResponse.json({ roster: [] });
+    const roster = await getRosterByFundraiserId(fundraiser.id);
+    return NextResponse.json({ roster: roster.map(r => ({ id: r.id, playerName: r.playerName })) });
+  }
+
   const sessionId = url.searchParams.get("session_id");
   if (!sessionId) return NextResponse.json({ error: "Missing session_id" }, { status: 400 });
   const session = await getStripe().checkout.sessions.retrieve(sessionId);

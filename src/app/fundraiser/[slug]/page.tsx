@@ -188,9 +188,16 @@ export default async function FundraiserPage({ params }: Props) {
                         )}
                         {player.bio && <p className="text-sm text-muted/80 mt-1">{player.bio}</p>}
                       </div>
-                      <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full shrink-0">
-                        Player
-                      </span>
+                      <div className="text-right shrink-0">
+                        {(player.amountRaised || 0) > 0 && (
+                          <div className="text-sm font-bold text-green-700 mb-0.5">
+                            ${((player.amountRaised || 0) / 100).toLocaleString("en-US")}
+                          </div>
+                        )}
+                        <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                          Player
+                        </span>
+                      </div>
                     </div>
                   );
                 })}

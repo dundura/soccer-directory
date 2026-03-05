@@ -8,6 +8,9 @@ import { useParams } from "next/navigation";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white";
+const selectClass = inputClass + " appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M6%208L1%203h10z%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_12px_center]";
+
+type RosterPlayer = { id: string; playerName: string };
 
 export default function DonatePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -17,10 +20,20 @@ export default function DonatePage() {
   const [donorEmail, setDonorEmail] = useState("");
   const [donorMessage, setDonorMessage] = useState("");
   const [onBehalfOf, setOnBehalfOf] = useState("");
+  const [selectedPlayerId, setSelectedPlayerId] = useState("");
+  const [rosterPlayers, setRosterPlayers] = useState<RosterPlayer[]>([]);
   const [clientSecret, setClientSecret] = useState("");
   const [error, setError] = useState("");
 
   const presetAmounts = [10, 25, 50, 100];
+
+  // Fetch roster players for the dropdown
+  useEffect(() => {
+    fetch(`/api/fundraiser/${slug}/donate?roster=1`)
+      .then(r => r.json())
+      .then(data => { if (data.roster) setRosterPlayers(data.roster); })
+      .catch(() => {});
+  }, [slug]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,7 +52,7 @@ export default function DonatePage() {
       const res = await fetch(`/api/fundraiser/${slug}/donate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: Number(amount), donorName, donorEmail, donorMessage, onBehalfOf }),
+        body: JSON.stringify({ amount: Number(amount), donorName, donorEmail, donorMessage, onBehalfOf, playerId: selectedPlayerId || undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to create checkout");
@@ -171,6 +184,19 @@ export default function DonatePage() {
               <label className="block text-sm font-semibold text-primary mb-1">Your Email <span className="text-accent">*</span></label>
               <input type="email" value={donorEmail} onChange={(e) => setDonorEmail(e.target.value)} className={inputClass} placeholder="email@example.com" required />
             </div>
+
+            {rosterPlayers.length > 0 && (
+              <div>
+                <label className="block text-sm font-semibold text-primary mb-1">Support a Player <span className="text-muted font-normal">(optional)</span></label>
+                <select value={selectedPlayerId} onChange={(e) => setSelectedPlayerId(e.target.value)} className={selectClass}>
+                  <option value="">-- No specific player --</option>
+                  {rosterPlayers.map((p) => (
+                    <option key={p.id} value={p.id}>{p.playerName}</option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted mt-1">Select a player to credit your donation to them</p>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-semibold text-primary mb-1">On Behalf Of <span className="text-muted font-normal">(optional)</span></label>

@@ -7,6 +7,8 @@ import { ImageUpload } from "@/components/image-upload";
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";
 
+type RosterEntry = { id: string; playerName: string; email?: string; inviteStatus?: string; position?: string; ageGroup?: string; amountRaised?: number };
+
 export default function EditFundraiserPage() {
   const { status } = useSession();
   const { slug } = useParams<{ slug: string }>();
@@ -28,6 +30,12 @@ export default function EditFundraiserPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
+  // Roster invite state
+  const [roster, setRoster] = useState<RosterEntry[]>([]);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviting, setInviting] = useState(false);
+  const [inviteMsg, setInviteMsg] = useState("");
+
   useEffect(() => {
     fetch(`/api/fundraiser/${slug}`).then(r => r.json()).then(data => {
       if (data.fundraiser) {
@@ -47,6 +55,10 @@ export default function EditFundraiserPage() {
         setTeamId(f.teamId || "");
         setLoaded(true);
       }
+    }).catch(() => {});
+    // Load roster
+    fetch(`/api/fundraiser/${slug}/invite`).then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setRoster(data);
     }).catch(() => {});
   }, [slug]);
 
@@ -83,6 +95,31 @@ export default function EditFundraiserPage() {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleInvite(e: React.FormEvent) {
+    e.preventDefault();
+    if (!inviteEmail.trim()) return;
+    setInviting(true); setInviteMsg("");
+    try {
+      const res = await fetch(`/api/fundraiser/${slug}/invite`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: inviteEmail.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to invite");
+      setInviteMsg(`Invite sent to ${inviteEmail}`);
+      setInviteEmail("");
+      // Refresh roster
+      const rosterRes = await fetch(`/api/fundraiser/${slug}/invite`);
+      const rosterData = await rosterRes.json();
+      if (Array.isArray(rosterData)) setRoster(rosterData);
+    } catch (err) {
+      setInviteMsg(err instanceof Error ? err.message : "Failed to invite");
+    } finally {
+      setInviting(false);
     }
   }
 
@@ -164,6 +201,73 @@ export default function EditFundraiserPage() {
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </form>
+
+      {/* Roster / Invite Players Section */}
+      <div className="mt-10 bg-white rounded-2xl border border-border p-6 shadow-lg">
+        <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-1">Roster — Invite Players</h2>
+        <p className="text-sm text-muted mb-4">Add players by email. They'll receive an invite to create an account and join the roster. Donors can then credit donations to specific players.</p>
+
+        <form onSubmit={handleInvite} className="flex gap-2 mb-4">
+          <input
+            type="email"
+            value={inviteEmail}
+            onChange={(e) => setInviteEmail(e.target.value)}
+            placeholder="player@example.com"
+            className={inputClass}
+            required
+          />
+          <button
+            type="submit"
+            disabled={inviting}
+            className="shrink-0 px-5 py-3 rounded-xl bg-accent text-white font-bold text-sm hover:bg-accent-hover transition-colors disabled:opacity-50"
+          >
+            {inviting ? "Sending..." : "Send Invite"}
+          </button>
+        </form>
+
+        {inviteMsg && (
+          <p className={`text-sm mb-4 px-4 py-2 rounded-lg ${inviteMsg.startsWith("Invite sent") ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-600 border border-red-200"}`}>
+            {inviteMsg}
+          </p>
+        )}
+
+        {roster.length > 0 && (
+          <div className="space-y-2">
+            {roster.map((p) => (
+              <div key={p.id} className="flex items-center gap-3 py-3 px-3 rounded-xl border border-border bg-surface/50">
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm text-primary">
+                    {p.inviteStatus === "accepted" ? p.playerName : (p.email || "Unknown")}
+                  </div>
+                  <div className="text-xs text-muted mt-0.5">
+                    {p.email && <span>{p.email}</span>}
+                    {p.position && <span> &middot; {p.position}</span>}
+                    {p.ageGroup && <span> &middot; {p.ageGroup}</span>}
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  {(p.amountRaised || 0) > 0 && (
+                    <div className="text-xs font-bold text-green-700 mb-0.5">
+                      ${((p.amountRaised || 0) / 100).toLocaleString("en-US")} raised
+                    </div>
+                  )}
+                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                    p.inviteStatus === "accepted"
+                      ? "bg-green-50 text-green-700 border border-green-200"
+                      : "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                  }`}>
+                    {p.inviteStatus === "accepted" ? "Joined" : "Pending"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {roster.length === 0 && (
+          <p className="text-sm text-muted text-center py-4">No players invited yet. Send an invite above to get started.</p>
+        )}
+      </div>
     </div>
   );
 }

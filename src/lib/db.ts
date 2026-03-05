@@ -2356,6 +2356,8 @@ export interface FundraiserRosterEntry {
   id: string; fundraiserId: string; playerName: string;
   position?: string; ageGroup?: string; photoUrl?: string; bio?: string;
   sortOrder: number; createdAt: string;
+  email?: string; inviteToken?: string; inviteStatus?: string; userId?: string;
+  amountRaised?: number;
 }
 
 export interface Fundraiser {
@@ -2480,28 +2482,77 @@ export async function deleteFundraiser(slug: string, userId: string): Promise<bo
 }
 
 // ── Fundraiser Roster ────────────────────────────────────────
-export async function getRosterByFundraiserId(fundraiserId: string): Promise<FundraiserRosterEntry[]> {
-  const rows = await sql`SELECT * FROM fundraiser_roster WHERE fundraiser_id = ${fundraiserId} ORDER BY sort_order ASC, created_at ASC`;
-  return rows.map((r) => ({
+function mapRosterEntry(r: Record<string, unknown>): FundraiserRosterEntry {
+  return {
     id: r.id as string, fundraiserId: r.fundraiser_id as string,
     playerName: r.player_name as string, position: r.position as string | undefined,
     ageGroup: r.age_group as string | undefined, photoUrl: r.photo_url as string | undefined,
     bio: r.bio as string | undefined, sortOrder: r.sort_order as number,
     createdAt: r.created_at as string,
-  }));
+    email: r.email as string | undefined, inviteToken: r.invite_token as string | undefined,
+    inviteStatus: r.invite_status as string | undefined, userId: r.user_id as string | undefined,
+    amountRaised: r.amount_raised ? Number(r.amount_raised) : 0,
+  };
+}
+
+export async function getRosterByFundraiserId(fundraiserId: string): Promise<FundraiserRosterEntry[]> {
+  const rows = await sql`SELECT r.*,
+    COALESCE((SELECT SUM(d.amount) FROM donations d WHERE d.player_id = r.id AND d.status = 'completed'), 0) as amount_raised
+    FROM fundraiser_roster r WHERE r.fundraiser_id = ${fundraiserId} AND r.invite_status = 'accepted'
+    ORDER BY r.sort_order ASC, r.created_at ASC`;
+  return rows.map(mapRosterEntry);
+}
+
+export async function getRosterWithPendingByFundraiserId(fundraiserId: string): Promise<FundraiserRosterEntry[]> {
+  const rows = await sql`SELECT r.*,
+    COALESCE((SELECT SUM(d.amount) FROM donations d WHERE d.player_id = r.id AND d.status = 'completed'), 0) as amount_raised
+    FROM fundraiser_roster r WHERE r.fundraiser_id = ${fundraiserId}
+    ORDER BY r.sort_order ASC, r.created_at ASC`;
+  return rows.map(mapRosterEntry);
+}
+
+export async function invitePlayerToRoster(fundraiserId: string, email: string): Promise<{ id: string; token: string }> {
+  // Check if already invited
+  const existing = await sql`SELECT id, invite_token FROM fundraiser_roster WHERE fundraiser_id = ${fundraiserId} AND email = ${email.toLowerCase()} LIMIT 1`;
+  if (existing[0]) {
+    return { id: existing[0].id as string, token: existing[0].invite_token as string };
+  }
+  const id = genId();
+  const token = genId();
+  await sql`INSERT INTO fundraiser_roster (id, fundraiser_id, player_name, email, invite_token, invite_status, sort_order)
+    VALUES (${id}, ${fundraiserId}, ${email.toLowerCase()}, ${email.toLowerCase()}, ${token}, 'pending', 999)`;
+  return { id, token };
+}
+
+export async function getRosterEntryByToken(token: string): Promise<(FundraiserRosterEntry & { fundraiserTitle?: string; fundraiserSlug?: string }) | null> {
+  const rows = await sql`SELECT r.*, f.title as fundraiser_title, f.slug as fundraiser_slug
+    FROM fundraiser_roster r LEFT JOIN fundraisers f ON r.fundraiser_id = f.id
+    WHERE r.invite_token = ${token} LIMIT 1`;
+  if (!rows[0]) return null;
+  return { ...mapRosterEntry(rows[0]), fundraiserTitle: rows[0].fundraiser_title as string, fundraiserSlug: rows[0].fundraiser_slug as string };
+}
+
+export async function acceptRosterInvite(token: string, userId: string, data: { playerName: string; position?: string; ageGroup?: string; photoUrl?: string; bio?: string }): Promise<boolean> {
+  const rows = await sql`UPDATE fundraiser_roster SET
+    invite_status = 'accepted', user_id = ${userId}, player_name = ${data.playerName},
+    position = ${data.position || null}, age_group = ${data.ageGroup || null},
+    photo_url = ${data.photoUrl || null}, bio = ${data.bio || null}
+    WHERE invite_token = ${token} RETURNING id`;
+  return rows.length > 0;
 }
 
 async function syncFundraiserRoster(fundraiserId: string, rosterJson: string) {
   try {
     const entries = JSON.parse(rosterJson);
     if (!Array.isArray(entries)) return;
-    await sql`DELETE FROM fundraiser_roster WHERE fundraiser_id = ${fundraiserId}`;
+    // Only delete non-invited entries (manually added ones)
+    await sql`DELETE FROM fundraiser_roster WHERE fundraiser_id = ${fundraiserId} AND email IS NULL`;
     for (let i = 0; i < entries.length; i++) {
       const e = entries[i];
       if (!e.playerName) continue;
       const id = genId();
-      await sql`INSERT INTO fundraiser_roster (id, fundraiser_id, player_name, position, age_group, photo_url, bio, sort_order)
-        VALUES (${id}, ${fundraiserId}, ${e.playerName}, ${e.position || null}, ${e.ageGroup || null}, ${e.photoUrl || null}, ${e.bio || null}, ${i})`;
+      await sql`INSERT INTO fundraiser_roster (id, fundraiser_id, player_name, position, age_group, photo_url, bio, sort_order, invite_status)
+        VALUES (${id}, ${fundraiserId}, ${e.playerName}, ${e.position || null}, ${e.ageGroup || null}, ${e.photoUrl || null}, ${e.bio || null}, ${i}, 'accepted')`;
     }
   } catch { /* ignore bad JSON */ }
 }
@@ -2512,6 +2563,7 @@ export interface Donation {
   amount: number; platformFee: number; netAmount: number;
   stripeSessionId?: string; stripePaymentIntentId?: string;
   donorMessage?: string; onBehalfOf?: string;
+  playerId?: string;
   status: string; createdAt: string;
 }
 
@@ -2528,9 +2580,9 @@ export async function getDonationsByFundraiserId(fundraiserId: string): Promise<
   }));
 }
 
-export async function createDonation(data: { fundraiserId: string; donorName: string; donorEmail: string; amount: number; platformFee: number; netAmount: number; stripeSessionId: string; donorMessage?: string; onBehalfOf?: string }) {
-  await sql`INSERT INTO donations (fundraiser_id, donor_name, donor_email, amount, platform_fee, net_amount, stripe_session_id, donor_message, on_behalf_of, status)
-    VALUES (${data.fundraiserId}, ${data.donorName}, ${data.donorEmail}, ${data.amount}, ${data.platformFee}, ${data.netAmount}, ${data.stripeSessionId}, ${data.donorMessage || null}, ${data.onBehalfOf || null}, 'pending')`;
+export async function createDonation(data: { fundraiserId: string; donorName: string; donorEmail: string; amount: number; platformFee: number; netAmount: number; stripeSessionId: string; donorMessage?: string; onBehalfOf?: string; playerId?: string }) {
+  await sql`INSERT INTO donations (fundraiser_id, donor_name, donor_email, amount, platform_fee, net_amount, stripe_session_id, donor_message, on_behalf_of, player_id, status)
+    VALUES (${data.fundraiserId}, ${data.donorName}, ${data.donorEmail}, ${data.amount}, ${data.platformFee}, ${data.netAmount}, ${data.stripeSessionId}, ${data.donorMessage || null}, ${data.onBehalfOf || null}, ${data.playerId || null}, 'pending')`;
 }
 
 export async function completeDonation(stripeSessionId: string, paymentIntentId: string): Promise<{ fundraiserId: string; donorName: string; donorEmail: string; amount: number; donorMessage?: string; onBehalfOf?: string } | null> {
