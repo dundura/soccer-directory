@@ -147,6 +147,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "mediaLinks", label: "Media Links (up to 5 URLs)", type: "media-links" },
     { name: "_positions", label: "Open Positions (Staff / Coaches)", type: "heading" },
     { name: "openPositions", label: "Open Positions", type: "open-positions" },
+    { name: "_scholarships", label: "Scholarships", type: "heading" },
+    { name: "scholarshipsAvailable", label: "Scholarships Available?", options: ["", "Yes", "No"] },
   ],
   team: [
     { name: "name", label: "Team Name", required: true },
@@ -198,6 +200,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_media", label: "Media Coverage", type: "heading" },
     { name: "mediaLinks", label: "Media Links (up to 5 URLs)", type: "media-links" },
+    { name: "_scholarships", label: "Scholarships", type: "heading" },
+    { name: "scholarshipsAvailable", label: "Scholarships Available?", options: ["", "Yes", "No"] },
   ],
   trainer: [
     { name: "name", label: "Your Name", required: true },

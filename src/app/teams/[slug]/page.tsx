@@ -126,18 +126,25 @@ export default async function TeamDetailPage({ params }: Props) {
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{team.name}</h3>
                 <p className="text-sm text-muted mt-1">{team.city}, {team.state}</p>
               </div>
-              <div className="flex items-center justify-between px-4 py-2.5 border-t border-border gap-2.5">
-                {team.lookingForPlayers && (
-                  <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full flex-1 text-center">
-                    Roster spots available!
+              <div className="flex flex-col gap-2 px-4 py-2.5 border-t border-border">
+                <div className="flex items-center justify-between gap-2.5">
+                  {team.lookingForPlayers && (
+                    <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full flex-1 text-center">
+                      Roster spots available!
+                    </span>
+                  )}
+                  <a
+                    href={`/contact/team/${slug}`}
+                    className="bg-[#DC373E] text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#C42F36] transition-colors whitespace-nowrap"
+                  >
+                    Contact
+                  </a>
+                </div>
+                {team.scholarshipsAvailable === "Yes" && (
+                  <span className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full text-center">
+                    Scholarships Available
                   </span>
                 )}
-                <a
-                  href={`/contact/team/${slug}`}
-                  className="bg-[#DC373E] text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#C42F36] transition-colors whitespace-nowrap"
-                >
-                  Contact
-                </a>
               </div>
             </div>
 
