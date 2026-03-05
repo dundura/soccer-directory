@@ -43,8 +43,8 @@ export function ListingCard({
       className="group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 relative"
     >
       {image && (
-        <div className="w-full h-40 overflow-hidden bg-surface flex items-center justify-center">
-          <img src={image} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={{ objectPosition: `center ${imagePosition ?? 30}%` }} />
+        <div className="w-full h-[200px] overflow-hidden bg-surface flex items-center justify-center">
+          <img src={image} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={{ objectPosition: `center ${imagePosition ?? 50}%` }} />
         </div>
       )}
       <div className="p-6">

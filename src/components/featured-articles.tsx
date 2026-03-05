@@ -1,8 +1,11 @@
-import { getBlogPosts } from "@/lib/db";
+import { getBlogPosts, getBlogPostBySlug } from "@/lib/db";
+
+const PINNED_SLUG = "top-7-soccer-training-apps-train-smarter-at-home";
 
 export async function FeaturedArticles() {
-  const posts = await getBlogPosts();
-  const articles = posts.slice(0, 3);
+  const [posts, pinned] = await Promise.all([getBlogPosts(), getBlogPostBySlug(PINNED_SLUG)]);
+  const top2 = posts.filter((p) => p.slug !== PINNED_SLUG).slice(0, 2);
+  const articles = pinned ? [...top2, pinned] : posts.slice(0, 3);
   if (articles.length === 0) return null;
 
   return (

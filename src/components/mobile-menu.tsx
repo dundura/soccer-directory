@@ -28,7 +28,7 @@ const navGroups: NavGroup[] = [
           { label: "Tryouts", href: "/tryouts" },
           { label: "US Tournaments", href: "/tournaments?region=US" },
           { label: "Int'l Tournaments", href: "/tournaments?region=International" },
-          { label: "Fundraisers", href: "/fundraiser/new" },
+          { label: "Fundraisers", href: "/fundraiser" },
         ],
       },
       {
@@ -203,7 +203,7 @@ export function MobileMenu() {
               Recommendations
             </a>
             <a
-              href="/fundraiser/new"
+              href="/fundraiser"
               onClick={() => setOpen(false)}
               className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
             >
