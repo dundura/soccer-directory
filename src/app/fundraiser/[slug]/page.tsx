@@ -93,28 +93,30 @@ export default async function FundraiserPage({ params }: Props) {
           )}
 
           {/* Title & Status */}
-          <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-extrabold text-primary mb-1 leading-tight">
-            {fundraiser.title}
-          </h1>
-          {fundraiser.tagline && (
-            <p className="text-sm text-accent font-medium mb-2">{fundraiser.tagline}</p>
-          )}
-          {!fundraiser.active && (
-            <span className="inline-block mb-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-              Fundraiser Closed
-            </span>
-          )}
+          <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mb-6">
+            <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-extrabold text-primary mb-1 leading-tight">
+              {fundraiser.title}
+            </h1>
+            {fundraiser.tagline && (
+              <p className="text-sm text-accent font-medium mb-2">{fundraiser.tagline}</p>
+            )}
+            {!fundraiser.active && (
+              <span className="inline-block mb-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                Fundraiser Closed
+              </span>
+            )}
 
-          {/* Tag Bubbles */}
-          {fundraiser.tags && fundraiser.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2 mb-4">
-              {fundraiser.tags.map((tag, i) => (
-                <span key={i} className="bg-blue-50 text-blue-800 text-sm font-semibold px-3.5 py-1.5 rounded-full border border-blue-100">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
+            {/* Tag Bubbles */}
+            {fundraiser.tags && fundraiser.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {fundraiser.tags.map((tag, i) => (
+                  <span key={i} className="bg-blue-50 text-blue-800 text-sm font-semibold px-3.5 py-1.5 rounded-full border border-blue-100">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Special Announcements */}
           {hasAnnouncements && (
