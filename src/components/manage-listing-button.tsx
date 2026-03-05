@@ -18,7 +18,7 @@ export function ManageListingButton({ ownerId, listingType, listingId }: { owner
 
   if (!isOwner && !isAdmin) return null;
 
-  const editHref = isAdmin && listingType && listingId
+  const editHref = isAdmin && !isOwner && listingType && listingId
     ? `/admin?editType=${listingType}&editId=${listingId}`
     : "/dashboard";
 
