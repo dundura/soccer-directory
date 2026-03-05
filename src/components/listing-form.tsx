@@ -1173,7 +1173,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
             </p>
           )}
           <div className="grid grid-cols-3 gap-2">
-            {(Object.keys(TYPE_LABELS) as ListingType[]).filter((t) => t !== "marketplace" && t !== "books").map((t) => (
+            {(Object.keys(TYPE_LABELS) as ListingType[]).filter((t) => t !== "marketplace" && t !== "books" && t !== "fundraiser").map((t) => (
               <button
                 key={t}
                 type="button"
