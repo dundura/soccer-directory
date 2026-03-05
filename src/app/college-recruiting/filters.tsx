@@ -15,13 +15,13 @@ export function RecruiterFilters({ recruiters }: { recruiters: Recruiter[] }) {
   const [page, setPage] = useState(1);
   const [viewAll, setViewAll] = useState(false);
 
-  const specialties = [...new Set(recruiters.map((t) => t.specialty))].sort();
-  const states = [...new Set(recruiters.map((t) => t.state))].sort();
+  const specialties = [...new Set(recruiters.map((t) => t.specialty).filter(Boolean))].sort();
+  const states = [...new Set(recruiters.map((t) => t.state).filter(Boolean))].sort();
 
   const filtered = recruiters.filter((t) => {
     if (search) {
       const q = search.toLowerCase();
-      if (!t.name.toLowerCase().includes(q) && !t.city.toLowerCase().includes(q) && !t.state.toLowerCase().includes(q)) return false;
+      if (!t.name.toLowerCase().includes(q) && !(t.city || "").toLowerCase().includes(q) && !(t.state || "").toLowerCase().includes(q)) return false;
     }
     if (specialty && t.specialty !== specialty) return false;
     if (state && t.state !== state) return false;
@@ -103,14 +103,14 @@ export function RecruiterFilters({ recruiters }: { recruiters: Recruiter[] }) {
                   key={recruiter.id}
                   href={`/college-recruiting/${recruiter.slug}`}
                   title={recruiter.name}
-                  subtitle={`${recruiter.city}, ${recruiter.state}`}
+                  subtitle={[recruiter.city, recruiter.state].filter(Boolean).join(", ")}
                   image={recruiter.teamPhoto && !recruiter.teamPhoto.includes("idf.webp") ? recruiter.teamPhoto : recruiter.logo || recruiter.imageUrl || undefined}
-                  badges={[{ label: recruiter.specialty, variant: "green" }]}
+                  badges={recruiter.specialty ? [{ label: recruiter.specialty, variant: "green" }] : []}
                   details={[
-                    { label: "Price", value: recruiter.priceRange },
+                    ...(recruiter.priceRange ? [{ label: "Price", value: recruiter.priceRange }] : []),
                     { label: "Rating", value: `⭐ ${recruiter.rating} (${recruiter.reviewCount})` },
-                    { label: "Experience", value: recruiter.experience.length > 50 ? recruiter.experience.slice(0, 50) + "…" : recruiter.experience },
-                    { label: "Area", value: recruiter.serviceArea.length > 50 ? recruiter.serviceArea.slice(0, 50) + "…" : recruiter.serviceArea },
+                    ...(recruiter.experience ? [{ label: "Experience", value: recruiter.experience.length > 50 ? recruiter.experience.slice(0, 50) + "…" : recruiter.experience }] : []),
+                    ...(recruiter.serviceArea ? [{ label: "Area", value: recruiter.serviceArea.length > 50 ? recruiter.serviceArea.slice(0, 50) + "…" : recruiter.serviceArea }] : []),
                   ]}
                   featured={recruiter.featured}
                   imagePosition={recruiter.imagePosition}
