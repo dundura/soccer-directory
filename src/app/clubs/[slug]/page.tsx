@@ -302,6 +302,47 @@ export default async function ClubDetailPage({ params }: Props) {
               </div>
           </div>
 
+          {/* ====== Open Positions ====== */}
+          {club.openPositions && club.openPositions.length > 0 && (
+            <div className="order-4 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-3.5">
+                <h3 className="text-[15px] font-bold text-primary">Open Positions</h3>
+                <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
+              </div>
+              <div className="space-y-3">
+                {club.openPositions.map((pos, i) => (
+                  <div key={i} className="border border-border rounded-xl p-4 hover:border-primary/30 transition-colors">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-bold text-primary">{pos.title}</h4>
+                        {pos.description && (
+                          <p className="text-sm text-muted mt-1 leading-relaxed">{pos.description}</p>
+                        )}
+                      </div>
+                      {pos.applyUrl ? (
+                        <a
+                          href={pos.applyUrl.startsWith("http") ? pos.applyUrl : `https://${pos.applyUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="shrink-0 bg-accent text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-accent-hover transition-colors"
+                        >
+                          Apply Here &#8599;
+                        </a>
+                      ) : (
+                        <a
+                          href={`/contact/club/${slug}`}
+                          className="shrink-0 bg-[#DC373E] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#C42F36] transition-colors"
+                        >
+                          Contact Us
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* ====== Photos & Video ====== */}
           <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between mb-3">

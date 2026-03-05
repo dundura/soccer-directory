@@ -53,6 +53,7 @@ export interface Club extends ProfileFields {
   announcementImage3?: string;
   announcementCta3?: string;
   announcementCtaUrl3?: string;
+  openPositions?: { title: string; description?: string; applyUrl?: string }[];
   featured: boolean;
   createdAt: string;
   updatedAt: string;

@@ -145,6 +145,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_media", label: "Media Coverage", type: "heading" },
     { name: "mediaLinks", label: "Media Links (up to 5 URLs)", type: "media-links" },
+    { name: "_positions", label: "Open Positions (Staff / Coaches)", type: "heading" },
+    { name: "openPositions", label: "Open Positions", type: "open-positions" },
   ],
   team: [
     { name: "name", label: "Team Name", required: true },
@@ -1391,6 +1393,63 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                   );
                 })}
                 <p className="text-xs text-muted">Add a title and URL for each media link</p>
+              </div>
+
+            /* Open Positions (up to 10 — title + description + apply URL) */
+            ) : field.type === "open-positions" ? (
+              <div className="space-y-3">
+                {Array.from({ length: Math.min(10, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                  let arr: { title: string; description?: string; applyUrl?: string }[] = [];
+                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  const pos = arr[i] || { title: "", description: "", applyUrl: "" };
+                  const updatePos = (key: string, val: string) => {
+                    const updated = [...arr];
+                    if (!updated[i]) updated[i] = { title: "", description: "", applyUrl: "" };
+                    (updated[i] as Record<string, string>)[key] = val;
+                    const filtered = updated.filter((p) => p.title);
+                    handleChange(field.name, JSON.stringify(filtered));
+                  };
+                  return (
+                    <div key={i} className="flex gap-2 items-start">
+                      <div className="flex-1 space-y-1.5">
+                        <input
+                          type="text"
+                          value={pos.title || ""}
+                          onChange={(e) => updatePos("title", e.target.value)}
+                          placeholder="Position title (e.g. Head Coach, GK Coach)"
+                          className={inputClass}
+                        />
+                        <textarea
+                          value={pos.description || ""}
+                          onChange={(e) => updatePos("description", e.target.value)}
+                          placeholder="Brief description (optional)"
+                          className={inputClass}
+                          rows={2}
+                        />
+                        <input
+                          type="url"
+                          value={pos.applyUrl || ""}
+                          onChange={(e) => updatePos("applyUrl", e.target.value)}
+                          placeholder="External apply URL (optional — leave blank for Contact Us)"
+                          className={inputClass}
+                        />
+                      </div>
+                      {pos.title && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = arr.filter((_, j) => j !== i);
+                            handleChange(field.name, JSON.stringify(updated));
+                          }}
+                          className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0 mt-2"
+                        >
+                          x
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-muted">Add positions your club is hiring for. Leave &ldquo;apply URL&rdquo; blank to show a &ldquo;Contact Us&rdquo; button instead.</p>
               </div>
 
             /* Top Episodes (up to 10 — title + description + URL) */
