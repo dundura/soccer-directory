@@ -282,13 +282,6 @@ export default async function FundraiserPage({ params }: Props) {
             </div>
           </div>
 
-          {/* Sidebar Image */}
-          {fundraiser.teamPhoto && (
-            <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(15,30,53,0.10)]">
-              <img src={fundraiser.teamPhoto} alt={fundraiser.title} className="w-full h-[200px] object-cover" />
-            </div>
-          )}
-
           {/* Organizer Card */}
           {(fundraiser.coachName || fundraiser.coachEmail || fundraiser.coachPhone) && (
             <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] text-center">

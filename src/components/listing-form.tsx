@@ -801,7 +801,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "description", label: "Description — Tell supporters what this fundraiser is for", type: "textarea" },
     { name: "goal", label: "Fundraising Goal ($) — Leave blank if no goal" },
     { name: "_tags", label: "Tags / Quick Info Bubbles", type: "heading" },
-    { name: "tags", label: "Tags — one per line (e.g. ⚽ Youth Soccer, 📍 Cary NC, ☀️ Summer 2026)", type: "tag-list" },
+    { name: "tags", label: "Tags / Quick Info Bubbles", type: "tag-list" },
     { name: "_contact", label: "Contact Information", type: "heading" },
     { name: "coachName", label: "Contact Name", required: true },
     { name: "contactEmail", label: "Contact Email", type: "email", required: true },
@@ -831,7 +831,6 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
     { name: "imageUrl", label: "Hero Image", type: "image" },
-    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
@@ -1687,20 +1686,41 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                 })}
               </div>
 
-            /* Tag list — one per line */
+            /* Tag list — 3 fixed rows with permanent emojis */
             ) : field.type === "tag-list" ? (
               <div className="space-y-2">
-                <textarea
-                  value={(() => { try { return JSON.parse(formData[field.name] || "[]").join("\n"); } catch { return formData[field.name] || ""; } })()}
-                  onChange={(e) => {
-                    const tags = e.target.value.split("\n").filter(t => t.trim());
-                    handleChange(field.name, JSON.stringify(tags));
-                  }}
-                  rows={4}
-                  placeholder={"⚽ Youth Soccer\n📍 Cary, NC\n☀️ Summer 2026"}
-                  className={inputClass + " resize-none"}
-                />
-                <p className="text-xs text-muted">One tag per line. Use emoji for visual flair.</p>
+                {(() => {
+                  const TAG_EMOJIS = ["⚽", "📍", "☀️"];
+                  const TAG_PLACEHOLDERS = ["Youth Soccer", "Cary, NC", "Summer 2026"];
+                  const TAG_MAX = 30;
+                  let tags: string[] = [];
+                  try { tags = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  // Strip emoji prefix if stored with it
+                  const stripEmoji = (t: string, emoji: string) => t.startsWith(emoji) ? t.slice(emoji.length).trimStart() : t;
+                  const vals = TAG_EMOJIS.map((em, i) => stripEmoji(tags[i] || "", em));
+                  const updateTag = (i: number, val: string) => {
+                    const trimmed = val.slice(0, TAG_MAX);
+                    const updated = [...vals];
+                    updated[i] = trimmed;
+                    const result = updated.map((v, j) => v.trim() ? `${TAG_EMOJIS[j]} ${v.trim()}` : "").filter(Boolean);
+                    handleChange(field.name, JSON.stringify(result));
+                  };
+                  return TAG_EMOJIS.map((emoji, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span className="text-xl w-8 text-center shrink-0">{emoji}</span>
+                      <input
+                        type="text"
+                        value={vals[i]}
+                        onChange={(e) => updateTag(i, e.target.value)}
+                        maxLength={TAG_MAX}
+                        placeholder={TAG_PLACEHOLDERS[i]}
+                        className={inputClass}
+                      />
+                      <span className="text-[11px] text-muted shrink-0 w-10 text-right">{vals[i].length}/{TAG_MAX}</span>
+                    </div>
+                  ));
+                })()}
+                <p className="text-xs text-muted">These appear as bubbles under your fundraiser title.</p>
               </div>
 
             /* Roster entries */
