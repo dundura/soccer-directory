@@ -1959,6 +1959,17 @@ export interface ClubReview {
   reviewText: string;
   status: string;
   createdAt: string;
+  likes: number;
+  dislikes: number;
+}
+
+export interface ClubReviewComment {
+  id: string;
+  reviewId: string;
+  userId: string;
+  userName: string;
+  body: string;
+  createdAt: string;
 }
 
 export async function createClubReview(data: {
@@ -1975,7 +1986,10 @@ export async function createClubReview(data: {
 }
 
 export async function getApprovedClubReviews(): Promise<ClubReview[]> {
-  const rows = await sql`SELECT * FROM club_reviews WHERE status = 'approved' ORDER BY created_at DESC`;
+  const rows = await sql`SELECT cr.*,
+    COALESCE((SELECT COUNT(*)::int FROM club_review_votes WHERE review_id = cr.id AND vote_type = 'like'), 0) as likes,
+    COALESCE((SELECT COUNT(*)::int FROM club_review_votes WHERE review_id = cr.id AND vote_type = 'dislike'), 0) as dislikes
+    FROM club_reviews cr WHERE cr.status = 'approved' ORDER BY cr.created_at DESC`;
   return rows.map(mapClubReview);
 }
 
@@ -2010,6 +2024,67 @@ export async function deleteClubReview(id: string, userId: string): Promise<bool
   return rows.length > 0;
 }
 
+// Club review comments
+export async function getClubReviewComments(reviewId: string): Promise<ClubReviewComment[]> {
+  const rows = await sql`SELECT * FROM club_review_comments WHERE review_id = ${reviewId} ORDER BY created_at ASC`;
+  return rows.map((r) => ({
+    id: r.id as string, reviewId: r.review_id as string, userId: r.user_id as string,
+    userName: r.user_name as string, body: r.body as string, createdAt: r.created_at as string,
+  }));
+}
+
+export async function createClubReviewComment(reviewId: string, userId: string, userName: string, body: string): Promise<string> {
+  const id = genId();
+  await sql`INSERT INTO club_review_comments (id, review_id, user_id, user_name, body) VALUES (${id}, ${reviewId}, ${userId}, ${userName}, ${body})`;
+  return id;
+}
+
+export async function deleteClubReviewComment(commentId: string, userId: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM club_review_comments WHERE id = ${commentId} AND user_id = ${userId} RETURNING id`;
+  return rows.length > 0;
+}
+
+// Club review votes
+export async function voteClubReview(reviewId: string, userId: string, voteType: "like" | "dislike"): Promise<{ likes: number; dislikes: number }> {
+  const existing = await sql`SELECT id, vote_type FROM club_review_votes WHERE review_id = ${reviewId} AND user_id = ${userId} LIMIT 1`;
+  if (existing.length > 0) {
+    if (existing[0].vote_type === voteType) {
+      // Same vote = remove it (toggle off)
+      await sql`DELETE FROM club_review_votes WHERE id = ${existing[0].id}`;
+    } else {
+      // Different vote = switch it
+      await sql`UPDATE club_review_votes SET vote_type = ${voteType} WHERE id = ${existing[0].id}`;
+    }
+  } else {
+    const id = genId();
+    await sql`INSERT INTO club_review_votes (id, review_id, user_id, vote_type) VALUES (${id}, ${reviewId}, ${userId}, ${voteType})`;
+  }
+  // Return updated counts
+  const counts = await sql`SELECT
+    COALESCE((SELECT COUNT(*)::int FROM club_review_votes WHERE review_id = ${reviewId} AND vote_type = 'like'), 0) as likes,
+    COALESCE((SELECT COUNT(*)::int FROM club_review_votes WHERE review_id = ${reviewId} AND vote_type = 'dislike'), 0) as dislikes`;
+  return { likes: Number(counts[0].likes), dislikes: Number(counts[0].dislikes) };
+}
+
+export async function getUserVotesForReviews(userId: string): Promise<Record<string, string>> {
+  const rows = await sql`SELECT review_id, vote_type FROM club_review_votes WHERE user_id = ${userId}`;
+  const map: Record<string, string> = {};
+  for (const r of rows) map[r.review_id as string] = r.vote_type as string;
+  return map;
+}
+
+// Get review owner info for email notifications
+export async function getClubReviewById(reviewId: string): Promise<{ userId: string; clubName: string; reviewerName: string } | null> {
+  const rows = await sql`SELECT user_id, club_name, reviewer_name FROM club_reviews WHERE id = ${reviewId} LIMIT 1`;
+  if (!rows[0]) return null;
+  return { userId: rows[0].user_id as string, clubName: rows[0].club_name as string, reviewerName: rows[0].reviewer_name as string };
+}
+
+export async function getUserEmailById(userId: string): Promise<string | null> {
+  const rows = await sql`SELECT email FROM users WHERE id = ${userId} LIMIT 1`;
+  return (rows[0]?.email as string) || null;
+}
+
 function mapClubReview(r: Record<string, unknown>): ClubReview {
   return {
     id: r.id as string, userId: r.user_id as string || "", clubName: r.club_name as string,
@@ -2019,6 +2094,7 @@ function mapClubReview(r: Record<string, unknown>): ClubReview {
     reviewerName: r.reviewer_name as string, reviewerRole: r.reviewer_role as string || "",
     reviewText: r.review_text as string || "", status: r.status as string,
     createdAt: r.created_at as string,
+    likes: Number(r.likes) || 0, dislikes: Number(r.dislikes) || 0,
   };
 }
 
