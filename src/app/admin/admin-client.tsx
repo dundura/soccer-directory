@@ -48,13 +48,23 @@ export default function AdminClient() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [tab, setTab] = useState<"users" | "listings" | "crm" | "contacts" | "todos" | "resources" | "food">("users");
+  const TABS = ["users", "listings", "crm", "contacts", "todos", "resources", "food"] as const;
+  type Tab = typeof TABS[number];
+  const [tab, setTab] = useState<Tab>(() => {
+    const hash = typeof window !== "undefined" ? window.location.hash.replace("#", "") : "";
+    return TABS.includes(hash as Tab) ? (hash as Tab) : (searchParams.get("tab") as Tab) || "users";
+  });
   const [users, setUsers] = useState<User[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [autoEditDone, setAutoEditDone] = useState(false);
+
+  function switchTab(t: Tab) {
+    setTab(t);
+    window.history.replaceState(null, "", `#${t}`);
+  }
 
   // Filter state
   const [listingTypeFilter, setListingTypeFilter] = useState("all");
@@ -228,43 +238,43 @@ export default function AdminClient() {
           {/* Tabs */}
           <div className="flex flex-wrap gap-2 mb-6">
             <button
-              onClick={() => setTab("users")}
+              onClick={() => switchTab("users")}
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "users" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
             >
               Users ({users.length})
             </button>
             <button
-              onClick={() => setTab("listings")}
+              onClick={() => switchTab("listings")}
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "listings" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
             >
               Listings ({listings.length})
             </button>
             <button
-              onClick={() => setTab("crm")}
+              onClick={() => switchTab("crm")}
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "crm" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
             >
               CRM
             </button>
             <button
-              onClick={() => setTab("contacts")}
+              onClick={() => switchTab("contacts")}
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "contacts" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
             >
               Contacts
             </button>
             <button
-              onClick={() => setTab("todos")}
+              onClick={() => switchTab("todos")}
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "todos" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
             >
               Todo List
             </button>
             <button
-              onClick={() => setTab("resources")}
+              onClick={() => switchTab("resources")}
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "resources" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
             >
               Resources
             </button>
             <button
-              onClick={() => setTab("food")}
+              onClick={() => switchTab("food")}
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "food" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
             >
               Food Tracker

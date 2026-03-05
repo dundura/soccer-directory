@@ -2085,10 +2085,10 @@ export async function getAdminContacts() {
   return await sql`SELECT * FROM admin_contacts ORDER BY created_at DESC`;
 }
 export async function addAdminContact(data: Record<string, string>) {
-  await sql`INSERT INTO admin_contacts (name, email, social, phone, notes) VALUES (${data.name}, ${data.email || ''}, ${data.social || ''}, ${data.phone || ''}, ${data.notes || ''})`;
+  await sql`INSERT INTO admin_contacts (name, email, social, phone, notes, action_item, group_name) VALUES (${data.name}, ${data.email || ''}, ${data.social || ''}, ${data.phone || ''}, ${data.notes || ''}, ${data.actionItem || ''}, ${data.groupName || ''})`;
 }
 export async function updateAdminContact(id: number, data: Record<string, string>) {
-  await sql`UPDATE admin_contacts SET name=${data.name}, email=${data.email || ''}, social=${data.social || ''}, phone=${data.phone || ''}, notes=${data.notes || ''} WHERE id=${id}`;
+  await sql`UPDATE admin_contacts SET name=${data.name}, email=${data.email || ''}, social=${data.social || ''}, phone=${data.phone || ''}, notes=${data.notes || ''}, action_item=${data.actionItem || ''}, group_name=${data.groupName || ''} WHERE id=${id}`;
 }
 export async function deleteAdminContact(id: number) {
   await sql`DELETE FROM admin_contacts WHERE id = ${id}`;
