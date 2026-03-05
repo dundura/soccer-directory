@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { VideoEmbed, PhotoGallery } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
+import { FeaturedArticles } from "@/components/featured-articles";
 import { ContactGroupForm } from "./contact-form";
 import { AnytimeInlineCTA } from "@/components/ui";
 
@@ -164,6 +165,8 @@ export default async function FacebookGroupPage({ params }: Props) {
               <PhotoGallery photos={group.photos} imagePosition={group.imagePosition} />
             </div>
           )}
+
+          <FeaturedArticles />
 
           {/* Contact Form */}
           <div id="contact" className="bg-white rounded-2xl border-2 border-accent/20 p-6">

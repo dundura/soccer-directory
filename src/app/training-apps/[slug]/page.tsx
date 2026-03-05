@@ -2,6 +2,7 @@ import { getTrainingAppBySlug, getTrainingAppSlugs, getListingOwner } from "@/li
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
+import { FeaturedArticles } from "@/components/featured-articles";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
@@ -206,6 +207,8 @@ export default async function TrainingAppDetailPage({ params }: Props) {
                 <VideoEmbed url={app.videoUrl} />
               </div>
             )}
+
+            <FeaturedArticles />
 
             {/* Share */}
             <div className="border-t border-border pt-6 mt-6">

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { getRecruiterBySlug, getRecruiterSlugs, getListingOwner, getBlogPosts } from "@/lib/db";
+import { getRecruiterBySlug, getRecruiterSlugs, getListingOwner } from "@/lib/db";
+import { FeaturedArticles } from "@/components/featured-articles";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
@@ -59,9 +60,6 @@ export default async function RecruiterDetailPage({ params }: Props) {
   } catch {
     ownerId = null;
   }
-
-  const allPosts = await getBlogPosts();
-  const relatedArticles = allPosts.filter((p) => p.category === "College Recruiting").slice(0, 3);
 
   const pageUrl = `https://www.soccer-near-me.com/college-recruiting/${slug}`;
   const imgPos = recruiter.imagePosition ?? 50;
@@ -287,30 +285,7 @@ export default async function RecruiterDetailPage({ params }: Props) {
               </div>
             )}
 
-            {/* Featured Articles */}
-            {relatedArticles.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 className="text-[15px] font-bold text-primary mb-4">Featured Articles</h3>
-                <div className="space-y-3">
-                  {relatedArticles.map((post, i) => (
-                    <a
-                      key={post.id}
-                      href={`/blog/${post.slug}`}
-                      className="flex items-start gap-3 p-3 rounded-xl border border-border hover:bg-surface transition-colors group"
-                    >
-                      {post.coverImage && (
-                        <img src={post.coverImage} alt={post.title} className="w-20 h-14 rounded-lg object-cover shrink-0 hidden sm:block" />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <span className="block font-semibold text-sm text-primary group-hover:text-accent-hover transition-colors leading-snug">{post.title}</span>
-                        <span className="block text-xs text-muted mt-1 line-clamp-1">{post.excerpt}</span>
-                        <span className="block text-xs text-muted mt-1">{post.date} &middot; {post.readTime}</span>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
+            <FeaturedArticles />
 
             {/* Availability Schedule */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">

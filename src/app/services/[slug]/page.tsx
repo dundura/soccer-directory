@@ -3,6 +3,7 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { FeaturedArticles } from "@/components/featured-articles";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -215,6 +216,7 @@ export default async function ServiceDetailPage({ params }: Props) {
           </div>
         </div>
 
+        <div className="mt-8"><FeaturedArticles /></div>
         <div className="mt-8"><AnytimeInlineCTA /></div>
       </div>
     </>

@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
+import { FeaturedArticles } from "@/components/featured-articles";
 import { ContactPodcastForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
@@ -265,6 +266,8 @@ export default async function PodcastPage({ params }: Props) {
               <PhotoGallery photos={podcast.photos} imagePosition={podcast.imagePosition} />
             </div>
           )}
+
+          <FeaturedArticles />
 
           {/* Be a Guest Form */}
           <div id="be-a-guest" className="bg-white rounded-2xl border-2 border-accent/20 p-6">

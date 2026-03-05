@@ -7,6 +7,7 @@ import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { AnnouncementSection } from "@/components/announcement-section";
+import { FeaturedArticles } from "@/components/featured-articles";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -363,6 +364,11 @@ export default async function TeamDetailPage({ params }: Props) {
                 ))}
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
+          </div>
+
+          {/* ====== Featured Articles ====== */}
+          <div className="order-5 lg:order-none lg:col-start-2">
+            <FeaturedArticles />
           </div>
 
           {/* ====== Media ====== */}

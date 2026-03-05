@@ -3,6 +3,7 @@ import { Badge, AnytimeInlineCTA } from "@/components/ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
+import { FeaturedArticles } from "@/components/featured-articles";
 import { RequestSpotForm } from "./request-spot-form";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -152,6 +153,8 @@ export default async function GuestDetailPage({ params }: Props) {
                 <PhotoGallery photos={opp.photos} />
               </section>
             )}
+
+            <FeaturedArticles />
 
             {/* Request Spot Form */}
             <section id="request-spot" className="bg-white rounded-2xl border-2 border-accent/20 p-6 md:p-8">

@@ -4,6 +4,7 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { FeaturedArticles } from "@/components/featured-articles";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { notFound } from "next/navigation";
@@ -306,6 +307,8 @@ export default async function SpecialEventDetailPage({ params }: Props) {
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
             </div>
+
+            <FeaturedArticles />
 
             {/* Contact Form */}
             <div id="contact" className="bg-white rounded-2xl border-2 border-accent/20 p-6">

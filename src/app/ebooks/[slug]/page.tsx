@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { PhotoGallery } from "@/components/profile-ui";
+import { FeaturedArticles } from "@/components/featured-articles";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -115,6 +116,8 @@ export default async function EbookDetailPage({ params }: Props) {
                 <PhotoGallery photos={item.photos} />
               </div>
             )}
+
+            <FeaturedArticles />
           </div>
         </div>
       </div>

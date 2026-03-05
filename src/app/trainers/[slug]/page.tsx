@@ -6,6 +6,7 @@ import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { FeaturedArticles } from "@/components/featured-articles";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -323,6 +324,9 @@ export default async function TrainerDetailPage({ params }: Props) {
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
             </div>
+
+            {/* Featured Articles */}
+            <FeaturedArticles />
 
             {/* Reviews */}
             <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
