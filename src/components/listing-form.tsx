@@ -270,7 +270,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "city", label: "City", required: true },
     { name: "country", label: "Country", required: true, type: "country" },
     { name: "state", label: "State", required: true, type: "state-select" },
-    { name: "campType", label: "Camp Type", required: true, options: ["Elite ID Camp", "Recreational Camp", "Position-Specific Clinic", "College Showcase", "Specialty Clinic", "Day Camp"] },
+    { name: "campType", label: "Camp Type", required: true, options: ["Elite ID Camp", "Player ID Camp", "Recreational Camp", "Position-Specific Clinic", "College Showcase", "Specialty Clinic", "Day Camp"] },
     { name: "ageRange", label: "Age Range", required: true, type: "age-multi" },
     { name: "dates", label: "Dates (e.g. June 15-18, 2026)", required: true },
     { name: "price", label: "Price (e.g. $299)", required: true },
