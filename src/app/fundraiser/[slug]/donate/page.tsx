@@ -67,7 +67,7 @@ export default function DonatePage() {
 
   if (step === "success") {
     return (
-      <div className="min-h-screen bg-primary">
+      <div className="min-h-screen bg-surface">
         <div className="max-w-lg mx-auto px-6 py-20 text-center">
           <div className="bg-white rounded-2xl border border-border p-10 shadow-lg">
             <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
@@ -88,9 +88,9 @@ export default function DonatePage() {
 
   if (step === "checkout" && clientSecret) {
     return (
-      <div className="min-h-screen bg-primary">
+      <div className="min-h-screen bg-surface">
         <div className="max-w-lg mx-auto px-6 py-10">
-          <a href={`/fundraiser/${slug}`} className="text-sm text-white/60 hover:text-white transition-colors mb-6 inline-flex items-center gap-1">
+          <a href={`/fundraiser/${slug}`} className="text-sm text-muted hover:text-primary transition-colors mb-6 inline-flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             Back to fundraiser
           </a>
@@ -108,21 +108,21 @@ export default function DonatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-primary">
+    <div className="min-h-screen bg-surface">
       {/* Header */}
-      <div className="bg-primary pt-8 pb-12">
+      <div className="pt-8 pb-6">
         <div className="max-w-lg mx-auto px-6">
-          <a href={`/fundraiser/${slug}`} className="text-sm text-white/60 hover:text-white transition-colors mb-6 inline-flex items-center gap-1">
+          <a href={`/fundraiser/${slug}`} className="text-sm text-muted hover:text-primary transition-colors mb-6 inline-flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             Back to fundraiser
           </a>
-          <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-2">Make a Donation</h1>
-          <p className="text-white/60">Your support makes a difference. Choose an amount below.</p>
+          <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-primary mb-2">Make a Donation</h1>
+          <p className="text-muted">Your support makes a difference. Choose an amount below.</p>
         </div>
       </div>
 
       {/* Form Card */}
-      <div className="max-w-lg mx-auto px-6 -mt-4 pb-16">
+      <div className="max-w-lg mx-auto px-6 pb-16">
         <div className="bg-white rounded-2xl border border-border p-6 md:p-8 shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Preset amounts */}
@@ -204,7 +204,7 @@ export default function DonatePage() {
         </div>
 
         {/* Security badge */}
-        <div className="flex items-center justify-center gap-2 mt-6 text-white/40 text-xs">
+        <div className="flex items-center justify-center gap-2 mt-6 text-muted/60 text-xs">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
