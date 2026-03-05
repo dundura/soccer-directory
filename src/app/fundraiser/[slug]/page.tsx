@@ -18,7 +18,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const DEFAULT_HERO = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+function ProgressRing({ pct, color, label, value, sub }: { pct: number; color: "navy" | "red"; label: string; value: string; sub: string }) {
+  const r = 38;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (pct / 100) * circ;
+  const strokeColor = color === "red" ? "#DC373E" : "var(--color-primary)";
+  const valueClass = color === "red" ? "text-[#DC373E]" : "text-primary";
+
+  return (
+    <div className="text-center">
+      <svg width="90" height="90" viewBox="0 0 90 90" className="block mx-auto mb-1.5">
+        <circle cx="45" cy="45" r={r} fill="none" stroke="#e8edf4" strokeWidth="8" />
+        <circle
+          cx="45" cy="45" r={r} fill="none"
+          stroke={strokeColor} strokeWidth="8"
+          strokeDasharray={circ} strokeDashoffset={offset}
+          strokeLinecap="round"
+          transform="rotate(-90 45 45)"
+          className="transition-all duration-700"
+        />
+        <text x="45" y="50" textAnchor="middle" className="fill-primary" style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: 700 }}>
+          {pct}%
+        </text>
+      </svg>
+      <div className={`font-[family-name:var(--font-display)] text-xl font-bold ${valueClass}`}>{value}</div>
+      <div className="text-[11px] text-muted mt-0.5">{sub}</div>
+      <div className="text-xs text-muted font-medium mt-1">{label}</div>
+    </div>
+  );
+}
 
 export default async function FundraiserPage({ params }: Props) {
   const { slug } = await params;
@@ -26,148 +54,178 @@ export default async function FundraiserPage({ params }: Props) {
   if (!fundraiser) notFound();
   const donations = await getDonationsByFundraiserId(fundraiser.id);
   const totalRaised = donations.reduce((sum, d) => sum + d.amount, 0);
+  const goalCents = fundraiser.goal || 0;
+  const pct = goalCents > 0 ? Math.min(100, Math.round((totalRaised / goalCents) * 100)) : 0;
   const pageUrl = `https://www.soccer-near-me.com/fundraiser/${slug}`;
 
   return (
-    <>
-      {/* Hero */}
-      <div className="relative">
-        <img
-          src={fundraiser.heroImageUrl || DEFAULT_HERO}
-          alt={fundraiser.title}
-          className="w-full h-[280px] sm:h-[360px] object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 max-w-4xl mx-auto px-6 pb-8">
-          <h1 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+    <div className="bg-surface min-h-screen">
+      <div className="max-w-[1100px] mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start">
+
+        {/* ── LEFT COLUMN ── */}
+        <div>
+          {/* Hero Image */}
+          {fundraiser.heroImageUrl && (
+            <img
+              src={fundraiser.heroImageUrl}
+              alt={fundraiser.title}
+              className="w-full rounded-xl object-cover mb-5"
+              style={{ maxHeight: 260 }}
+            />
+          )}
+
+          {/* Title & Status */}
+          <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-extrabold text-primary mb-2 leading-tight">
             {fundraiser.title}
           </h1>
           {!fundraiser.active && (
-            <span className="inline-block mt-2 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+            <span className="inline-block mb-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
               Fundraiser Closed
             </span>
           )}
-        </div>
-      </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
-
-          {/* Main Content */}
-          <div className="space-y-6">
-            {/* Progress */}
-            <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
-              <div className="flex items-baseline justify-between mb-3">
-                <div>
-                  <span className="text-3xl font-extrabold text-accent">${(totalRaised / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-                  <span className="text-muted text-sm ml-1">raised</span>
-                </div>
-                {fundraiser.goal && (
-                  <span className="text-sm text-muted">
-                    of ${(fundraiser.goal / 100).toLocaleString("en-US")} goal
-                  </span>
-                )}
-              </div>
-              {fundraiser.goal && fundraiser.goal > 0 && (
-                <div className="w-full bg-surface rounded-full h-3 overflow-hidden">
-                  <div
-                    className="bg-accent h-3 rounded-full transition-all"
-                    style={{ width: `${Math.min(100, (totalRaised / fundraiser.goal) * 100)}%` }}
-                  />
-                </div>
-              )}
-              <p className="text-sm text-muted mt-2">{donations.length} donation{donations.length !== 1 ? "s" : ""}</p>
-              {fundraiser.active && (
-                <a
-                  href={`/fundraiser/${slug}/donate`}
-                  className="block w-full mt-4 py-3 rounded-xl bg-[#DC373E] text-white text-center font-bold text-lg hover:bg-[#C42F36] transition-colors"
-                >
-                  Donate Now
-                </a>
-              )}
+          {/* About Card */}
+          {fundraiser.description && (
+            <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3 pb-2.5 border-b-2 border-border">
+                About This Fundraiser
+              </h2>
+              <p className="text-[15px] leading-[1.7] text-primary/80 whitespace-pre-line">{fundraiser.description}</p>
             </div>
+          )}
 
-            {/* Description */}
-            {fundraiser.description && (
-              <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">About This Fundraiser</h2>
-                <p className="text-sm text-muted leading-relaxed whitespace-pre-line">{fundraiser.description}</p>
-              </div>
-            )}
+          {/* Supporters Card */}
+          <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
+            <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary pb-2.5 border-b-2 border-border mb-1">
+              Supporters{" "}
+              <span className="font-normal text-muted text-base">({donations.length})</span>
+            </h2>
 
-            {/* Donations */}
-            {donations.length > 0 && (
-              <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">
-                  Supporters ({donations.length})
-                </h2>
-                <div className="space-y-3">
-                  {donations.map((d) => (
-                    <div key={d.id} className="flex items-start gap-3 p-3 rounded-xl border border-border">
-                      <div className="w-10 h-10 rounded-full bg-accent/10 text-accent font-bold flex items-center justify-center shrink-0 text-sm">
-                        {d.donorName.charAt(0).toUpperCase()}
+            {donations.length === 0 ? (
+              <p className="text-sm text-muted py-6 text-center">Be the first to support this fundraiser!</p>
+            ) : (
+              <div>
+                {donations.map((d) => {
+                  const initials = d.donorName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+                  return (
+                    <div key={d.id} className="flex items-center gap-3.5 py-3 border-b border-border last:border-b-0">
+                      <div className="w-[42px] h-[42px] rounded-full bg-gradient-to-br from-primary to-[#2a5298] flex items-center justify-center text-white font-[family-name:var(--font-display)] text-lg font-bold shrink-0">
+                        {initials}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-baseline justify-between">
-                          <span className="font-bold text-sm text-primary">{d.donorName}</span>
-                          <span className="font-bold text-sm text-accent">${(d.amount / 100).toFixed(2)}</span>
+                        <div className="font-semibold text-sm text-primary">{d.donorName}</div>
+                        <div className="text-[13px] text-muted mt-0.5">
+                          Donated ${(d.amount / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                          {d.onBehalfOf ? ` — on behalf of ${d.onBehalfOf}` : ""}
                         </div>
-                        {d.onBehalfOf && <p className="text-xs text-muted">On behalf of {d.onBehalfOf}</p>}
-                        {d.donorMessage && <p className="text-sm text-muted mt-1">{d.donorMessage}</p>}
+                        {d.donorMessage && <p className="text-sm text-muted/80 mt-1 italic">&ldquo;{d.donorMessage}&rdquo;</p>}
                       </div>
+                      <span className="bg-green-50 text-green-700 text-xs font-bold px-2.5 py-1 rounded-full shrink-0">
+                        Donor
+                      </span>
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             )}
           </div>
+        </div>
 
-          {/* Sidebar */}
-          <div className="space-y-4">
-            {/* Contact */}
-            {(fundraiser.coachName || fundraiser.coachEmail || fundraiser.coachPhone) && (
-              <div className="bg-white rounded-2xl border border-border p-5 shadow-sm">
-                <h3 className="font-[family-name:var(--font-display)] text-sm font-bold text-primary mb-3">Contact</h3>
-                {fundraiser.coachName && <p className="text-sm font-medium text-primary">{fundraiser.coachName}</p>}
-                {fundraiser.coachEmail && (
-                  <a href={`mailto:${fundraiser.coachEmail}`} className="text-sm text-accent hover:text-accent-hover block mt-1">{fundraiser.coachEmail}</a>
-                )}
-                {fundraiser.coachPhone && <p className="text-sm text-muted mt-1">{fundraiser.coachPhone}</p>}
-              </div>
+        {/* ── RIGHT COLUMN ── */}
+        <div className="space-y-5 lg:sticky lg:top-20">
+          {/* Support Card */}
+          <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)]">
+            <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary text-center mb-5">
+              Support This Fundraiser
+            </h3>
+
+            {/* Progress Rings */}
+            <div className="flex justify-center gap-8 mb-6">
+              <ProgressRing
+                pct={pct}
+                color="navy"
+                label="Fundraising Goal"
+                value={`$${(totalRaised / 100).toLocaleString("en-US")}`}
+                sub={goalCents > 0 ? `raised of $${(goalCents / 100).toLocaleString("en-US")}` : "total raised"}
+              />
+              <ProgressRing
+                pct={donations.length > 0 ? Math.min(100, donations.length * 10) : 0}
+                color="red"
+                label="Donations"
+                value={`${donations.length}`}
+                sub={donations.length === 1 ? "supporter" : "supporters"}
+              />
+            </div>
+
+            {/* Give Now Button */}
+            {fundraiser.active && (
+              <a
+                href={`/fundraiser/${slug}/donate`}
+                className="block w-full py-3.5 rounded-lg bg-[#DC373E] text-white text-center font-[family-name:var(--font-display)] text-xl font-bold tracking-wide hover:bg-[#C42F36] transition-all hover:-translate-y-0.5 mb-2.5"
+              >
+                Give Now
+              </a>
             )}
 
-            {/* Social Links */}
-            {(fundraiser.websiteUrl || fundraiser.facebookUrl || fundraiser.instagramUrl) && (
-              <div className="bg-white rounded-2xl border border-border p-5 shadow-sm">
-                <h3 className="font-[family-name:var(--font-display)] text-sm font-bold text-primary mb-3">Links</h3>
-                <div className="space-y-2">
-                  {fundraiser.websiteUrl && (
-                    <a href={fundraiser.websiteUrl.startsWith("http") ? fundraiser.websiteUrl : `https://${fundraiser.websiteUrl}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-accent hover:text-accent-hover">
-                      <span>&#127760;</span> Website
-                    </a>
-                  )}
-                  {fundraiser.facebookUrl && (
-                    <a href={fundraiser.facebookUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-accent hover:text-accent-hover">
-                      <span>&#128101;</span> Facebook
-                    </a>
-                  )}
-                  {fundraiser.instagramUrl && (
-                    <a href={fundraiser.instagramUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-accent hover:text-accent-hover">
-                      <span>&#128247;</span> Instagram
-                    </a>
-                  )}
-                </div>
-              </div>
-            )}
+            {/* Share Button */}
+            <a
+              href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(fundraiser.title)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full py-3 rounded-lg bg-white text-primary border-2 border-border text-center font-[family-name:var(--font-display)] text-lg font-bold hover:border-primary transition-colors mb-5"
+            >
+              Share
+            </a>
 
-            {/* Share */}
-            <div className="bg-white rounded-2xl border border-border p-5 shadow-sm">
-              <h3 className="font-[family-name:var(--font-display)] text-sm font-bold text-primary mb-3">Share</h3>
+            {/* Social Share */}
+            <div className="text-center">
+              <p className="text-[11px] font-bold text-muted uppercase tracking-widest mb-3">Share this fundraiser</p>
               <ShareButtons url={pageUrl} title={fundraiser.title} />
             </div>
           </div>
+
+          {/* Organizer Card */}
+          {(fundraiser.coachName || fundraiser.coachEmail || fundraiser.coachPhone) && (
+            <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] text-center">
+              <div className="w-[60px] h-[60px] rounded-full bg-gradient-to-br from-primary to-[#1a4080] border-[3px] border-[#DC373E] flex items-center justify-center mx-auto mb-3">
+                <span className="font-[family-name:var(--font-display)] text-xl font-extrabold text-white">
+                  {(fundraiser.coachName || "?")[0].toUpperCase()}
+                </span>
+              </div>
+              {fundraiser.coachName && (
+                <h4 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-1">{fundraiser.coachName}</h4>
+              )}
+              <p className="text-[13px] text-muted mb-2">Organizer</p>
+              {fundraiser.coachEmail && (
+                <a href={`mailto:${fundraiser.coachEmail}`} className="block text-[13px] text-[#DC373E] hover:underline mb-0.5">{fundraiser.coachEmail}</a>
+              )}
+              {fundraiser.coachPhone && (
+                <a href={`tel:${fundraiser.coachPhone}`} className="block text-[13px] text-[#DC373E] hover:underline">{fundraiser.coachPhone}</a>
+              )}
+              {/* Social links */}
+              {(fundraiser.websiteUrl || fundraiser.facebookUrl || fundraiser.instagramUrl) && (
+                <div className="flex justify-center gap-3 mt-4">
+                  {fundraiser.websiteUrl && (
+                    <a href={fundraiser.websiteUrl.startsWith("http") ? fundraiser.websiteUrl : `https://${fundraiser.websiteUrl}`} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-primary hover:bg-border transition-colors text-sm" title="Website">
+                      &#127760;
+                    </a>
+                  )}
+                  {fundraiser.facebookUrl && (
+                    <a href={fundraiser.facebookUrl} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-primary hover:bg-border transition-colors text-sm font-bold" title="Facebook">
+                      f
+                    </a>
+                  )}
+                  {fundraiser.instagramUrl && (
+                    <a href={fundraiser.instagramUrl} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-primary hover:bg-border transition-colors text-sm font-bold italic" title="Instagram">
+                      in
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
