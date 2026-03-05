@@ -2229,6 +2229,11 @@ export async function getActiveFundraisers(): Promise<Fundraiser[]> {
   return rows.map(mapFundraiser);
 }
 
+export async function getFundraiserById(id: string): Promise<Fundraiser | null> {
+  const rows = await sql`SELECT * FROM fundraisers WHERE id = ${id} LIMIT 1`;
+  return rows[0] ? mapFundraiser(rows[0]) : null;
+}
+
 export async function getFundraiserBySlug(slug: string): Promise<Fundraiser | null> {
   const rows = await sql`
     SELECT f.*,
@@ -2331,7 +2336,15 @@ export async function createDonation(data: { fundraiserId: string; donorName: st
     VALUES (${data.fundraiserId}, ${data.donorName}, ${data.donorEmail}, ${data.amount}, ${data.platformFee}, ${data.netAmount}, ${data.stripeSessionId}, ${data.donorMessage || null}, ${data.onBehalfOf || null}, 'pending')`;
 }
 
-export async function completeDonation(stripeSessionId: string, paymentIntentId: string): Promise<{ fundraiserId: string } | null> {
-  const rows = await sql`UPDATE donations SET status='completed', stripe_payment_intent_id=${paymentIntentId} WHERE stripe_session_id=${stripeSessionId} AND status='pending' RETURNING fundraiser_id`;
-  return rows[0] ? { fundraiserId: rows[0].fundraiser_id as string } : null;
+export async function completeDonation(stripeSessionId: string, paymentIntentId: string): Promise<{ fundraiserId: string; donorName: string; donorEmail: string; amount: number; donorMessage?: string; onBehalfOf?: string } | null> {
+  const rows = await sql`UPDATE donations SET status='completed', stripe_payment_intent_id=${paymentIntentId} WHERE stripe_session_id=${stripeSessionId} AND status='pending' RETURNING fundraiser_id, donor_name, donor_email, amount, donor_message, on_behalf_of`;
+  if (!rows[0]) return null;
+  return {
+    fundraiserId: rows[0].fundraiser_id as string,
+    donorName: rows[0].donor_name as string,
+    donorEmail: rows[0].donor_email as string,
+    amount: rows[0].amount as number,
+    donorMessage: rows[0].donor_message as string | undefined,
+    onBehalfOf: rows[0].on_behalf_of as string | undefined,
+  };
 }
