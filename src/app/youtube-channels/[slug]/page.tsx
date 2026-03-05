@@ -67,11 +67,6 @@ export default async function YoutubeChannelPage({ params }: Props) {
                 <span className="text-6xl">&#9654;</span>
               </div>
             )}
-            {channel.logo && sidebarImage !== channel.logo && (
-              <div className="absolute bottom-0 right-0 w-12 h-12 rounded-tl-xl bg-white p-1 shadow">
-                <img src={channel.logo} alt="" className="w-full h-full object-contain rounded-lg" />
-              </div>
-            )}
           </div>
 
           {/* Info Table */}
@@ -109,19 +104,30 @@ export default async function YoutubeChannelPage({ params }: Props) {
         {/* Main Content */}
         <div className="flex-1 min-w-0 space-y-6">
           {/* Hero Banner */}
-          <div className="relative rounded-2xl overflow-hidden h-48 md:h-64">
-            {heroImage.startsWith("color:") ? (
-              <div className="w-full h-full" style={{ backgroundColor: heroImage.replace("color:", "") }} />
-            ) : (
-              <img src={heroImage} alt={channel.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${heroPos}%` }} />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
-            <div className="absolute bottom-0 left-0 p-6">
-              <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="name" value={channel.name} tag="h1" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1" />
-              {channel.tagline && (
-                <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="tagline" value={channel.tagline} tag="p" className="text-white/80 text-sm font-medium" />
+          <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <div className="relative h-48 md:h-64">
+              {heroImage.startsWith("color:") ? (
+                <div className="w-full h-full" style={{ backgroundColor: heroImage.replace("color:", "") }} />
+              ) : (
+                <img src={heroImage} alt={channel.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${heroPos}%` }} />
               )}
-              <p className="text-white/70 text-sm">Created by {channel.creatorName} &middot; {channel.city}, {channel.state}</p>
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
+            </div>
+            <div className="p-5 sm:p-7 sm:flex sm:gap-6 sm:items-start">
+              {channel.logo && (
+                <img
+                  src={channel.logo}
+                  alt={`${channel.name} logo`}
+                  className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1 sm:p-1.5 bg-surface -mt-12 sm:-mt-14 relative z-10"
+                />
+              )}
+              <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0">
+                <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="name" value={channel.name} tag="h1" className="font-[family-name:var(--font-display)] text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+                {channel.tagline && (
+                  <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="tagline" value={channel.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                )}
+                <p className="text-sm text-muted mt-1.5 font-medium">Created by {channel.creatorName} &middot; {channel.city}, {channel.state}</p>
+              </div>
             </div>
           </div>
 
