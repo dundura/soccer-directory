@@ -324,7 +324,7 @@ export default async function FundraiserPage({ params }: Props) {
           )}
 
           {/* Manage Listing (owner/admin only) */}
-          <ManageListingButton ownerId={fundraiser.userId} listingType="fundraiser" listingId={fundraiser.id} />
+          <ManageListingButton ownerId={fundraiser.userId} listingType="fundraiser" listingId={fundraiser.id} listingSlug={slug} />
         </div>
       </div>
     </div>

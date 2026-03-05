@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export function ManageListingButton({ ownerId, listingType, listingId }: { ownerId: string | null; listingType?: string; listingId?: string }) {
+export function ManageListingButton({ ownerId, listingType, listingId, listingSlug }: { ownerId: string | null; listingType?: string; listingId?: string; listingSlug?: string }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [archiving, setArchiving] = useState(false);
@@ -18,11 +18,14 @@ export function ManageListingButton({ ownerId, listingType, listingId }: { owner
 
   if (!isOwner && !isAdmin) return null;
 
-  const editHref = isAdmin && !isOwner && listingType && listingId
-    ? `/admin?editType=${listingType}&editId=${listingId}`
-    : listingType && listingId
-      ? `/dashboard?editType=${listingType}&editId=${listingId}`
-      : "/dashboard";
+  // Fundraisers have a dedicated edit page with roster management
+  const editHref = listingType === "fundraiser" && listingSlug && isOwner
+    ? `/fundraiser/${listingSlug}/edit`
+    : isAdmin && !isOwner && listingType && listingId
+      ? `/admin?editType=${listingType}&editId=${listingId}`
+      : listingType && listingId
+        ? `/dashboard?editType=${listingType}&editId=${listingId}`
+        : "/dashboard";
 
   async function handleArchive() {
     if (!listingType || !listingId) return;
