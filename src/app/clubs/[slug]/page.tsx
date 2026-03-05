@@ -7,6 +7,7 @@ import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { AnnouncementSection } from "@/components/announcement-section";
+import { SponsorsSection } from "@/components/sponsors-section";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -435,8 +436,15 @@ export default async function ClubDetailPage({ params }: Props) {
               </div>
           )}
 
+          {/* ====== Sponsors ====== */}
+          {club.sponsors && club.sponsors.length > 0 && (
+            <div className="order-8 lg:order-none lg:col-start-2">
+              <SponsorsSection sponsors={club.sponsors} />
+            </div>
+          )}
+
           {/* ====== CTA Banner ====== */}
-          <div className="order-8 lg:order-none lg:col-start-2">
+          <div className="order-9 lg:order-none lg:col-start-2">
             <AnytimeInlineCTA />
           </div>
 

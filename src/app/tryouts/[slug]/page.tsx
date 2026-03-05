@@ -10,6 +10,7 @@ import { HeroImage } from "@/components/hero-image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ContactTryoutForm } from "./contact-form";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -321,6 +322,13 @@ export default async function TryoutDetailPage({ params }: Props) {
             <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
               <ReviewSection listingType="tryout" listingId={tryout.id} />
             </Suspense>
+
+            {/* ====== Sponsors ====== */}
+            {tryout.sponsors && tryout.sponsors.length > 0 && (
+              <div className="order-8 lg:order-none lg:col-start-2">
+                <SponsorsSection sponsors={tryout.sponsors} />
+              </div>
+            )}
 
             <AnytimeInlineCTA />
 

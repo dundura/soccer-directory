@@ -5,6 +5,14 @@ export interface MediaLink {
   image?: string;
 }
 
+export interface Sponsor {
+  image: string;
+  title: string;
+  description: string;
+  link: string;
+  ctaText: string;
+}
+
 export interface ProfileFields {
   teamPhoto?: string;
   photos?: string[];
@@ -19,6 +27,7 @@ export interface ProfileFields {
   imagePosition?: number;
   heroImagePosition?: number;
   tagline?: string;
+  sponsors?: Sponsor[];
 }
 
 export interface Club extends ProfileFields {
@@ -346,6 +355,7 @@ export interface MarketplaceItem {
   photos?: string[];
   aboutAuthor?: string;
   tagline?: string;
+  sponsors?: Sponsor[];
   featured: boolean;
   createdAt: string;
 }

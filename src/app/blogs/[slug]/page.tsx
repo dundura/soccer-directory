@@ -9,6 +9,7 @@ import { FeaturedArticles } from "@/components/featured-articles";
 import { ContactBlogForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -290,6 +291,13 @@ export default async function BlogPage({ params }: Props) {
 
           {/* Reviews */}
           <ReviewSection listingType="blog" listingId={blog.id} />
+
+          {/* ====== Sponsors ====== */}
+          {blog.sponsors && blog.sponsors.length > 0 && (
+            <div className="order-8 lg:order-none lg:col-start-2">
+              <SponsorsSection sponsors={blog.sponsors} />
+            </div>
+          )}
 
           {/* Recommended Resource CTA */}
           <AnytimeInlineCTA />

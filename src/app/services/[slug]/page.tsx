@@ -7,6 +7,7 @@ import { FeaturedArticles } from "@/components/featured-articles";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -215,6 +216,13 @@ export default async function ServiceDetailPage({ params }: Props) {
             </div>
           </div>
         </div>
+
+        {/* ====== Sponsors ====== */}
+        {service.sponsors && service.sponsors.length > 0 && (
+          <div className="order-8 lg:order-none lg:col-start-2">
+            <SponsorsSection sponsors={service.sponsors} />
+          </div>
+        )}
 
         <div className="mt-8"><FeaturedArticles /></div>
         <div className="mt-8"><AnytimeInlineCTA /></div>

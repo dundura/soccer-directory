@@ -7,6 +7,7 @@ import { InlineEditField } from "@/components/inline-edit";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { ContactGroupForm } from "./contact-form";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -174,6 +175,13 @@ export default async function FacebookGroupPage({ params }: Props) {
             <p className="text-muted text-sm mb-5">Have a question about {group.name}? Send a message to the group admin.</p>
             <ContactGroupForm groupName={group.name} slug={slug} />
           </div>
+
+          {/* ====== Sponsors ====== */}
+          {group.sponsors && group.sponsors.length > 0 && (
+            <div className="order-8 lg:order-none lg:col-start-2">
+              <SponsorsSection sponsors={group.sponsors} />
+            </div>
+          )}
 
           {/* Anytime CTA */}
           <AnytimeInlineCTA />

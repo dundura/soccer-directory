@@ -6,6 +6,7 @@ import { PhotoGallery } from "@/components/profile-ui";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -118,8 +119,13 @@ export default async function ShopDetailPage({ params }: Props) {
             )}
 
             <FeaturedArticles />
+
+            {/* Sponsors */}
+            {item.sponsors && item.sponsors.length > 0 && (
+              <SponsorsSection sponsors={item.sponsors} />
+            )}
           </div>
-        </div>
+</div>
       </div>
     </>
   );

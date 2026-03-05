@@ -7,6 +7,7 @@ import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { TripInquiryForm } from "./inquiry-form";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -181,6 +182,13 @@ export default async function TripDetailPage({ params }: Props) {
       </div>
 
       {/* Anytime Soccer Training Banner */}
+      {/* ====== Sponsors ====== */}
+      {trip.sponsors && trip.sponsors.length > 0 && (
+        <div className="order-8 lg:order-none lg:col-start-2">
+          <SponsorsSection sponsors={trip.sponsors} />
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnytimeInlineCTA />
       </div>

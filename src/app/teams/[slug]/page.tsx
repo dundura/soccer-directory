@@ -10,6 +10,7 @@ import { AnnouncementSection } from "@/components/announcement-section";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -471,8 +472,14 @@ export default async function TeamDetailPage({ params }: Props) {
                 </div>
               </div>
           )}
+{/* ====== CTA Banner ====== */}
+          {/* ====== Sponsors ====== */}
+          {team.sponsors && team.sponsors.length > 0 && (
+            <div className="order-8 lg:order-none lg:col-start-2">
+              <SponsorsSection sponsors={team.sponsors} />
+            </div>
+          )}
 
-          {/* ====== CTA Banner ====== */}
           <div className="order-9 lg:order-none lg:col-start-2">
             <AnytimeInlineCTA />
           </div>

@@ -9,6 +9,7 @@ import { AnytimeInlineCTA } from "@/components/ui";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -290,6 +291,13 @@ export default async function CampDetailPage({ params }: Props) {
             <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
               <ReviewSection listingType="camp" listingId={camp.id} />
             </Suspense>
+
+            {/* ====== Sponsors ====== */}
+            {camp.sponsors && camp.sponsors.length > 0 && (
+              <div className="order-8 lg:order-none lg:col-start-2">
+                <SponsorsSection sponsors={camp.sponsors} />
+              </div>
+            )}
 
             <AnytimeInlineCTA />
 

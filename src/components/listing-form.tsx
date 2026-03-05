@@ -153,6 +153,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "scholarshipsAvailable", label: "Scholarships Available?", options: ["", "Yes", "No"] },
     { name: "_fundraiser", label: "Fundraiser", type: "heading" },
     { name: "fundraiserSlug", label: "Fundraiser URL Slug (links Donate button to /fundraiser/your-slug)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   team: [
     { name: "name", label: "Team Name", required: true },
@@ -208,6 +210,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "scholarshipsAvailable", label: "Scholarships Available?", options: ["", "Yes", "No"] },
     { name: "_fundraiser", label: "Fundraiser", type: "heading" },
     { name: "fundraiserSlug", label: "Fundraiser URL Slug (links Donate button to /fundraiser/your-slug)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   trainer: [
     { name: "name", label: "Your Name", required: true },
@@ -236,6 +240,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "practiceSchedule", label: "Availability", type: "schedule" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   recruiter: [
     { name: "name", label: "Advisor Name", required: true },
@@ -263,6 +269,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "practiceSchedule", label: "Availability", type: "schedule" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   camp: [
     { name: "name", label: "Camp Name", required: true },
@@ -291,6 +299,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   guest: [
     { name: "teamName", label: "Team Name", required: true },
@@ -317,6 +327,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   tournament: [
     { name: "name", label: "Tournament Name", required: true },
@@ -346,6 +358,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   futsal: [
     { name: "name", label: "Team Name", required: true },
@@ -376,6 +390,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "practiceSchedule", label: "Practice Days", type: "schedule" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   trip: [
     { name: "tripName", label: "Trip Name", required: true },
@@ -404,6 +420,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   marketplace: [
     { name: "name", label: "Item Name", required: true },
@@ -420,6 +438,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
     { name: "imageUrl", label: "Main Photo", type: "image" },
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   equipment: [
     { name: "name", label: "Item Name", required: true },
@@ -435,6 +455,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
     { name: "imageUrl", label: "Main Photo", type: "image" },
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   books: [
     { name: "name", label: "Item Name", required: true },
@@ -451,6 +473,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
     { name: "imageUrl", label: "Main Photo", type: "image" },
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   showcase: [
     { name: "name", label: "Showcase Name", required: true },
@@ -478,6 +502,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   player: [
     { name: "playerName", label: "Player Name", required: true },
@@ -510,6 +536,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Highlight Video 1 (YouTube/Vimeo)" },
     { name: "videoUrl2", label: "Highlight Video 2 (YouTube/Vimeo)" },
     { name: "videoUrl3", label: "Highlight Video 3 (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   podcast: [
     { name: "name", label: "Podcast Name", required: true },
@@ -543,6 +571,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Episode Video 1 (YouTube/Vimeo)" },
     { name: "videoUrl2", label: "Episode Video 2 (YouTube/Vimeo)" },
     { name: "videoUrl3", label: "Episode Video 3 (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   blog: [
     { name: "name", label: "Blog Name", required: true },
@@ -576,6 +606,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video 1 (YouTube/Vimeo)" },
     { name: "videoUrl2", label: "Video 2 (YouTube/Vimeo)" },
     { name: "videoUrl3", label: "Video 3 (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   youtube: [
     { name: "name", label: "Channel Name", required: true },
@@ -609,6 +641,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video 1 (YouTube/Vimeo)" },
     { name: "videoUrl2", label: "Video 2 (YouTube/Vimeo)" },
     { name: "videoUrl3", label: "Video 3 (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   fbgroup: [
     { name: "name", label: "Group Name", required: true },
@@ -631,6 +665,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   service: [
     { name: "name", label: "Product / Service Name", required: true },
@@ -666,6 +702,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "announcementImage3", label: "Offer 3 — Image", type: "image" },
     { name: "announcementCta3", label: "Offer 3 — Button Text (default: Learn More →)" },
     { name: "announcementCtaUrl3", label: "Offer 3 — Button Link URL" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   tryout: [
     { name: "name", label: "Tryout Name", required: true },
@@ -697,6 +735,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   specialevent: [
     { name: "name", label: "Event Name", required: true },
@@ -728,6 +768,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   trainingapp: [
     { name: "name", label: "App Name", required: true },
@@ -763,6 +805,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "announcementImage3", label: "Offer 3 — Image", type: "image" },
     { name: "announcementCta3", label: "Offer 3 — Button Text (default: Learn More →)" },
     { name: "announcementCtaUrl3", label: "Offer 3 — Button Link URL" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   ebook: [
     { name: "name", label: "Ebook Title", required: true },
@@ -779,6 +823,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
     { name: "imageUrl", label: "Cover Image", type: "image" },
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   giveaway: [
     { name: "name", label: "Giveaway Name", required: true },
@@ -795,6 +841,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
     { name: "imageUrl", label: "Main Photo", type: "image" },
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   fundraiser: [
     { name: "_howitworks", label: "How it works: Donations are processed securely via Stripe. Proceeds are sent to the fundraiser creator, less a 10% platform fee. Donors can contribute between $5 and $500 per donation.", type: "warning" },
@@ -834,6 +882,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "Hero Image", type: "image" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
 };
 
@@ -1500,6 +1550,78 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                   );
                 })}
                 <p className="text-xs text-muted">Add positions your club is hiring for. Leave &ldquo;apply URL&rdquo; blank to show a &ldquo;Contact Us&rdquo; button instead.</p>
+              </div>
+
+            /* Sponsors (up to 3 — image + title + description + link + CTA) */
+            ) : field.type === "sponsors" ? (
+              <div className="space-y-3">
+                {Array.from({ length: Math.min(field.max || 3, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                  let arr: { image: string; title: string; description: string; link: string; ctaText: string }[] = [];
+                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  const sp = arr[i] || { image: "", title: "", description: "", link: "", ctaText: "" };
+                  const updateSp = (key: string, val: string) => {
+                    const updated = [...arr];
+                    if (!updated[i]) updated[i] = { image: "", title: "", description: "", link: "", ctaText: "" };
+                    (updated[i] as Record<string, string>)[key] = val;
+                    const filtered = updated.filter((s) => s.title);
+                    handleChange(field.name, JSON.stringify(filtered));
+                  };
+                  return (
+                    <div key={i} className="flex gap-2 items-start">
+                      <div className="flex-1 space-y-1.5">
+                        <input
+                          type="text"
+                          value={sp.title || ""}
+                          onChange={(e) => updateSp("title", e.target.value)}
+                          placeholder="Sponsor name"
+                          className={inputClass}
+                        />
+                        <input
+                          type="url"
+                          value={sp.image || ""}
+                          onChange={(e) => updateSp("image", e.target.value)}
+                          placeholder="Logo / image URL"
+                          className={inputClass}
+                        />
+                        <input
+                          type="text"
+                          value={sp.description || ""}
+                          onChange={(e) => updateSp("description", e.target.value.slice(0, 120))}
+                          placeholder="Short description (max 120 chars)"
+                          maxLength={120}
+                          className={inputClass}
+                        />
+                        <input
+                          type="url"
+                          value={sp.link || ""}
+                          onChange={(e) => updateSp("link", e.target.value)}
+                          placeholder="Link URL (e.g. https://sponsor.com)"
+                          className={inputClass}
+                        />
+                        <input
+                          type="text"
+                          value={sp.ctaText || ""}
+                          onChange={(e) => updateSp("ctaText", e.target.value)}
+                          placeholder="Button text (default: Visit Sponsor)"
+                          className={inputClass}
+                        />
+                      </div>
+                      {sp.title && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = arr.filter((_, j) => j !== i);
+                            handleChange(field.name, JSON.stringify(updated));
+                          }}
+                          className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0 mt-2"
+                        >
+                          x
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-muted">Add up to 3 sponsors. Each sponsor shows as a card with image, name, description, and a link button.</p>
               </div>
 
             /* Top Episodes (up to 10 — title + description + URL) */

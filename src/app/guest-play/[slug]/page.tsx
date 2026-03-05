@@ -7,6 +7,7 @@ import { FeaturedArticles } from "@/components/featured-articles";
 import { RequestSpotForm } from "./request-spot-form";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,6 @@ export default async function GuestDetailPage({ params }: Props) {
   const opp = await getGuestBySlug(slug);
   if (!opp) notFound();
   const ownerId = await getListingOwner("guest", slug);
-
 
   return (
     <>
@@ -172,8 +172,14 @@ export default async function GuestDetailPage({ params }: Props) {
           </div>
         </div>
       </div>
-
       {/* Anytime Soccer Training Banner */}
+      {/* ====== Sponsors ====== */}
+      {opp.sponsors && opp.sponsors.length > 0 && (
+        <div className="order-8 lg:order-none lg:col-start-2">
+          <SponsorsSection sponsors={opp.sponsors} />
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnytimeInlineCTA />
       </div>

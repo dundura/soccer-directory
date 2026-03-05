@@ -8,6 +8,7 @@ import { FeaturedArticles } from "@/components/featured-articles";
 import { ContactYoutubeForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -271,6 +272,13 @@ export default async function YoutubeChannelPage({ params }: Props) {
 
           {/* Reviews */}
           <ReviewSection listingType="youtube" listingId={channel.id} />
+
+          {/* ====== Sponsors ====== */}
+          {channel.sponsors && channel.sponsors.length > 0 && (
+            <div className="order-8 lg:order-none lg:col-start-2">
+              <SponsorsSection sponsors={channel.sponsors} />
+            </div>
+          )}
 
           {/* CTA */}
           <AnytimeInlineCTA />

@@ -7,6 +7,7 @@ import { PlayerAvatar } from "@/components/player-avatar";
 import { ContactPlayerForm } from "./contact-form";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -238,6 +239,13 @@ export default async function PlayerDetailPage({ params }: Props) {
       </div>
 
       {/* Anytime Soccer Training Banner */}
+      {/* ====== Sponsors ====== */}
+      {player.sponsors && player.sponsors.length > 0 && (
+        <div className="order-8 lg:order-none lg:col-start-2">
+          <SponsorsSection sponsors={player.sponsors} />
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnytimeInlineCTA />
       </div>

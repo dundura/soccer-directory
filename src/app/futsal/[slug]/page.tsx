@@ -8,6 +8,7 @@ import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -283,6 +284,13 @@ export default async function FutsalDetailPage({ params }: Props) {
             </div>
 
             <FeaturedArticles />
+
+            {/* ====== Sponsors ====== */}
+            {team.sponsors && team.sponsors.length > 0 && (
+              <div className="order-8 lg:order-none lg:col-start-2">
+                <SponsorsSection sponsors={team.sponsors} />
+              </div>
+            )}
 
             {/* Reviews */}
             <ReviewSection listingType="futsal" listingId={team.id} />
