@@ -2567,6 +2567,19 @@ export async function getUserRosterEntryForFundraiser(fundraiserId: string, user
   return rows[0] ? mapRosterEntry(rows[0]) : null;
 }
 
+export async function updateRosterEntry(entryId: string, userId: string, data: { playerName: string; position?: string; ageGroup?: string; photoUrl?: string; bio?: string }): Promise<boolean> {
+  const rows = await sql`UPDATE fundraiser_roster SET
+    player_name = ${data.playerName}, position = ${data.position || null},
+    age_group = ${data.ageGroup || null}, photo_url = ${data.photoUrl || null}, bio = ${data.bio || null}
+    WHERE id = ${entryId} AND user_id = ${userId} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function removeRosterEntry(entryId: string, fundraiserId: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM fundraiser_roster WHERE id = ${entryId} AND fundraiser_id = ${fundraiserId} RETURNING id`;
+  return rows.length > 0;
+}
+
 async function syncFundraiserRoster(fundraiserId: string, rosterJson: string) {
   try {
     const entries = JSON.parse(rosterJson);

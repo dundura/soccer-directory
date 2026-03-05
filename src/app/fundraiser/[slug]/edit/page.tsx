@@ -287,13 +287,30 @@ export default function EditFundraiserPage() {
                       </button>
                     </div>
                   ) : (
-                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                      p.inviteStatus === "accepted"
-                        ? "bg-green-50 text-green-700 border border-green-200"
-                        : "bg-yellow-50 text-yellow-700 border border-yellow-200"
-                    }`}>
-                      {p.inviteStatus === "accepted" ? "Joined" : "Pending Invite"}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                        p.inviteStatus === "accepted"
+                          ? "bg-green-50 text-green-700 border border-green-200"
+                          : "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                      }`}>
+                        {p.inviteStatus === "accepted" ? "Joined" : "Pending Invite"}
+                      </span>
+                      <button
+                        onClick={async () => {
+                          if (!confirm(`Remove ${p.inviteStatus === "pending" ? (p.email || "this player") : p.playerName} from the roster?`)) return;
+                          const res = await fetch(`/api/fundraiser/${slug}/roster-edit`, {
+                            method: "DELETE",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ entryId: p.id }),
+                          });
+                          if (res.ok) setRoster(roster.filter(r => r.id !== p.id));
+                        }}
+                        className="text-xs px-2 py-1 rounded-lg border border-red-200 text-[#DC373E] hover:bg-red-50 transition-colors"
+                        title="Remove from roster"
+                      >
+                        &times;
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>

@@ -4,6 +4,7 @@ import { SharePopupButton } from "@/components/share-popup";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { JoinRosterButton } from "./join-roster-button";
+import { RosterList } from "./roster-list";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -168,41 +169,7 @@ export default async function FundraiserPage({ params }: Props) {
               <span className="font-normal text-muted text-base">({roster.length})</span>
             </h2>
             {roster.length > 0 ? (
-              <div>
-                {roster.map((player) => {
-                  const initials = player.playerName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
-                  return (
-                    <div key={player.id} className="flex items-center gap-3.5 py-3 border-b border-border last:border-b-0">
-                      {player.photoUrl ? (
-                        <img src={player.photoUrl} alt={player.playerName} className="w-[42px] h-[42px] rounded-full object-cover shrink-0" />
-                      ) : (
-                        <div className="w-[42px] h-[42px] rounded-full bg-gradient-to-br from-[#DC373E] to-[#a02028] flex items-center justify-center text-white font-[family-name:var(--font-display)] text-lg font-bold shrink-0">
-                          {initials}
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-sm text-primary">{player.playerName}</div>
-                        {(player.position || player.ageGroup) && (
-                          <div className="text-[13px] text-muted mt-0.5">
-                            {[player.position, player.ageGroup].filter(Boolean).join(" \u2022 ")}
-                          </div>
-                        )}
-                        {player.bio && <p className="text-sm text-muted/80 mt-1">{player.bio}</p>}
-                      </div>
-                      <div className="text-right shrink-0">
-                        {(player.amountRaised || 0) > 0 && (
-                          <div className="text-sm font-bold text-green-700 mb-0.5">
-                            ${((player.amountRaised || 0) / 100).toLocaleString("en-US")}
-                          </div>
-                        )}
-                        <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                          Player
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <RosterList roster={roster} slug={slug} />
             ) : (
               <p className="text-sm text-muted py-4 text-center">No players on the roster yet. Be the first to join!</p>
             )}
