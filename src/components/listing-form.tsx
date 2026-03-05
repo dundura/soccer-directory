@@ -800,17 +800,40 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "name", label: "Fundraiser Title", required: true },
     { name: "description", label: "Description — Tell supporters what this fundraiser is for", type: "textarea" },
     { name: "goal", label: "Fundraising Goal ($) — Leave blank if no goal" },
+    { name: "_tags", label: "Tags / Quick Info Bubbles", type: "heading" },
+    { name: "tags", label: "Tags — one per line (e.g. ⚽ Youth Soccer, 📍 Cary NC, ☀️ Summer 2026)", type: "tag-list" },
     { name: "_contact", label: "Contact Information", type: "heading" },
     { name: "coachName", label: "Contact Name" },
     { name: "contactEmail", label: "Contact Email", type: "email" },
     { name: "phone", label: "Contact Phone" },
+    { name: "_roster", label: "Roster / Players", type: "heading" },
+    { name: "roster", label: "Roster Entries", type: "roster" },
+    { name: "_announcement", label: "Special Announcements (up to 3)", type: "heading" },
+    { name: "announcementHeading", label: "Announcement 1 — Heading (default: Special Announcement)" },
+    { name: "announcementText", label: "Announcement 1 — Text", type: "textarea" },
+    { name: "announcementImage", label: "Announcement 1 — Image", type: "image" },
+    { name: "announcementCta", label: "Announcement 1 — Button Text (default: Learn More →)" },
+    { name: "announcementCtaUrl", label: "Announcement 1 — Button Link URL" },
+    { name: "announcementHeading2", label: "Announcement 2 — Heading" },
+    { name: "announcementText2", label: "Announcement 2 — Text", type: "textarea" },
+    { name: "announcementImage2", label: "Announcement 2 — Image", type: "image" },
+    { name: "announcementCta2", label: "Announcement 2 — Button Text (default: Learn More →)" },
+    { name: "announcementCtaUrl2", label: "Announcement 2 — Button Link URL" },
+    { name: "announcementHeading3", label: "Announcement 3 — Heading" },
+    { name: "announcementText3", label: "Announcement 3 — Text", type: "textarea" },
+    { name: "announcementImage3", label: "Announcement 3 — Image", type: "image" },
+    { name: "announcementCta3", label: "Announcement 3 — Button Text (default: Learn More →)" },
+    { name: "announcementCtaUrl3", label: "Announcement 3 — Button Link URL" },
     { name: "_social", label: "Social Links", type: "heading" },
     { name: "website", label: "Website URL" },
     { name: "facebookUrl", label: "Facebook URL" },
     { name: "instagramUrl", label: "Instagram URL" },
-    { name: "_profile", label: "Hero Image", type: "heading" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
     { name: "imageUrl", label: "Hero Image", type: "image" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
   ],
 };
 
@@ -1662,6 +1685,63 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                     </button>
                   );
                 })}
+              </div>
+
+            /* Tag list — one per line */
+            ) : field.type === "tag-list" ? (
+              <div className="space-y-2">
+                <textarea
+                  value={(() => { try { return JSON.parse(formData[field.name] || "[]").join("\n"); } catch { return formData[field.name] || ""; } })()}
+                  onChange={(e) => {
+                    const tags = e.target.value.split("\n").filter(t => t.trim());
+                    handleChange(field.name, JSON.stringify(tags));
+                  }}
+                  rows={4}
+                  placeholder={"⚽ Youth Soccer\n📍 Cary, NC\n☀️ Summer 2026"}
+                  className={inputClass + " resize-none"}
+                />
+                <p className="text-xs text-muted">One tag per line. Use emoji for visual flair.</p>
+              </div>
+
+            /* Roster entries */
+            ) : field.type === "roster" ? (
+              <div className="space-y-3">
+                {(() => {
+                  let entries: { playerName: string; position?: string; ageGroup?: string; bio?: string }[] = [];
+                  try { entries = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  const updateEntry = (i: number, key: string, val: string) => {
+                    const updated = [...entries];
+                    updated[i] = { ...updated[i], [key]: val };
+                    handleChange(field.name, JSON.stringify(updated));
+                  };
+                  const addEntry = () => {
+                    handleChange(field.name, JSON.stringify([...entries, { playerName: "" }]));
+                  };
+                  const removeEntry = (i: number) => {
+                    handleChange(field.name, JSON.stringify(entries.filter((_, j) => j !== i)));
+                  };
+                  return (
+                    <>
+                      {entries.map((entry, i) => (
+                        <div key={i} className="border border-border rounded-xl p-3 space-y-2 bg-surface/50">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-muted">Player {i + 1}</span>
+                            <button type="button" onClick={() => removeEntry(i)} className="text-red-500 hover:text-red-700 text-xs font-bold">Remove</button>
+                          </div>
+                          <input type="text" value={entry.playerName || ""} onChange={(e) => updateEntry(i, "playerName", e.target.value)} placeholder="Player Name *" className={inputClass} />
+                          <div className="grid grid-cols-2 gap-2">
+                            <input type="text" value={entry.position || ""} onChange={(e) => updateEntry(i, "position", e.target.value)} placeholder="Position" className={inputClass} />
+                            <input type="text" value={entry.ageGroup || ""} onChange={(e) => updateEntry(i, "ageGroup", e.target.value)} placeholder="Age Group" className={inputClass} />
+                          </div>
+                          <input type="text" value={entry.bio || ""} onChange={(e) => updateEntry(i, "bio", e.target.value)} placeholder="Short bio (optional)" className={inputClass} />
+                        </div>
+                      ))}
+                      <button type="button" onClick={addEntry} className="w-full py-2 border-2 border-dashed border-border rounded-xl text-sm font-medium text-muted hover:border-accent/50 hover:text-accent transition-colors">
+                        + Add Player
+                      </button>
+                    </>
+                  );
+                })()}
               </div>
 
             /* Textarea */

@@ -1,11 +1,18 @@
-import { getFundraiserBySlug, getDonationsByFundraiserId } from "@/lib/db";
-import { ShareButtons } from "@/components/profile-ui";
+import { getFundraiserBySlug, getDonationsByFundraiserId, getRosterByFundraiserId } from "@/lib/db";
+import { ShareButtons, VideoEmbed } from "@/components/profile-ui";
+import { AnnouncementSection } from "@/components/announcement-section";
+import { ManageListingButton } from "@/components/manage-listing-button";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ slug: string }> };
+
+function normalizeUrl(url?: string) {
+  if (!url) return undefined;
+  return url.startsWith("http") ? url : `https://${url}`;
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -52,11 +59,21 @@ export default async function FundraiserPage({ params }: Props) {
   const { slug } = await params;
   const fundraiser = await getFundraiserBySlug(slug);
   if (!fundraiser) notFound();
-  const donations = await getDonationsByFundraiserId(fundraiser.id);
+  const [donations, roster] = await Promise.all([
+    getDonationsByFundraiserId(fundraiser.id),
+    getRosterByFundraiserId(fundraiser.id),
+  ]);
   const totalRaised = donations.reduce((sum, d) => sum + d.amount, 0);
   const goalCents = fundraiser.goal || 0;
   const pct = goalCents > 0 ? Math.min(100, Math.round((totalRaised / goalCents) * 100)) : 0;
   const pageUrl = `https://www.soccer-near-me.com/fundraiser/${slug}`;
+
+  const hasAnnouncements = fundraiser.announcementHeading || fundraiser.announcementText || fundraiser.announcementImage ||
+    fundraiser.announcementHeading2 || fundraiser.announcementText2 || fundraiser.announcementImage2 ||
+    fundraiser.announcementHeading3 || fundraiser.announcementText3 || fundraiser.announcementImage3;
+
+  const fundPhotos = fundraiser.photos && fundraiser.photos.length > 0 ? fundraiser.photos : [];
+  const hasMedia = fundPhotos.length > 0 || fundraiser.videoUrl;
 
   return (
     <div className="bg-surface min-h-screen">
@@ -84,6 +101,32 @@ export default async function FundraiserPage({ params }: Props) {
             </span>
           )}
 
+          {/* Tag Bubbles */}
+          {fundraiser.tags && fundraiser.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2 mb-4">
+              {fundraiser.tags.map((tag, i) => (
+                <span key={i} className="bg-blue-50 text-blue-800 text-sm font-semibold px-3.5 py-1.5 rounded-full border border-blue-100">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Special Announcements */}
+          {hasAnnouncements && (
+            <div className="space-y-4 mt-4">
+              {(fundraiser.announcementHeading || fundraiser.announcementText || fundraiser.announcementImage) && (
+                <AnnouncementSection heading={fundraiser.announcementHeading} text={fundraiser.announcementText} image={fundraiser.announcementImage} ctaUrl={normalizeUrl(fundraiser.announcementCtaUrl || fundraiser.websiteUrl)} ctaLabel={fundraiser.announcementCta || "Learn More \u2192"} />
+              )}
+              {(fundraiser.announcementHeading2 || fundraiser.announcementText2 || fundraiser.announcementImage2) && (
+                <AnnouncementSection heading={fundraiser.announcementHeading2} text={fundraiser.announcementText2} image={fundraiser.announcementImage2} ctaUrl={normalizeUrl(fundraiser.announcementCtaUrl2 || fundraiser.websiteUrl)} ctaLabel={fundraiser.announcementCta2 || "Learn More \u2192"} />
+              )}
+              {(fundraiser.announcementHeading3 || fundraiser.announcementText3 || fundraiser.announcementImage3) && (
+                <AnnouncementSection heading={fundraiser.announcementHeading3} text={fundraiser.announcementText3} image={fundraiser.announcementImage3} ctaUrl={normalizeUrl(fundraiser.announcementCtaUrl3 || fundraiser.websiteUrl)} ctaLabel={fundraiser.announcementCta3 || "Learn More \u2192"} />
+              )}
+            </div>
+          )}
+
           {/* About Card */}
           {fundraiser.description && (
             <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
@@ -91,6 +134,61 @@ export default async function FundraiserPage({ params }: Props) {
                 About This Fundraiser
               </h2>
               <p className="text-[15px] leading-[1.7] text-primary/80 whitespace-pre-line">{fundraiser.description}</p>
+            </div>
+          )}
+
+          {/* Photos & Video */}
+          {hasMedia && (
+            <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3 pb-2.5 border-b-2 border-border">
+                Photos &amp; Video
+              </h2>
+              {fundPhotos.length > 0 && (
+                <div className={`grid grid-cols-2 gap-1.5 ${fundraiser.videoUrl ? "mb-3" : ""}`}>
+                  {fundPhotos.map((photo, i) => (
+                    <img key={i} src={photo} alt={`Photo ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-lg block" />
+                  ))}
+                </div>
+              )}
+              {fundraiser.videoUrl && <VideoEmbed url={fundraiser.videoUrl} />}
+            </div>
+          )}
+
+          {/* Roster */}
+          {roster.length > 0 && (
+            <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary pb-2.5 border-b-2 border-border mb-1">
+                Roster{" "}
+                <span className="font-normal text-muted text-base">({roster.length})</span>
+              </h2>
+              <div>
+                {roster.map((player) => {
+                  const initials = player.playerName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+                  return (
+                    <div key={player.id} className="flex items-center gap-3.5 py-3 border-b border-border last:border-b-0">
+                      {player.photoUrl ? (
+                        <img src={player.photoUrl} alt={player.playerName} className="w-[42px] h-[42px] rounded-full object-cover shrink-0" />
+                      ) : (
+                        <div className="w-[42px] h-[42px] rounded-full bg-gradient-to-br from-[#DC373E] to-[#a02028] flex items-center justify-center text-white font-[family-name:var(--font-display)] text-lg font-bold shrink-0">
+                          {initials}
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-sm text-primary">{player.playerName}</div>
+                        {(player.position || player.ageGroup) && (
+                          <div className="text-[13px] text-muted mt-0.5">
+                            {[player.position, player.ageGroup].filter(Boolean).join(" \u2022 ")}
+                          </div>
+                        )}
+                        {player.bio && <p className="text-sm text-muted/80 mt-1">{player.bio}</p>}
+                      </div>
+                      <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full shrink-0">
+                        Player
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -116,7 +214,7 @@ export default async function FundraiserPage({ params }: Props) {
                         <div className="font-semibold text-sm text-primary">{d.donorName}</div>
                         <div className="text-[13px] text-muted mt-0.5">
                           Donated ${(d.amount / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                          {d.onBehalfOf ? ` — on behalf of ${d.onBehalfOf}` : ""}
+                          {d.onBehalfOf ? ` \u2014 on behalf of ${d.onBehalfOf}` : ""}
                         </div>
                         {d.donorMessage && <p className="text-sm text-muted/80 mt-1 italic">&ldquo;{d.donorMessage}&rdquo;</p>}
                       </div>
@@ -184,6 +282,13 @@ export default async function FundraiserPage({ params }: Props) {
             </div>
           </div>
 
+          {/* Sidebar Image */}
+          {fundraiser.teamPhoto && (
+            <div className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(15,30,53,0.10)]">
+              <img src={fundraiser.teamPhoto} alt={fundraiser.title} className="w-full h-[200px] object-cover" />
+            </div>
+          )}
+
           {/* Organizer Card */}
           {(fundraiser.coachName || fundraiser.coachEmail || fundraiser.coachPhone) && (
             <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] text-center">
@@ -224,6 +329,9 @@ export default async function FundraiserPage({ params }: Props) {
               )}
             </div>
           )}
+
+          {/* Manage Listing (owner/admin only) */}
+          <ManageListingButton ownerId={fundraiser.userId} listingType="fundraiser" listingId={fundraiser.id} />
         </div>
       </div>
     </div>

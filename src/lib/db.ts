@@ -1324,7 +1324,7 @@ export async function getListingData(type: string, id: string, userId: string): 
       if (!rows[0]) return null;
       return mapYoutubeChannelToForm(rows[0]);
     case "fundraiser":
-      rows = await sql`SELECT * FROM fundraisers WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      rows = await sql`SELECT f.*, (SELECT json_agg(json_build_object('playerName', r.player_name, 'position', r.position, 'ageGroup', r.age_group, 'photoUrl', r.photo_url, 'bio', r.bio) ORDER BY r.sort_order) FROM fundraiser_roster r WHERE r.fundraiser_id = f.id) as roster_json FROM fundraisers f WHERE f.id = ${id} AND f.user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
       return mapFundraiserToForm(rows[0]);
     default:
@@ -1356,7 +1356,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "trainingapp": rows = await sql`SELECT * FROM training_apps WHERE id = ${id} LIMIT 1`; break;
     case "blog": rows = await sql`SELECT * FROM blogs WHERE id = ${id} LIMIT 1`; break;
     case "youtube": rows = await sql`SELECT * FROM youtube_channels WHERE id = ${id} LIMIT 1`; break;
-    case "fundraiser": rows = await sql`SELECT * FROM fundraisers WHERE id = ${id} LIMIT 1`; break;
+    case "fundraiser": rows = await sql`SELECT f.*, (SELECT json_agg(json_build_object('playerName', r.player_name, 'position', r.position, 'ageGroup', r.age_group, 'photoUrl', r.photo_url, 'bio', r.bio) ORDER BY r.sort_order) FROM fundraiser_roster r WHERE r.fundraiser_id = f.id) as roster_json FROM fundraisers f WHERE f.id = ${id} LIMIT 1`; break;
     default: return null;
   }
   if (!rows[0]) return null;
@@ -1397,6 +1397,26 @@ function mapFundraiserToForm(r: Record<string, unknown>): Record<string, string>
     facebookUrl: String(r.facebook_url || ""),
     instagramUrl: String(r.instagram_url || ""),
     imageUrl: String(r.hero_image_url || ""),
+    tags: String(r.tags || ""),
+    photos: String(r.photos || ""),
+    videoUrl: String(r.video_url || ""),
+    teamPhoto: String(r.team_photo || ""),
+    announcementHeading: String(r.announcement_heading || ""),
+    announcementText: String(r.announcement_text || ""),
+    announcementImage: String(r.announcement_image || ""),
+    announcementCta: String(r.announcement_cta || ""),
+    announcementCtaUrl: String(r.announcement_cta_url || ""),
+    announcementHeading2: String(r.announcement_heading_2 || ""),
+    announcementText2: String(r.announcement_text_2 || ""),
+    announcementImage2: String(r.announcement_image_2 || ""),
+    announcementCta2: String(r.announcement_cta_2 || ""),
+    announcementCtaUrl2: String(r.announcement_cta_url_2 || ""),
+    announcementHeading3: String(r.announcement_heading_3 || ""),
+    announcementText3: String(r.announcement_text_3 || ""),
+    announcementImage3: String(r.announcement_image_3 || ""),
+    announcementCta3: String(r.announcement_cta_3 || ""),
+    announcementCtaUrl3: String(r.announcement_cta_url_3 || ""),
+    roster: String(r.roster_json || ""),
   };
 }
 
@@ -1560,7 +1580,10 @@ export async function updateListing(type: string, id: string, data: Record<strin
       rows = await sql`UPDATE youtube_channels SET name=${data.name}, creator_name=${data.creatorName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, description=${data.description || null}, website=${data.website || null}, channel_url=${data.channelUrl || null}, subscribe_url=${data.subscribeUrl || null}, email=${data.email || null}, phone=${data.phone || null}, featured_videos=${data.featuredVideos || null}, creator_heading=${data.creatorHeading || null}, creator_image=${data.creatorImage || null}, creator_bio=${data.creatorBio || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, video_url_2=${data.videoUrl2 || null}, video_url_3=${data.videoUrl3 || null}, media_links=${pf.mediaLinks}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "fundraiser":
-      rows = await sql`UPDATE fundraisers SET title=${data.name}, description=${data.description || null}, goal=${data.goal ? Math.round(Number(data.goal) * 100) : null}, coach_name=${data.coachName || null}, coach_email=${data.contactEmail || null}, coach_phone=${data.phone || null}, website_url=${data.website || null}, facebook_url=${data.facebookUrl || null}, instagram_url=${data.instagramUrl || null}, hero_image_url=${data.imageUrl || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      rows = await sql`UPDATE fundraisers SET title=${data.name}, description=${data.description || null}, goal=${data.goal ? Math.round(Number(data.goal) * 100) : null}, coach_name=${data.coachName || null}, coach_email=${data.contactEmail || null}, coach_phone=${data.phone || null}, website_url=${data.website || null}, facebook_url=${data.facebookUrl || null}, instagram_url=${data.instagramUrl || null}, hero_image_url=${data.imageUrl || null}, tags=${data.tags || null}, photos=${data.photos || null}, video_url=${data.videoUrl || null}, team_photo=${data.teamPhoto || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      if (data.roster) {
+        await syncFundraiserRoster(id, data.roster);
+      }
       break;
     default:
       return false;
@@ -1631,6 +1654,12 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
       break;
     case "youtube":
       rows = await sql`UPDATE youtube_channels SET name=${data.name}, creator_name=${data.creatorName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, description=${data.description || null}, website=${data.website || null}, channel_url=${data.channelUrl || null}, subscribe_url=${data.subscribeUrl || null}, email=${data.email || null}, phone=${data.phone || null}, featured_videos=${data.featuredVideos || null}, creator_heading=${data.creatorHeading || null}, creator_image=${data.creatorImage || null}, creator_bio=${data.creatorBio || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, video_url_2=${data.videoUrl2 || null}, video_url_3=${data.videoUrl3 || null}, media_links=${pf.mediaLinks}, tagline=${pf.tagline}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
+    case "fundraiser":
+      rows = await sql`UPDATE fundraisers SET title=${data.name}, description=${data.description || null}, goal=${data.goal ? Math.round(Number(data.goal) * 100) : null}, coach_name=${data.coachName || null}, coach_email=${data.contactEmail || null}, coach_phone=${data.phone || null}, website_url=${data.website || null}, facebook_url=${data.facebookUrl || null}, instagram_url=${data.instagramUrl || null}, hero_image_url=${data.imageUrl || null}, tags=${data.tags || null}, photos=${data.photos || null}, video_url=${data.videoUrl || null}, team_photo=${data.teamPhoto || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      if (data.roster) {
+        await syncFundraiserRoster(id, data.roster);
+      }
       break;
     default:
       return false;
@@ -2126,6 +2155,12 @@ export async function deleteAdminContact(id: number) {
 }
 
 // ── Fundraisers ─────────────────────────────────────────────
+export interface FundraiserRosterEntry {
+  id: string; fundraiserId: string; playerName: string;
+  position?: string; ageGroup?: string; photoUrl?: string; bio?: string;
+  sortOrder: number; createdAt: string;
+}
+
 export interface Fundraiser {
   id: string; slug: string; userId: string;
   clubId?: string; teamId?: string;
@@ -2133,8 +2168,21 @@ export interface Fundraiser {
   coachName?: string; coachEmail?: string; coachPhone?: string;
   websiteUrl?: string; facebookUrl?: string; instagramUrl?: string;
   heroImageUrl?: string; active: boolean;
+  tags?: string[]; photos?: string[]; videoUrl?: string; teamPhoto?: string;
+  announcementHeading?: string; announcementText?: string; announcementImage?: string;
+  announcementCta?: string; announcementCtaUrl?: string;
+  announcementHeading2?: string; announcementText2?: string; announcementImage2?: string;
+  announcementCta2?: string; announcementCtaUrl2?: string;
+  announcementHeading3?: string; announcementText3?: string; announcementImage3?: string;
+  announcementCta3?: string; announcementCtaUrl3?: string;
   createdAt: string; updatedAt: string;
   totalRaised?: number; donorCount?: number;
+  roster?: FundraiserRosterEntry[];
+}
+
+function parseJsonArray(val: unknown): string[] | undefined {
+  if (!val) return undefined;
+  try { const arr = JSON.parse(val as string); return Array.isArray(arr) ? arr : undefined; } catch { return undefined; }
 }
 
 function mapFundraiser(r: Record<string, unknown>): Fundraiser {
@@ -2149,6 +2197,23 @@ function mapFundraiser(r: Record<string, unknown>): Fundraiser {
     instagramUrl: r.instagram_url as string | undefined,
     heroImageUrl: r.hero_image_url as string | undefined,
     active: r.active as boolean,
+    tags: parseJsonArray(r.tags), photos: parseJsonArray(r.photos),
+    videoUrl: r.video_url as string | undefined, teamPhoto: r.team_photo as string | undefined,
+    announcementHeading: r.announcement_heading as string | undefined,
+    announcementText: r.announcement_text as string | undefined,
+    announcementImage: r.announcement_image as string | undefined,
+    announcementCta: r.announcement_cta as string | undefined,
+    announcementCtaUrl: r.announcement_cta_url as string | undefined,
+    announcementHeading2: r.announcement_heading_2 as string | undefined,
+    announcementText2: r.announcement_text_2 as string | undefined,
+    announcementImage2: r.announcement_image_2 as string | undefined,
+    announcementCta2: r.announcement_cta_2 as string | undefined,
+    announcementCtaUrl2: r.announcement_cta_url_2 as string | undefined,
+    announcementHeading3: r.announcement_heading_3 as string | undefined,
+    announcementText3: r.announcement_text_3 as string | undefined,
+    announcementImage3: r.announcement_image_3 as string | undefined,
+    announcementCta3: r.announcement_cta_3 as string | undefined,
+    announcementCtaUrl3: r.announcement_cta_url_3 as string | undefined,
     createdAt: r.created_at as string, updatedAt: r.updated_at as string,
     totalRaised: r.total_raised ? Number(r.total_raised) : undefined,
     donorCount: r.donor_count ? Number(r.donor_count) : undefined,
@@ -2185,8 +2250,11 @@ export async function getFundraisersByUserId(userId: string): Promise<Fundraiser
 export async function createFundraiser(data: Record<string, string>, userId: string): Promise<string> {
   const id = genId();
   const slug = data.slug || (data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
-  await sql`INSERT INTO fundraisers (id, slug, user_id, club_id, team_id, title, description, goal, coach_name, coach_email, coach_phone, website_url, facebook_url, instagram_url, hero_image_url, active)
-    VALUES (${id}, ${slug}, ${userId}, ${data.clubId || null}, ${data.teamId || null}, ${data.title}, ${data.description || null}, ${data.goal ? Number(data.goal) : null}, ${data.coachName || null}, ${data.coachEmail || null}, ${data.coachPhone || null}, ${data.websiteUrl || null}, ${data.facebookUrl || null}, ${data.instagramUrl || null}, ${data.heroImageUrl || null}, true)`;
+  await sql`INSERT INTO fundraisers (id, slug, user_id, club_id, team_id, title, description, goal, coach_name, coach_email, coach_phone, website_url, facebook_url, instagram_url, hero_image_url, tags, photos, video_url, team_photo, announcement_heading, announcement_text, announcement_image, announcement_cta, announcement_cta_url, announcement_heading_2, announcement_text_2, announcement_image_2, announcement_cta_2, announcement_cta_url_2, announcement_heading_3, announcement_text_3, announcement_image_3, announcement_cta_3, announcement_cta_url_3, active)
+    VALUES (${id}, ${slug}, ${userId}, ${data.clubId || null}, ${data.teamId || null}, ${data.title}, ${data.description || null}, ${data.goal ? Number(data.goal) : null}, ${data.coachName || null}, ${data.coachEmail || null}, ${data.coachPhone || null}, ${data.websiteUrl || null}, ${data.facebookUrl || null}, ${data.instagramUrl || null}, ${data.heroImageUrl || null}, ${data.tags || null}, ${data.photos || null}, ${data.videoUrl || null}, ${data.teamPhoto || null}, ${data.announcementHeading || null}, ${data.announcementText || null}, ${data.announcementImage || null}, ${data.announcementCta || null}, ${data.announcementCtaUrl || null}, ${data.announcementHeading2 || null}, ${data.announcementText2 || null}, ${data.announcementImage2 || null}, ${data.announcementCta2 || null}, ${data.announcementCtaUrl2 || null}, ${data.announcementHeading3 || null}, ${data.announcementText3 || null}, ${data.announcementImage3 || null}, ${data.announcementCta3 || null}, ${data.announcementCtaUrl3 || null}, true)`;
+  if (data.roster) {
+    await syncFundraiserRoster(id, data.roster);
+  }
   return slug;
 }
 
@@ -2207,6 +2275,33 @@ export async function updateFundraiser(slug: string, data: Record<string, string
 export async function deleteFundraiser(slug: string, userId: string): Promise<boolean> {
   const rows = await sql`DELETE FROM fundraisers WHERE slug=${slug} AND user_id=${userId} RETURNING id`;
   return rows.length > 0;
+}
+
+// ── Fundraiser Roster ────────────────────────────────────────
+export async function getRosterByFundraiserId(fundraiserId: string): Promise<FundraiserRosterEntry[]> {
+  const rows = await sql`SELECT * FROM fundraiser_roster WHERE fundraiser_id = ${fundraiserId} ORDER BY sort_order ASC, created_at ASC`;
+  return rows.map((r) => ({
+    id: r.id as string, fundraiserId: r.fundraiser_id as string,
+    playerName: r.player_name as string, position: r.position as string | undefined,
+    ageGroup: r.age_group as string | undefined, photoUrl: r.photo_url as string | undefined,
+    bio: r.bio as string | undefined, sortOrder: r.sort_order as number,
+    createdAt: r.created_at as string,
+  }));
+}
+
+async function syncFundraiserRoster(fundraiserId: string, rosterJson: string) {
+  try {
+    const entries = JSON.parse(rosterJson);
+    if (!Array.isArray(entries)) return;
+    await sql`DELETE FROM fundraiser_roster WHERE fundraiser_id = ${fundraiserId}`;
+    for (let i = 0; i < entries.length; i++) {
+      const e = entries[i];
+      if (!e.playerName) continue;
+      const id = genId();
+      await sql`INSERT INTO fundraiser_roster (id, fundraiser_id, player_name, position, age_group, photo_url, bio, sort_order)
+        VALUES (${id}, ${fundraiserId}, ${e.playerName}, ${e.position || null}, ${e.ageGroup || null}, ${e.photoUrl || null}, ${e.bio || null}, ${i})`;
+    }
+  } catch { /* ignore bad JSON */ }
 }
 
 export interface Donation {
