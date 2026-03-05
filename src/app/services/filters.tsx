@@ -15,6 +15,7 @@ const CATEGORIES = [
   "Team Management",
   "Field Rental",
   "Transportation",
+  "Books",
   "Other",
 ];
 const PER_PAGE = 10;

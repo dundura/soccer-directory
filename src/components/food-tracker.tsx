@@ -13,6 +13,7 @@ export function FoodTracker() {
   const [mealType, setMealType] = useState("breakfast");
   const [kind, setKind] = useState<"planned" | "actual">("planned");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const fetchEntries = useCallback(async () => {
     const res = await fetch(`/api/admin/food?date=${date}`);
@@ -25,13 +26,24 @@ export function FoodTracker() {
     e.preventDefault();
     if (!description.trim()) return;
     setLoading(true);
-    await fetch("/api/admin/food", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ date, mealType, kind, description: description.trim() }),
-    });
-    setDescription("");
-    await fetchEntries();
+    setError("");
+    try {
+      const res = await fetch("/api/admin/food", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, mealType, kind, description: description.trim() }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || `Save failed (${res.status})`);
+        setLoading(false);
+        return;
+      }
+      setDescription("");
+      await fetchEntries();
+    } catch {
+      setError("Network error — could not save");
+    }
     setLoading(false);
   }
 
@@ -94,6 +106,7 @@ export function FoodTracker() {
           Add
         </button>
       </form>
+      {error && <p className="text-sm text-red-600 -mt-4 mb-4">{error}</p>}
 
       {/* Two Column Layout */}
       <div className="grid md:grid-cols-2 gap-6">
