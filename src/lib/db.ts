@@ -467,7 +467,9 @@ export async function getYoutubeChannelSlugs(): Promise<string[]> {
 function mapYoutubeChannel(r: Record<string, unknown>): YoutubeChannel {
   let featuredVideos: FeaturedVideo[] | undefined;
   if (r.featured_videos) {
-    try { featuredVideos = JSON.parse(r.featured_videos as string); } catch { featuredVideos = undefined; }
+    try {
+      featuredVideos = typeof r.featured_videos === "string" ? JSON.parse(r.featured_videos) : r.featured_videos as FeaturedVideo[];
+    } catch { featuredVideos = undefined; }
   }
   return {
     id: r.id as string, slug: r.slug as string, name: r.name as string,
