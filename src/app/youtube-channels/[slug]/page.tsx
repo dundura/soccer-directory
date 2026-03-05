@@ -201,7 +201,7 @@ export default async function YoutubeChannelPage({ params }: Props) {
                   <div className="space-y-3">
                     {rest.map((vid, i) => (
                       <div key={i} className="flex gap-4 p-3 rounded-xl border border-border">
-                        <div className="w-56 shrink-0 rounded-lg overflow-hidden">
+                        <div className="w-44 shrink-0 rounded-lg overflow-hidden">
                           <VideoEmbed url={vid.url} />
                         </div>
                         <div className="flex-1 min-w-0 py-1">
