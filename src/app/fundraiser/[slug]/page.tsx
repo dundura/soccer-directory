@@ -254,22 +254,18 @@ export default async function FundraiserPage({ params }: Props) {
               Support This Fundraiser
             </h3>
 
-            {/* Progress Rings */}
-            <div className="flex justify-center gap-8 mb-6">
+            {/* Progress Ring */}
+            <div className="flex flex-col items-center mb-6">
               <ProgressRing
                 pct={pct}
                 color="navy"
                 label="Fundraising Goal"
                 value={`$${(totalRaised / 100).toLocaleString("en-US")}`}
-                sub={goalCents > 0 ? `raised of $${(goalCents / 100).toLocaleString("en-US")}` : "total raised"}
+                sub={`raised of $${(goalCents / 100).toLocaleString("en-US")}`}
               />
-              <ProgressRing
-                pct={donations.length > 0 ? Math.min(100, donations.length * 10) : 0}
-                color="red"
-                label="Donations"
-                value={`${donations.length}`}
-                sub={donations.length === 1 ? "supporter" : "supporters"}
-              />
+              <p className="text-sm text-muted mt-3">
+                <span className="font-bold text-primary">{donations.length}</span> {donations.length === 1 ? "supporter" : "supporters"}
+              </p>
             </div>
 
             {/* Give Now Button */}

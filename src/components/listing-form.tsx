@@ -848,7 +848,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_howitworks", label: "How it works: Donations are processed securely via Stripe. Proceeds are sent to the fundraiser creator, less a 10% platform fee. Donors can contribute between $5 and $500 per donation.", type: "warning" },
     { name: "name", label: "Fundraiser Title", required: true },
     { name: "description", label: "Description — Tell supporters what this fundraiser is for", type: "textarea" },
-    { name: "goal", label: "Fundraising Goal ($) — Leave blank if no goal" },
+    { name: "goal", label: "Fundraising Goal ($)", required: true },
     { name: "_tags", label: "Tags / Quick Info Bubbles", type: "heading" },
     { name: "tags", label: "Tags / Quick Info Bubbles", type: "tag-list" },
     { name: "_contact", label: "Contact Information", type: "heading" },

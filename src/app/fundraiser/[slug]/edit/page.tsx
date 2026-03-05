@@ -76,6 +76,7 @@ export default function EditFundraiserPage() {
     e.preventDefault();
     setError(""); setSuccess(false);
     if (!title.trim()) { setError("Title is required"); return; }
+    if (!goal || isNaN(Number(goal)) || Number(goal) <= 0) { setError("Fundraising goal is required"); return; }
     setSaving(true);
 
     try {
@@ -142,8 +143,8 @@ export default function EditFundraiserPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Goal ($)</label>
-          <input type="number" min="0" step="1" value={goal} onChange={(e) => setGoal(e.target.value)} className={inputClass} placeholder="Optional" />
+          <label className="block text-sm font-medium mb-1">Goal ($) *</label>
+          <input type="number" min="1" step="1" value={goal} onChange={(e) => setGoal(e.target.value)} className={inputClass} placeholder="e.g. 5000" required />
         </div>
 
         <div>
