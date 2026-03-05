@@ -10,7 +10,7 @@ const trainingPlans = [
     title: "7-Day Training Plan",
     description: "See results in just one week. Short daily sessions your player can do in 10 minutes or less.",
     href: "https://anytime-soccer.com/free-soccer-drills-for-kids/",
-    image: "https://anytime-soccer.com/wp-content/themes/anytime/images/about/new-chalange-image.png",
+    image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/about/new-chalange-image.png",
   },
   {
     title: "30-Day Training Plan",
