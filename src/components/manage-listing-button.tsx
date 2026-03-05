@@ -20,7 +20,9 @@ export function ManageListingButton({ ownerId, listingType, listingId }: { owner
 
   const editHref = isAdmin && !isOwner && listingType && listingId
     ? `/admin?editType=${listingType}&editId=${listingId}`
-    : "/dashboard";
+    : listingType && listingId
+      ? `/dashboard?editType=${listingType}&editId=${listingId}`
+      : "/dashboard";
 
   async function handleArchive() {
     if (!listingType || !listingId) return;
@@ -97,7 +99,9 @@ export function EditSectionLink({ ownerId, listingType, listingId }: { ownerId: 
   const isOwner = session.user.id === ownerId;
   const isAdmin = (session.user as { role?: string }).role === "admin";
   if (!isOwner && !isAdmin) return null;
-  const href = isAdmin ? `/admin?editType=${listingType}&editId=${listingId}` : "/dashboard";
+  const href = isAdmin && !isOwner
+    ? `/admin?editType=${listingType}&editId=${listingId}`
+    : `/dashboard?editType=${listingType}&editId=${listingId}`;
   return (
     <a href={href} className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors">
       Edit

@@ -317,6 +317,8 @@ function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const typeParam = searchParams.get("type") as ListingType | null;
+  const editTypeParam = searchParams.get("editType") as ListingType | null;
+  const editIdParam = searchParams.get("editId");
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(!!typeParam);
@@ -332,6 +334,13 @@ function DashboardContent() {
   useEffect(() => {
     fetchListings();
   }, []);
+
+  // Auto-open edit form when editType and editId params are present
+  useEffect(() => {
+    if (editTypeParam && editIdParam && !editingListing) {
+      handleEdit({ id: editIdParam, slug: "", type: editTypeParam, name: "", status: "approved" });
+    }
+  }, [editTypeParam, editIdParam]);
 
   async function fetchListings() {
     setLoading(true);
