@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { ImageUpload } from "@/components/image-upload";
@@ -8,6 +8,10 @@ import { ImageUpload } from "@/components/image-upload";
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";
 
 export default function JoinRosterPage() {
+  return <Suspense fallback={<div className="max-w-xl mx-auto px-6 py-20 text-center text-muted">Loading...</div>}><JoinRosterInner /></Suspense>;
+}
+
+function JoinRosterInner() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
