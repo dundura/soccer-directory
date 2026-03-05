@@ -1526,11 +1526,11 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                           placeholder="Episode title"
                           className={inputClass}
                         />
-                        <input
-                          type="text"
+                        <textarea
                           value={ep.description || ""}
                           onChange={(e) => updateEp("description", e.target.value)}
                           placeholder="Short description (optional)"
+                          rows={3}
                           className={inputClass}
                         />
                         <input
