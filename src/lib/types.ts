@@ -55,6 +55,7 @@ export interface Club extends ProfileFields {
   announcementCtaUrl3?: string;
   openPositions?: { title: string; description?: string; applyUrl?: string }[];
   scholarshipsAvailable?: string;
+  fundraiserSlug?: string;
   featured: boolean;
   createdAt: string;
   updatedAt: string;
@@ -102,6 +103,7 @@ export interface Team extends ProfileFields {
   announcementCta3?: string;
   announcementCtaUrl3?: string;
   scholarshipsAvailable?: string;
+  fundraiserSlug?: string;
   featured: boolean;
   createdAt: string;
   updatedAt: string;

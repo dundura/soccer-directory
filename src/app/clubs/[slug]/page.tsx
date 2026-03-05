@@ -183,6 +183,18 @@ export default async function ClubDetailPage({ params }: Props) {
               </div>
             )}
 
+            {/* Donate / Fundraiser */}
+            {club.fundraiserSlug && (
+              <a href={`/fundraiser/${club.fundraiserSlug}`} className="block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+                <div className="bg-[#DC373E] px-4 py-3 text-center">
+                  <span className="text-white font-bold text-sm">Support Us — Donate</span>
+                </div>
+                <div className="px-4 py-3 text-center">
+                  <p className="text-xs text-muted">Help {club.name} reach their goals</p>
+                </div>
+              </a>
+            )}
+
             {/* Blog Post */}
             {club.blogUrl && (
               <a href={club.blogUrl} className="block bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow group">

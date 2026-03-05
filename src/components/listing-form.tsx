@@ -149,6 +149,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "openPositions", label: "Open Positions", type: "open-positions" },
     { name: "_scholarships", label: "Scholarships", type: "heading" },
     { name: "scholarshipsAvailable", label: "Scholarships Available?", options: ["", "Yes", "No"] },
+    { name: "_fundraiser", label: "Fundraiser", type: "heading" },
+    { name: "fundraiserSlug", label: "Fundraiser URL Slug (links Donate button to /fundraiser/your-slug)" },
   ],
   team: [
     { name: "name", label: "Team Name", required: true },
@@ -202,6 +204,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "mediaLinks", label: "Media Links (up to 5 URLs)", type: "media-links" },
     { name: "_scholarships", label: "Scholarships", type: "heading" },
     { name: "scholarshipsAvailable", label: "Scholarships Available?", options: ["", "Yes", "No"] },
+    { name: "_fundraiser", label: "Fundraiser", type: "heading" },
+    { name: "fundraiserSlug", label: "Fundraiser URL Slug (links Donate button to /fundraiser/your-slug)" },
   ],
   trainer: [
     { name: "name", label: "Your Name", required: true },

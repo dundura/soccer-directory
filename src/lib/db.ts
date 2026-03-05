@@ -102,6 +102,7 @@ function mapClub(r: Record<string, unknown>): Club {
     announcementCtaUrl3: r.announcement_cta_url_3 as string | undefined,
     openPositions: r.open_positions ? (() => { try { return JSON.parse(r.open_positions as string); } catch { return undefined; } })() : undefined,
     scholarshipsAvailable: r.scholarships_available as string | undefined,
+    fundraiserSlug: r.fundraiser_slug as string | undefined,
     featured: r.featured as boolean,
     createdAt: r.created_at as string, updatedAt: r.updated_at as string,
     ...mapProfileFields(r),
@@ -161,6 +162,7 @@ function mapTeam(r: Record<string, unknown>): Team {
     announcementCta3: r.announcement_cta_3 as string | undefined,
     announcementCtaUrl3: r.announcement_cta_url_3 as string | undefined,
     scholarshipsAvailable: r.scholarships_available as string | undefined,
+    fundraiserSlug: r.fundraiser_slug as string | undefined,
     featured: r.featured as boolean,
     createdAt: r.created_at as string, updatedAt: r.updated_at as string,
     ...mapProfileFields(r),
@@ -1391,11 +1393,11 @@ function profileFormFields(r: Record<string, unknown>): Record<string, string> {
 }
 function mapClubToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
-  return { name: s(r.name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), league: s(r.league), leagueUrl: s(r.league_url), ageGroups: s(r.age_groups), gender: s(r.gender), teamCount: String(r.team_count || ""), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), openPositions: s(r.open_positions), scholarshipsAvailable: s(r.scholarships_available), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3), ...profileFormFields(r) };
+  return { name: s(r.name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), league: s(r.league), leagueUrl: s(r.league_url), ageGroups: s(r.age_groups), gender: s(r.gender), teamCount: String(r.team_count || ""), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), openPositions: s(r.open_positions), scholarshipsAvailable: s(r.scholarships_available), fundraiserSlug: s(r.fundraiser_slug), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3), ...profileFormFields(r) };
 }
 function mapTeamToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
-  return { name: s(r.name), clubName: s(r.club_name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), ageGroup: s(r.age_group), gender: s(r.gender), coach: s(r.coach), lookingForPlayers: r.looking_for_players ? "true" : "false", positionsNeeded: s(r.positions_needed), season: s(r.season), description: s(r.description), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), events: s(r.events), annualTournaments: s(r.annual_tournaments), scholarshipsAvailable: s(r.scholarships_available), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3), ...profileFormFields(r) };
+  return { name: s(r.name), clubName: s(r.club_name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), ageGroup: s(r.age_group), gender: s(r.gender), coach: s(r.coach), lookingForPlayers: r.looking_for_players ? "true" : "false", positionsNeeded: s(r.positions_needed), season: s(r.season), description: s(r.description), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), events: s(r.events), annualTournaments: s(r.annual_tournaments), scholarshipsAvailable: s(r.scholarships_available), fundraiserSlug: s(r.fundraiser_slug), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3), ...profileFormFields(r) };
 }
 function mapTrainerToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
@@ -1479,10 +1481,10 @@ export async function updateListing(type: string, id: string, data: Record<strin
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club":
-      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, league=${data.league || null}, league_url=${data.leagueUrl || null}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, media_links=${pf.mediaLinks}, open_positions=${data.openPositions || null}, scholarships_available=${data.scholarshipsAvailable || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, league=${data.league || null}, league_url=${data.leagueUrl || null}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, media_links=${pf.mediaLinks}, open_positions=${data.openPositions || null}, scholarships_available=${data.scholarshipsAvailable || null}, fundraiser_slug=${data.fundraiserSlug || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "team":
-      rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, events=${data.events || null}, annual_tournaments=${data.annualTournaments || null}, media_links=${pf.mediaLinks}, scholarships_available=${data.scholarshipsAvailable || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, events=${data.events || null}, annual_tournaments=${data.annualTournaments || null}, media_links=${pf.mediaLinks}, scholarships_available=${data.scholarshipsAvailable || null}, fundraiser_slug=${data.fundraiserSlug || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "trainer":
       rows = await sql`UPDATE trainers SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty}, experience=${data.experience}, credentials=${data.credentials}, price_range=${data.priceRange}, service_area=${data.serviceArea}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
@@ -1549,10 +1551,10 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
   let rows: Record<string, unknown>[];
   switch (type) {
     case "club":
-      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, league=${data.league || null}, league_url=${data.leagueUrl || null}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, media_links=${pf.mediaLinks}, open_positions=${data.openPositions || null}, scholarships_available=${data.scholarshipsAvailable || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, tagline=${pf.tagline}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      rows = await sql`UPDATE clubs SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, league=${data.league || null}, league_url=${data.leagueUrl || null}, age_groups=${data.ageGroups}, gender=${data.gender}, team_count=${Number(data.teamCount) || 0}, description=${data.description}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, media_links=${pf.mediaLinks}, open_positions=${data.openPositions || null}, scholarships_available=${data.scholarshipsAvailable || null}, fundraiser_slug=${data.fundraiserSlug || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, tagline=${pf.tagline}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
     case "team":
-      rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, events=${data.events || null}, annual_tournaments=${data.annualTournaments || null}, media_links=${pf.mediaLinks}, scholarships_available=${data.scholarshipsAvailable || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, tagline=${pf.tagline}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      rows = await sql`UPDATE teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, events=${data.events || null}, annual_tournaments=${data.annualTournaments || null}, media_links=${pf.mediaLinks}, scholarships_available=${data.scholarshipsAvailable || null}, fundraiser_slug=${data.fundraiserSlug || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, tagline=${pf.tagline}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
     case "trainer":
       rows = await sql`UPDATE trainers SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty}, experience=${data.experience}, credentials=${data.credentials}, price_range=${data.priceRange}, service_area=${data.serviceArea}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, tagline=${pf.tagline}, updated_at=NOW() WHERE id=${id} RETURNING id`;
@@ -2092,4 +2094,111 @@ export async function updateAdminContact(id: number, data: Record<string, string
 }
 export async function deleteAdminContact(id: number) {
   await sql`DELETE FROM admin_contacts WHERE id = ${id}`;
+}
+
+// ── Fundraisers ─────────────────────────────────────────────
+export interface Fundraiser {
+  id: string; slug: string; userId: string;
+  clubId?: string; teamId?: string;
+  title: string; description?: string; goal?: number;
+  coachName?: string; coachEmail?: string; coachPhone?: string;
+  websiteUrl?: string; facebookUrl?: string; instagramUrl?: string;
+  heroImageUrl?: string; active: boolean;
+  createdAt: string; updatedAt: string;
+  totalRaised?: number; donorCount?: number;
+}
+
+function mapFundraiser(r: Record<string, unknown>): Fundraiser {
+  return {
+    id: r.id as string, slug: r.slug as string, userId: r.user_id as string,
+    clubId: r.club_id as string | undefined, teamId: r.team_id as string | undefined,
+    title: r.title as string, description: r.description as string | undefined,
+    goal: r.goal as number | undefined,
+    coachName: r.coach_name as string | undefined, coachEmail: r.coach_email as string | undefined,
+    coachPhone: r.coach_phone as string | undefined,
+    websiteUrl: r.website_url as string | undefined, facebookUrl: r.facebook_url as string | undefined,
+    instagramUrl: r.instagram_url as string | undefined,
+    heroImageUrl: r.hero_image_url as string | undefined,
+    active: r.active as boolean,
+    createdAt: r.created_at as string, updatedAt: r.updated_at as string,
+    totalRaised: r.total_raised ? Number(r.total_raised) : undefined,
+    donorCount: r.donor_count ? Number(r.donor_count) : undefined,
+  };
+}
+
+export async function getFundraiserBySlug(slug: string): Promise<Fundraiser | null> {
+  const rows = await sql`
+    SELECT f.*,
+      COALESCE((SELECT SUM(amount) FROM donations WHERE fundraiser_id = f.id AND status = 'completed'), 0) as total_raised,
+      COALESCE((SELECT COUNT(*) FROM donations WHERE fundraiser_id = f.id AND status = 'completed'), 0) as donor_count
+    FROM fundraisers f WHERE f.slug = ${slug} LIMIT 1`;
+  return rows[0] ? mapFundraiser(rows[0]) : null;
+}
+
+export async function getFundraisersByUserId(userId: string): Promise<Fundraiser[]> {
+  const rows = await sql`
+    SELECT f.*,
+      COALESCE((SELECT SUM(amount) FROM donations WHERE fundraiser_id = f.id AND status = 'completed'), 0) as total_raised,
+      COALESCE((SELECT COUNT(*) FROM donations WHERE fundraiser_id = f.id AND status = 'completed'), 0) as donor_count
+    FROM fundraisers f WHERE f.user_id = ${userId} ORDER BY f.created_at DESC`;
+  return rows.map(mapFundraiser);
+}
+
+export async function createFundraiser(data: Record<string, string>, userId: string): Promise<string> {
+  const id = genId();
+  const slug = data.slug || (data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
+  await sql`INSERT INTO fundraisers (id, slug, user_id, club_id, team_id, title, description, goal, coach_name, coach_email, coach_phone, website_url, facebook_url, instagram_url, hero_image_url, active)
+    VALUES (${id}, ${slug}, ${userId}, ${data.clubId || null}, ${data.teamId || null}, ${data.title}, ${data.description || null}, ${data.goal ? Number(data.goal) : null}, ${data.coachName || null}, ${data.coachEmail || null}, ${data.coachPhone || null}, ${data.websiteUrl || null}, ${data.facebookUrl || null}, ${data.instagramUrl || null}, ${data.heroImageUrl || null}, true)`;
+  return slug;
+}
+
+export async function updateFundraiser(slug: string, data: Record<string, string>, userId: string): Promise<boolean> {
+  const rows = await sql`UPDATE fundraisers SET
+    title=${data.title}, description=${data.description || null},
+    goal=${data.goal ? Number(data.goal) : null},
+    club_id=${data.clubId || null}, team_id=${data.teamId || null},
+    coach_name=${data.coachName || null}, coach_email=${data.coachEmail || null}, coach_phone=${data.coachPhone || null},
+    website_url=${data.websiteUrl || null}, facebook_url=${data.facebookUrl || null}, instagram_url=${data.instagramUrl || null},
+    hero_image_url=${data.heroImageUrl || null},
+    active=${data.active === "true"},
+    updated_at=NOW()
+    WHERE slug=${slug} AND user_id=${userId} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function deleteFundraiser(slug: string, userId: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM fundraisers WHERE slug=${slug} AND user_id=${userId} RETURNING id`;
+  return rows.length > 0;
+}
+
+export interface Donation {
+  id: number; fundraiserId: string;
+  donorName: string; donorEmail: string;
+  amount: number; platformFee: number; netAmount: number;
+  stripeSessionId?: string; stripePaymentIntentId?: string;
+  donorMessage?: string; onBehalfOf?: string;
+  status: string; createdAt: string;
+}
+
+export async function getDonationsByFundraiserId(fundraiserId: string): Promise<Donation[]> {
+  const rows = await sql`SELECT * FROM donations WHERE fundraiser_id = ${fundraiserId} AND status = 'completed' ORDER BY created_at DESC`;
+  return rows.map((r) => ({
+    id: r.id as number, fundraiserId: r.fundraiser_id as string,
+    donorName: r.donor_name as string, donorEmail: r.donor_email as string,
+    amount: r.amount as number, platformFee: r.platform_fee as number, netAmount: r.net_amount as number,
+    stripeSessionId: r.stripe_session_id as string | undefined,
+    stripePaymentIntentId: r.stripe_payment_intent_id as string | undefined,
+    donorMessage: r.donor_message as string | undefined, onBehalfOf: r.on_behalf_of as string | undefined,
+    status: r.status as string, createdAt: r.created_at as string,
+  }));
+}
+
+export async function createDonation(data: { fundraiserId: string; donorName: string; donorEmail: string; amount: number; platformFee: number; netAmount: number; stripeSessionId: string; donorMessage?: string; onBehalfOf?: string }) {
+  await sql`INSERT INTO donations (fundraiser_id, donor_name, donor_email, amount, platform_fee, net_amount, stripe_session_id, donor_message, on_behalf_of, status)
+    VALUES (${data.fundraiserId}, ${data.donorName}, ${data.donorEmail}, ${data.amount}, ${data.platformFee}, ${data.netAmount}, ${data.stripeSessionId}, ${data.donorMessage || null}, ${data.onBehalfOf || null}, 'pending')`;
+}
+
+export async function completeDonation(stripeSessionId: string, paymentIntentId: string): Promise<{ fundraiserId: string } | null> {
+  const rows = await sql`UPDATE donations SET status='completed', stripe_payment_intent_id=${paymentIntentId} WHERE stripe_session_id=${stripeSessionId} AND status='pending' RETURNING fundraiser_id`;
+  return rows[0] ? { fundraiserId: rows[0].fundraiser_id as string } : null;
 }
