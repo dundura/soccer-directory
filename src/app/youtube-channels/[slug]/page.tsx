@@ -186,22 +186,13 @@ export default async function YoutubeChannelPage({ params }: Props) {
                 <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Featured Videos</h2>
                 <EditSectionLink ownerId={ownerId} listingType="youtube" listingId={channel.id} />
               </div>
-              <div className="space-y-3">
+              <div className="space-y-5">
                 {channel.featuredVideos.map((vid, i) => (
-                  <a
-                    key={i}
-                    href={vid.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-start gap-3 p-3 rounded-xl border border-border hover:bg-surface transition-colors group"
-                  >
-                    <span className="shrink-0 w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center text-sm font-bold">{i + 1}</span>
-                    <div className="min-w-0">
-                      <span className="block font-semibold text-sm text-primary group-hover:text-accent-hover transition-colors">{vid.title}</span>
-                      {vid.description && <span className="block text-xs text-muted mt-0.5 line-clamp-2">{vid.description}</span>}
-                    </div>
-                    <span className="shrink-0 text-muted text-xs ml-auto">↗</span>
-                  </a>
+                  <div key={i}>
+                    {vid.title && <h3 className="font-semibold text-sm text-primary mb-1.5">{vid.title}</h3>}
+                    {vid.description && <p className="text-xs text-muted mb-2">{vid.description}</p>}
+                    <VideoEmbed url={vid.url} />
+                  </div>
                 ))}
               </div>
             </div>
