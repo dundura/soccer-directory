@@ -20,13 +20,14 @@ export async function POST(req: Request, { params }: Props) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
-  const { body } = await req.json();
+  const { body, nickname } = await req.json();
   if (!body?.trim()) {
     return NextResponse.json({ error: "Comment cannot be empty" }, { status: 400 });
   }
+  const displayName = nickname?.trim() || session.user.name || "Anonymous";
 
   try {
-    const commentId = await createClubReviewComment(reviewId, session.user.id, session.user.name || "Anonymous", body.trim());
+    const commentId = await createClubReviewComment(reviewId, session.user.id, displayName, body.trim());
 
     // Send email to review owner and admin
     if (resend) {
@@ -45,7 +46,7 @@ export async function POST(req: Request, { params }: Props) {
           html: `
             <div style="font-family:sans-serif;max-width:600px;">
               <h2 style="color:#1a365d;">New Comment on Club Review</h2>
-              <p><strong>${session.user.name || "Someone"}</strong> commented on the review for <strong>${review.clubName}</strong>:</p>
+              <p><strong>${displayName}</strong> commented on the review for <strong>${review.clubName}</strong>:</p>
               <div style="background:#f7f7f7;padding:16px;border-radius:8px;margin:16px 0;">
                 <p style="color:#333;line-height:1.6;margin:0;white-space:pre-wrap;">${body.trim()}</p>
               </div>
@@ -56,7 +57,7 @@ export async function POST(req: Request, { params }: Props) {
       }
     }
 
-    return NextResponse.json({ success: true, id: commentId, userName: session.user.name });
+    return NextResponse.json({ success: true, id: commentId, userName: displayName });
   } catch {
     return NextResponse.json({ error: "Failed to post comment" }, { status: 500 });
   }

@@ -134,7 +134,7 @@ function ReviewForm({ onSuccess, initial, isEdit }: {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <input type="text" required value={reviewerName} onChange={(e) => setReviewerName(e.target.value)} placeholder="Your Name *" className={inputClass} />
+        <input type="text" required value={reviewerName} onChange={(e) => setReviewerName(e.target.value)} placeholder="Display Name / Nickname *" className={inputClass} />
         <select value={reviewerRole} onChange={(e) => setReviewerRole(e.target.value)} className={inputClass + " bg-white"}>
           <option value="">Your role...</option>
           <option value="Parent">Parent</option>
@@ -220,6 +220,7 @@ function CommentsSection({ reviewId, isLoggedIn, userId }: { reviewId: string; i
   const [comments, setComments] = useState<ClubReviewComment[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [nickname, setNickname] = useState("");
   const [body, setBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const { data: session } = useSession();
@@ -241,13 +242,13 @@ function CommentsSection({ reviewId, isLoggedIn, userId }: { reviewId: string; i
       const res = await fetch(`/api/club-reviews/${reviewId}/comments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body }),
+        body: JSON.stringify({ body, nickname: nickname.trim() || undefined }),
       });
       const json = await res.json();
       if (res.ok) {
         setComments((prev) => [...prev, {
           id: json.id, reviewId, userId: userId || "",
-          userName: json.userName || session?.user?.name || "You",
+          userName: json.userName || nickname.trim() || session?.user?.name || "You",
           body: body.trim(), createdAt: new Date().toISOString(),
         }]);
         setBody("");
@@ -298,7 +299,14 @@ function CommentsSection({ reviewId, isLoggedIn, userId }: { reviewId: string; i
           )}
 
           {isLoggedIn ? (
-            <form onSubmit={handleSubmit} className="flex gap-2">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="Nickname (optional)"
+                className="sm:w-36 px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+              />
               <input
                 type="text"
                 required
