@@ -1,5 +1,6 @@
 import { getFundraiserBySlug, getDonationsByFundraiserId, getRosterByFundraiserId } from "@/lib/db";
-import { ShareButtons, VideoEmbed } from "@/components/profile-ui";
+import { VideoEmbed } from "@/components/profile-ui";
+import { SharePopupButton } from "@/components/share-popup";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { notFound } from "next/navigation";
@@ -92,9 +93,12 @@ export default async function FundraiserPage({ params }: Props) {
           )}
 
           {/* Title & Status */}
-          <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-extrabold text-primary mb-2 leading-tight">
+          <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-extrabold text-primary mb-1 leading-tight">
             {fundraiser.title}
           </h1>
+          {fundraiser.tagline && (
+            <p className="text-sm text-accent font-medium mb-2">{fundraiser.tagline}</p>
+          )}
           {!fundraiser.active && (
             <span className="inline-block mb-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
               Fundraiser Closed
@@ -265,21 +269,8 @@ export default async function FundraiserPage({ params }: Props) {
               </a>
             )}
 
-            {/* Share Button */}
-            <a
-              href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(fundraiser.title)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full py-3 rounded-lg bg-white text-primary border-2 border-border text-center font-[family-name:var(--font-display)] text-lg font-bold hover:border-primary transition-colors mb-5"
-            >
-              Share
-            </a>
-
-            {/* Social Share */}
-            <div className="text-center">
-              <p className="text-[11px] font-bold text-muted uppercase tracking-widest mb-3">Share this fundraiser</p>
-              <ShareButtons url={pageUrl} title={fundraiser.title} />
-            </div>
+            {/* Share Button with Popup */}
+            <SharePopupButton url={pageUrl} title={fundraiser.title} />
           </div>
 
           {/* Organizer Card */}
