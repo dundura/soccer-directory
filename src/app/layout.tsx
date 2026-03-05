@@ -84,6 +84,7 @@ function Header() {
                     { label: "Player Profiles", href: "/guest-play/players", desc: "Browse available players", icon: "👤" },
                     { label: "Guest Player Posts", href: "/guest-play/posts", desc: "Latest guest play posts", icon: "📋" },
                     { label: "College Showcases", href: "/camps?type=College+Showcase", desc: "Get recruited", icon: "🎓" },
+                    { label: "Fundraisers", href: "/fundraiser/new", desc: "Support local teams", icon: "💚" },
                     { label: "US Tournaments", href: "/tournaments?region=US", desc: "Domestic tournaments", icon: "🇺🇸" },
                     { label: "Int'l Tournaments", href: "/tournaments?region=International", desc: "International events", icon: "🌎" },
                   ],
@@ -105,6 +106,7 @@ function Header() {
                 },
               ]}
             />
+            <a href="/fundraiser/new" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Fundraising</a>
             <a href="/rankings" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Rankings</a>
             <a href="/shop" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Recommendations</a>
             <NavDropdown
@@ -171,6 +173,7 @@ function Footer() {
               <a href="/dashboard" className="hover:text-white transition-colors">Manage Listings</a>
               <a href="/dashboard" className="hover:text-white transition-colors">Post a Camp</a>
               <a href="/dashboard" className="hover:text-white transition-colors">Post a Tournament</a>
+              <a href="/fundraiser/new" className="hover:text-white transition-colors">Start a Fundraiser</a>
             </div>
           </div>
           <div>
