@@ -7,7 +7,7 @@ import { ImageUpload } from "@/components/image-upload";
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";
 
-type RosterEntry = { id: string; playerName: string; email?: string; inviteStatus?: string; position?: string; ageGroup?: string; amountRaised?: number };
+type RosterEntry = { id: string; playerName: string; email?: string; inviteStatus?: string; position?: string; ageGroup?: string; amountRaised?: number; userId?: string };
 
 export default function EditFundraiserPage() {
   const { status } = useSession();
@@ -234,10 +234,10 @@ export default function EditFundraiserPage() {
         {roster.length > 0 && (
           <div className="space-y-2">
             {roster.map((p) => (
-              <div key={p.id} className="flex items-center gap-3 py-3 px-3 rounded-xl border border-border bg-surface/50">
+              <div key={p.id} className={`flex items-center gap-3 py-3 px-3 rounded-xl border bg-surface/50 ${p.inviteStatus === "requested" ? "border-yellow-300 bg-yellow-50/50" : "border-border"}`}>
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-sm text-primary">
-                    {p.inviteStatus === "accepted" ? p.playerName : (p.email || "Unknown")}
+                    {p.inviteStatus === "pending" ? (p.email || "Unknown") : p.playerName}
                   </div>
                   <div className="text-xs text-muted mt-0.5">
                     {p.email && <span>{p.email}</span>}
@@ -245,19 +245,55 @@ export default function EditFundraiserPage() {
                     {p.ageGroup && <span> &middot; {p.ageGroup}</span>}
                   </div>
                 </div>
-                <div className="text-right shrink-0">
+                <div className="text-right shrink-0 flex items-center gap-2">
                   {(p.amountRaised || 0) > 0 && (
-                    <div className="text-xs font-bold text-green-700 mb-0.5">
+                    <div className="text-xs font-bold text-green-700">
                       ${((p.amountRaised || 0) / 100).toLocaleString("en-US")} raised
                     </div>
                   )}
-                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                    p.inviteStatus === "accepted"
-                      ? "bg-green-50 text-green-700 border border-green-200"
-                      : "bg-yellow-50 text-yellow-700 border border-yellow-200"
-                  }`}>
-                    {p.inviteStatus === "accepted" ? "Joined" : "Pending"}
-                  </span>
+                  {p.inviteStatus === "requested" ? (
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={async () => {
+                          const res = await fetch(`/api/fundraiser/${slug}/invite`, {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "approve", entryId: p.id, userId: p.userId }),
+                          });
+                          if (res.ok) {
+                            setRoster(roster.map(r => r.id === p.id ? { ...r, inviteStatus: "accepted" } : r));
+                          }
+                        }}
+                        className="text-xs px-3 py-1.5 rounded-lg bg-green-600 text-white font-bold hover:bg-green-700 transition-colors"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!confirm(`Reject ${p.playerName}?`)) return;
+                          const res = await fetch(`/api/fundraiser/${slug}/invite`, {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "reject", entryId: p.id }),
+                          });
+                          if (res.ok) {
+                            setRoster(roster.filter(r => r.id !== p.id));
+                          }
+                        }}
+                        className="text-xs px-3 py-1.5 rounded-lg border border-red-200 text-[#DC373E] font-bold hover:bg-red-50 transition-colors"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  ) : (
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                      p.inviteStatus === "accepted"
+                        ? "bg-green-50 text-green-700 border border-green-200"
+                        : "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                    }`}>
+                      {p.inviteStatus === "accepted" ? "Joined" : "Pending Invite"}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}

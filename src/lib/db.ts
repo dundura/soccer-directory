@@ -2541,6 +2541,32 @@ export async function acceptRosterInvite(token: string, userId: string, data: { 
   return rows.length > 0;
 }
 
+export async function requestToJoinRoster(fundraiserId: string, userId: string, data: { playerName: string; position?: string; ageGroup?: string; photoUrl?: string; bio?: string }): Promise<string> {
+  // Check if already on roster
+  const existing = await sql`SELECT id FROM fundraiser_roster WHERE fundraiser_id = ${fundraiserId} AND user_id = ${userId} LIMIT 1`;
+  if (existing[0]) return existing[0].id as string;
+  const id = genId();
+  const token = genId();
+  await sql`INSERT INTO fundraiser_roster (id, fundraiser_id, player_name, position, age_group, photo_url, bio, invite_token, invite_status, user_id, sort_order)
+    VALUES (${id}, ${fundraiserId}, ${data.playerName}, ${data.position || null}, ${data.ageGroup || null}, ${data.photoUrl || null}, ${data.bio || null}, ${token}, 'requested', ${userId}, 999)`;
+  return id;
+}
+
+export async function approveRosterRequest(entryId: string, fundraiserId: string): Promise<boolean> {
+  const rows = await sql`UPDATE fundraiser_roster SET invite_status = 'accepted' WHERE id = ${entryId} AND fundraiser_id = ${fundraiserId} AND invite_status = 'requested' RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function rejectRosterRequest(entryId: string, fundraiserId: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM fundraiser_roster WHERE id = ${entryId} AND fundraiser_id = ${fundraiserId} AND invite_status = 'requested' RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function getUserRosterEntryForFundraiser(fundraiserId: string, userId: string): Promise<FundraiserRosterEntry | null> {
+  const rows = await sql`SELECT r.*, 0 as amount_raised FROM fundraiser_roster r WHERE r.fundraiser_id = ${fundraiserId} AND r.user_id = ${userId} LIMIT 1`;
+  return rows[0] ? mapRosterEntry(rows[0]) : null;
+}
+
 async function syncFundraiserRoster(fundraiserId: string, rosterJson: string) {
   try {
     const entries = JSON.parse(rosterJson);

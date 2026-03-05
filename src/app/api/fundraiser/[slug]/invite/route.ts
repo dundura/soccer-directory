@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { auth } from "@/lib/auth";
-import { getFundraiserBySlug, invitePlayerToRoster, getRosterWithPendingByFundraiserId } from "@/lib/db";
+import { getFundraiserBySlug, invitePlayerToRoster, getRosterWithPendingByFundraiserId, approveRosterRequest, rejectRosterRequest, getUserEmailById } from "@/lib/db";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const BASE_URL = process.env.NEXTAUTH_URL || "https://www.soccer-near-me.com";
@@ -65,4 +65,58 @@ export async function POST(req: Request, { params }: Ctx) {
   }
 
   return NextResponse.json({ success: true });
+}
+
+// PUT — approve or reject a roster request
+export async function PUT(req: Request, { params }: Ctx) {
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  const { slug } = await params;
+  const fundraiser = await getFundraiserBySlug(slug);
+  if (!fundraiser) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (fundraiser.userId !== session.user.id) return NextResponse.json({ error: "Not owner" }, { status: 403 });
+
+  const { action, entryId, userId } = await req.json();
+
+  if (action === "approve") {
+    const ok = await approveRosterRequest(entryId, fundraiser.id);
+    if (!ok) return NextResponse.json({ error: "Request not found" }, { status: 404 });
+    // Notify the player they've been accepted
+    if (resend && userId) {
+      const playerEmail = await getUserEmailById(userId);
+      if (playerEmail) {
+        const fundraiserUrl = `${BASE_URL}/fundraiser/${slug}`;
+        await resend.emails.send({
+          from: "Soccer Near Me <notifications@soccer-near-me.com>",
+          to: [playerEmail],
+          subject: `You've been added to the roster: ${fundraiser.title}!`,
+          html: `
+            <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
+              <div style="background:linear-gradient(135deg,#0f1e35,#1a365d);border-radius:12px;padding:32px;text-align:center;margin-bottom:24px;">
+                <span style="font-size:48px;">&#127881;</span>
+                <h1 style="color:white;margin:12px 0 4px;font-size:24px;">You're on the Team!</h1>
+                <p style="color:rgba(255,255,255,0.7);font-size:16px;margin:0;">${fundraiser.title}</p>
+              </div>
+              <p style="color:#333;font-size:15px;line-height:1.6;">
+                Great news! Your request to join the roster for <strong>${fundraiser.title}</strong> has been approved.
+                You're now featured on the fundraiser page and supporters can donate on your behalf.
+              </p>
+              <div style="text-align:center;margin:28px 0;">
+                <a href="${fundraiserUrl}" style="display:inline-block;padding:14px 32px;background:#DC373E;color:white;text-decoration:none;border-radius:10px;font-weight:bold;font-size:15px;">View Fundraiser</a>
+              </div>
+            </div>
+          `,
+        }).catch((err) => console.error("Failed to send approval email:", err));
+      }
+    }
+    return NextResponse.json({ success: true });
+  }
+
+  if (action === "reject") {
+    const ok = await rejectRosterRequest(entryId, fundraiser.id);
+    if (!ok) return NextResponse.json({ error: "Request not found" }, { status: 404 });
+    return NextResponse.json({ success: true });
+  }
+
+  return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 }

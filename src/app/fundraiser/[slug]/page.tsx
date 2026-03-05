@@ -3,6 +3,7 @@ import { VideoEmbed } from "@/components/profile-ui";
 import { SharePopupButton } from "@/components/share-popup";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { ManageListingButton } from "@/components/manage-listing-button";
+import { JoinRosterButton } from "./join-roster-button";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -161,12 +162,12 @@ export default async function FundraiserPage({ params }: Props) {
           )}
 
           {/* Roster */}
-          {roster.length > 0 && (
-            <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary pb-2.5 border-b-2 border-border mb-1">
-                Roster{" "}
-                <span className="font-normal text-muted text-base">({roster.length})</span>
-              </h2>
+          <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
+            <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary pb-2.5 border-b-2 border-border mb-1">
+              Roster{" "}
+              <span className="font-normal text-muted text-base">({roster.length})</span>
+            </h2>
+            {roster.length > 0 ? (
               <div>
                 {roster.map((player) => {
                   const initials = player.playerName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
@@ -202,8 +203,11 @@ export default async function FundraiserPage({ params }: Props) {
                   );
                 })}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="text-sm text-muted py-4 text-center">No players on the roster yet. Be the first to join!</p>
+            )}
+            {fundraiser.active && <JoinRosterButton slug={slug} />}
+          </div>
 
           {/* Supporters Card */}
           <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
