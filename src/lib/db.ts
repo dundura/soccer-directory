@@ -1,6 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { Club, Team, TeamEvent, Trainer, Recruiter, Camp, Tryout, SpecialEvent, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, Podcast, TopEpisode, FacebookGroup, Service, TrainingApp, Blog, FeaturedPost, YoutubeChannel, FeaturedVideo, ProfileFields, MediaLink, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment } from "./types";
-import type { Sponsor } from "./types";
+import type { Club, Team, TeamEvent, Trainer, Recruiter, Camp, Tryout, SpecialEvent, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, Podcast, TopEpisode, FacebookGroup, Service, TrainingApp, Blog, FeaturedPost, YoutubeChannel, FeaturedVideo, ProfileFields, MediaLink, Sponsor, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment } from "./types";
 
 const sql = neon(process.env.DATABASE_URL!);
 
