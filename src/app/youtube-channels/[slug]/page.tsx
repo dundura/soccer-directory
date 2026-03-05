@@ -190,7 +190,7 @@ export default async function YoutubeChannelPage({ params }: Props) {
                 </div>
 
                 {/* Main featured video — full width */}
-                <div className="mb-6">
+                <div className="p-3 rounded-xl border border-border mb-4">
                   {main.title && <h3 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary mb-2">{main.title}</h3>}
                   {main.description && <p className="text-sm text-muted mb-3">{main.description}</p>}
                   <VideoEmbed url={main.url} />
@@ -198,9 +198,9 @@ export default async function YoutubeChannelPage({ params }: Props) {
 
                 {/* Remaining videos — table layout */}
                 {rest.length > 0 && (
-                  <div className="space-y-4 border-t border-border pt-4">
+                  <div className="space-y-3">
                     {rest.map((vid, i) => (
-                      <div key={i} className="flex gap-4">
+                      <div key={i} className="flex gap-4 p-3 rounded-xl border border-border">
                         <div className="w-56 shrink-0 rounded-lg overflow-hidden">
                           <VideoEmbed url={vid.url} />
                         </div>
