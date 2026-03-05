@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import type { ClubReview } from "@/lib/db";
 import { EmptyState, AnytimeInlineCTA } from "@/components/ui";
 
@@ -55,16 +56,20 @@ function StarInput({ label, value, onChange }: { label: string; value: number; o
   );
 }
 
-function ReviewForm({ onSuccess }: { onSuccess: () => void }) {
-  const [clubName, setClubName] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [ratingPrice, setRatingPrice] = useState(0);
-  const [ratingQuality, setRatingQuality] = useState(0);
-  const [ratingCoaching, setRatingCoaching] = useState(0);
-  const [reviewerName, setReviewerName] = useState("");
-  const [reviewerRole, setReviewerRole] = useState("");
-  const [reviewText, setReviewText] = useState("");
+function ReviewForm({ onSuccess, initial, isEdit }: {
+  onSuccess: () => void;
+  initial?: ClubReview;
+  isEdit?: boolean;
+}) {
+  const [clubName, setClubName] = useState(initial?.clubName || "");
+  const [city, setCity] = useState(initial?.city || "");
+  const [state, setState] = useState(initial?.state || "");
+  const [ratingPrice, setRatingPrice] = useState(initial?.ratingPrice || 0);
+  const [ratingQuality, setRatingQuality] = useState(initial?.ratingQuality || 0);
+  const [ratingCoaching, setRatingCoaching] = useState(initial?.ratingCoaching || 0);
+  const [reviewerName, setReviewerName] = useState(initial?.reviewerName || "");
+  const [reviewerRole, setReviewerRole] = useState(initial?.reviewerRole || "");
+  const [reviewText, setReviewText] = useState(initial?.reviewText || "");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -78,10 +83,11 @@ function ReviewForm({ onSuccess }: { onSuccess: () => void }) {
     setSubmitting(true);
     setError("");
     try {
+      const body = { clubName, city, state, ratingPrice, ratingQuality, ratingCoaching, reviewerName, reviewerRole, reviewText, ...(isEdit && initial ? { id: initial.id } : {}) };
       const res = await fetch("/api/club-reviews", {
-        method: "POST",
+        method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ clubName, city, state, ratingPrice, ratingQuality, ratingCoaching, reviewerName, reviewerRole, reviewText }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) {
         const j = await res.json();
@@ -100,7 +106,9 @@ function ReviewForm({ onSuccess }: { onSuccess: () => void }) {
     return (
       <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
         <div className="text-3xl mb-2">&#10003;</div>
-        <p className="text-green-700 font-semibold">Your review has been submitted and is pending approval.</p>
+        <p className="text-green-700 font-semibold">
+          {isEdit ? "Your review has been updated and is pending re-approval." : "Your review has been submitted and is pending approval."}
+        </p>
         <p className="text-green-600 text-sm mt-1">We review all submissions to ensure quality. Your review will appear once approved.</p>
       </div>
     );
@@ -140,20 +148,24 @@ function ReviewForm({ onSuccess }: { onSuccess: () => void }) {
       {error && <p className="text-[#DC373E] text-sm">{error}</p>}
 
       <button type="submit" disabled={submitting} className="px-8 py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
-        {submitting ? "Submitting..." : "Submit Review"}
+        {submitting ? "Saving..." : isEdit ? "Update Review" : "Submit Review"}
       </button>
     </form>
   );
 }
 
 export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubReview[] }) {
-  const [reviews] = useState(initialReviews);
+  const { data: session } = useSession();
+  const currentUserId = session?.user?.id;
+  const [reviews, setReviews] = useState(initialReviews);
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [page, setPage] = useState(1);
   const [viewAll, setViewAll] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [editingReview, setEditingReview] = useState<ClubReview | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   const states = [...new Set(reviews.map((r) => r.state).filter(Boolean))].sort();
   const cities = [...new Set(
@@ -182,6 +194,29 @@ export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubRe
   const sorted = [...filtered].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   const totalPages = Math.ceil(sorted.length / PER_PAGE);
   const visible = viewAll ? sorted : sorted.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  async function refreshReviews() {
+    try {
+      const res = await fetch("/api/club-reviews");
+      if (res.ok) setReviews(await res.json());
+    } catch { /* ignore */ }
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm("Are you sure you want to delete this review?")) return;
+    setDeleting(id);
+    try {
+      const res = await fetch("/api/club-reviews", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) {
+        setReviews((prev) => prev.filter((r) => r.id !== id));
+      }
+    } catch { /* ignore */ }
+    setDeleting(null);
+  }
 
   return (
     <>
@@ -222,7 +257,14 @@ export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubRe
             )}
             <button
               type="button"
-              onClick={() => setShowForm(!showForm)}
+              onClick={() => {
+                if (!session?.user) {
+                  window.location.href = "/dashboard";
+                  return;
+                }
+                setEditingReview(null);
+                setShowForm(!showForm);
+              }}
               className="px-8 py-4 rounded-xl bg-accent text-white font-semibold text-base hover:bg-accent-hover transition-colors whitespace-nowrap"
             >
               Write a Review
@@ -232,12 +274,24 @@ export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubRe
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        {/* Review Form */}
-        {showForm && (
+        {/* Review Form (create) */}
+        {showForm && !editingReview && (
           <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mt-6">
             <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Write a Club Review</h2>
             <p className="text-muted text-sm mb-6">All reviews are moderated before being published.</p>
-            <ReviewForm onSuccess={() => setShowForm(false)} />
+            <ReviewForm onSuccess={() => { setShowForm(false); refreshReviews(); }} />
+          </div>
+        )}
+
+        {/* Edit Form */}
+        {editingReview && (
+          <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Edit Your Review</h2>
+              <button onClick={() => setEditingReview(null)} className="text-sm text-muted hover:text-primary transition-colors">Cancel</button>
+            </div>
+            <p className="text-muted text-sm mb-6">Edited reviews go back to pending approval.</p>
+            <ReviewForm initial={editingReview} isEdit onSuccess={() => { setEditingReview(null); refreshReviews(); }} />
           </div>
         )}
 
@@ -262,53 +316,74 @@ export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubRe
         ) : (
           <>
             <div className="space-y-4">
-              {visible.map((review) => (
-                <div key={review.id} className="bg-white rounded-2xl border border-border p-5 md:p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
-                    <div>
-                      <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">
-                        {review.clubName}
-                      </h3>
-                      {(review.city || review.state) && (
-                        <p className="text-muted text-sm">{[review.city, review.state].filter(Boolean).join(", ")}</p>
+              {visible.map((review) => {
+                const isOwner = currentUserId && review.userId === currentUserId;
+                return (
+                  <div key={review.id} className="bg-white rounded-2xl border border-border p-5 md:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+                      <div>
+                        <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">
+                          {review.clubName}
+                        </h3>
+                        {(review.city || review.state) && (
+                          <p className="text-muted text-sm">{[review.city, review.state].filter(Boolean).join(", ")}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Stars count={Math.round(review.overallRating)} />
+                        <span className="text-sm font-semibold text-primary">{review.overallRating.toFixed(1)}</span>
+                      </div>
+                    </div>
+
+                    {/* Rating breakdown */}
+                    <div className="flex flex-wrap gap-4 mb-3">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-semibold text-muted uppercase tracking-wide">Price</span>
+                        <Stars count={review.ratingPrice} size="text-sm" />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-semibold text-muted uppercase tracking-wide">Quality</span>
+                        <Stars count={review.ratingQuality} size="text-sm" />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-semibold text-muted uppercase tracking-wide">Coaching</span>
+                        <Stars count={review.ratingCoaching} size="text-sm" />
+                      </div>
+                    </div>
+
+                    {review.reviewText && (
+                      <p className="text-sm text-muted leading-relaxed mb-3 whitespace-pre-wrap">{review.reviewText}</p>
+                    )}
+
+                    <div className="flex items-center gap-2 text-xs text-muted">
+                      <span className="font-bold text-primary">{review.reviewerName}</span>
+                      {review.reviewerRole && (
+                        <span className="bg-surface px-2 py-0.5 rounded-full">{review.reviewerRole}</span>
+                      )}
+                      <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">Verified Review</span>
+                      <span className="ml-auto">{new Date(review.createdAt).toLocaleDateString()}</span>
+
+                      {isOwner && (
+                        <>
+                          <button
+                            onClick={() => { setEditingReview(review); setShowForm(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                            className="px-3 py-1 rounded-lg bg-accent/10 text-accent-hover text-xs font-medium hover:bg-accent/20 transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(review.id)}
+                            disabled={deleting === review.id}
+                            className="px-3 py-1 rounded-lg border border-red-200 text-red-600 text-xs font-medium hover:bg-red-50 transition-colors disabled:opacity-50"
+                          >
+                            {deleting === review.id ? "..." : "Delete"}
+                          </button>
+                        </>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Stars count={Math.round(review.overallRating)} />
-                      <span className="text-sm font-semibold text-primary">{review.overallRating.toFixed(1)}</span>
-                    </div>
                   </div>
-
-                  {/* Rating breakdown */}
-                  <div className="flex flex-wrap gap-4 mb-3">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-semibold text-muted uppercase tracking-wide">Price</span>
-                      <Stars count={review.ratingPrice} size="text-sm" />
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-semibold text-muted uppercase tracking-wide">Quality</span>
-                      <Stars count={review.ratingQuality} size="text-sm" />
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-semibold text-muted uppercase tracking-wide">Coaching</span>
-                      <Stars count={review.ratingCoaching} size="text-sm" />
-                    </div>
-                  </div>
-
-                  {review.reviewText && (
-                    <p className="text-sm text-muted leading-relaxed mb-3 whitespace-pre-wrap">{review.reviewText}</p>
-                  )}
-
-                  <div className="flex items-center gap-2 text-xs text-muted">
-                    <span className="font-bold text-primary">{review.reviewerName}</span>
-                    {review.reviewerRole && (
-                      <span className="bg-surface px-2 py-0.5 rounded-full">{review.reviewerRole}</span>
-                    )}
-                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">Verified Review</span>
-                    <span className="ml-auto">{new Date(review.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Pagination */}

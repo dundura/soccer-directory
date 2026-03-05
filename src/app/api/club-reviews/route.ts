@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { createClubReview, getApprovedClubReviews } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { createClubReview, getApprovedClubReviews, updateClubReview, deleteClubReview } from "@/lib/db";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const NOTIFY_EMAIL = "neil@anytime-soccer.com";
@@ -12,6 +13,11 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "You must be signed in to submit a review" }, { status: 401 });
+  }
+
   const data = await req.json();
 
   if (!data.clubName?.trim()) {
@@ -38,7 +44,7 @@ export async function POST(req: Request) {
       reviewerName: data.reviewerName.trim(),
       reviewerRole: data.reviewerRole || "",
       reviewText: data.reviewText?.trim() || "",
-    });
+    }, session.user.id);
 
     if (resend) {
       const approveUrl = `${BASE_URL}/api/club-reviews/approve?token=${approvalToken}`;
@@ -75,4 +81,52 @@ export async function POST(req: Request) {
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to submit review" }, { status: 500 });
   }
+}
+
+export async function PUT(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+  const data = await req.json();
+  if (!data.id || !data.clubName?.trim() || !data.reviewerName?.trim()) {
+    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+  for (const key of ["ratingPrice", "ratingQuality", "ratingCoaching"]) {
+    const v = Number(data[key]);
+    if (!v || v < 1 || v > 5) {
+      return NextResponse.json({ error: "All ratings are required (1-5 stars)" }, { status: 400 });
+    }
+  }
+  const updated = await updateClubReview(data.id, session.user.id, {
+    clubName: data.clubName.trim(),
+    city: data.city?.trim() || "",
+    state: data.state?.trim() || "",
+    ratingPrice: Number(data.ratingPrice),
+    ratingQuality: Number(data.ratingQuality),
+    ratingCoaching: Number(data.ratingCoaching),
+    reviewerName: data.reviewerName.trim(),
+    reviewerRole: data.reviewerRole || "",
+    reviewText: data.reviewText?.trim() || "",
+  });
+  if (!updated) {
+    return NextResponse.json({ error: "Review not found or not yours" }, { status: 404 });
+  }
+  return NextResponse.json({ success: true });
+}
+
+export async function DELETE(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+  const { id } = await req.json();
+  if (!id) {
+    return NextResponse.json({ error: "Review ID required" }, { status: 400 });
+  }
+  const deleted = await deleteClubReview(id, session.user.id);
+  if (!deleted) {
+    return NextResponse.json({ error: "Review not found or not yours" }, { status: 404 });
+  }
+  return NextResponse.json({ success: true });
 }
