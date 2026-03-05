@@ -184,8 +184,9 @@ export async function POST(req: Request) {
     notifyNewListing(type, data, slug).catch(() => {});
 
     return NextResponse.json({ success: true, slug });
-  } catch {
-    return NextResponse.json({ error: "Failed to create listing" }, { status: 500 });
+  } catch (err) {
+    console.error("Failed to create listing:", err);
+    return NextResponse.json({ error: "Failed to create listing", detail: err instanceof Error ? err.message : "Unknown" }, { status: 500 });
   }
 }
 
