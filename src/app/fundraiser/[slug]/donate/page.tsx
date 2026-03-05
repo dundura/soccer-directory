@@ -162,6 +162,13 @@ export default function DonatePage() {
           <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-4 py-3">{error}</p>
         )}
 
+        <p className="text-xs text-muted text-center">
+          By donating, you agree to our{" "}
+          <a href="/fundraiser/terms" target="_blank" className="text-accent hover:text-accent-hover underline">
+            Fundraiser Terms &amp; Conditions
+          </a>. Donations are not tax-deductible.
+        </p>
+
         <button
           type="submit"
           className="w-full py-3 rounded-xl bg-[#DC373E] text-white font-bold text-lg hover:bg-[#C42F36] transition-colors"
