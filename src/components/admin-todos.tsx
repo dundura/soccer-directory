@@ -24,6 +24,7 @@ export function AdminTodos() {
   const [editItem, setEditItem] = useState("");
   const [editNotes, setEditNotes] = useState("");
   const [editProject, setEditProject] = useState("");
+  const [editNewProject, setEditNewProject] = useState("");
   const [filterProject, setFilterProject] = useState<string>("all");
   const [collapsedProjects, setCollapsedProjects] = useState<Set<string>>(new Set());
   const [showHidden, setShowHidden] = useState(false);
@@ -104,10 +105,12 @@ export function AdminTodos() {
     setEditItem(t.item);
     setEditNotes(t.notes || "");
     setEditProject(t.project || "");
+    setEditNewProject("");
   }
 
   async function saveEdit(t: Todo) {
-    await fetch("/api/admin/todos", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: t.id, item: editItem, notes: editNotes, status: t.status, project: editProject, hidden: t.hidden }) });
+    const finalProject = editNewProject.trim() || editProject;
+    await fetch("/api/admin/todos", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: t.id, item: editItem, notes: editNotes, status: t.status, project: finalProject, hidden: t.hidden }) });
     setEditingId(null);
     await fetchTodos();
   }
@@ -153,10 +156,13 @@ export function AdminTodos() {
                 {editingId === t.id ? (
                   <div className="space-y-1">
                     <input type="text" value={editNotes} onChange={(e) => setEditNotes(e.target.value)} placeholder="Notes" className={inputClass} />
-                    <select value={editProject} onChange={(e) => setEditProject(e.target.value)} className={selectClass + " w-full"}>
-                      <option value="">No Project</option>
-                      {allProjects.map((p) => <option key={p} value={p}>{p}</option>)}
-                    </select>
+                    <div className="flex gap-2">
+                      <select value={editProject} onChange={(e) => { setEditProject(e.target.value); if (e.target.value) setEditNewProject(""); }} className={selectClass + " flex-1"}>
+                        <option value="">No Project</option>
+                        {allProjects.map((p) => <option key={p} value={p}>{p}</option>)}
+                      </select>
+                      <input type="text" placeholder="Or new project..." value={editNewProject} onChange={(e) => { setEditNewProject(e.target.value); if (e.target.value) setEditProject(""); }} className={inputClass + " flex-1"} />
+                    </div>
                   </div>
                 ) : (
                   <span className="max-w-[300px] truncate block">{t.notes}</span>
