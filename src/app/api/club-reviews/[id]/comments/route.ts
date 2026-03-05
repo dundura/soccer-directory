@@ -47,6 +47,12 @@ export async function POST(req: Request, { params }: Props) {
             <div style="font-family:sans-serif;max-width:600px;">
               <h2 style="color:#1a365d;">New Comment on Club Review</h2>
               <p><strong>${displayName}</strong> commented on the review for <strong>${review.clubName}</strong>:</p>
+              <table style="width:100%;border-collapse:collapse;margin:12px 0;">
+                <tr><td style="padding:4px 0;color:#666;width:120px;">Account Email</td><td style="padding:4px 0;font-weight:bold;">${session.user.email || "N/A"}</td></tr>
+                <tr><td style="padding:4px 0;color:#666;">Account Name</td><td style="padding:4px 0;">${session.user.name || "N/A"}</td></tr>
+                <tr><td style="padding:4px 0;color:#666;">Display Name</td><td style="padding:4px 0;">${displayName}</td></tr>
+                <tr><td style="padding:4px 0;color:#666;">User ID</td><td style="padding:4px 0;font-size:12px;color:#999;">${session.user.id}</td></tr>
+              </table>
               <div style="background:#f7f7f7;padding:16px;border-radius:8px;margin:16px 0;">
                 <p style="color:#333;line-height:1.6;margin:0;white-space:pre-wrap;">${body.trim()}</p>
               </div>

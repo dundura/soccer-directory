@@ -63,6 +63,8 @@ export async function POST(req: Request) {
               <tr><td style="padding:8px 0;color:#666;width:120px;">Club</td><td style="padding:8px 0;font-weight:bold;">${data.clubName}</td></tr>
               <tr><td style="padding:8px 0;color:#666;">Location</td><td style="padding:8px 0;">${data.city || "N/A"}, ${data.state || "N/A"}</td></tr>
               <tr><td style="padding:8px 0;color:#666;">Reviewer</td><td style="padding:8px 0;">${data.reviewerName} (${data.reviewerRole || "N/A"})</td></tr>
+              <tr><td style="padding:8px 0;color:#666;">Account Email</td><td style="padding:8px 0;font-weight:bold;">${session.user.email || "N/A"}</td></tr>
+              <tr><td style="padding:8px 0;color:#666;">Account Name</td><td style="padding:8px 0;">${session.user.name || "N/A"}</td></tr>
               <tr><td style="padding:8px 0;color:#666;">Price</td><td style="padding:8px 0;font-size:18px;">${"\u2605".repeat(data.ratingPrice)}${"\u2606".repeat(5 - data.ratingPrice)}</td></tr>
               <tr><td style="padding:8px 0;color:#666;">Quality</td><td style="padding:8px 0;font-size:18px;">${"\u2605".repeat(data.ratingQuality)}${"\u2606".repeat(5 - data.ratingQuality)}</td></tr>
               <tr><td style="padding:8px 0;color:#666;">Coaching</td><td style="padding:8px 0;font-size:18px;">${"\u2605".repeat(data.ratingCoaching)}${"\u2606".repeat(5 - data.ratingCoaching)}</td></tr>
