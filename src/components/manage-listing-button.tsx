@@ -68,6 +68,14 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
       >
         Edit Listing
       </a>
+      {listingType === "player" && listingId && isOwner && (
+        <a
+          href={`/dashboard/player?id=${listingId}`}
+          className="block w-full text-center px-4 py-2 rounded-xl border-2 border-primary/20 bg-primary/5 text-primary text-sm font-bold hover:bg-primary/10 transition-colors"
+        >
+          Player Dashboard
+        </a>
+      )}
       {listingType === "fundraiser" && listingSlug && isOwner && (
         <a
           href={`/fundraiser/${listingSlug}/edit`}

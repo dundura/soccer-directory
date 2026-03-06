@@ -552,6 +552,14 @@ function DashboardContent() {
               <div className="flex items-center gap-2 shrink-0 ml-4">
                 {listing.status !== "archived" ? (
                   <>
+                    {listing.type === "player" && (
+                      <a
+                        href={`/dashboard/player?id=${listing.id}`}
+                        className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
+                      >
+                        Dashboard
+                      </a>
+                    )}
                     <button
                       onClick={() => handleEdit(listing)}
                       disabled={editLoading}

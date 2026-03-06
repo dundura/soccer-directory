@@ -4,6 +4,7 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { PlayerAvatar } from "@/components/player-avatar";
+import { HeroImage } from "@/components/hero-image";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ContactPlayerForm } from "./contact-form";
 import { notFound } from "next/navigation";
@@ -55,132 +56,92 @@ export default async function PlayerDetailPage({ params }: Props) {
     ownerId = null;
   }
 
+  const heroPhoto = player.imageUrl || DEFAULT_HERO_IMAGE;
+  const heroPos = player.heroImagePosition ?? 50;
+
   return (
     <>
-      {/* Hero Banner */}
-      <div className="relative">
-        <div className="h-48 md:h-64 bg-primary overflow-hidden">
-          <img
-            src={player.imageUrl || DEFAULT_HERO_IMAGE}
-            alt=""
-            className="w-full h-full object-cover opacity-30"
-          />
+      {/* Breadcrumb */}
+      <div className="max-w-[1100px] mx-auto px-6 py-3.5 text-sm text-muted flex items-center justify-between">
+        <div>
+          <a href="/guest-play/players" className="text-primary hover:underline">Players</a>
+          {" › "}
+          <span>{player.state}</span>
+          {" › "}
+          <span>{player.playerName}</span>
         </div>
-        <div className="absolute inset-0 flex items-end">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-6">
-            <a href="/guest-play/players" className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">&larr; All Players</a>
-            <div className="flex flex-wrap gap-2 mb-3">
-              <Badge variant="blue">{player.position}</Badge>
-              {player.secondaryPosition && <Badge variant="default">{player.secondaryPosition}</Badge>}
-              <Badge variant={player.gender === "Boys" ? "blue" : "purple"}>{player.gender}</Badge>
-              <Badge variant="default">{player.birthYear}</Badge>
-              {player.availableForGuestPlay && <Badge variant="green">Available for Guest Play</Badge>}
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="playerName" value={player.playerName} tag="h1" className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold text-white mb-1" />
-                {player.tagline && (
-                  <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="tagline" value={player.tagline} tag="p" className="text-white/80 text-sm font-medium" />
-                )}
-                <p className="text-white/60 text-lg">
-                  {player.teamName && <>{player.teamName} &middot; </>}
-                  {!player.teamName && player.currentClub && <>{player.currentClub} &middot; </>}
-                  {player.city}, {player.state}
-                </p>
-              </div>
-              <ManageListingButton ownerId={ownerId} listingType="player" listingId={player.id} />
-            </div>
-          </div>
-        </div>
+        <ManageListingButton ownerId={ownerId} listingType="player" listingId={player.id} />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* ====== Sidebar ====== */}
-          <div className="space-y-6">
+      <div className="max-w-[1100px] mx-auto px-6 pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5 lg:gap-6 items-start">
+          {/* ====== LEFT SIDEBAR ====== */}
+          <aside className="order-4 lg:order-none lg:[grid-row:span_10] flex flex-col gap-4">
             {/* Player Card */}
-            <div className="bg-white rounded-2xl border border-border overflow-hidden">
+            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
               <PlayerAvatar
                 src={player.teamPhoto}
                 name={player.playerName}
-                className="w-full aspect-square object-cover"
+                className="w-full h-[200px] object-cover"
               />
-              <div className="p-6">
-                {player.logo && (
-                  <img src={player.logo} alt="Club logo" className="w-12 h-12 rounded-xl object-contain border border-border mb-3 -mt-10 bg-white relative z-10" />
-                )}
-                <div className="space-y-3 mb-5">
-                  <div>
-                    <p className="text-xs text-muted font-medium uppercase tracking-wide">Position</p>
-                    <p className="font-[family-name:var(--font-display)] font-bold text-lg">
-                      {player.position}
-                      {player.secondaryPosition && ` / ${player.secondaryPosition}`}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted font-medium uppercase tracking-wide">Birth Year</p>
-                    <p className="font-medium">{player.birthYear}</p>
-                  </div>
-                  {player.height && (
-                    <div>
-                      <p className="text-xs text-muted font-medium uppercase tracking-wide">Height</p>
-                      <p className="font-medium">{player.height}</p>
-                    </div>
+              <div className="text-center py-3.5 px-4">
+                <h3 className="text-[15px] font-bold text-primary leading-snug">{player.playerName}</h3>
+                <p className="text-sm text-muted mt-1">{player.city}, {player.state}</p>
+              </div>
+              <div className="flex flex-col gap-2 px-4 py-2.5 border-t border-border">
+                <div className="flex items-center justify-between gap-2.5">
+                  {player.availableForGuestPlay && (
+                    <span className="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full flex-1 text-center">
+                      Available for Guest Play
+                    </span>
                   )}
-                  {player.preferredFoot && (
-                    <div>
-                      <p className="text-xs text-muted font-medium uppercase tracking-wide">Preferred Foot</p>
-                      <p className="font-medium">{player.preferredFoot}</p>
-                    </div>
-                  )}
-                  {player.gpa && (
-                    <div>
-                      <p className="text-xs text-muted font-medium uppercase tracking-wide">GPA</p>
-                      <p className="font-medium">{player.gpa}</p>
-                    </div>
-                  )}
+                  <a
+                    href="#contact-player"
+                    className="bg-[#DC373E] text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#C42F36] transition-colors whitespace-nowrap"
+                  >
+                    Contact
+                  </a>
                 </div>
-
-                <a
-                  href="#contact-player"
-                  className="block w-full text-center py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors"
-                >
-                  Contact Player
-                </a>
               </div>
             </div>
 
-            {/* Club / Team / League Info */}
-            <div className="bg-white rounded-2xl border border-border p-6 space-y-3">
-              {player.currentClub && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Club</p><p className="font-medium">{player.currentClub}</p></div>}
-              {player.teamName && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Team</p><p className="font-medium">{player.teamName}</p></div>}
-              {player.league && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">League</p><p className="font-medium">{player.league}</p></div>}
-              <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Level</p><p className="font-medium">{player.level}</p></div>
-              <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Gender</p><p className="font-medium">{player.gender}</p></div>
-              <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Location</p><p className="font-medium">{player.city}, {player.state}</p></div>
-              {player.phone && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Phone</p><p className="font-medium">{player.phone}</p></div>}
+            {/* Info Table */}
+            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+              {[
+                { label: "Position", value: `${player.position}${player.secondaryPosition ? ` / ${player.secondaryPosition}` : ""}` },
+                { label: "Birth Year", value: player.birthYear },
+                { label: "Gender", value: player.gender },
+                { label: "Level", value: player.level },
+                ...(player.height ? [{ label: "Height", value: player.height }] : []),
+                ...(player.preferredFoot ? [{ label: "Preferred Foot", value: player.preferredFoot }] : []),
+                ...(player.gpa ? [{ label: "GPA", value: player.gpa }] : []),
+                ...(player.currentClub ? [{ label: "Club", value: player.currentClub }] : []),
+                ...(player.teamName ? [{ label: "Team", value: player.teamName }] : []),
+                ...(player.league ? [{ label: "League", value: player.league }] : []),
+              ].map((row, i) => (
+                <div key={i} className={`flex justify-between items-center px-4 py-2.5 text-sm ${i ? "border-t border-border" : ""}`}>
+                  <span className="text-muted font-medium">{row.label}</span>
+                  <span className="font-bold text-primary text-right">{row.value}</span>
+                </div>
+              ))}
             </div>
 
             {/* Favorites */}
             {(player.favoriteTeam || player.favoritePlayer) && (
-              <div className="bg-white rounded-2xl border border-border p-6 space-y-3">
-                <h3 className="font-[family-name:var(--font-display)] font-bold text-sm uppercase tracking-wide text-muted">Favorites</h3>
+              <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+                <div className="px-4 py-2.5 border-b border-border">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Favorites</p>
+                </div>
                 {player.favoriteTeam && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">&#9917;</span>
-                    <div>
-                      <p className="text-xs text-muted">Favorite Team</p>
-                      <p className="font-bold text-primary">{player.favoriteTeam}</p>
-                    </div>
+                  <div className="flex justify-between items-center px-4 py-2.5 text-sm border-b border-border">
+                    <span className="text-muted font-medium">Team</span>
+                    <span className="font-bold text-primary">{player.favoriteTeam}</span>
                   </div>
                 )}
                 {player.favoritePlayer && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">&#11088;</span>
-                    <div>
-                      <p className="text-xs text-muted">Favorite Player</p>
-                      <p className="font-bold text-primary">{player.favoritePlayer}</p>
-                    </div>
+                  <div className="flex justify-between items-center px-4 py-2.5 text-sm">
+                    <span className="text-muted font-medium">Player</span>
+                    <span className="font-bold text-primary">{player.favoritePlayer}</span>
                   </div>
                 )}
               </div>
@@ -188,59 +149,68 @@ export default async function PlayerDetailPage({ params }: Props) {
 
             {/* Social Links */}
             {player.socialMedia && (player.socialMedia.facebook || player.socialMedia.instagram || player.socialMedia.youtube) && (
-              <div className="bg-white rounded-2xl border border-border p-6">
-                <h3 className="font-[family-name:var(--font-display)] font-bold mb-3">Follow</h3>
+              <div className="bg-white rounded-2xl p-4 shadow-sm">
+                <h4 className="text-sm font-bold mb-2.5">Follow</h4>
                 <SocialLinks website={player.socialMedia.youtube} facebook={player.socialMedia.facebook} instagram={player.socialMedia.instagram} />
               </div>
             )}
+
+            {/* Phone / Contact Info */}
+            {player.phone && (
+              <div className="bg-white rounded-2xl p-[18px] shadow-sm">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Phone</p>
+                <p className="text-sm font-bold text-primary">{player.phone}</p>
+              </div>
+            )}
+          </aside>
+
+          {/* ====== Hero ====== */}
+          <div className="order-1 lg:order-none lg:col-start-2 bg-white rounded-2xl overflow-hidden shadow-sm">
+            <HeroImage src={heroPhoto} alt={player.playerName} id={player.id} imagePosition={heroPos} />
+            <div className="p-5 sm:p-7">
+              {player.logo && (
+                <img src={player.logo} alt="Club logo" className="w-[56px] h-[56px] rounded-xl border-2 border-border object-contain shrink-0 p-1 bg-surface -mt-8 relative z-10 mb-2" />
+              )}
+              <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="playerName" value={player.playerName} tag="h1" className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+              {player.tagline && (
+                <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="tagline" value={player.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+              )}
+              <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
+                {player.teamName && <>{player.teamName} &middot; </>}
+                {!player.teamName && player.currentClub && <>{player.currentClub} &middot; </>}
+                {player.city}, {player.state}
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Badge variant="blue">{player.position}</Badge>
+                {player.secondaryPosition && <Badge variant="default">{player.secondaryPosition}</Badge>}
+                <Badge variant={player.gender === "Boys" ? "blue" : "purple"}>{player.gender}</Badge>
+                <Badge variant="default">{player.birthYear}</Badge>
+                {player.availableForGuestPlay && <Badge variant="green">Available for Guest Play</Badge>}
+              </div>
+              {player.description && (
+                <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="description" value={player.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+              )}
+            </div>
           </div>
 
           {/* ====== Main Content ====== */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="order-3 lg:order-none lg:col-start-2 space-y-5">
             {/* Looking For */}
             {player.lookingFor && (
-              <section className="bg-white rounded-2xl border-2 border-accent/20 p-6 md:p-8">
+              <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Looking For</h2>
+                  <h2 className="text-[15px] font-bold text-primary">Looking For</h2>
                   <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
                 </div>
-                <p className="text-muted leading-relaxed whitespace-pre-line">{player.lookingFor}</p>
+                <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-line">{player.lookingFor}</p>
               </section>
             )}
-
-            {/* About */}
-            {player.description && (
-              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About</h2>
-                <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="description" value={player.description} tag="p" className="text-muted leading-relaxed whitespace-pre-line" multiline />
-              </section>
-            )}
-
-            {/* Player Details */}
-            <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Player Details</h2>
-                <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div><p className="text-xs text-muted mb-1">Position</p><p className="font-medium">{player.position}{player.secondaryPosition ? ` / ${player.secondaryPosition}` : ""}</p></div>
-                <div><p className="text-xs text-muted mb-1">Birth Year</p><p className="font-medium">{player.birthYear}</p></div>
-                <div><p className="text-xs text-muted mb-1">Location</p><p className="font-medium">{player.city}, {player.state}</p></div>
-                <div><p className="text-xs text-muted mb-1">Level</p><p className="font-medium">{player.level}</p></div>
-                {player.height && <div><p className="text-xs text-muted mb-1">Height</p><p className="font-medium">{player.height}</p></div>}
-                {player.preferredFoot && <div><p className="text-xs text-muted mb-1">Preferred Foot</p><p className="font-medium">{player.preferredFoot}</p></div>}
-                {player.currentClub && <div><p className="text-xs text-muted mb-1">Current Club</p><p className="font-medium">{player.currentClub}</p></div>}
-                {player.teamName && <div><p className="text-xs text-muted mb-1">Team</p><p className="font-medium">{player.teamName}</p></div>}
-                {player.league && <div><p className="text-xs text-muted mb-1">League</p><p className="font-medium">{player.league}</p></div>}
-                {player.gpa && <div><p className="text-xs text-muted mb-1">GPA</p><p className="font-medium">{player.gpa}</p></div>}
-              </div>
-            </section>
 
             {/* Featured Highlight Video */}
             {player.videoUrl && (
-              <section className="bg-white rounded-2xl border-2 border-primary/20 p-6 md:p-8">
+              <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Featured Highlight</h2>
+                  <h2 className="text-[15px] font-bold text-primary">Featured Highlight</h2>
                   <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
                 </div>
                 <VideoEmbed url={player.videoUrl} />
@@ -249,8 +219,8 @@ export default async function PlayerDetailPage({ params }: Props) {
 
             {/* More Highlight Videos */}
             {(player.videoUrl2 || player.videoUrl3) && (
-              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">More Highlights</h2>
+              <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+                <h2 className="text-[15px] font-bold text-primary mb-4">More Highlights</h2>
                 <div className="grid sm:grid-cols-2 gap-4">
                   {player.videoUrl2 && <VideoEmbed url={player.videoUrl2} />}
                   {player.videoUrl3 && <VideoEmbed url={player.videoUrl3} />}
@@ -260,9 +230,9 @@ export default async function PlayerDetailPage({ params }: Props) {
 
             {/* Game Highlights */}
             {player.gameHighlights && player.gameHighlights.length > 0 && (
-              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+              <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Game Highlights</h2>
+                  <h2 className="text-[15px] font-bold text-primary">Game Highlights</h2>
                   <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
                 </div>
                 <div className="space-y-6">
@@ -278,9 +248,9 @@ export default async function PlayerDetailPage({ params }: Props) {
 
             {/* Photos */}
             {player.photos && player.photos.length > 0 && (
-              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+              <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Photos</h2>
+                  <h2 className="text-[15px] font-bold text-primary">Photos</h2>
                   <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
                 </div>
                 <PhotoGallery photos={player.photos} />
@@ -293,8 +263,8 @@ export default async function PlayerDetailPage({ params }: Props) {
             )}
 
             {/* Contact Form */}
-            <section id="contact-player" className="bg-white rounded-2xl border-2 border-accent/20 p-6 md:p-8">
-              <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-2">Contact This Player</h2>
+            <section id="contact-player" className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+              <h2 className="text-[15px] font-bold text-primary mb-2">Contact This Player</h2>
               <p className="text-muted text-sm mb-6">Interested in this player? Send a message and they will be notified via email.</p>
               <ContactPlayerForm playerName={player.playerName} slug={slug} />
             </section>
@@ -303,7 +273,7 @@ export default async function PlayerDetailPage({ params }: Props) {
       </div>
 
       {/* CTA Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-[1100px] mx-auto px-6 py-8">
         <AnytimeInlineCTA />
       </div>
     </>
