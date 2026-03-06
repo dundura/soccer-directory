@@ -44,6 +44,7 @@ export async function POST(req: Request) {
       reviewerName: data.reviewerName.trim(),
       reviewerRole: data.reviewerRole || "",
       reviewText: data.reviewText?.trim() || "",
+      clubId: data.clubId || undefined,
     }, session.user.id);
 
     if (resend) {

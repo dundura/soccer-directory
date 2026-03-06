@@ -66,6 +66,12 @@ export async function getClubs(): Promise<Club[]> {
   return rows.map(mapClub);
 }
 
+export async function searchClubsForReview(query: string): Promise<{ id: string; name: string; city: string; state: string; slug: string }[]> {
+  const pattern = `%${query}%`;
+  const rows = await sql`SELECT id, name, city, state, slug FROM clubs WHERE status = 'approved' AND (name ILIKE ${pattern} OR city ILIKE ${pattern}) ORDER BY name ASC LIMIT 10`;
+  return rows.map(r => ({ id: r.id as string, name: r.name as string, city: r.city as string, state: r.state as string, slug: r.slug as string }));
+}
+
 export async function getClubBySlug(slug: string): Promise<Club | null> {
   const rows = await sql`SELECT * FROM clubs WHERE slug = ${slug} AND status = 'approved' LIMIT 1`;
   return rows[0] ? mapClub(rows[0]) : null;
@@ -1975,6 +1981,8 @@ function mapReview(r: Record<string, unknown>): Review {
 export interface ClubReview {
   id: string;
   userId: string;
+  clubId?: string;
+  clubSlug?: string;
   clubName: string;
   city: string;
   state: string;
@@ -2004,20 +2012,22 @@ export async function createClubReview(data: {
   clubName: string; city: string; state: string;
   ratingPrice: number; ratingQuality: number; ratingCoaching: number;
   reviewerName: string; reviewerRole: string; reviewText: string;
+  clubId?: string;
 }, userId?: string): Promise<{ id: string; approvalToken: string }> {
   const id = genId();
   const approvalToken = id + "-" + Math.random().toString(36).slice(2, 10);
   const overall = Number(((data.ratingPrice + data.ratingQuality + data.ratingCoaching) / 3).toFixed(1));
-  await sql`INSERT INTO club_reviews (id, user_id, club_name, city, state, rating_price, rating_quality, rating_coaching, overall_rating, reviewer_name, reviewer_role, review_text, status, approval_token)
-    VALUES (${id}, ${userId || null}, ${data.clubName}, ${data.city || null}, ${data.state || null}, ${data.ratingPrice}, ${data.ratingQuality}, ${data.ratingCoaching}, ${overall}, ${data.reviewerName}, ${data.reviewerRole || null}, ${data.reviewText || null}, 'pending', ${approvalToken})`;
+  await sql`INSERT INTO club_reviews (id, user_id, club_id, club_name, city, state, rating_price, rating_quality, rating_coaching, overall_rating, reviewer_name, reviewer_role, review_text, status, approval_token)
+    VALUES (${id}, ${userId || null}, ${data.clubId || null}, ${data.clubName}, ${data.city || null}, ${data.state || null}, ${data.ratingPrice}, ${data.ratingQuality}, ${data.ratingCoaching}, ${overall}, ${data.reviewerName}, ${data.reviewerRole || null}, ${data.reviewText || null}, 'pending', ${approvalToken})`;
   return { id, approvalToken };
 }
 
 export async function getApprovedClubReviews(): Promise<ClubReview[]> {
-  const rows = await sql`SELECT cr.*,
+  const rows = await sql`SELECT cr.*, c.slug as club_slug,
     COALESCE((SELECT COUNT(*)::int FROM club_review_votes WHERE review_id = cr.id AND vote_type = 'like'), 0) as likes,
     COALESCE((SELECT COUNT(*)::int FROM club_review_votes WHERE review_id = cr.id AND vote_type = 'dislike'), 0) as dislikes
-    FROM club_reviews cr WHERE cr.status = 'approved' ORDER BY cr.created_at DESC`;
+    FROM club_reviews cr LEFT JOIN clubs c ON c.id = cr.club_id
+    WHERE cr.status = 'approved' ORDER BY cr.created_at DESC`;
   return rows.map(mapClubReview);
 }
 
@@ -2145,7 +2155,9 @@ export async function getUserEmailById(userId: string): Promise<string | null> {
 
 function mapClubReview(r: Record<string, unknown>): ClubReview {
   return {
-    id: r.id as string, userId: r.user_id as string || "", clubName: r.club_name as string,
+    id: r.id as string, userId: r.user_id as string || "",
+    clubId: r.club_id as string | undefined, clubSlug: r.club_slug as string | undefined,
+    clubName: r.club_name as string,
     city: r.city as string || "", state: r.state as string || "",
     ratingPrice: Number(r.rating_price), ratingQuality: Number(r.rating_quality),
     ratingCoaching: Number(r.rating_coaching), overallRating: Number(r.overall_rating),

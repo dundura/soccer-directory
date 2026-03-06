@@ -57,12 +57,15 @@ function StarInput({ label, value, onChange }: { label: string; value: number; o
   );
 }
 
+type ClubSuggestion = { id: string; name: string; city: string; state: string; slug: string };
+
 function ReviewForm({ onSuccess, initial, isEdit }: {
   onSuccess: () => void;
   initial?: ClubReview;
   isEdit?: boolean;
 }) {
   const [clubName, setClubName] = useState(initial?.clubName || "");
+  const [clubId, setClubId] = useState(initial?.clubId || "");
   const [city, setCity] = useState(initial?.city || "");
   const [state, setState] = useState(initial?.state || "");
   const [ratingPrice, setRatingPrice] = useState(initial?.ratingPrice || 0);
@@ -74,6 +77,36 @@ function ReviewForm({ onSuccess, initial, isEdit }: {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [suggestions, setSuggestions] = useState<ClubSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchTimer, setSearchTimer] = useState<NodeJS.Timeout | null>(null);
+
+  function handleClubSearch(value: string) {
+    setClubName(value);
+    setClubId("");
+    if (searchTimer) clearTimeout(searchTimer);
+    if (value.trim().length < 2) { setSuggestions([]); setShowSuggestions(false); return; }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/club-reviews/search-clubs?q=${encodeURIComponent(value.trim())}`);
+        if (res.ok) {
+          const data = await res.json();
+          setSuggestions(data);
+          setShowSuggestions(data.length > 0);
+        }
+      } catch { /* ignore */ }
+    }, 300);
+    setSearchTimer(timer);
+  }
+
+  function selectClub(club: ClubSuggestion) {
+    setClubName(club.name);
+    setClubId(club.id);
+    setCity(club.city);
+    setState(club.state);
+    setSuggestions([]);
+    setShowSuggestions(false);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -84,7 +117,7 @@ function ReviewForm({ onSuccess, initial, isEdit }: {
     setSubmitting(true);
     setError("");
     try {
-      const body = { clubName, city, state, ratingPrice, ratingQuality, ratingCoaching, reviewerName, reviewerRole, reviewText, ...(isEdit && initial ? { id: initial.id } : {}) };
+      const body = { clubName, clubId: clubId || undefined, city, state, ratingPrice, ratingQuality, ratingCoaching, reviewerName, reviewerRole, reviewText, ...(isEdit && initial ? { id: initial.id } : {}) };
       const res = await fetch("/api/club-reviews", {
         method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -118,7 +151,41 @@ function ReviewForm({ onSuccess, initial, isEdit }: {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <input type="text" required value={clubName} onChange={(e) => setClubName(e.target.value)} placeholder="Club Name *" className={inputClass} />
+        <div className="relative">
+          <input
+            type="text"
+            required
+            value={clubName}
+            onChange={(e) => handleClubSearch(e.target.value)}
+            onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+            placeholder="Search for a club or type a new name *"
+            className={inputClass}
+            autoComplete="off"
+          />
+          {clubId && (
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Linked</span>
+          )}
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-border rounded-xl shadow-lg max-h-60 overflow-y-auto">
+              {suggestions.map((club) => (
+                <button
+                  key={club.id}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => selectClub(club)}
+                  className="w-full text-left px-4 py-3 hover:bg-surface transition-colors border-b border-border last:border-b-0"
+                >
+                  <div className="font-semibold text-sm text-primary">{club.name}</div>
+                  <div className="text-xs text-muted">{club.city}, {club.state}</div>
+                </button>
+              ))}
+              <div className="px-4 py-2 bg-surface/50 text-xs text-muted">
+                Don&apos;t see your club? Just type the name above.
+              </div>
+            </div>
+          )}
+        </div>
         <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" className={inputClass} />
         <select value={state} onChange={(e) => setState(e.target.value)} className={inputClass + " bg-white"}>
           <option value="">State</option>
@@ -512,7 +579,9 @@ export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubRe
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">
-                            {review.clubName}
+                            {review.clubSlug ? (
+                              <a href={`/clubs/${review.clubSlug}`} className="hover:text-accent transition-colors">{review.clubName}</a>
+                            ) : review.clubName}
                           </h3>
                           {review.likes >= HELPFUL_THRESHOLD && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">
