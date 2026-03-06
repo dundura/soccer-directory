@@ -1318,17 +1318,27 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                           </datalist>
                         </>
 
-                      /* State dropdown */
+                      /* State dropdown (US) or free text (international) */
                       ) : field.type === "state-select" ? (
-                        <select
-                          value={formData[field.name] || ""}
-                          onChange={(e) => handleChange(field.name, e.target.value)}
-                          required={field.required}
-                          className={selectClass}
-                        >
-                          <option value="">Select state...</option>
-                          {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-                        </select>
+                        (formData.country || "United States") === "United States" ? (
+                          <select
+                            value={formData[field.name] || ""}
+                            onChange={(e) => handleChange(field.name, e.target.value)}
+                            required={field.required}
+                            className={selectClass}
+                          >
+                            <option value="">Select state...</option>
+                            {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            value={formData[field.name] || ""}
+                            onChange={(e) => handleChange(field.name, e.target.value)}
+                            placeholder="State / Province / Region"
+                            className={inputClass}
+                          />
+                        )
 
                       /* Single age select */
                       ) : field.type === "age-select" ? (
