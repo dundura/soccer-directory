@@ -182,6 +182,21 @@ export interface Camp extends ProfileFields {
   featured: boolean;
   createdAt: string;
   updatedAt: string;
+  announcementHeading?: string;
+  announcementText?: string;
+  announcementImage?: string;
+  announcementCta?: string;
+  announcementCtaUrl?: string;
+  announcementHeading2?: string;
+  announcementText2?: string;
+  announcementImage2?: string;
+  announcementCta2?: string;
+  announcementCtaUrl2?: string;
+  announcementHeading3?: string;
+  announcementText3?: string;
+  announcementImage3?: string;
+  announcementCta3?: string;
+  announcementCtaUrl3?: string;
 }
 
 export interface Tryout extends ProfileFields {

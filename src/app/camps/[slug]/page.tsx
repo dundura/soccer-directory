@@ -10,6 +10,7 @@ import { FeaturedArticles } from "@/components/featured-articles";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { AnnouncementSection } from "@/components/announcement-section";
 
 export const dynamic = "force-dynamic";
 
@@ -61,6 +62,15 @@ export default async function CampDetailPage({ params }: Props) {
   }
 
   const pageUrl = `https://www.soccer-near-me.com/camps/${slug}`;
+
+  const hasAnnouncements = camp.announcementHeading || camp.announcementText || camp.announcementImage ||
+    camp.announcementHeading2 || camp.announcementText2 || camp.announcementImage2 ||
+    camp.announcementHeading3 || camp.announcementText3 || camp.announcementImage3;
+
+  function normalizeUrl(url?: string) {
+    if (!url) return undefined;
+    return url.startsWith("http") ? url : `https://${url}`;
+  }
   const imgPos = camp.imagePosition ?? 50;
   const heroPos = camp.heroImagePosition ?? 50;
   const heroPhoto = camp.imageUrl || camp.teamPhoto || DEFAULT_HERO_PHOTO;
@@ -224,6 +234,21 @@ export default async function CampDetailPage({ params }: Props) {
                 </div>
               </div>
             </div>
+
+            {/* Special Announcements */}
+            {hasAnnouncements && (
+              <div className="space-y-4">
+                {(camp.announcementHeading || camp.announcementText || camp.announcementImage) && (
+                  <AnnouncementSection heading={camp.announcementHeading} text={camp.announcementText} image={camp.announcementImage} ctaUrl={normalizeUrl(camp.announcementCtaUrl)} ctaLabel={camp.announcementCta || "Learn More \u2192"} />
+                )}
+                {(camp.announcementHeading2 || camp.announcementText2 || camp.announcementImage2) && (
+                  <AnnouncementSection heading={camp.announcementHeading2} text={camp.announcementText2} image={camp.announcementImage2} ctaUrl={normalizeUrl(camp.announcementCtaUrl2)} ctaLabel={camp.announcementCta2 || "Learn More \u2192"} />
+                )}
+                {(camp.announcementHeading3 || camp.announcementText3 || camp.announcementImage3) && (
+                  <AnnouncementSection heading={camp.announcementHeading3} text={camp.announcementText3} image={camp.announcementImage3} ctaUrl={normalizeUrl(camp.announcementCtaUrl3)} ctaLabel={camp.announcementCta3 || "Learn More \u2192"} />
+                )}
+              </div>
+            )}
 
             {/* At a Glance */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
