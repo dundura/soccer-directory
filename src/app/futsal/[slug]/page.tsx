@@ -9,6 +9,7 @@ import { HeroImage } from "@/components/hero-image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 
 export const dynamic = "force-dynamic";
 
@@ -160,6 +161,9 @@ export default async function FutsalDetailPage({ params }: Props) {
               <h4 className="text-sm font-bold mb-2.5">Share this profile!</h4>
               <ShareButtons url={pageUrl} title={team.name} />
             </div>
+
+            {/* Our Posts */}
+            <ListingPostsSidebar listingType="futsal" listingId={String(team.id)} slug={slug} ownerId={ownerId} />
           </aside>
 
           {/* ====== RIGHT MAIN COLUMN ====== */}

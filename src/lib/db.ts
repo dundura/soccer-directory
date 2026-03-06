@@ -1899,16 +1899,48 @@ export async function getListingOwner(type: string, slug: string): Promise<strin
 
 // ── Reviews ─────────────────────────────────────────────────
 
-export async function createReview(listingType: string, listingId: string, reviewerName: string, reviewerRole: string, rating: number, reviewText: string): Promise<{ id: string; approvalToken: string }> {
+export async function createReview(listingType: string, listingId: string, reviewerName: string, reviewerRole: string, rating: number, reviewText: string, invitationToken?: string): Promise<{ id: string; approvalToken: string; autoApproved: boolean }> {
   const id = genId();
   const approvalToken = id + "-" + Math.random().toString(36).slice(2, 10);
-  await sql`INSERT INTO reviews (id, listing_type, listing_id, reviewer_name, reviewer_role, rating, review_text, status, approval_token) VALUES (${id}, ${listingType}, ${listingId}, ${reviewerName}, ${reviewerRole}, ${rating}, ${reviewText}, 'pending', ${approvalToken})`;
-  return { id, approvalToken };
+  const autoApproved = !!invitationToken;
+  const status = autoApproved ? "approved" : "pending";
+  await sql`INSERT INTO reviews (id, listing_type, listing_id, reviewer_name, reviewer_role, rating, review_text, status, approval_token, invitation_token) VALUES (${id}, ${listingType}, ${listingId}, ${reviewerName}, ${reviewerRole}, ${rating}, ${reviewText}, ${status}, ${approvalToken}, ${invitationToken || null})`;
+  if (invitationToken) {
+    await sql`UPDATE review_invitations SET status = 'completed' WHERE token = ${invitationToken}`;
+  }
+  return { id, approvalToken, autoApproved };
 }
 
 export async function getApprovedReviews(listingType: string, listingId: string): Promise<Review[]> {
-  const rows = await sql`SELECT * FROM reviews WHERE listing_type = ${listingType} AND listing_id = ${listingId} AND status = 'approved' ORDER BY created_at DESC`;
+  const rows = await sql`SELECT *, (invitation_token IS NOT NULL) as is_invited FROM reviews WHERE listing_type = ${listingType} AND listing_id = ${listingId} AND status = 'approved' ORDER BY created_at DESC`;
   return rows.map(mapReview);
+}
+
+export async function getListingOwnerIdById(type: string, id: string): Promise<string | null> {
+  const t = normalizeType(type);
+  let rows: Record<string, unknown>[];
+  switch (t) {
+    case "club": rows = await sql`SELECT user_id FROM clubs WHERE id = ${id} LIMIT 1`; break;
+    case "team": rows = await sql`SELECT user_id FROM teams WHERE id = ${id} LIMIT 1`; break;
+    case "trainer": rows = await sql`SELECT user_id FROM trainers WHERE id = ${id} LIMIT 1`; break;
+    case "recruiter": rows = await sql`SELECT user_id FROM recruiters WHERE id = ${id} LIMIT 1`; break;
+    case "camp":
+    case "showcase": rows = await sql`SELECT user_id FROM camps WHERE id = ${id} LIMIT 1`; break;
+    case "tryout": rows = await sql`SELECT user_id FROM tryouts WHERE id = ${id} LIMIT 1`; break;
+    case "specialevent": rows = await sql`SELECT user_id FROM special_events WHERE id = ${id} LIMIT 1`; break;
+    case "tournament": rows = await sql`SELECT user_id FROM tournaments WHERE id = ${id} LIMIT 1`; break;
+    case "futsal": rows = await sql`SELECT user_id FROM futsal_teams WHERE id = ${id} LIMIT 1`; break;
+    case "trip": rows = await sql`SELECT user_id FROM international_trips WHERE id = ${id} LIMIT 1`; break;
+    case "guest": rows = await sql`SELECT user_id FROM guest_opportunities WHERE id = ${id} LIMIT 1`; break;
+    case "podcast": rows = await sql`SELECT user_id FROM podcasts WHERE id = ${id} LIMIT 1`; break;
+    case "service": rows = await sql`SELECT user_id FROM services WHERE id = ${id} LIMIT 1`; break;
+    case "blog": rows = await sql`SELECT user_id FROM blogs WHERE id = ${id} LIMIT 1`; break;
+    case "youtube": rows = await sql`SELECT user_id FROM youtube_channels WHERE id = ${id} LIMIT 1`; break;
+    case "trainingapp": rows = await sql`SELECT user_id FROM training_apps WHERE id = ${id} LIMIT 1`; break;
+    case "fbgroup": rows = await sql`SELECT user_id FROM facebook_groups WHERE id = ${id} LIMIT 1`; break;
+    default: return null;
+  }
+  return (rows[0]?.user_id as string) || null;
 }
 
 export async function getReviewSummary(listingType: string, listingId: string): Promise<{ averageRating: number; reviewCount: number }> {
@@ -1925,6 +1957,30 @@ export async function getReviewByToken(token: string): Promise<{ id: string; lis
 export async function updateReviewStatus(token: string, status: string): Promise<boolean> {
   const rows = await sql`UPDATE reviews SET status = ${status} WHERE approval_token = ${token} RETURNING id`;
   return rows.length > 0;
+}
+
+export async function getListingSlugById(type: string, id: string): Promise<string | null> {
+  const t = normalizeType(type);
+  let rows: Record<string, unknown>[];
+  switch (t) {
+    case "club": rows = await sql`SELECT slug FROM clubs WHERE id = ${id} LIMIT 1`; break;
+    case "team": rows = await sql`SELECT slug FROM teams WHERE id = ${id} LIMIT 1`; break;
+    case "trainer": rows = await sql`SELECT slug FROM trainers WHERE id = ${id} LIMIT 1`; break;
+    case "recruiter": rows = await sql`SELECT slug FROM recruiters WHERE id = ${id} LIMIT 1`; break;
+    case "camp": rows = await sql`SELECT slug FROM camps WHERE id = ${id} LIMIT 1`; break;
+    case "tryout": rows = await sql`SELECT slug FROM tryouts WHERE id = ${id} LIMIT 1`; break;
+    case "specialevent": rows = await sql`SELECT slug FROM special_events WHERE id = ${id} LIMIT 1`; break;
+    case "tournament": rows = await sql`SELECT slug FROM tournaments WHERE id = ${id} LIMIT 1`; break;
+    case "futsal": rows = await sql`SELECT slug FROM futsal_teams WHERE id = ${id} LIMIT 1`; break;
+    case "trip": rows = await sql`SELECT slug FROM international_trips WHERE id = ${id} LIMIT 1`; break;
+    case "guest": rows = await sql`SELECT slug FROM guest_opportunities WHERE id = ${id} LIMIT 1`; break;
+    case "podcast": rows = await sql`SELECT slug FROM podcasts WHERE id = ${id} LIMIT 1`; break;
+    case "service": rows = await sql`SELECT slug FROM services WHERE id = ${id} LIMIT 1`; break;
+    case "blog": rows = await sql`SELECT slug FROM blogs WHERE id = ${id} LIMIT 1`; break;
+    case "youtube": rows = await sql`SELECT slug FROM youtube_channels WHERE id = ${id} LIMIT 1`; break;
+    default: return null;
+  }
+  return (rows[0]?.slug as string) || null;
 }
 
 export async function getListingNameById(type: string, id: string): Promise<string | null> {
@@ -1983,7 +2039,28 @@ function mapReview(r: Record<string, unknown>): Review {
     reviewerName: r.reviewer_name as string, reviewerRole: r.reviewer_role as ReviewerRole,
     rating: Number(r.rating), reviewText: r.review_text as string,
     status: r.status as ReviewStatus, createdAt: r.created_at as string,
+    isInvited: r.is_invited === true || r.invitation_token != null,
   };
+}
+
+// ── Review Invitations ─────────────────────────────────────
+
+export async function createReviewInvitation(listingType: string, listingId: string, email: string, name: string | undefined, invitedBy: string): Promise<{ id: string; token: string }> {
+  const id = genId();
+  const token = genId();
+  await sql`INSERT INTO review_invitations (id, listing_type, listing_id, email, name, token, status, invited_by) VALUES (${id}, ${listingType}, ${listingId}, ${email}, ${name || null}, ${token}, 'pending', ${invitedBy})`;
+  return { id, token };
+}
+
+export async function getReviewInvitation(token: string): Promise<{ id: string; listingType: string; listingId: string; email: string; name: string | null; status: string } | null> {
+  const rows = await sql`SELECT id, listing_type, listing_id, email, name, status FROM review_invitations WHERE token = ${token} LIMIT 1`;
+  if (!rows[0]) return null;
+  return { id: rows[0].id as string, listingType: rows[0].listing_type as string, listingId: rows[0].listing_id as string, email: rows[0].email as string, name: rows[0].name as string | null, status: rows[0].status as string };
+}
+
+export async function getInvitationsByListing(listingType: string, listingId: string): Promise<{ email: string; name: string | null; status: string; createdAt: string }[]> {
+  const rows = await sql`SELECT email, name, status, created_at FROM review_invitations WHERE listing_type = ${listingType} AND listing_id = ${listingId} ORDER BY created_at DESC LIMIT 50`;
+  return rows.map(r => ({ email: r.email as string, name: r.name as string | null, status: r.status as string, createdAt: r.created_at as string }));
 }
 
 // ── Club Reviews ────────────────────────────────────────────
@@ -2315,6 +2392,63 @@ function mapGuestPostComment(r: Record<string, unknown>): GuestPostComment {
     userId: r.user_id as string, userName: r.user_name as string,
     createdAt: r.created_at as string, updatedAt: r.updated_at as string,
   };
+}
+
+// ── Listing Posts ────────────────────────────────────────────
+export interface ListingPost {
+  id: string;
+  listingType: string;
+  listingId: string;
+  userId: string;
+  userName: string;
+  body: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  hidden: boolean;
+  createdAt: string;
+}
+
+function mapListingPost(r: Record<string, unknown>): ListingPost {
+  return {
+    id: r.id as string,
+    listingType: r.listing_type as string,
+    listingId: r.listing_id as string,
+    userId: r.user_id as string,
+    userName: r.user_name as string,
+    body: r.body as string,
+    imageUrl: r.image_url as string | undefined,
+    videoUrl: r.video_url as string | undefined,
+    hidden: r.hidden as boolean,
+    createdAt: r.created_at as string,
+  };
+}
+
+export async function getListingPosts(listingType: string, listingId: string, includeHidden = false): Promise<ListingPost[]> {
+  const rows = includeHidden
+    ? await sql`SELECT p.*, u.name as user_name FROM listing_posts p JOIN users u ON u.id = p.user_id WHERE p.listing_type = ${listingType} AND p.listing_id = ${listingId} ORDER BY p.created_at DESC LIMIT 50`
+    : await sql`SELECT p.*, u.name as user_name FROM listing_posts p JOIN users u ON u.id = p.user_id WHERE p.listing_type = ${listingType} AND p.listing_id = ${listingId} AND p.hidden = false ORDER BY p.created_at DESC LIMIT 50`;
+  return rows.map(mapListingPost);
+}
+
+export async function getListingPostById(id: string): Promise<ListingPost | null> {
+  const rows = await sql`SELECT p.*, u.name as user_name FROM listing_posts p JOIN users u ON u.id = p.user_id WHERE p.id = ${id} LIMIT 1`;
+  return rows[0] ? mapListingPost(rows[0]) : null;
+}
+
+export async function createListingPost(listingType: string, listingId: string, userId: string, body: string, imageUrl?: string, videoUrl?: string): Promise<string> {
+  const id = genId();
+  await sql`INSERT INTO listing_posts (id, listing_type, listing_id, user_id, body, image_url, video_url) VALUES (${id}, ${listingType}, ${listingId}, ${userId}, ${body}, ${imageUrl || null}, ${videoUrl || null})`;
+  return id;
+}
+
+export async function toggleListingPostHidden(id: string, userId: string): Promise<boolean> {
+  const rows = await sql`UPDATE listing_posts SET hidden = NOT hidden WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function deleteListingPost(id: string, userId: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM listing_posts WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
+  return rows.length > 0;
 }
 
 // ── Food Tracker ─────────────────────────────────────────────

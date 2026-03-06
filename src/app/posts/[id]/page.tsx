@@ -1,0 +1,114 @@
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { getListingPostById, getListingNameById, getListingSlugById } from "@/lib/db";
+import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
+
+export const dynamic = "force-dynamic";
+
+type Props = { params: Promise<{ id: string }> };
+
+const TYPE_LABELS: Record<string, string> = {
+  club: "Clubs", team: "Teams", trainer: "Trainers",
+  recruiter: "College Recruiting", futsal: "Futsal",
+};
+const TYPE_PATHS: Record<string, string> = {
+  club: "clubs", team: "teams", trainer: "trainers",
+  recruiter: "college-recruiting", futsal: "futsal",
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const post = await getListingPostById(id);
+  if (!post || post.hidden) return {};
+  const listingName = await getListingNameById(post.listingType, post.listingId);
+  const { ogMeta } = await import("@/lib/og");
+  const title = listingName ? `${listingName} — Update` : "Post";
+  const description = post.body.slice(0, 160);
+  return ogMeta(title, description, post.imageUrl, `/posts/${id}`);
+}
+
+export default async function PostPage({ params }: Props) {
+  const { id } = await params;
+  const post = await getListingPostById(id);
+  if (!post || post.hidden) notFound();
+
+  const [listingName, listingSlug] = await Promise.all([
+    getListingNameById(post.listingType, post.listingId),
+    getListingSlugById(post.listingType, post.listingId),
+  ]);
+
+  const typePath = TYPE_PATHS[post.listingType] || "clubs";
+  const typeLabel = TYPE_LABELS[post.listingType] || "Listings";
+  const profileUrl = listingSlug ? `/${typePath}/${listingSlug}` : `/${typePath}`;
+  const postUrl = `https://www.soccer-near-me.com/posts/${id}`;
+  const date = new Date(post.createdAt);
+
+  return (
+    <>
+      {/* Breadcrumb */}
+      <div className="max-w-[700px] mx-auto px-6 py-3.5 text-sm text-muted">
+        <a href={`/${typePath}`} className="text-primary hover:underline">{typeLabel}</a>
+        {" \u203A "}
+        {listingName && listingSlug && (
+          <>
+            <a href={profileUrl} className="text-primary hover:underline">{listingName}</a>
+            {" \u203A "}
+          </>
+        )}
+        <span>Post</span>
+      </div>
+
+      <div className="max-w-[700px] mx-auto px-6 pb-16">
+        <article className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          {/* Author header */}
+          <div className="flex items-center gap-3 px-6 pt-6 pb-3">
+            <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-base">
+              {post.userName.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <p className="text-[15px] font-bold text-primary leading-tight">{post.userName}</p>
+              <p className="text-xs text-muted">
+                {listingName && <><a href={profileUrl} className="hover:underline">{listingName}</a> &middot; </>}
+                {date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+              </p>
+            </div>
+          </div>
+
+          {/* Body */}
+          <div className="px-6 pb-4">
+            <p className="text-[15px] leading-relaxed text-gray-800 whitespace-pre-line">{post.body}</p>
+          </div>
+
+          {/* Image */}
+          {post.imageUrl && (
+            <div className="px-4 pb-4">
+              <img src={post.imageUrl} alt="" className="w-full rounded-xl object-cover" />
+            </div>
+          )}
+
+          {/* Video */}
+          {post.videoUrl && (
+            <div className="px-4 pb-4">
+              <VideoEmbed url={post.videoUrl} />
+            </div>
+          )}
+
+          {/* Share */}
+          <div className="px-6 py-4 border-t border-border">
+            <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2.5">Share this post</p>
+            <ShareButtons url={postUrl} title={post.body.slice(0, 100)} />
+          </div>
+        </article>
+
+        {/* Back link */}
+        {listingSlug && (
+          <div className="mt-6 text-center">
+            <a href={profileUrl} className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors">
+              &larr; Back to {listingName} profile
+            </a>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
