@@ -38,6 +38,8 @@ export function ListingPostsSidebar({
 }) {
   const { data: session } = useSession();
   const isOwner = !!session?.user?.id && session.user.id === ownerId;
+  const isAdmin = (session?.user as { role?: string } | undefined)?.role === "admin";
+  const canManage = isOwner || isAdmin;
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -101,21 +103,21 @@ export function ListingPostsSidebar({
   }
 
   if (loading) return null;
-  if (!isOwner && posts.length === 0) return null;
+  if (!canManage && posts.length === 0) return null;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
         <h4 className="text-sm font-bold">Our Posts</h4>
-        {isOwner && !showForm && (
+        {canManage && !showForm && (
           <button onClick={() => setShowForm(true)} className="text-[11px] font-semibold text-accent hover:text-accent-hover transition-colors">
-            + New
+            + Create Post
           </button>
         )}
       </div>
 
       {/* Create form */}
-      {isOwner && showForm && (
+      {canManage && showForm && (
         <form onSubmit={handleSubmit} className="px-4 pb-3 space-y-2.5">
           <textarea
             value={body}
@@ -170,7 +172,7 @@ export function ListingPostsSidebar({
                   {post.hidden && <span className="text-[10px] text-orange-500 font-medium">Hidden</span>}
                 </div>
               </a>
-              {isOwner && (
+              {canManage && (
                 <div className="flex gap-1 shrink-0 pt-0.5">
                   <button
                     onClick={() => handleToggleHidden(post.id)}
@@ -197,7 +199,7 @@ export function ListingPostsSidebar({
         ))}
       </div>
 
-      {posts.length === 0 && isOwner && !showForm && (
+      {posts.length === 0 && canManage && !showForm && (
         <div className="px-4 pb-3.5 text-center">
           <p className="text-xs text-muted">No posts yet</p>
         </div>

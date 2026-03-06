@@ -6,6 +6,10 @@ export const dynamic = "force-dynamic";
 
 const VALID_TYPES = ["club", "team", "trainer", "recruiter", "futsal"];
 
+function isAdmin(session: { user?: { role?: string } } | null): boolean {
+  return (session?.user as { role?: string } | undefined)?.role === "admin";
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type");
@@ -16,12 +20,15 @@ export async function GET(req: Request) {
   }
 
   try {
-    // Check if requester is the owner (to show hidden posts)
     const session = await auth();
     let includeHidden = false;
     if (session?.user?.id && slug) {
-      const ownerId = await getListingOwner(type, slug);
-      includeHidden = ownerId === session.user.id;
+      if (isAdmin(session)) {
+        includeHidden = true;
+      } else {
+        const ownerId = await getListingOwner(type, slug);
+        includeHidden = ownerId === session.user.id;
+      }
     }
     const posts = await getListingPosts(type, id, includeHidden);
     return NextResponse.json(posts);
@@ -45,9 +52,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Post body is required" }, { status: 400 });
     }
 
-    const ownerId = await getListingOwner(type, slug);
-    if (ownerId !== session.user.id) {
-      return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+    if (!isAdmin(session)) {
+      const ownerId = await getListingOwner(type, slug);
+      if (ownerId !== session.user.id) {
+        return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+      }
     }
 
     const postId = await createListingPost(type, id, session.user.id, body.trim(), imageUrl || undefined, videoUrl || undefined);
@@ -65,8 +74,16 @@ export async function DELETE(req: Request) {
 
   try {
     const { id } = await req.json();
-    const deleted = await deleteListingPost(id, session.user.id);
-    if (!deleted) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    // Admins can delete any post; owners can only delete their own
+    if (isAdmin(session)) {
+      // Admin bypass: delete regardless of user_id
+      const { deleteListingPostAdmin } = await import("@/lib/db");
+      const deleted = await deleteListingPostAdmin(id);
+      if (!deleted) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    } else {
+      const deleted = await deleteListingPost(id, session.user.id);
+      if (!deleted) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
@@ -82,8 +99,14 @@ export async function PATCH(req: Request) {
   try {
     const { id, action } = await req.json();
     if (action === "toggle_hidden") {
-      const toggled = await toggleListingPostHidden(id, session.user.id);
-      if (!toggled) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      if (isAdmin(session)) {
+        const { toggleListingPostHiddenAdmin } = await import("@/lib/db");
+        const toggled = await toggleListingPostHiddenAdmin(id);
+        if (!toggled) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      } else {
+        const toggled = await toggleListingPostHidden(id, session.user.id);
+        if (!toggled) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
       return NextResponse.json({ success: true });
     }
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });

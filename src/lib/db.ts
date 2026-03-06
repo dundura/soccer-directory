@@ -2451,6 +2451,16 @@ export async function deleteListingPost(id: string, userId: string): Promise<boo
   return rows.length > 0;
 }
 
+export async function deleteListingPostAdmin(id: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM listing_posts WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function toggleListingPostHiddenAdmin(id: string): Promise<boolean> {
+  const rows = await sql`UPDATE listing_posts SET hidden = NOT hidden WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
 // ── Food Tracker ─────────────────────────────────────────────
 export async function getFoodLog(date: string) {
   const rows = await sql`SELECT id, entry_date, meal_type, kind, description, created_at FROM food_log WHERE entry_date = ${date} ORDER BY created_at ASC`;
