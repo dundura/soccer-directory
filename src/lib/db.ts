@@ -2023,13 +2023,11 @@ export async function createClubReview(data: {
 }
 
 export async function getApprovedClubReviews(): Promise<ClubReview[]> {
-  const rows = await sql`SELECT cr.*,
-    COALESCE(c.slug, c2.slug) as club_slug,
+  const rows = await sql`SELECT cr.*, c.slug as club_slug,
     COALESCE((SELECT COUNT(*)::int FROM club_review_votes WHERE review_id = cr.id AND vote_type = 'like'), 0) as likes,
     COALESCE((SELECT COUNT(*)::int FROM club_review_votes WHERE review_id = cr.id AND vote_type = 'dislike'), 0) as dislikes
     FROM club_reviews cr
     LEFT JOIN clubs c ON c.id = cr.club_id AND c.status = 'approved'
-    LEFT JOIN clubs c2 ON cr.club_id IS NULL AND LOWER(c2.name) = LOWER(cr.club_name) AND c2.status = 'approved'
     WHERE cr.status = 'approved' ORDER BY cr.created_at DESC`;
   return rows.map(mapClubReview);
 }
