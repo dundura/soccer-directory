@@ -213,6 +213,9 @@ export async function PUT(req: Request) {
     }
     return NextResponse.json({ success: true });
   } catch (err) {
+    if (err instanceof Error && err.message === "SLUG_TAKEN") {
+      return NextResponse.json({ error: "That URL slug is already taken. Please choose a different one." }, { status: 409 });
+    }
     console.error("Failed to update listing:", err);
     return NextResponse.json({ error: "Failed to update listing", detail: err instanceof Error ? err.message : "Unknown" }, { status: 500 });
   }

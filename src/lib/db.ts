@@ -1397,6 +1397,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
 function mapFundraiserToForm(r: Record<string, unknown>): Record<string, string> {
   return {
     name: String(r.title || ""),
+    slug: String(r.slug || ""),
     tagline: String(r.tagline || ""),
     description: String(r.description || ""),
     goal: r.goal ? String(Number(r.goal) / 100) : "",
@@ -1590,12 +1591,18 @@ export async function updateListing(type: string, id: string, data: Record<strin
     case "youtube":
       rows = await sql`UPDATE youtube_channels SET name=${data.name}, creator_name=${data.creatorName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, description=${data.description || null}, website=${data.website || null}, channel_url=${data.channelUrl || null}, subscribe_url=${data.subscribeUrl || null}, email=${data.email || null}, phone=${data.phone || null}, featured_videos=${data.featuredVideos || null}, creator_heading=${data.creatorHeading || null}, creator_image=${data.creatorImage || null}, creator_bio=${data.creatorBio || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, video_url_2=${data.videoUrl2 || null}, video_url_3=${data.videoUrl3 || null}, media_links=${pf.mediaLinks}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
-    case "fundraiser":
-      rows = await sql`UPDATE fundraisers SET title=${data.name}, tagline=${data.tagline || null}, description=${data.description || null}, goal=${data.goal && !isNaN(Number(data.goal)) ? Math.round(Number(data.goal) * 100) : null}, coach_name=${data.coachName || null}, coach_email=${data.contactEmail || null}, coach_phone=${data.phone || null}, website_url=${data.website || null}, facebook_url=${data.facebookUrl || null}, instagram_url=${data.instagramUrl || null}, hero_image_url=${data.imageUrl || null}, tags=${data.tags || null}, photos=${data.photos || null}, video_url=${data.videoUrl || null}, team_photo=${data.teamPhoto || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+    case "fundraiser": {
+      const newSlug = data.slug ? await resolveFundraiserSlug(data, id) : null;
+      if (newSlug) {
+        rows = await sql`UPDATE fundraisers SET title=${data.name}, slug=${newSlug}, tagline=${data.tagline || null}, description=${data.description || null}, goal=${data.goal && !isNaN(Number(data.goal)) ? Math.round(Number(data.goal) * 100) : null}, coach_name=${data.coachName || null}, coach_email=${data.contactEmail || null}, coach_phone=${data.phone || null}, website_url=${data.website || null}, facebook_url=${data.facebookUrl || null}, instagram_url=${data.instagramUrl || null}, hero_image_url=${data.imageUrl || null}, tags=${data.tags || null}, photos=${data.photos || null}, video_url=${data.videoUrl || null}, team_photo=${data.teamPhoto || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      } else {
+        rows = await sql`UPDATE fundraisers SET title=${data.name}, tagline=${data.tagline || null}, description=${data.description || null}, goal=${data.goal && !isNaN(Number(data.goal)) ? Math.round(Number(data.goal) * 100) : null}, coach_name=${data.coachName || null}, coach_email=${data.contactEmail || null}, coach_phone=${data.phone || null}, website_url=${data.website || null}, facebook_url=${data.facebookUrl || null}, instagram_url=${data.instagramUrl || null}, hero_image_url=${data.imageUrl || null}, tags=${data.tags || null}, photos=${data.photos || null}, video_url=${data.videoUrl || null}, team_photo=${data.teamPhoto || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      }
       if (data.roster) {
         await syncFundraiserRoster(id, data.roster);
       }
       break;
+    }
     default:
       return false;
   }
@@ -1666,12 +1673,18 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
     case "youtube":
       rows = await sql`UPDATE youtube_channels SET name=${data.name}, creator_name=${data.creatorName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, description=${data.description || null}, website=${data.website || null}, channel_url=${data.channelUrl || null}, subscribe_url=${data.subscribeUrl || null}, email=${data.email || null}, phone=${data.phone || null}, featured_videos=${data.featuredVideos || null}, creator_heading=${data.creatorHeading || null}, creator_image=${data.creatorImage || null}, creator_bio=${data.creatorBio || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, video_url_2=${data.videoUrl2 || null}, video_url_3=${data.videoUrl3 || null}, media_links=${pf.mediaLinks}, tagline=${pf.tagline}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
-    case "fundraiser":
-      rows = await sql`UPDATE fundraisers SET title=${data.name}, tagline=${data.tagline || null}, description=${data.description || null}, goal=${data.goal && !isNaN(Number(data.goal)) ? Math.round(Number(data.goal) * 100) : null}, coach_name=${data.coachName || null}, coach_email=${data.contactEmail || null}, coach_phone=${data.phone || null}, website_url=${data.website || null}, facebook_url=${data.facebookUrl || null}, instagram_url=${data.instagramUrl || null}, hero_image_url=${data.imageUrl || null}, tags=${data.tags || null}, photos=${data.photos || null}, video_url=${data.videoUrl || null}, team_photo=${data.teamPhoto || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+    case "fundraiser": {
+      const newSlug = data.slug ? await resolveFundraiserSlug(data, id) : null;
+      if (newSlug) {
+        rows = await sql`UPDATE fundraisers SET title=${data.name}, slug=${newSlug}, tagline=${data.tagline || null}, description=${data.description || null}, goal=${data.goal && !isNaN(Number(data.goal)) ? Math.round(Number(data.goal) * 100) : null}, coach_name=${data.coachName || null}, coach_email=${data.contactEmail || null}, coach_phone=${data.phone || null}, website_url=${data.website || null}, facebook_url=${data.facebookUrl || null}, instagram_url=${data.instagramUrl || null}, hero_image_url=${data.imageUrl || null}, tags=${data.tags || null}, photos=${data.photos || null}, video_url=${data.videoUrl || null}, team_photo=${data.teamPhoto || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      } else {
+        rows = await sql`UPDATE fundraisers SET title=${data.name}, tagline=${data.tagline || null}, description=${data.description || null}, goal=${data.goal && !isNaN(Number(data.goal)) ? Math.round(Number(data.goal) * 100) : null}, coach_name=${data.coachName || null}, coach_email=${data.contactEmail || null}, coach_phone=${data.phone || null}, website_url=${data.website || null}, facebook_url=${data.facebookUrl || null}, instagram_url=${data.instagramUrl || null}, hero_image_url=${data.imageUrl || null}, tags=${data.tags || null}, photos=${data.photos || null}, video_url=${data.videoUrl || null}, team_photo=${data.teamPhoto || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      }
       if (data.roster) {
         await syncFundraiserRoster(id, data.roster);
       }
       break;
+    }
     default:
       return false;
   }
@@ -2573,6 +2586,19 @@ export async function updateRosterEntry(entryId: string, userId: string, data: {
     age_group = ${data.ageGroup || null}, photo_url = ${data.photoUrl || null}, bio = ${data.bio || null}
     WHERE id = ${entryId} AND user_id = ${userId} RETURNING id`;
   return rows.length > 0;
+}
+
+function sanitizeSlug(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+async function resolveFundraiserSlug(data: Record<string, string>, currentId: string): Promise<string | null> {
+  if (!data.slug) return null;
+  const slug = sanitizeSlug(data.slug);
+  if (!slug) return null;
+  const existing = await sql`SELECT id FROM fundraisers WHERE slug = ${slug} AND id != ${currentId} LIMIT 1`;
+  if (existing.length > 0) throw new Error("SLUG_TAKEN");
+  return slug;
 }
 
 const PATCHABLE_FUNDRAISER_FIELDS: Record<string, string> = {

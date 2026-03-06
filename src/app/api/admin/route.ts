@@ -80,6 +80,9 @@ export async function PUT(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
+    if (err instanceof Error && err.message === "SLUG_TAKEN") {
+      return NextResponse.json({ error: "That URL slug is already taken. Please choose a different one." }, { status: 409 });
+    }
     console.error("Admin PUT error:", err);
     return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to save" }, { status: 500 });
   }
