@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import { getServiceBySlug, getServiceSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ReviewSection } from "@/components/review-section";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -220,6 +222,10 @@ export default async function ServiceDetailPage({ params }: Props) {
             </div>
           </div>
         </div>
+
+        <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
+          <ReviewSection listingType="service" listingId={service.id} />
+        </Suspense>
 
         {/* ====== Sponsors ====== */}
         {service.sponsors && service.sponsors.length > 0 && (

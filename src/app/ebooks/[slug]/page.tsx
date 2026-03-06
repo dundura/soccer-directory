@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import { getMarketplaceItemBySlug, getEbookSlugs, getListingOwner } from "@/lib/db";
 import { Badge } from "@/components/ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { PhotoGallery } from "@/components/profile-ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ReviewSection } from "@/components/review-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
@@ -121,6 +123,10 @@ export default async function EbookDetailPage({ params }: Props) {
                 <PhotoGallery photos={item.photos} />
               </div>
             )}
+
+            <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
+              <ReviewSection listingType="ebook" listingId={item.id} />
+            </Suspense>
 
             <FeaturedArticles />
 

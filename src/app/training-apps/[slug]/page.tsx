@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import { getTrainingAppBySlug, getTrainingAppSlugs, getListingOwner } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
@@ -212,6 +214,10 @@ export default async function TrainingAppDetailPage({ params }: Props) {
                 <VideoEmbed url={app.videoUrl} />
               </div>
             )}
+
+            <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
+              <ReviewSection listingType="trainingapp" listingId={app.id} />
+            </Suspense>
 
             <FeaturedArticles />
 

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getFacebookGroupBySlug, getFacebookGroupSlugs, getListingOwner } from "@/lib/db";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -5,6 +6,7 @@ import { VideoEmbed, PhotoGallery } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ReviewSection } from "@/components/review-section";
 import { ContactGroupForm } from "./contact-form";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
@@ -170,6 +172,10 @@ export default async function FacebookGroupPage({ params }: Props) {
               <PhotoGallery photos={group.photos} imagePosition={group.imagePosition} />
             </div>
           )}
+
+          <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
+            <ReviewSection listingType="fbgroup" listingId={group.id} />
+          </Suspense>
 
           <FeaturedArticles />
 

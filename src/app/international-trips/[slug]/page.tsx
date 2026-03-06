@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { getTripBySlug, getTripSlugs, getListingOwner } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ReviewSection } from "@/components/review-section";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
@@ -172,6 +174,10 @@ export default async function TripDetailPage({ params }: Props) {
               <p className="text-muted text-sm mb-6">Fill out the form below to express interest in this international trip. The organizer will review your inquiry and contact you directly.</p>
               <TripInquiryForm tripName={trip.tripName} destination={trip.destination} slug={slug} />
             </section>
+
+            <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
+              <ReviewSection listingType="trip" listingId={trip.id} />
+            </Suspense>
 
             <FeaturedArticles />
 
