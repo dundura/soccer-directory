@@ -10,10 +10,22 @@ type Props = { params: Promise<{ id: string }> };
 const TYPE_LABELS: Record<string, string> = {
   club: "Clubs", team: "Teams", trainer: "Trainers",
   recruiter: "College Recruiting", futsal: "Futsal",
+  camp: "Camps", specialevent: "Special Events", tryout: "Tryouts",
+  tournament: "Tournaments", player: "Players", blog: "Blogs",
+  fbgroup: "Facebook Groups", podcast: "Podcasts", youtube: "YouTube Channels",
+  service: "Services", trainingapp: "Training Apps", ebook: "Ebooks",
+  giveaway: "Giveaways", guest: "Guest Play", trip: "International Trips",
+  marketplace: "Shop", fundraiser: "Fundraisers",
 };
 const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers",
   recruiter: "college-recruiting", futsal: "futsal",
+  camp: "camps", specialevent: "special-events", tryout: "tryouts",
+  tournament: "tournaments", player: "guest-play/players", blog: "blogs",
+  fbgroup: "facebook-groups", podcast: "podcasts", youtube: "youtube-channels",
+  service: "services", trainingapp: "training-apps", ebook: "ebooks",
+  giveaway: "giveaways", guest: "guest-play", trip: "international-trips",
+  marketplace: "shop", fundraiser: "fundraiser",
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

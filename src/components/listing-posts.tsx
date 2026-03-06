@@ -58,6 +58,14 @@ export function ListingPostsSidebar({
 
   useEffect(() => { fetchPosts(); }, [listingType, listingId, slug]);
 
+  // Auto-open form when navigated via #create-post
+  useEffect(() => {
+    if (window.location.hash === "#create-post" && canManage) {
+      setShowForm(true);
+      setTimeout(() => document.getElementById("create-post")?.scrollIntoView({ behavior: "smooth" }), 100);
+    }
+  }, [canManage]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!body.trim()) return;
@@ -106,7 +114,7 @@ export function ListingPostsSidebar({
   if (!canManage && posts.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div id="create-post" className="bg-white rounded-2xl shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
         <h4 className="text-sm font-bold">Our Posts</h4>
         {canManage && !showForm && (
