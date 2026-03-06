@@ -4,10 +4,10 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { PlayerAvatar } from "@/components/player-avatar";
+import { SponsorsSection } from "@/components/sponsors-section";
 import { ContactPlayerForm } from "./contact-form";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +74,7 @@ export default async function PlayerDetailPage({ params }: Props) {
               {player.secondaryPosition && <Badge variant="default">{player.secondaryPosition}</Badge>}
               <Badge variant={player.gender === "Boys" ? "blue" : "purple"}>{player.gender}</Badge>
               <Badge variant="default">{player.birthYear}</Badge>
+              {player.availableForGuestPlay && <Badge variant="green">Available for Guest Play</Badge>}
             </div>
             <div className="flex items-center justify-between">
               <div>
@@ -82,7 +83,8 @@ export default async function PlayerDetailPage({ params }: Props) {
                   <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="tagline" value={player.tagline} tag="p" className="text-white/80 text-sm font-medium" />
                 )}
                 <p className="text-white/60 text-lg">
-                  {player.currentClub && <>{player.currentClub} &middot; </>}
+                  {player.teamName && <>{player.teamName} &middot; </>}
+                  {!player.teamName && player.currentClub && <>{player.currentClub} &middot; </>}
                   {player.city}, {player.state}
                 </p>
               </div>
@@ -94,8 +96,9 @@ export default async function PlayerDetailPage({ params }: Props) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Sidebar */}
+          {/* ====== Sidebar ====== */}
           <div className="space-y-6">
+            {/* Player Card */}
             <div className="bg-white rounded-2xl border border-border overflow-hidden">
               <PlayerAvatar
                 src={player.teamPhoto}
@@ -130,12 +133,6 @@ export default async function PlayerDetailPage({ params }: Props) {
                       <p className="font-medium">{player.preferredFoot}</p>
                     </div>
                   )}
-                  {player.currentClub && (
-                    <div>
-                      <p className="text-xs text-muted font-medium uppercase tracking-wide">Current Club</p>
-                      <p className="font-medium">{player.currentClub}</p>
-                    </div>
-                  )}
                   {player.gpa && (
                     <div>
                       <p className="text-xs text-muted font-medium uppercase tracking-wide">GPA</p>
@@ -153,16 +150,54 @@ export default async function PlayerDetailPage({ params }: Props) {
               </div>
             </div>
 
+            {/* Club / Team / League Info */}
             <div className="bg-white rounded-2xl border border-border p-6 space-y-3">
+              {player.currentClub && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Club</p><p className="font-medium">{player.currentClub}</p></div>}
+              {player.teamName && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Team</p><p className="font-medium">{player.teamName}</p></div>}
+              {player.league && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">League</p><p className="font-medium">{player.league}</p></div>}
               <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Level</p><p className="font-medium">{player.level}</p></div>
               <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Gender</p><p className="font-medium">{player.gender}</p></div>
               <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Location</p><p className="font-medium">{player.city}, {player.state}</p></div>
               {player.phone && <div><p className="text-xs text-muted font-medium uppercase tracking-wide">Phone</p><p className="font-medium">{player.phone}</p></div>}
             </div>
+
+            {/* Favorites */}
+            {(player.favoriteTeam || player.favoritePlayer) && (
+              <div className="bg-white rounded-2xl border border-border p-6 space-y-3">
+                <h3 className="font-[family-name:var(--font-display)] font-bold text-sm uppercase tracking-wide text-muted">Favorites</h3>
+                {player.favoriteTeam && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">&#9917;</span>
+                    <div>
+                      <p className="text-xs text-muted">Favorite Team</p>
+                      <p className="font-bold text-primary">{player.favoriteTeam}</p>
+                    </div>
+                  </div>
+                )}
+                {player.favoritePlayer && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">&#11088;</span>
+                    <div>
+                      <p className="text-xs text-muted">Favorite Player</p>
+                      <p className="font-bold text-primary">{player.favoritePlayer}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Social Links */}
+            {player.socialMedia && (player.socialMedia.facebook || player.socialMedia.instagram || player.socialMedia.youtube) && (
+              <div className="bg-white rounded-2xl border border-border p-6">
+                <h3 className="font-[family-name:var(--font-display)] font-bold mb-3">Follow</h3>
+                <SocialLinks website={player.socialMedia.youtube} facebook={player.socialMedia.facebook} instagram={player.socialMedia.instagram} />
+              </div>
+            )}
           </div>
 
-          {/* Main Content */}
+          {/* ====== Main Content ====== */}
           <div className="lg:col-span-2 space-y-8">
+            {/* Looking For */}
             {player.lookingFor && (
               <section className="bg-white rounded-2xl border-2 border-accent/20 p-6 md:p-8">
                 <div className="flex items-center justify-between mb-4">
@@ -173,6 +208,7 @@ export default async function PlayerDetailPage({ params }: Props) {
               </section>
             )}
 
+            {/* About */}
             {player.description && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About</h2>
@@ -180,6 +216,7 @@ export default async function PlayerDetailPage({ params }: Props) {
               </section>
             )}
 
+            {/* Player Details */}
             <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Player Details</h2>
@@ -193,24 +230,53 @@ export default async function PlayerDetailPage({ params }: Props) {
                 {player.height && <div><p className="text-xs text-muted mb-1">Height</p><p className="font-medium">{player.height}</p></div>}
                 {player.preferredFoot && <div><p className="text-xs text-muted mb-1">Preferred Foot</p><p className="font-medium">{player.preferredFoot}</p></div>}
                 {player.currentClub && <div><p className="text-xs text-muted mb-1">Current Club</p><p className="font-medium">{player.currentClub}</p></div>}
+                {player.teamName && <div><p className="text-xs text-muted mb-1">Team</p><p className="font-medium">{player.teamName}</p></div>}
+                {player.league && <div><p className="text-xs text-muted mb-1">League</p><p className="font-medium">{player.league}</p></div>}
                 {player.gpa && <div><p className="text-xs text-muted mb-1">GPA</p><p className="font-medium">{player.gpa}</p></div>}
               </div>
             </section>
 
-            {(player.videoUrl || player.videoUrl2 || player.videoUrl3) && (
-              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+            {/* Featured Highlight Video */}
+            {player.videoUrl && (
+              <section className="bg-white rounded-2xl border-2 border-primary/20 p-6 md:p-8">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Highlights</h2>
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Featured Highlight</h2>
                   <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
                 </div>
-                <div className="space-y-6">
-                  {player.videoUrl && <VideoEmbed url={player.videoUrl} />}
+                <VideoEmbed url={player.videoUrl} />
+              </section>
+            )}
+
+            {/* More Highlight Videos */}
+            {(player.videoUrl2 || player.videoUrl3) && (
+              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">More Highlights</h2>
+                <div className="grid sm:grid-cols-2 gap-4">
                   {player.videoUrl2 && <VideoEmbed url={player.videoUrl2} />}
                   {player.videoUrl3 && <VideoEmbed url={player.videoUrl3} />}
                 </div>
               </section>
             )}
 
+            {/* Game Highlights */}
+            {player.gameHighlights && player.gameHighlights.length > 0 && (
+              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Game Highlights</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
+                </div>
+                <div className="space-y-6">
+                  {player.gameHighlights.map((gh, i) => (
+                    <div key={i}>
+                      <p className="text-sm font-bold text-primary mb-2">{gh.title}</p>
+                      <VideoEmbed url={gh.url} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Photos */}
             {player.photos && player.photos.length > 0 && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
                 <div className="flex items-center justify-between mb-4">
@@ -221,31 +287,22 @@ export default async function PlayerDetailPage({ params }: Props) {
               </section>
             )}
 
+            {/* Sponsors */}
+            {player.sponsors && player.sponsors.length > 0 && (
+              <SponsorsSection sponsors={player.sponsors} />
+            )}
+
             {/* Contact Form */}
             <section id="contact-player" className="bg-white rounded-2xl border-2 border-accent/20 p-6 md:p-8">
               <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-2">Contact This Player</h2>
               <p className="text-muted text-sm mb-6">Interested in this player? Send a message and they will be notified via email.</p>
               <ContactPlayerForm playerName={player.playerName} slug={slug} />
             </section>
-
-            {player.socialMedia && (player.socialMedia.facebook || player.socialMedia.instagram) && (
-              <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <h3 className="font-[family-name:var(--font-display)] font-bold mb-3">Follow</h3>
-                <SocialLinks facebook={player.socialMedia.facebook} instagram={player.socialMedia.instagram} />
-              </div>
-            )}
           </div>
         </div>
       </div>
 
-      {/* Anytime Soccer Training Banner */}
-      {/* ====== Sponsors ====== */}
-      {player.sponsors && player.sponsors.length > 0 && (
-        <div className="order-8 lg:order-none lg:col-start-2">
-          <SponsorsSection sponsors={player.sponsors} />
-        </div>
-      )}
-
+      {/* CTA Banner */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnytimeInlineCTA />
       </div>

@@ -528,7 +528,14 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "birthYear", label: "Birth Year", required: true, options: ["2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016"] },
     { name: "height", label: "Height (e.g. 5'8\")" },
     { name: "preferredFoot", label: "Preferred Foot", options: ["Right", "Left", "Both"] },
+    { name: "_team", label: "Team & League", type: "heading" },
     { name: "currentClub", label: "Current Club" },
+    { name: "teamName", label: "Team Name" },
+    { name: "league", label: "League (e.g. ECNL, MLS NEXT, GA)" },
+    { name: "_favorites", label: "Favorites", type: "heading" },
+    { name: "favoriteTeam", label: "Favorite Pro Team" },
+    { name: "favoritePlayer", label: "Favorite Player" },
+    { name: "_location", label: "Location & Details", type: "heading" },
     { name: "city", label: "City", required: true },
     { name: "country", label: "Country", required: true, type: "country" },
     { name: "state", label: "State", required: true, type: "state-select" },
@@ -539,6 +546,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "lookingFor", label: "What opportunities are you looking for?", required: true, type: "textarea" },
     { name: "contactEmail", label: "Contact Email", required: true, type: "email" },
     { name: "phone", label: "Phone" },
+    { name: "_guestplay", label: "Guest Player Directory", type: "heading" },
+    { name: "availableForGuestPlay", label: "Show my profile on the Guest Player directory?", options: ["false", "true"] },
     { name: "_socials", label: "Social Media", type: "heading" },
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
@@ -549,9 +558,11 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "logo", label: "Club Logo URL" },
     { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Action Photos (up to 5 URLs)", type: "photos" },
-    { name: "videoUrl", label: "Highlight Video 1 (YouTube/Vimeo)" },
+    { name: "_highlights", label: "Highlight Videos", type: "heading" },
+    { name: "videoUrl", label: "Featured Highlight Video (YouTube/Vimeo) — shown large at top" },
     { name: "videoUrl2", label: "Highlight Video 2 (YouTube/Vimeo)" },
     { name: "videoUrl3", label: "Highlight Video 3 (YouTube/Vimeo)" },
+    { name: "gameHighlights", label: "Game Highlights (up to 10)", type: "game-highlights", max: 10 },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
@@ -1642,6 +1653,56 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                   );
                 })}
                 <p className="text-xs text-muted">Add up to 3 sponsors. Each sponsor shows as a card with image, name, description, and a link button.</p>
+              </div>
+
+            /* Game Highlights (up to 10 — title + URL) */
+            ) : field.type === "game-highlights" ? (
+              <div className="space-y-3">
+                {Array.from({ length: Math.min(field.max || 10, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                  let arr: { title: string; url: string }[] = [];
+                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  const gh = arr[i] || { title: "", url: "" };
+                  const updateGh = (key: string, val: string) => {
+                    const updated = [...arr];
+                    if (!updated[i]) updated[i] = { title: "", url: "" };
+                    (updated[i] as Record<string, string>)[key] = val;
+                    const filtered = updated.filter((g) => g.title || g.url);
+                    handleChange(field.name, JSON.stringify(filtered));
+                  };
+                  return (
+                    <div key={i} className="flex gap-2 items-start">
+                      <div className="flex-1 space-y-1.5">
+                        <input
+                          type="text"
+                          value={gh.title || ""}
+                          onChange={(e) => updateGh("title", e.target.value)}
+                          placeholder="Game / highlight title (e.g. vs. FC Dallas — 2 Goals)"
+                          className={inputClass}
+                        />
+                        <input
+                          type="url"
+                          value={gh.url || ""}
+                          onChange={(e) => updateGh("url", e.target.value)}
+                          placeholder="YouTube / Vimeo URL"
+                          className={inputClass}
+                        />
+                      </div>
+                      {gh.title && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = arr.filter((_, j) => j !== i);
+                            handleChange(field.name, JSON.stringify(updated));
+                          }}
+                          className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0 mt-2"
+                        >
+                          x
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-muted">Add individual game highlights. Each shows as an embedded video with its title.</p>
               </div>
 
             /* Top Episodes (up to 10 — title + description + URL) */

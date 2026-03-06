@@ -375,6 +375,11 @@ export interface MarketplaceItem {
   createdAt: string;
 }
 
+export interface GameHighlight {
+  title: string;
+  url: string;
+}
+
 export interface PlayerProfile extends ProfileFields {
   id: string;
   slug: string;
@@ -385,6 +390,12 @@ export interface PlayerProfile extends ProfileFields {
   height?: string;
   preferredFoot?: string;
   currentClub?: string;
+  league?: string;
+  teamName?: string;
+  favoriteTeam?: string;
+  favoritePlayer?: string;
+  gameHighlights?: GameHighlight[];
+  availableForGuestPlay?: boolean;
   city: string;
   state: string;
   country?: string;
