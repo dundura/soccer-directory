@@ -61,7 +61,7 @@ export async function POST(req: Request) {
           <div style="font-family:sans-serif;max-width:600px;">
             <h2 style="color:#1a365d;">New Club Review Submitted</h2>
             <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-              <tr><td style="padding:8px 0;color:#666;width:120px;">Club</td><td style="padding:8px 0;font-weight:bold;">${data.clubName}</td></tr>
+              <tr><td style="padding:8px 0;color:#666;width:120px;">Club</td><td style="padding:8px 0;font-weight:bold;">${data.clubName}${data.clubId ? ' <span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600;">Listed Club</span>' : ' <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600;">Not in Directory</span>'}</td></tr>
               <tr><td style="padding:8px 0;color:#666;">Location</td><td style="padding:8px 0;">${data.city || "N/A"}, ${data.state || "N/A"}</td></tr>
               <tr><td style="padding:8px 0;color:#666;">Reviewer</td><td style="padding:8px 0;">${data.reviewerName} (${data.reviewerRole || "N/A"})</td></tr>
               <tr><td style="padding:8px 0;color:#666;">Account Email</td><td style="padding:8px 0;font-weight:bold;">${session.user.email || "N/A"}</td></tr>

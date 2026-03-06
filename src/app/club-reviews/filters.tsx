@@ -20,6 +20,7 @@ const US_STATES = [
 ];
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";
+const REVIEW_TRUNCATE_LEN = 300;
 
 function Stars({ count, size = "text-lg" }: { count: number; size?: string }) {
   return (
@@ -57,12 +58,32 @@ function StarInput({ label, value, onChange }: { label: string; value: number; o
   );
 }
 
+function ReviewText({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const needsTruncation = text.length > REVIEW_TRUNCATE_LEN;
+  const display = needsTruncation && !expanded ? text.slice(0, REVIEW_TRUNCATE_LEN) + "..." : text;
+  return (
+    <div className="mb-3">
+      <p className="text-sm text-muted leading-relaxed whitespace-pre-wrap">{display}</p>
+      {needsTruncation && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors mt-1"
+        >
+          {expanded ? "Show less" : "Read more"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 type ClubSuggestion = { id: string; name: string; city: string; state: string; slug: string };
 
-function ReviewForm({ onSuccess, initial, isEdit }: {
+function ReviewForm({ onSuccess, initial, isEdit, allReviews }: {
   onSuccess: () => void;
   initial?: ClubReview;
   isEdit?: boolean;
+  allReviews?: ClubReview[];
 }) {
   const [clubName, setClubName] = useState(initial?.clubName || "");
   const [clubId, setClubId] = useState(initial?.clubId || "");
@@ -80,10 +101,12 @@ function ReviewForm({ onSuccess, initial, isEdit }: {
   const [suggestions, setSuggestions] = useState<ClubSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchTimer, setSearchTimer] = useState<NodeJS.Timeout | null>(null);
+  const [existingReviews, setExistingReviews] = useState<ClubReview[]>([]);
 
   function handleClubSearch(value: string) {
     setClubName(value);
     setClubId("");
+    setExistingReviews([]);
     if (searchTimer) clearTimeout(searchTimer);
     if (value.trim().length < 2) { setSuggestions([]); setShowSuggestions(false); return; }
     const timer = setTimeout(async () => {
@@ -106,6 +129,10 @@ function ReviewForm({ onSuccess, initial, isEdit }: {
     setState(club.state);
     setSuggestions([]);
     setShowSuggestions(false);
+    if (allReviews) {
+      const matching = allReviews.filter(r => r.clubName.toLowerCase() === club.name.toLowerCase());
+      setExistingReviews(matching);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -192,6 +219,28 @@ function ReviewForm({ onSuccess, initial, isEdit }: {
           {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
       </div>
+
+      {existingReviews.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <p className="text-sm font-semibold text-primary mb-2">
+            {existingReviews.length} existing review{existingReviews.length !== 1 ? "s" : ""} for {clubName}:
+          </p>
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {existingReviews.map((r) => (
+              <div key={r.id} className="bg-white rounded-lg p-3 text-sm">
+                <div className="flex items-center gap-2 mb-1">
+                  <Stars count={Math.round(r.overallRating)} size="text-xs" />
+                  <span className="text-xs text-muted">{r.overallRating.toFixed(1)}</span>
+                  <span className="text-xs font-bold text-primary">{r.reviewerName}</span>
+                  {r.reviewerRole && <span className="text-xs text-muted">({r.reviewerRole})</span>}
+                </div>
+                {r.reviewText && <p className="text-xs text-muted leading-relaxed line-clamp-2">{r.reviewText}</p>}
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-blue-600 mt-2">You can still add your own review below.</p>
+        </div>
+      )}
 
       <div className="bg-surface rounded-xl p-4 space-y-2">
         <p className="text-sm font-semibold text-primary mb-2">Rate this club:</p>
@@ -534,7 +583,7 @@ export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubRe
           <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mt-6">
             <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Write a Club Review</h2>
             <p className="text-muted text-sm mb-6">All reviews are moderated before being published.</p>
-            <ReviewForm onSuccess={() => { setShowForm(false); refreshReviews(); }} />
+            <ReviewForm onSuccess={() => { setShowForm(false); refreshReviews(); }} allReviews={reviews} />
           </div>
         )}
 
@@ -618,7 +667,7 @@ export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubRe
                     </div>
 
                     {review.reviewText && (
-                      <p className="text-sm text-muted leading-relaxed mb-3 whitespace-pre-wrap">{review.reviewText}</p>
+                      <ReviewText text={review.reviewText} />
                     )}
 
                     <div className="flex items-center gap-2 text-xs text-muted flex-wrap">
