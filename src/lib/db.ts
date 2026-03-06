@@ -2575,6 +2575,27 @@ export async function updateRosterEntry(entryId: string, userId: string, data: {
   return rows.length > 0;
 }
 
+const PATCHABLE_FUNDRAISER_FIELDS: Record<string, string> = {
+  title: "title", tagline: "tagline", description: "description",
+  coachName: "coach_name", coachEmail: "coach_email", coachPhone: "coach_phone",
+};
+
+export async function patchFundraiserField(slug: string, userId: string, field: string, value: string): Promise<boolean> {
+  const col = PATCHABLE_FUNDRAISER_FIELDS[field];
+  if (!col) return false;
+  let rows;
+  switch (col) {
+    case "title": rows = await sql`UPDATE fundraisers SET title = ${value}, updated_at = NOW() WHERE slug = ${slug} AND user_id = ${userId} RETURNING id`; break;
+    case "tagline": rows = await sql`UPDATE fundraisers SET tagline = ${value}, updated_at = NOW() WHERE slug = ${slug} AND user_id = ${userId} RETURNING id`; break;
+    case "description": rows = await sql`UPDATE fundraisers SET description = ${value}, updated_at = NOW() WHERE slug = ${slug} AND user_id = ${userId} RETURNING id`; break;
+    case "coach_name": rows = await sql`UPDATE fundraisers SET coach_name = ${value}, updated_at = NOW() WHERE slug = ${slug} AND user_id = ${userId} RETURNING id`; break;
+    case "coach_email": rows = await sql`UPDATE fundraisers SET coach_email = ${value}, updated_at = NOW() WHERE slug = ${slug} AND user_id = ${userId} RETURNING id`; break;
+    case "coach_phone": rows = await sql`UPDATE fundraisers SET coach_phone = ${value}, updated_at = NOW() WHERE slug = ${slug} AND user_id = ${userId} RETURNING id`; break;
+    default: return false;
+  }
+  return rows.length > 0;
+}
+
 export async function removeRosterEntry(entryId: string, fundraiserId: string): Promise<boolean> {
   const rows = await sql`DELETE FROM fundraiser_roster WHERE id = ${entryId} AND fundraiser_id = ${fundraiserId} RETURNING id`;
   return rows.length > 0;

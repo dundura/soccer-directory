@@ -5,6 +5,8 @@ import { AnnouncementSection } from "@/components/announcement-section";
 import { ManageListingButton } from "@/components/manage-listing-button";
 import { JoinRosterButton } from "./join-roster-button";
 import { RosterList } from "./roster-list";
+import { InlineEdit } from "./inline-edit";
+import { PhotoGallery } from "./photo-gallery";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -96,12 +98,24 @@ export default async function FundraiserPage({ params }: Props) {
 
           {/* Title & Status */}
           <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mb-6">
-            <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-extrabold text-primary mb-2 leading-tight">
-              {fundraiser.title}
-            </h1>
-            {fundraiser.tagline && (
-              <p className="text-sm text-accent font-medium mb-3">{fundraiser.tagline}</p>
-            )}
+            <InlineEdit
+              slug={slug}
+              ownerId={fundraiser.userId}
+              field="title"
+              value={fundraiser.title}
+              as="h1"
+              className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-extrabold text-primary mb-2 leading-tight"
+              placeholder="Add a title..."
+            />
+            <InlineEdit
+              slug={slug}
+              ownerId={fundraiser.userId}
+              field="tagline"
+              value={fundraiser.tagline || ""}
+              as="p"
+              className="text-base text-accent font-medium mb-3"
+              placeholder="Add a tagline..."
+            />
             {!fundraiser.active && (
               <span className="inline-block mb-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
                 Fundraiser Closed
@@ -136,14 +150,21 @@ export default async function FundraiserPage({ params }: Props) {
           )}
 
           {/* About Card */}
-          {fundraiser.description && (
-            <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3 pb-2.5 border-b-2 border-border">
-                About This Fundraiser
-              </h2>
-              <p className="text-[15px] leading-[1.7] text-primary/80 whitespace-pre-line">{fundraiser.description}</p>
-            </div>
-          )}
+          <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
+            <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3 pb-2.5 border-b-2 border-border">
+              About This Fundraiser
+            </h2>
+            <InlineEdit
+              slug={slug}
+              ownerId={fundraiser.userId}
+              field="description"
+              value={fundraiser.description || ""}
+              as="p"
+              className="text-[15px] leading-[1.7] text-primary/80 whitespace-pre-line"
+              multiline
+              placeholder="Add a description..."
+            />
+          </div>
 
           {/* Photos & Video */}
           {hasMedia && (
@@ -151,13 +172,7 @@ export default async function FundraiserPage({ params }: Props) {
               <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3 pb-2.5 border-b-2 border-border">
                 Photos &amp; Video
               </h2>
-              {fundPhotos.length > 0 && (
-                <div className={`grid grid-cols-2 gap-1.5 ${fundraiser.videoUrl ? "mb-3" : ""}`}>
-                  {fundPhotos.map((photo, i) => (
-                    <img key={i} src={photo} alt={`Photo ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-lg block" />
-                  ))}
-                </div>
-              )}
+              <PhotoGallery photos={fundPhotos} hasVideo={!!fundraiser.videoUrl} />
               {fundraiser.videoUrl && <VideoEmbed url={fundraiser.videoUrl} />}
             </div>
           )}
