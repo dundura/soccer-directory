@@ -855,8 +855,6 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "coachName", label: "Contact Name", required: true },
     { name: "contactEmail", label: "Contact Email", type: "email", required: true },
     { name: "phone", label: "Contact Phone" },
-    { name: "_roster", label: "Roster / Players", type: "heading" },
-    { name: "roster", label: "Roster Entries", type: "roster" },
     { name: "_announcement", label: "Special Announcements (up to 3)", type: "heading" },
     { name: "announcementHeading", label: "Announcement 1 — Heading (default: Special Announcement)" },
     { name: "announcementText", label: "Announcement 1 — Text", type: "textarea" },
