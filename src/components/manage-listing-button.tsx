@@ -18,14 +18,11 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
 
   if (!isOwner && !isAdmin) return null;
 
-  // Fundraisers have a dedicated edit page with roster management
-  const editHref = listingType === "fundraiser" && listingSlug && isOwner
-    ? `/fundraiser/${listingSlug}/edit`
-    : isAdmin && !isOwner && listingType && listingId
-      ? `/admin?editType=${listingType}&editId=${listingId}`
-      : listingType && listingId
-        ? `/dashboard?editType=${listingType}&editId=${listingId}`
-        : "/dashboard";
+  const editHref = isAdmin && !isOwner && listingType && listingId
+    ? `/admin?editType=${listingType}&editId=${listingId}`
+    : listingType && listingId
+      ? `/dashboard?editType=${listingType}&editId=${listingId}`
+      : "/dashboard";
 
   async function handleArchive() {
     if (!listingType || !listingId) return;
@@ -71,6 +68,14 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
       >
         Edit Listing
       </a>
+      {listingType === "fundraiser" && listingSlug && isOwner && (
+        <a
+          href={`/fundraiser/${listingSlug}/edit`}
+          className="block w-full text-center px-4 py-2 rounded-xl border-2 border-primary/20 bg-primary/5 text-primary text-sm font-bold hover:bg-primary/10 transition-colors"
+        >
+          Manage Roster
+        </a>
+      )}
       {listingType && listingId && (
         <>
           {!archived ? (
