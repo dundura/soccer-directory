@@ -6,6 +6,7 @@ import AuthProvider from "@/components/session-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.soccer-near-me.com"),
   title: "Soccer Near Me | Find Youth Soccer Teams, Clubs, Camps & Trainers",
   description: "The #1 directory for youth soccer. Find clubs, teams, private trainers, camps, and guest player opportunities near you. Powered by Anytime Soccer Training.",
   keywords: "youth soccer, soccer teams, soccer clubs, soccer camps, private soccer trainer, guest player, ECNL, MLS Next",
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     description: "The #1 directory for youth soccer. Find clubs, teams, private trainers, camps, and guest player opportunities near you.",
     url: "https://www.soccer-near-me.com",
     siteName: "Soccer Near Me",
-    images: [{ url: "https://www.soccer-near-me.com/og-image.png", width: 1200, height: 630 }],
+    images: [{ url: "https://www.soccer-near-me.com/og-image.png", width: 1200, height: 630, type: "image/png" }],
     type: "website",
   },
   twitter: {

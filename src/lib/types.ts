@@ -640,6 +640,19 @@ export interface Review {
   reviewText: string;
   status: ReviewStatus;
   createdAt: string;
+  isInvited?: boolean;
+}
+
+export interface ReviewInvitation {
+  id: string;
+  listingType: string;
+  listingId: string;
+  email: string;
+  name?: string;
+  token: string;
+  status: string;
+  invitedBy: string;
+  createdAt: string;
 }
 
 // ── Forum ───────────────────────────────────────────────────

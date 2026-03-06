@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { auth } from "@/lib/auth";
 import { createClubReview, getApprovedClubReviews, updateClubReview, deleteClubReview } from "@/lib/db";
+import { escapeHtml } from "@/lib/utils";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const NOTIFY_EMAIL = "neil@anytime-soccer.com";
@@ -52,25 +53,33 @@ export async function POST(req: Request) {
       const rejectUrl = `${BASE_URL}/api/club-reviews/reject?token=${approvalToken}`;
       const overall = Math.round((Number(data.ratingPrice) + Number(data.ratingQuality) + Number(data.ratingCoaching)) / 3);
       const overallStars = "\u2605".repeat(overall) + "\u2606".repeat(5 - overall);
+      const safeClubName = escapeHtml(data.clubName.trim());
+      const safeCity = escapeHtml(data.city || "N/A");
+      const safeState = escapeHtml(data.state || "N/A");
+      const safeReviewerName = escapeHtml(data.reviewerName.trim());
+      const safeReviewerRole = escapeHtml(data.reviewerRole || "N/A");
+      const safeReviewText = data.reviewText ? escapeHtml(data.reviewText.trim()) : "";
+      const safeEmail = escapeHtml(session.user.email || "N/A");
+      const safeAccountName = escapeHtml(session.user.name || "N/A");
 
       await resend.emails.send({
         from: "Soccer Near Me <notifications@soccer-near-me.com>",
         to: [NOTIFY_EMAIL],
-        subject: `New Club Review: ${data.clubName} (${overallStars})`,
+        subject: `New Club Review: ${data.clubName.trim()} (${overallStars})`,
         html: `
           <div style="font-family:sans-serif;max-width:600px;">
             <h2 style="color:#1a365d;">New Club Review Submitted</h2>
             <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-              <tr><td style="padding:8px 0;color:#666;width:120px;">Club</td><td style="padding:8px 0;font-weight:bold;">${data.clubName}${data.clubId ? ' <span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600;">Listed Club</span>' : ' <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600;">Not in Directory</span>'}</td></tr>
-              <tr><td style="padding:8px 0;color:#666;">Location</td><td style="padding:8px 0;">${data.city || "N/A"}, ${data.state || "N/A"}</td></tr>
-              <tr><td style="padding:8px 0;color:#666;">Reviewer</td><td style="padding:8px 0;">${data.reviewerName} (${data.reviewerRole || "N/A"})</td></tr>
-              <tr><td style="padding:8px 0;color:#666;">Account Email</td><td style="padding:8px 0;font-weight:bold;">${session.user.email || "N/A"}</td></tr>
-              <tr><td style="padding:8px 0;color:#666;">Account Name</td><td style="padding:8px 0;">${session.user.name || "N/A"}</td></tr>
+              <tr><td style="padding:8px 0;color:#666;width:120px;">Club</td><td style="padding:8px 0;font-weight:bold;">${safeClubName}${data.clubId ? ' <span style="background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600;">Listed Club</span>' : ' <span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:600;">Not in Directory</span>'}</td></tr>
+              <tr><td style="padding:8px 0;color:#666;">Location</td><td style="padding:8px 0;">${safeCity}, ${safeState}</td></tr>
+              <tr><td style="padding:8px 0;color:#666;">Reviewer</td><td style="padding:8px 0;">${safeReviewerName} (${safeReviewerRole})</td></tr>
+              <tr><td style="padding:8px 0;color:#666;">Account Email</td><td style="padding:8px 0;font-weight:bold;">${safeEmail}</td></tr>
+              <tr><td style="padding:8px 0;color:#666;">Account Name</td><td style="padding:8px 0;">${safeAccountName}</td></tr>
               <tr><td style="padding:8px 0;color:#666;">Price</td><td style="padding:8px 0;font-size:18px;">${"\u2605".repeat(data.ratingPrice)}${"\u2606".repeat(5 - data.ratingPrice)}</td></tr>
               <tr><td style="padding:8px 0;color:#666;">Quality</td><td style="padding:8px 0;font-size:18px;">${"\u2605".repeat(data.ratingQuality)}${"\u2606".repeat(5 - data.ratingQuality)}</td></tr>
               <tr><td style="padding:8px 0;color:#666;">Coaching</td><td style="padding:8px 0;font-size:18px;">${"\u2605".repeat(data.ratingCoaching)}${"\u2606".repeat(5 - data.ratingCoaching)}</td></tr>
             </table>
-            ${data.reviewText ? `<div style="background:#f7f7f7;padding:16px;border-radius:8px;margin:16px 0;"><p style="color:#333;line-height:1.6;margin:0;white-space:pre-wrap;">${data.reviewText}</p></div>` : ""}
+            ${safeReviewText ? `<div style="background:#f7f7f7;padding:16px;border-radius:8px;margin:16px 0;"><p style="color:#333;line-height:1.6;margin:0;white-space:pre-wrap;">${safeReviewText}</p></div>` : ""}
             <div style="margin-top:24px;">
               <a href="${approveUrl}" style="display:inline-block;padding:12px 24px;background:#22c55e;color:white;text-decoration:none;border-radius:8px;margin-right:12px;font-weight:bold;">Approve</a>
               <a href="${rejectUrl}" style="display:inline-block;padding:12px 24px;background:#DC373E;color:white;text-decoration:none;border-radius:8px;font-weight:bold;">Reject</a>
