@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 
-type Tab = "calendar" | "goals" | "training" | "stats" | "notes";
+type Tab = "daily" | "calendar" | "goals" | "training" | "stats" | "notes";
 
 const TABS: { key: Tab; label: string }[] = [
+  { key: "daily", label: "Daily Tracker" },
   { key: "calendar", label: "Calendar" },
   { key: "goals", label: "Goals" },
   { key: "training", label: "Training Log" },
@@ -15,6 +16,7 @@ const TABS: { key: Tab; label: string }[] = [
 ];
 
 const TABLE_MAP: Record<Tab, string> = {
+  daily: "player_daily_tracker",
   calendar: "player_calendar_events",
   goals: "player_goals",
   training: "player_training_logs",
@@ -128,7 +130,7 @@ function CalendarTab({ playerId, data, reload }: { playerId: string; data: Row[]
       </div>
 
       {showForm && (
-        <form onSubmit={handleSave} className="bg-surface rounded-xl p-4 mb-6 space-y-3">
+        <form onSubmit={handleSave} className="bg-white rounded-xl border border-border p-4 mb-6 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <Input label="Title" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
             <Select label="Type" options={EVENT_TYPES} value={form.eventType} onChange={(e) => setForm({ ...form, eventType: e.target.value })} />
@@ -208,11 +210,16 @@ function CalendarTab({ playerId, data, reload }: { playerId: string; data: Row[]
 // ── Goals Tab ──
 function GoalsTab({ playerId, data, reload }: { playerId: string; data: Row[]; reload: () => void }) {
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ title: "", category: "general", targetDate: "", notes: "" });
+  const [form, setForm] = useState({ title: "", category: "", targetDate: "", notes: "" });
   const [saving, setSaving] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
-  function resetForm() { setForm({ title: "", category: "general", targetDate: "", notes: "" }); setEditId(null); setShowForm(false); }
+  // Derive unique categories from data + defaults
+  const existingCategories = [...new Set(data.map((r) => r.category as string))];
+  const allCategories = [...new Set([...GOAL_CATEGORIES.map((c) => c.toLowerCase()), ...existingCategories])];
+
+  function resetForm() { setForm({ title: "", category: "", targetDate: "", notes: "" }); setEditId(null); setShowForm(false); }
 
   function startEdit(row: Row) {
     setForm({ title: row.title, category: row.category, targetDate: row.target_date?.split("T")[0] || "", notes: row.notes || "" });
@@ -220,11 +227,20 @@ function GoalsTab({ playerId, data, reload }: { playerId: string; data: Row[]; r
     setShowForm(true);
   }
 
+  function addToCategory(cat: string) {
+    setForm({ title: "", category: cat, targetDate: "", notes: "" });
+    setEditId(null);
+    setShowForm(true);
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    const catValue = form.category.trim().toLowerCase() || "general";
     const method = editId ? "PUT" : "POST";
-    const body = editId ? { id: editId, table: TABLE_MAP.goals, ...form } : { playerId, table: TABLE_MAP.goals, ...form };
+    const body = editId
+      ? { id: editId, table: TABLE_MAP.goals, ...form, category: catValue }
+      : { playerId, table: TABLE_MAP.goals, ...form, category: catValue };
     await fetch("/api/player-dashboard", { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     setSaving(false);
     resetForm();
@@ -250,6 +266,27 @@ function GoalsTab({ playerId, data, reload }: { playerId: string; data: Row[]; r
   const active = data.filter((r) => r.status === "active");
   const completed = data.filter((r) => r.status === "completed");
 
+  // Group active goals by category
+  const grouped: Record<string, Row[]> = {};
+  for (const row of active) {
+    const cat = (row.category as string) || "general";
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(row);
+  }
+  const sortedCategories = Object.keys(grouped).sort();
+
+  // Group completed by category
+  const completedGrouped: Record<string, Row[]> = {};
+  for (const row of completed) {
+    const cat = (row.category as string) || "general";
+    if (!completedGrouped[cat]) completedGrouped[cat] = [];
+    completedGrouped[cat].push(row);
+  }
+
+  function toggleCollapse(cat: string) {
+    setCollapsed((prev) => ({ ...prev, [cat]: !prev[cat] }));
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -258,10 +295,22 @@ function GoalsTab({ playerId, data, reload }: { playerId: string; data: Row[]; r
       </div>
 
       {showForm && (
-        <form onSubmit={handleSave} className="bg-surface rounded-xl p-4 mb-6 space-y-3">
+        <form onSubmit={handleSave} className="bg-white rounded-xl border border-border p-4 mb-6 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <Input label="Goal" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-            <Select label="Category" options={GOAL_CATEGORIES} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1">Category</label>
+              <input
+                list="goal-categories"
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                placeholder="e.g. Technical, Fitness, or type your own"
+                className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+              />
+              <datalist id="goal-categories">
+                {allCategories.map((c) => <option key={c} value={c} />)}
+              </datalist>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <Input label="Target Date" type="date" value={form.targetDate} onChange={(e) => setForm({ ...form, targetDate: e.target.value })} />
@@ -283,58 +332,94 @@ function GoalsTab({ playerId, data, reload }: { playerId: string; data: Row[]; r
         </div>
       )}
 
-      {active.length > 0 && (
-        <>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-muted mb-2">Active Goals</h4>
-          <div className="space-y-3 mb-6">
-            {active.map((row) => (
-              <div key={row.id} className="bg-white rounded-xl border border-border p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-semibold bg-accent/10 text-accent-hover px-2 py-0.5 rounded-full">{row.category}</span>
-                      {row.target_date && <span className="text-xs text-muted">Target: {formatDate(row.target_date.split("T")[0])}</span>}
+      {/* Active goals grouped by category */}
+      {sortedCategories.length > 0 && (
+        <div className="space-y-4 mb-6">
+          {sortedCategories.map((cat) => {
+            const goals = grouped[cat];
+            const catProgress = Math.round(goals.reduce((s, r) => s + (r.progress || 0), 0) / goals.length);
+            const isCollapsed = collapsed[cat];
+            return (
+              <div key={cat} className="bg-white rounded-xl border border-border overflow-hidden">
+                {/* Category header */}
+                <button
+                  onClick={() => toggleCollapse(cat)}
+                  className="w-full px-4 py-3 flex items-center justify-between hover:bg-surface/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs">{isCollapsed ? "&#9654;" : "&#9660;"}</span>
+                    <span className="font-bold text-sm capitalize">{cat}</span>
+                    <span className="text-xs text-muted">{goals.length} goal{goals.length !== 1 ? "s" : ""}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-24 bg-surface rounded-full h-2">
+                      <div className="bg-accent h-2 rounded-full transition-all" style={{ width: `${catProgress}%` }} />
                     </div>
-                    <p className="font-semibold text-sm">{row.title}</p>
-                    {row.notes && <p className="text-xs text-muted mt-1">{row.notes}</p>}
+                    <span className="text-xs font-bold text-muted">{catProgress}%</span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); addToCategory(cat); }}
+                      className="text-xs px-2 py-1 rounded-md bg-accent/10 text-accent-hover hover:bg-accent/20 transition-colors font-semibold"
+                    >
+                      + Add
+                    </button>
                   </div>
-                  <div className="flex gap-1.5 shrink-0 ml-4">
-                    <button onClick={() => startEdit(row)} className="text-xs px-3 py-1.5 rounded-lg bg-surface hover:bg-border transition-colors">Edit</button>
-                    <button onClick={() => handleDelete(row.id)} className="text-xs px-3 py-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors">Delete</button>
+                </button>
+
+                {/* Goals nested under category */}
+                {!isCollapsed && (
+                  <div className="border-t border-border">
+                    {goals.map((row) => (
+                      <div key={row.id} className="px-4 py-3 border-b border-border last:border-b-0">
+                        <div className="flex items-start justify-between mb-1">
+                          <div>
+                            <p className="font-semibold text-sm">{row.title}</p>
+                            {row.target_date && <span className="text-xs text-muted">Target: {formatDate(row.target_date.split("T")[0])}</span>}
+                            {row.notes && <p className="text-xs text-muted mt-1">{row.notes}</p>}
+                          </div>
+                          <div className="flex gap-1.5 shrink-0 ml-4">
+                            <button onClick={() => startEdit(row)} className="text-xs px-3 py-1.5 rounded-lg bg-surface hover:bg-border transition-colors">Edit</button>
+                            <button onClick={() => handleDelete(row.id)} className="text-xs px-3 py-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors">Delete</button>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 mt-2">
+                          <div className="flex-1 bg-surface rounded-full h-2">
+                            <div className="bg-accent h-2 rounded-full transition-all" style={{ width: `${row.progress || 0}%` }} />
+                          </div>
+                          <span className="text-xs font-bold text-muted w-10 text-right">{row.progress || 0}%</span>
+                        </div>
+                        <div className="flex gap-1.5 mt-2">
+                          {[0, 25, 50, 75, 100].map((p) => (
+                            <button key={p} onClick={() => updateProgress(row, p)} className={`text-xs px-2 py-1 rounded-md transition-colors ${(row.progress || 0) >= p ? "bg-accent/20 text-accent-hover font-bold" : "bg-surface text-muted hover:bg-border"}`}>{p}%</button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
-                {/* Progress bar */}
-                <div className="flex items-center gap-3 mt-3">
-                  <div className="flex-1 bg-surface rounded-full h-2.5">
-                    <div className="bg-accent h-2.5 rounded-full transition-all" style={{ width: `${row.progress || 0}%` }} />
-                  </div>
-                  <span className="text-xs font-bold text-muted w-10 text-right">{row.progress || 0}%</span>
-                </div>
-                <div className="flex gap-1.5 mt-2">
-                  {[0, 25, 50, 75, 100].map((p) => (
-                    <button key={p} onClick={() => updateProgress(row, p)} className={`text-xs px-2 py-1 rounded-md transition-colors ${(row.progress || 0) >= p ? "bg-accent/20 text-accent-hover font-bold" : "bg-surface text-muted hover:bg-border"}`}>{p}%</button>
-                  ))}
-                </div>
+                )}
               </div>
-            ))}
-          </div>
-        </>
+            );
+          })}
+        </div>
       )}
 
+      {/* Completed goals grouped by category */}
       {completed.length > 0 && (
         <>
           <h4 className="text-xs font-bold uppercase tracking-wider text-muted mb-2">Completed</h4>
-          <div className="space-y-2">
-            {completed.map((row) => (
-              <div key={row.id} className="bg-white rounded-xl border border-green-200 p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-green-600 text-lg">&#10003;</span>
-                  <div>
-                    <p className="font-semibold text-sm">{row.title}</p>
-                    <span className="text-xs text-muted">{row.category}</span>
-                  </div>
+          <div className="space-y-3">
+            {Object.keys(completedGrouped).sort().map((cat) => (
+              <div key={cat} className="bg-white rounded-xl border border-green-200 overflow-hidden">
+                <div className="px-4 py-2.5 bg-green-50 flex items-center gap-2">
+                  <span className="text-green-600">&#10003;</span>
+                  <span className="font-bold text-sm capitalize">{cat}</span>
+                  <span className="text-xs text-muted">{completedGrouped[cat].length} goal{completedGrouped[cat].length !== 1 ? "s" : ""}</span>
                 </div>
-                <button onClick={() => handleDelete(row.id)} className="text-xs px-3 py-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors">Delete</button>
+                {completedGrouped[cat].map((row) => (
+                  <div key={row.id} className="px-4 py-2.5 border-t border-green-100 flex items-center justify-between">
+                    <p className="font-medium text-sm line-through text-muted">{row.title}</p>
+                    <button onClick={() => handleDelete(row.id)} className="text-xs px-3 py-1.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors">Delete</button>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
@@ -418,7 +503,7 @@ function TrainingTab({ playerId, data, reload }: { playerId: string; data: Row[]
       )}
 
       {showForm && (
-        <form onSubmit={handleSave} className="bg-surface rounded-xl p-4 mb-6 space-y-3">
+        <form onSubmit={handleSave} className="bg-white rounded-xl border border-border p-4 mb-6 space-y-3">
           <div className="grid grid-cols-3 gap-3">
             <Input label="Date" type="date" required value={form.sessionDate} onChange={(e) => setForm({ ...form, sessionDate: e.target.value })} />
             <Input label="Duration (min)" type="number" required min={1} value={form.durationMinutes} onChange={(e) => setForm({ ...form, durationMinutes: e.target.value })} />
@@ -559,7 +644,7 @@ function StatsTab({ playerId, data, reload }: { playerId: string; data: Row[]; r
       )}
 
       {showForm && (
-        <form onSubmit={handleSave} className="bg-surface rounded-xl p-4 mb-6 space-y-3">
+        <form onSubmit={handleSave} className="bg-white rounded-xl border border-border p-4 mb-6 space-y-3">
           <div className="grid grid-cols-3 gap-3">
             <Input label="Date" type="date" required value={form.gameDate} onChange={(e) => setForm({ ...form, gameDate: e.target.value })} />
             <Input label="Opponent" value={form.opponent} onChange={(e) => setForm({ ...form, opponent: e.target.value })} />
@@ -663,7 +748,7 @@ function NotesTab({ playerId, data, reload }: { playerId: string; data: Row[]; r
       </div>
 
       {showForm && (
-        <form onSubmit={handleSave} className="bg-surface rounded-xl p-4 mb-6 space-y-3">
+        <form onSubmit={handleSave} className="bg-white rounded-xl border border-border p-4 mb-6 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <Input label="Title" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
             <Select label="Category" options={NOTE_CATEGORIES} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
@@ -718,6 +803,164 @@ function NotesTab({ playerId, data, reload }: { playerId: string; data: Row[]; r
   );
 }
 
+// ── Daily Tracker Tab ──
+const TRACKER_CATEGORIES = ["Training", "Fitness", "Recovery", "Nutrition", "Mental", "School", "Other"];
+
+function DailyTrackerTab({ playerId }: { playerId: string }) {
+  const [date, setDate] = useState(todayStr);
+  const [entries, setEntries] = useState<Row[]>([]);
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("training");
+  const [kind, setKind] = useState<"planned" | "actual">("planned");
+  const [loading, setLoading] = useState(false);
+
+  const fetchEntries = useCallback(async () => {
+    const res = await fetch(`/api/player-dashboard?playerId=${playerId}&table=player_daily_tracker&date=${date}`);
+    if (res.ok) setEntries(await res.json());
+  }, [playerId, date]);
+
+  useEffect(() => { fetchEntries(); }, [fetchEntries]);
+
+  async function handleAdd(e: React.FormEvent) {
+    e.preventDefault();
+    if (!description.trim()) return;
+    setLoading(true);
+    await fetch("/api/player-dashboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ playerId, table: "player_daily_tracker", trackerDate: date, kind, category, description: description.trim() }),
+    });
+    setDescription("");
+    await fetchEntries();
+    setLoading(false);
+  }
+
+  async function handleToggle(row: Row) {
+    await fetch("/api/player-dashboard", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: row.id, table: "player_daily_tracker", completed: !row.completed, description: row.description, category: row.category, kind: row.kind }),
+    });
+    await fetchEntries();
+  }
+
+  async function handleDelete(id: string) {
+    await fetch("/api/player-dashboard", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, table: "player_daily_tracker" }),
+    });
+    await fetchEntries();
+  }
+
+  function changeDate(delta: number) {
+    const d = new Date(date);
+    d.setDate(d.getDate() + delta);
+    setDate(d.toISOString().slice(0, 10));
+  }
+
+  const planned = entries.filter((e) => e.kind === "planned");
+  const actual = entries.filter((e) => e.kind === "actual");
+
+  return (
+    <div>
+      <h3 className="font-bold text-lg mb-4">Daily Tracker</h3>
+
+      {/* Date Navigation */}
+      <div className="flex items-center gap-3 mb-5">
+        <button onClick={() => changeDate(-1)} className="px-3 py-1.5 rounded-lg border border-border text-sm hover:bg-surface transition-colors">&larr;</button>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="px-3 py-1.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30"
+        />
+        <button onClick={() => changeDate(1)} className="px-3 py-1.5 rounded-lg border border-border text-sm hover:bg-surface transition-colors">&rarr;</button>
+        <button onClick={() => setDate(todayStr())} className="px-3 py-1.5 rounded-lg text-xs font-semibold text-accent hover:text-accent-hover transition-colors">Today</button>
+      </div>
+
+      {/* Add Entry Form */}
+      <form onSubmit={handleAdd} className="flex flex-wrap gap-2 mb-6">
+        <select value={kind} onChange={(e) => setKind(e.target.value as "planned" | "actual")} className="px-3 py-2 rounded-lg border border-border text-sm bg-white">
+          <option value="planned">Plan</option>
+          <option value="actual">Did</option>
+        </select>
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className="px-3 py-2 rounded-lg border border-border text-sm bg-white">
+          {TRACKER_CATEGORIES.map((c) => <option key={c} value={c.toLowerCase()}>{c}</option>)}
+        </select>
+        <input
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="What did you plan / do?"
+          className="flex-1 min-w-[200px] px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30"
+        />
+        <button
+          type="submit"
+          disabled={loading || !description.trim()}
+          className="px-5 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50"
+        >
+          Add
+        </button>
+      </form>
+
+      {/* Two Column Layout */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Plan Column */}
+        <div>
+          <h4 className="text-sm font-bold text-primary mb-3 uppercase tracking-wide">Plan</h4>
+          {planned.length === 0 ? (
+            <p className="text-sm text-muted">No planned activities for this day.</p>
+          ) : (
+            <div className="space-y-2">
+              {planned.map((entry) => (
+                <div key={entry.id} className={`flex items-start gap-2 rounded-lg px-3 py-2 ${entry.completed ? "bg-green-50" : "bg-blue-50"}`}>
+                  <button
+                    onClick={() => handleToggle(entry)}
+                    className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${entry.completed ? "bg-green-500 border-green-500 text-white" : "border-gray-300 hover:border-accent"}`}
+                  >
+                    {entry.completed && <span className="text-xs">&#10003;</span>}
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
+                      {entry.category}
+                    </span>
+                    <p className={`text-sm mt-1 ${entry.completed ? "line-through text-muted" : ""}`}>{entry.description}</p>
+                  </div>
+                  <button onClick={() => handleDelete(entry.id)} className="text-red-400 hover:text-red-600 text-xs shrink-0">x</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Did Column */}
+        <div>
+          <h4 className="text-sm font-bold text-primary mb-3 uppercase tracking-wide">Did</h4>
+          {actual.length === 0 ? (
+            <p className="text-sm text-muted">No activities logged for this day.</p>
+          ) : (
+            <div className="space-y-2">
+              {actual.map((entry) => (
+                <div key={entry.id} className="flex items-start gap-2 bg-green-50 rounded-lg px-3 py-2">
+                  <span className="text-green-600 mt-0.5 shrink-0">&#10003;</span>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
+                      {entry.category}
+                    </span>
+                    <p className="text-sm mt-1">{entry.description}</p>
+                  </div>
+                  <button onClick={() => handleDelete(entry.id)} className="text-red-400 hover:text-red-600 text-xs shrink-0">x</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main Dashboard ──
 export default function PlayerDashboardClient() {
   const { data: session, status } = useSession();
@@ -726,7 +969,7 @@ export default function PlayerDashboardClient() {
 
   const [players, setPlayers] = useState<Row[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(playerIdParam);
-  const [tab, setTab] = useState<Tab>("calendar");
+  const [tab, setTab] = useState<Tab>("daily");
   const [tabData, setTabData] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [tabLoading, setTabLoading] = useState(false);
@@ -837,6 +1080,7 @@ export default function PlayerDashboardClient() {
           <div className="text-center py-12 text-muted">Select a player profile to get started.</div>
         ) : (
           <>
+            {tab === "daily" && <DailyTrackerTab playerId={selectedPlayer} />}
             {tab === "calendar" && <CalendarTab playerId={selectedPlayer} data={tabData} reload={fetchTabData} />}
             {tab === "goals" && <GoalsTab playerId={selectedPlayer} data={tabData} reload={fetchTabData} />}
             {tab === "training" && <TrainingTab playerId={selectedPlayer} data={tabData} reload={fetchTabData} />}

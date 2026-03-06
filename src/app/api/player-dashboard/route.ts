@@ -26,10 +26,13 @@ export async function GET(req: NextRequest) {
   const owner = await sql`SELECT id FROM player_profiles WHERE id = ${playerId} AND user_id = ${userId} LIMIT 1`;
   if (owner.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const allowed = ["player_calendar_events", "player_goals", "player_training_logs", "player_game_stats", "player_notes"];
+  const allowed = ["player_calendar_events", "player_goals", "player_training_logs", "player_game_stats", "player_notes", "player_daily_tracker"];
   if (!allowed.includes(table)) {
     return NextResponse.json({ error: "Invalid table" }, { status: 400 });
   }
+
+  // Daily tracker supports date filter
+  const dateParam = searchParams.get("date");
 
   let rows;
   if (table === "player_calendar_events") {
@@ -40,6 +43,12 @@ export async function GET(req: NextRequest) {
     rows = await sql`SELECT * FROM player_training_logs WHERE player_id = ${playerId} AND user_id = ${userId} ORDER BY session_date DESC`;
   } else if (table === "player_game_stats") {
     rows = await sql`SELECT * FROM player_game_stats WHERE player_id = ${playerId} AND user_id = ${userId} ORDER BY game_date DESC`;
+  } else if (table === "player_daily_tracker") {
+    if (dateParam) {
+      rows = await sql`SELECT * FROM player_daily_tracker WHERE player_id = ${playerId} AND user_id = ${userId} AND tracker_date = ${dateParam} ORDER BY kind ASC, created_at ASC`;
+    } else {
+      rows = await sql`SELECT * FROM player_daily_tracker WHERE player_id = ${playerId} AND user_id = ${userId} ORDER BY tracker_date DESC, kind ASC, created_at ASC`;
+    }
   } else {
     rows = await sql`SELECT * FROM player_notes WHERE player_id = ${playerId} AND user_id = ${userId} ORDER BY created_at DESC`;
   }
@@ -96,6 +105,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(rows[0]);
   }
 
+  if (table === "player_daily_tracker") {
+    const rows = await sql`INSERT INTO player_daily_tracker (player_id, user_id, tracker_date, kind, category, description)
+      VALUES (${playerId}, ${userId}, ${data.trackerDate}, ${data.kind || "planned"}, ${data.category || "training"}, ${data.description})
+      RETURNING *`;
+    return NextResponse.json(rows[0]);
+  }
+
   return NextResponse.json({ error: "Invalid table" }, { status: 400 });
 }
 
@@ -136,6 +152,11 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
+  if (table === "player_daily_tracker") {
+    await sql`UPDATE player_daily_tracker SET completed = ${data.completed ?? false}, description = ${data.description}, category = ${data.category || "training"}, kind = ${data.kind || "planned"} WHERE id = ${id} AND user_id = ${userId}`;
+    return NextResponse.json({ ok: true });
+  }
+
   return NextResponse.json({ error: "Invalid table" }, { status: 400 });
 }
 
@@ -151,7 +172,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "Missing id or table" }, { status: 400 });
   }
 
-  const allowed = ["player_calendar_events", "player_goals", "player_training_logs", "player_game_stats", "player_notes"];
+  const allowed = ["player_calendar_events", "player_goals", "player_training_logs", "player_game_stats", "player_notes", "player_daily_tracker"];
   if (!allowed.includes(table)) {
     return NextResponse.json({ error: "Invalid table" }, { status: 400 });
   }
@@ -164,6 +185,8 @@ export async function DELETE(req: NextRequest) {
     await sql`DELETE FROM player_training_logs WHERE id = ${id} AND user_id = ${userId}`;
   } else if (table === "player_game_stats") {
     await sql`DELETE FROM player_game_stats WHERE id = ${id} AND user_id = ${userId}`;
+  } else if (table === "player_daily_tracker") {
+    await sql`DELETE FROM player_daily_tracker WHERE id = ${id} AND user_id = ${userId}`;
   } else {
     await sql`DELETE FROM player_notes WHERE id = ${id} AND user_id = ${userId}`;
   }
