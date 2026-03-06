@@ -11,6 +11,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ContactTryoutForm } from "./contact-form";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 
 export const dynamic = "force-dynamic";
 
@@ -189,6 +190,9 @@ export default async function TryoutDetailPage({ params }: Props) {
               <h4 className="text-sm font-bold mb-2.5">Share this tryout!</h4>
               <ShareButtons url={pageUrl} title={tryout.name} />
             </div>
+
+            {/* Our Posts */}
+            <ListingPostsSidebar listingType="tryout" listingId={String(tryout.id)} slug={slug} ownerId={ownerId} />
           </aside>
 
           {/* ====== RIGHT MAIN COLUMN ====== */}

@@ -11,6 +11,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ContactSpecialEventForm } from "./contact-form";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 
 export const dynamic = "force-dynamic";
 
@@ -189,6 +190,9 @@ export default async function SpecialEventDetailPage({ params }: Props) {
               <h4 className="text-sm font-bold mb-2.5">Share this event!</h4>
               <ShareButtons url={pageUrl} title={event.name} />
             </div>
+
+            {/* Our Posts */}
+            <ListingPostsSidebar listingType="specialevent" listingId={String(event.id)} slug={slug} ownerId={ownerId} />
           </aside>
 
           {/* ====== RIGHT MAIN COLUMN ====== */}

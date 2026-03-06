@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getListingPostById, getListingNameById, getListingSlugById } from "@/lib/db";
-import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
+import { getListingPostById, getListingPostBySlug, getListingNameById, getListingSlugById } from "@/lib/db";
+import { ShareButtons } from "@/components/profile-ui";
+import { PostEditableContent } from "@/components/post-editable";
 
 export const dynamic = "force-dynamic";
 
@@ -28,20 +29,32 @@ const TYPE_PATHS: Record<string, string> = {
   marketplace: "shop", fundraiser: "fundraiser",
 };
 
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
+}
+
+async function resolvePost(idOrSlug: string) {
+  // Try by ID first, then by slug
+  let post = await getListingPostById(idOrSlug);
+  if (!post) post = await getListingPostBySlug(idOrSlug);
+  return post;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const post = await getListingPostById(id);
+  const post = await resolvePost(id);
   if (!post || post.hidden) return {};
   const listingName = await getListingNameById(post.listingType, post.listingId);
   const { ogMeta } = await import("@/lib/og");
   const title = listingName ? `${listingName} — Update` : "Post";
-  const description = post.body.slice(0, 160);
-  return ogMeta(title, description, post.imageUrl, `/posts/${id}`);
+  const description = stripHtml(post.body).slice(0, 160);
+  const canonical = post.slug ? `/posts/${post.slug}` : `/posts/${post.id}`;
+  return ogMeta(title, description, post.imageUrl, canonical);
 }
 
 export default async function PostPage({ params }: Props) {
   const { id } = await params;
-  const post = await getListingPostById(id);
+  const post = await resolvePost(id);
   if (!post || post.hidden) notFound();
 
   const [listingName, listingSlug] = await Promise.all([
@@ -52,7 +65,7 @@ export default async function PostPage({ params }: Props) {
   const typePath = TYPE_PATHS[post.listingType] || "clubs";
   const typeLabel = TYPE_LABELS[post.listingType] || "Listings";
   const profileUrl = listingSlug ? `/${typePath}/${listingSlug}` : `/${typePath}`;
-  const postUrl = `https://www.soccer-near-me.com/posts/${id}`;
+  const postUrl = `https://www.soccer-near-me.com/posts/${post.slug || post.id}`;
   const date = new Date(post.createdAt);
 
   return (
@@ -86,29 +99,20 @@ export default async function PostPage({ params }: Props) {
             </div>
           </div>
 
-          {/* Body */}
-          <div className="px-6 pb-4">
-            <p className="text-[15px] leading-relaxed text-gray-800 whitespace-pre-line">{post.body}</p>
-          </div>
-
-          {/* Image */}
-          {post.imageUrl && (
-            <div className="px-4 pb-4">
-              <img src={post.imageUrl} alt="" className="w-full rounded-xl object-cover" />
-            </div>
-          )}
-
-          {/* Video */}
-          {post.videoUrl && (
-            <div className="px-4 pb-4">
-              <VideoEmbed url={post.videoUrl} />
-            </div>
-          )}
+          {/* Editable body + slug */}
+          <PostEditableContent
+            postId={post.id}
+            body={post.body}
+            slug={post.slug || post.id}
+            imageUrl={post.imageUrl}
+            videoUrl={post.videoUrl}
+            userId={post.userId}
+          />
 
           {/* Share */}
           <div className="px-6 py-4 border-t border-border">
             <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2.5">Share this post</p>
-            <ShareButtons url={postUrl} title={post.body.slice(0, 100)} />
+            <ShareButtons url={postUrl} title={stripHtml(post.body).slice(0, 100)} />
           </div>
         </article>
 

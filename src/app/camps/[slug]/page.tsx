@@ -11,6 +11,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { AnnouncementSection } from "@/components/announcement-section";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 
 export const dynamic = "force-dynamic";
 
@@ -167,6 +168,9 @@ export default async function CampDetailPage({ params }: Props) {
         <h4 className="text-sm font-bold mb-2.5">Share this camp!</h4>
         <ShareButtons url={pageUrl} title={camp.name} />
       </div>
+
+      {/* Our Posts */}
+      <ListingPostsSidebar listingType="camp" listingId={String(camp.id)} slug={slug} ownerId={ownerId} />
     </>
   );
 

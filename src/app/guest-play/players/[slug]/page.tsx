@@ -9,6 +9,7 @@ import { SponsorsSection } from "@/components/sponsors-section";
 import { ContactPlayerForm } from "./contact-form";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 
 export const dynamic = "force-dynamic";
 

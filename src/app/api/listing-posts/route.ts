@@ -97,7 +97,7 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { id, action } = await req.json();
+    const { id, action, body, slug } = await req.json();
     if (action === "toggle_hidden") {
       if (isAdmin(session)) {
         const { toggleListingPostHiddenAdmin } = await import("@/lib/db");
@@ -106,6 +106,30 @@ export async function PATCH(req: Request) {
       } else {
         const toggled = await toggleListingPostHidden(id, session.user.id);
         if (!toggled) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
+      return NextResponse.json({ success: true });
+    }
+    if (action === "edit_body" && typeof body === "string") {
+      if (isAdmin(session)) {
+        const { updateListingPostBodyAdmin } = await import("@/lib/db");
+        const ok = await updateListingPostBodyAdmin(id, body);
+        if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      } else {
+        const { updateListingPostBody } = await import("@/lib/db");
+        const ok = await updateListingPostBody(id, session.user.id, body);
+        if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
+      return NextResponse.json({ success: true });
+    }
+    if (action === "edit_slug" && typeof slug === "string") {
+      if (isAdmin(session)) {
+        const { updateListingPostSlugAdmin } = await import("@/lib/db");
+        const ok = await updateListingPostSlugAdmin(id, slug);
+        if (!ok) return NextResponse.json({ error: "Slug taken or invalid" }, { status: 400 });
+      } else {
+        const { updateListingPostSlug } = await import("@/lib/db");
+        const ok = await updateListingPostSlug(id, session.user.id, slug);
+        if (!ok) return NextResponse.json({ error: "Slug taken or invalid" }, { status: 400 });
       }
       return NextResponse.json({ success: true });
     }
