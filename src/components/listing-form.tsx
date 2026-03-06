@@ -1304,19 +1304,14 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
 
                       /* Country with searchable datalist */
                       ) : field.type === "country" ? (
-                        <>
-                          <input
-                            list="countries-list"
-                            value={formData[field.name] || ""}
-                            onChange={(e) => handleChange(field.name, e.target.value)}
-                            required={field.required}
-                            placeholder="Start typing a country..."
-                            className={inputClass}
-                          />
-                          <datalist id="countries-list">
-                            {COUNTRIES.map((c) => <option key={c} value={c} />)}
-                          </datalist>
-                        </>
+                        <select
+                          value={formData[field.name] || "United States"}
+                          onChange={(e) => handleChange(field.name, e.target.value)}
+                          required={field.required}
+                          className={selectClass}
+                        >
+                          {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                        </select>
 
                       /* State dropdown (US) or free text (international) */
                       ) : field.type === "state-select" ? (
