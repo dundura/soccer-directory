@@ -17,8 +17,12 @@ const DEFAULT_IMAGE = "https://media.anytime-soccer.com/wp-content/uploads/2026/
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  const slugs = await getServiceSlugs();
-  return slugs.map((slug) => ({ slug }));
+  try {
+    const slugs = await getServiceSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -47,8 +47,12 @@ function parseEventDate(dateStr: string) {
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  const slugs = await getTeamSlugs();
-  return slugs.map((slug) => ({ slug }));
+  try {
+    const slugs = await getTeamSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

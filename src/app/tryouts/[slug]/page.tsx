@@ -26,8 +26,12 @@ const DEFAULT_VIDEO = "https://youtu.be/JqombeGBALU";
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  const slugs = await getTryoutSlugs();
-  return slugs.map((slug) => ({ slug }));
+  try {
+    const slugs = await getTryoutSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
