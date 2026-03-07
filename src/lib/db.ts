@@ -2447,14 +2447,14 @@ function generatePostSlug(body: string): string {
   return text.slice(0, 60).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || genId();
 }
 
-export async function createListingPost(listingType: string, listingId: string, userId: string, body: string, imageUrl?: string, videoUrl?: string): Promise<string> {
+export async function createListingPost(listingType: string, listingId: string, userId: string, body: string, imageUrl?: string, videoUrl?: string): Promise<{ id: string; slug: string }> {
   const id = genId();
   const baseSlug = generatePostSlug(body);
   let slug = baseSlug;
   const existing = await sql`SELECT id FROM listing_posts WHERE slug = ${slug} LIMIT 1`;
   if (existing.length > 0) slug = `${baseSlug}-${id.slice(0, 6)}`;
   await sql`INSERT INTO listing_posts (id, slug, listing_type, listing_id, user_id, body, image_url, video_url) VALUES (${id}, ${slug}, ${listingType}, ${listingId}, ${userId}, ${body}, ${imageUrl || null}, ${videoUrl || null})`;
-  return id;
+  return { id, slug };
 }
 
 export async function updateListingPostBody(id: string, userId: string, body: string): Promise<boolean> {

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ImageUpload } from "./image-upload";
 
 export function ManageListingButton({ ownerId, listingType, listingId, listingSlug }: { ownerId: string | null; listingType?: string; listingId?: string; listingSlug?: string }) {
   const { data: session } = useSession();
@@ -11,12 +10,6 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
   const [archiving, setArchiving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [archived, setArchived] = useState(false);
-  const [showPostForm, setShowPostForm] = useState(false);
-  const [postBody, setPostBody] = useState("");
-  const [postImage, setPostImage] = useState("");
-  const [postVideo, setPostVideo] = useState("");
-  const [posting, setPosting] = useState(false);
-  const [postSuccess, setPostSuccess] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
@@ -37,30 +30,10 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
 
   // Resolve slug for the current page from the URL
   const currentSlug = typeof window !== "undefined" ? window.location.pathname.split("/").pop() || "" : "";
-
-  async function handleCreatePost(e: React.FormEvent) {
-    e.preventDefault();
-    if (!postBody.trim() || !listingType || !listingId) return;
-    setPosting(true);
-    try {
-      const res = await fetch("/api/listing-posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: listingType, id: listingId, slug: currentSlug,
-          body: postBody.trim(),
-          imageUrl: postImage || undefined,
-          videoUrl: postVideo || undefined,
-        }),
-      });
-      if (res.ok) {
-        setPostBody(""); setPostImage(""); setPostVideo(""); setShowPostForm(false);
-        setPostSuccess(true);
-        setTimeout(() => setPostSuccess(false), 3000);
-      }
-    } catch { /* */ }
-    setPosting(false);
-  }
+  const listingNameFromPage = typeof document !== "undefined" ? document.querySelector("h1")?.textContent || "" : "";
+  const createPostHref = listingType && listingId
+    ? `/posts/new?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(currentSlug)}&name=${encodeURIComponent(listingNameFromPage)}`
+    : "";
 
   async function handleInviteReview(e: React.FormEvent) {
     e.preventDefault();
@@ -133,51 +106,13 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
       </a>
 
       {/* Create Post */}
-      {listingType && listingId && (
-        <>
-          {!showPostForm ? (
-            <button
-              onClick={() => setShowPostForm(true)}
-              className="block w-full text-center px-4 py-2 rounded-xl border-2 border-primary/20 bg-primary/5 text-primary text-sm font-bold hover:bg-primary/10 transition-colors"
-            >
-              {postSuccess ? "Post Created!" : "Create Post"}
-            </button>
-          ) : (
-            <form onSubmit={handleCreatePost} className="rounded-xl border-2 border-primary/20 bg-white p-3 space-y-2">
-              <textarea
-                value={postBody}
-                onChange={(e) => setPostBody(e.target.value)}
-                placeholder="Share an update..."
-                rows={3}
-                className="w-full text-xs px-3 py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none"
-                autoFocus
-              />
-              {postImage ? (
-                <div className="relative">
-                  <img src={postImage} alt="Preview" className="w-full rounded-lg max-h-[120px] object-cover" />
-                  <button type="button" onClick={() => setPostImage("")} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/50 text-white text-[10px] flex items-center justify-center hover:bg-black/70">&#x2715;</button>
-                </div>
-              ) : (
-                <ImageUpload onUploaded={(url) => setPostImage(url)} />
-              )}
-              <input
-                type="url"
-                value={postVideo}
-                onChange={(e) => setPostVideo(e.target.value)}
-                placeholder="YouTube or Vimeo URL (optional)"
-                className="w-full text-xs px-3 py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
-              />
-              <div className="flex gap-2 justify-end">
-                <button type="button" onClick={() => { setShowPostForm(false); setPostBody(""); setPostImage(""); setPostVideo(""); }} className="px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:bg-surface transition-colors">
-                  Cancel
-                </button>
-                <button type="submit" disabled={posting || !postBody.trim()} className="px-4 py-1.5 rounded-lg text-xs font-bold bg-accent text-white hover:bg-accent-hover transition-colors disabled:opacity-50">
-                  {posting ? "Posting..." : "Post"}
-                </button>
-              </div>
-            </form>
-          )}
-        </>
+      {createPostHref && (
+        <a
+          href={createPostHref}
+          className="block w-full text-center px-4 py-2 rounded-xl border-2 border-primary/20 bg-primary/5 text-primary text-sm font-bold hover:bg-primary/10 transition-colors"
+        >
+          Create Post
+        </a>
       )}
 
       {/* Invite Review */}

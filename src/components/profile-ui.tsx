@@ -4,22 +4,32 @@ import { useState } from "react";
 
 // ── Video Embed ──────────────────────────────────────────────
 
-function getEmbedUrl(url: string): string | null {
-  // YouTube
-  let match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/);
-  if (match) return `https://www.youtube.com/embed/${match[1]}`;
+function getEmbedUrl(url: string): { src: string; type: "video" | "instagram" } | null {
+  // YouTube (regular, shorts, embeds, youtu.be)
+  let match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
+  if (match) return { src: `https://www.youtube.com/embed/${match[1]}`, type: "video" };
   // Vimeo
   match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (match) return `https://player.vimeo.com/video/${match[1]}`;
+  if (match) return { src: `https://player.vimeo.com/video/${match[1]}`, type: "video" };
+  // Instagram post/reel
+  match = url.match(/instagram\.com\/(?:p|reel|reels)\/([\w-]+)/);
+  if (match) return { src: `https://www.instagram.com/p/${match[1]}/embed`, type: "instagram" };
   return null;
 }
 
 export function VideoEmbed({ url }: { url: string }) {
-  const embedUrl = getEmbedUrl(url);
-  if (!embedUrl) return null;
+  const embed = getEmbedUrl(url);
+  if (!embed) return null;
+  if (embed.type === "instagram") {
+    return (
+      <div className="rounded-xl overflow-hidden border border-border" style={{ maxWidth: 540 }}>
+        <iframe src={embed.src} className="w-full border-0" style={{ minHeight: 500 }} allowFullScreen scrolling="no" />
+      </div>
+    );
+  }
   return (
     <div className="aspect-video rounded-xl overflow-hidden border border-border">
-      <iframe src={embedUrl} className="w-full h-full" allowFullScreen allow="autoplay; encrypted-media" />
+      <iframe src={embed.src} className="w-full h-full" allowFullScreen allow="autoplay; encrypted-media" />
     </div>
   );
 }

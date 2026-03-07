@@ -59,8 +59,8 @@ export async function POST(req: Request) {
       }
     }
 
-    const postId = await createListingPost(type, id, session.user.id, body.trim(), imageUrl || undefined, videoUrl || undefined);
-    return NextResponse.json({ success: true, id: postId });
+    const post = await createListingPost(type, id, session.user.id, body.trim(), imageUrl || undefined, videoUrl || undefined);
+    return NextResponse.json({ success: true, id: post.id, slug: post.slug });
   } catch {
     return NextResponse.json({ error: "Failed to create post" }, { status: 500 });
   }
