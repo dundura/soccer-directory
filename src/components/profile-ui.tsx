@@ -4,13 +4,18 @@ import { useState, useRef } from "react";
 
 // ── Video Embed ──────────────────────────────────────────────
 
-function getEmbedUrl(url: string): { src: string; type: "video" | "youtube" | "vimeo" | "instagram" } | null {
+function getEmbedUrl(url: string): { src: string; type: "video" | "youtube" | "vimeo" | "instagram" | "tiktok" } | null {
   // YouTube (regular, shorts, embeds, youtu.be)
   let match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
   if (match) return { src: `https://www.youtube.com/embed/${match[1]}?autoplay=1&mute=1&loop=1&playlist=${match[1]}&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`, type: "youtube" };
   // Vimeo
   match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
   if (match) return { src: `https://player.vimeo.com/video/${match[1]}?autoplay=1&muted=1&loop=1&title=0&byline=0&portrait=0&api=1`, type: "vimeo" };
+  // TikTok video
+  match = url.match(/tiktok\.com\/@[\w.-]+\/video\/(\d+)/);
+  if (match) return { src: `https://www.tiktok.com/embed/v2/${match[1]}`, type: "tiktok" };
+  // TikTok short link (vm.tiktok.com)
+  if (/vm\.tiktok\.com\//.test(url) || /tiktok\.com\/t\//.test(url)) return { src: url, type: "tiktok" };
   // Instagram post/reel
   match = url.match(/instagram\.com\/(?:p|reel|reels)\/([\w-]+)/);
   if (match) return { src: `https://www.instagram.com/p/${match[1]}/embed`, type: "instagram" };
@@ -70,6 +75,22 @@ export function VideoEmbed({ url }: { url: string }) {
     return (
       <div className="rounded-xl overflow-hidden border border-border" style={{ maxWidth: 540 }}>
         <iframe src={embed.src} className="w-full border-0" style={{ minHeight: 500 }} allowFullScreen scrolling="no" />
+      </div>
+    );
+  }
+  if (embed.type === "tiktok") {
+    // TikTok short links can't be embedded via iframe, show as link
+    if (!embed.src.includes("/embed/")) {
+      return (
+        <a href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-5 py-4 rounded-xl border border-border bg-white hover:bg-surface transition-colors">
+          <svg className="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.72a8.2 8.2 0 004.77 1.52V6.79a4.85 4.85 0 01-1.01-.1z"/></svg>
+          <span className="text-sm font-semibold text-primary">Watch on TikTok</span>
+        </a>
+      );
+    }
+    return (
+      <div className="rounded-xl overflow-hidden border border-border" style={{ maxWidth: 340 }}>
+        <iframe src={embed.src} className="w-full border-0" style={{ minHeight: 700 }} allowFullScreen scrolling="no" />
       </div>
     );
   }
