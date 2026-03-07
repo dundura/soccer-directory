@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getListingPostById, getListingPostBySlug, getListingNameById, getListingSlugById } from "@/lib/db";
+import { getListingPostById, getListingPostBySlug, getListingNameById, getListingSlugById, getListingImageById } from "@/lib/db";
 import { ShareButtons } from "@/components/profile-ui";
 import { PostEditableContent } from "@/components/post-editable";
 
@@ -38,9 +38,6 @@ function getVideoThumbnail(url?: string): string | null {
   // YouTube (regular + shorts)
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
   if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
-  // Instagram reel/post
-  const igMatch = url.match(/instagram\.com\/(?:p|reel|reels)\/([\w-]+)/);
-  if (igMatch) return `https://www.instagram.com/p/${igMatch[1]}/media/?size=l`;
   // Vimeo - can't get thumbnail without API, return null
   return null;
 }
@@ -61,7 +58,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const plainBody = stripHtml(post.body);
   const title = listingName ? `${listingName} — ${plainBody.slice(0, 60) || "Update"}` : plainBody.slice(0, 60) || "Post";
   const description = plainBody.slice(0, 160);
-  const ogImage = post.imageUrl || getVideoThumbnail(post.videoUrl);
+  const listingImage = await getListingImageById(post.listingType, post.listingId);
+  const ogImage = post.imageUrl || getVideoThumbnail(post.videoUrl) || listingImage;
   const canonical = post.slug ? `/posts/${post.slug}` : `/posts/${post.id}`;
   return ogMeta(title, description, ogImage, canonical);
 }

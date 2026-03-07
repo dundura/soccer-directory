@@ -2277,6 +2277,15 @@ export async function getListingNameById(type: string, id: string): Promise<stri
   return (rows[0]?.name as string) || null;
 }
 
+export async function getListingImageById(type: string, id: string): Promise<string | null> {
+  type = normalizeType(type);
+  const table = TYPE_TO_TABLE[type];
+  if (!table) return null;
+  const raw = [`SELECT image_url, team_photo FROM ${table} WHERE id = `, " LIMIT 1"] as unknown as TemplateStringsArray;
+  const rows: Record<string, unknown>[] = await sql(raw, id);
+  return (rows[0]?.image_url as string) || (rows[0]?.team_photo as string) || null;
+}
+
 export async function getListingOwnerEmailById(type: string, id: string): Promise<string | null> {
   type = normalizeType(type);
   let rows: Record<string, unknown>[];
