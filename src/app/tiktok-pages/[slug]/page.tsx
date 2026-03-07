@@ -46,7 +46,7 @@ export default async function TikTokPagePage({ params }: Props) {
 
   const imgPos = page.imagePosition ?? 50;
   const heroPos = page.heroImagePosition ?? 50;
-  const heroImage = page.imageUrl || "https://vectorseek.com/vector_logo/tiktok-banner-black-logo-vector/";
+  const heroImage = page.imageUrl || "color:#010101";
   const sidebarImage = page.teamPhoto || page.logo || null;
 
   const videos = [page.videoUrl, page.videoUrl2, page.videoUrl3].filter(Boolean);

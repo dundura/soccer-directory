@@ -46,7 +46,7 @@ export default async function InstagramPagePage({ params }: Props) {
 
   const imgPos = page.imagePosition ?? 50;
   const heroPos = page.heroImagePosition ?? 50;
-  const heroImage = page.imageUrl || "http://pbsproracing.com/home-3/instagram-banner-logo-de-instagram-vector-logo-instagram-sin-fondo-1000x480/";
+  const heroImage = page.imageUrl || "color:#E1306C";
   const sidebarImage = page.teamPhoto || page.logo || null;
 
   const videos = [page.videoUrl, page.videoUrl2, page.videoUrl3].filter(Boolean);
