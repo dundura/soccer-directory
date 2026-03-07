@@ -9,6 +9,22 @@ import { ImageUpload } from "@/components/image-upload";
 const DEFAULT_HERO_IMAGE = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 const DEFAULT_SIDEBAR_IMAGE = "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
 
+const TYPE_DEFAULT_IMAGES: Partial<Record<ListingType, { hero: string; sidebar: string }>> = {
+  instagrampage: {
+    hero: "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/1772852257695-7gb8x6.jpg",
+    sidebar: "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/1772852496287-yoq2c2.jpg",
+  },
+  tiktokpage: {
+    hero: "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/1772852080922-k37zwx.png",
+    sidebar: "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/1772852025436-kdk49t.jpg",
+  },
+};
+
+function getDefaultImages(type: ListingType) {
+  const td = TYPE_DEFAULT_IMAGES[type];
+  return { hero: td?.hero || DEFAULT_HERO_IMAGE, sidebar: td?.sidebar || DEFAULT_SIDEBAR_IMAGE };
+}
+
 const US_STATES = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
   "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
@@ -1201,7 +1217,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
   const startType = editType || defaultType || "club";
   const [type, setType] = useState<ListingType>(startType);
   const [formData, setFormData] = useState<Record<string, string>>(
-    initialData || { description: DEFAULT_DESCRIPTIONS[startType], imageUrl: DEFAULT_HERO_IMAGE, teamPhoto: DEFAULT_SIDEBAR_IMAGE, country: "United States" }
+    initialData || { description: DEFAULT_DESCRIPTIONS[startType], imageUrl: getDefaultImages(startType).hero, teamPhoto: getDefaultImages(startType).sidebar, country: "United States" }
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -1221,7 +1237,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
   function handleTypeSwitch(t: ListingType) {
     setType(t);
     if (!isEdit) {
-      setFormData({ description: DEFAULT_DESCRIPTIONS[t], imageUrl: DEFAULT_HERO_IMAGE, teamPhoto: DEFAULT_SIDEBAR_IMAGE, country: "United States" });
+      setFormData({ description: DEFAULT_DESCRIPTIONS[t], imageUrl: getDefaultImages(t).hero, teamPhoto: getDefaultImages(t).sidebar, country: "United States" });
     }
     setOpenSections(new Set());
   }

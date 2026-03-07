@@ -49,8 +49,10 @@ export default async function TikTokPagePage({ params }: Props) {
 
   const imgPos = page.imagePosition ?? 50;
   const heroPos = page.heroImagePosition ?? 50;
-  const heroImage = page.imageUrl || DEFAULT_HERO_PHOTO;
-  const sidebarImage = page.teamPhoto || page.logo || DEFAULT_SIDEBAR_PHOTO;
+  const GENERIC_HERO = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+  const GENERIC_SIDEBAR = "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
+  const heroImage = (page.imageUrl && page.imageUrl !== GENERIC_HERO) ? page.imageUrl : DEFAULT_HERO_PHOTO;
+  const sidebarImage = (page.teamPhoto && page.teamPhoto !== GENERIC_SIDEBAR) ? page.teamPhoto : page.logo || DEFAULT_SIDEBAR_PHOTO;
 
   const videos = [page.videoUrl, page.videoUrl2, page.videoUrl3].filter(Boolean);
 
