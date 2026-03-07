@@ -13,7 +13,7 @@ import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
-const DEFAULT_SIDEBAR_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
+const DEFAULT_SIDEBAR_PHOTO = "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/1772852496287-yoq2c2.jpg";
 const DEFAULT_HERO_PHOTO = "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/1772852257695-7gb8x6.jpg";
 
 type Props = { params: Promise<{ slug: string }> };
