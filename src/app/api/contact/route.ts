@@ -11,6 +11,7 @@ const TYPE_LABELS: Record<string, string> = {
   guest: "Guest Play Opportunity", tournament: "Tournament", futsal: "Futsal Team",
   player: "Player Profile", service: "Product / Service",
   tryout: "Tryout", specialevent: "Special Event", recruiter: "College Recruiting Advisor",
+  scrimmage: "Scrimmage",
 };
 
 const TYPE_PATHS: Record<string, string> = {
@@ -18,6 +19,7 @@ const TYPE_PATHS: Record<string, string> = {
   guest: "guest-play", tournament: "tournaments", futsal: "futsal",
   player: "guest-play/players", service: "services",
   tryout: "tryouts", specialevent: "special-events", recruiter: "college-recruiting",
+  scrimmage: "scrimmages",
 };
 
 export async function POST(req: Request) {

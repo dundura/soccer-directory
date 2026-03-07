@@ -935,6 +935,7 @@ export async function updateListingStatus(type: string, id: string, status: stri
     case "trainingapp": await sql`UPDATE training_apps SET status = ${status} WHERE id = ${id}`; break;
     case "blog": await sql`UPDATE blogs SET status = ${status} WHERE id = ${id}`; break;
     case "youtube": await sql`UPDATE youtube_channels SET status = ${status} WHERE id = ${id}`; break;
+    case "scrimmage": await sql`UPDATE scrimmages SET status = ${status} WHERE id = ${id}`; break;
   }
 }
 
@@ -962,6 +963,7 @@ export async function updateListingFeatured(type: string, id: string, featured: 
     case "trainingapp": await sql`UPDATE training_apps SET featured = ${featured} WHERE id = ${id}`; break;
     case "blog": await sql`UPDATE blogs SET featured = ${featured} WHERE id = ${id}`; break;
     case "youtube": await sql`UPDATE youtube_channels SET featured = ${featured} WHERE id = ${id}`; break;
+    case "scrimmage": await sql`UPDATE scrimmages SET featured = ${featured} WHERE id = ${id}`; break;
   }
 }
 
@@ -973,6 +975,7 @@ const TYPE_TO_TABLE: Record<string, string> = {
   trip: "international_trips", marketplace: "marketplace", player: "player_profiles",
   podcast: "podcasts", fbgroup: "facebook_groups", instagrampage: "instagram_pages", tiktokpage: "tiktok_pages", service: "services",
   tryout: "tryouts", specialevent: "special_events", trainingapp: "training_apps", blog: "blogs", youtube: "youtube_channels",
+  scrimmage: "scrimmages",
 };
 
 const FIELD_TO_COLUMN: Record<string, string> = {
@@ -1459,6 +1462,10 @@ export async function getListingData(type: string, id: string, userId: string): 
       rows = await sql`SELECT * FROM futsal_teams WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
       return mapFutsalToForm(rows[0]);
+    case "scrimmage":
+      rows = await sql`SELECT * FROM scrimmages WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapScrimmageToForm(rows[0]);
     case "trip":
       rows = await sql`SELECT * FROM international_trips WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
@@ -1533,6 +1540,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "guest": rows = await sql`SELECT * FROM guest_opportunities WHERE id = ${id} LIMIT 1`; break;
     case "tournament": rows = await sql`SELECT * FROM tournaments WHERE id = ${id} LIMIT 1`; break;
     case "futsal": rows = await sql`SELECT * FROM futsal_teams WHERE id = ${id} LIMIT 1`; break;
+    case "scrimmage": rows = await sql`SELECT * FROM scrimmages WHERE id = ${id} LIMIT 1`; break;
     case "trip": rows = await sql`SELECT * FROM international_trips WHERE id = ${id} LIMIT 1`; break;
     case "marketplace": rows = await sql`SELECT * FROM marketplace WHERE id = ${id} LIMIT 1`; break;
     case "player": rows = await sql`SELECT * FROM player_profiles WHERE id = ${id} LIMIT 1`; break;
@@ -1559,6 +1567,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "guest": return mapGuestToForm(rows[0]);
     case "tournament": return mapTournamentToForm(rows[0]);
     case "futsal": return mapFutsalToForm(rows[0]);
+    case "scrimmage": return mapScrimmageToForm(rows[0]);
     case "trip": return mapTripToForm(rows[0]);
     case "marketplace": return mapMarketplaceToForm(rows[0]);
     case "player": return mapPlayerToForm(rows[0]);
@@ -1669,6 +1678,11 @@ function mapFutsalToForm(r: Record<string, unknown>): Record<string, string> {
   return { name: s(r.name), clubName: s(r.club_name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), ageGroup: s(r.age_group), gender: s(r.gender), coach: s(r.coach), lookingForPlayers: r.looking_for_players ? "true" : "false", positionsNeeded: s(r.positions_needed), season: s(r.season), description: s(r.description), format: s(r.format), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
 }
 
+function mapScrimmageToForm(r: Record<string, unknown>): Record<string, string> {
+  const sm = parseSocial(r.social_media);
+  return { teamName: s(r.team_name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), ageGroup: s(r.age_group), gender: s(r.gender), availability: s(r.availability), contactEmail: s(r.contact_email), description: s(r.description), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
+}
+
 function mapTripToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
   return { tripName: s(r.trip_name), organizer: s(r.organizer), destination: s(r.destination), city: s(r.city), country: s(r.country) || "International", state: s(r.state), dates: s(r.dates), ageGroup: s(r.age_group), gender: s(r.gender), level: s(r.level), price: s(r.price), spotsAvailable: s(r.spots_available), contactEmail: s(r.contact_email), description: s(r.description), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
@@ -1748,6 +1762,9 @@ export async function updateListing(type: string, id: string, data: Record<strin
       break;
     case "futsal":
       rows = await sql`UPDATE futsal_teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, format=${data.format || '5v5'}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "scrimmage":
+      rows = await sql`UPDATE scrimmages SET team_name=${data.teamName}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, availability=${data.availability || 'Looking for Scrimmage'}, contact_email=${data.contactEmail}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, tagline=${pf.tagline}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "trip":
       rows = await sql`UPDATE international_trips SET trip_name=${data.tripName}, organizer=${data.organizer}, destination=${data.destination}, city=${data.city}, country=${data.country || 'International'}, state=${data.state || ''}, dates=${data.dates}, age_group=${data.ageGroup}, gender=${data.gender}, level=${data.level}, price=${data.price || null}, spots_available=${data.spotsAvailable || null}, contact_email=${data.contactEmail}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
@@ -1837,6 +1854,9 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
     case "futsal":
       rows = await sql`UPDATE futsal_teams SET name=${data.name}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, coach=${data.coach}, looking_for_players=${data.lookingForPlayers === "true"}, positions_needed=${data.positionsNeeded || null}, season=${data.season}, description=${data.description || null}, format=${data.format || '5v5'}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, tagline=${pf.tagline}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
+    case "scrimmage":
+      rows = await sql`UPDATE scrimmages SET team_name=${data.teamName}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, level=${data.level}, age_group=${data.ageGroup}, gender=${data.gender}, availability=${data.availability || 'Looking for Scrimmage'}, contact_email=${data.contactEmail}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, tagline=${pf.tagline}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
     case "trip":
       rows = await sql`UPDATE international_trips SET trip_name=${data.tripName}, organizer=${data.organizer}, destination=${data.destination}, city=${data.city}, country=${data.country || 'International'}, state=${data.state || ''}, dates=${data.dates}, age_group=${data.ageGroup}, gender=${data.gender}, level=${data.level}, price=${data.price || null}, spots_available=${data.spotsAvailable || null}, contact_email=${data.contactEmail}, description=${data.description || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, tagline=${pf.tagline}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
@@ -1908,6 +1928,7 @@ export async function archiveListing(type: string, id: string, userId: string, i
       case "guest": rows = await sql`UPDATE guest_opportunities SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "tournament": rows = await sql`UPDATE tournaments SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "futsal": rows = await sql`UPDATE futsal_teams SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "scrimmage": rows = await sql`UPDATE scrimmages SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "trip": rows = await sql`UPDATE international_trips SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "marketplace": rows = await sql`UPDATE marketplace SET status = 'archived' WHERE id = ${id} RETURNING id`; break;
       case "player": rows = await sql`UPDATE player_profiles SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
@@ -1934,6 +1955,7 @@ export async function archiveListing(type: string, id: string, userId: string, i
       case "guest": rows = await sql`UPDATE guest_opportunities SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "tournament": rows = await sql`UPDATE tournaments SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "futsal": rows = await sql`UPDATE futsal_teams SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "scrimmage": rows = await sql`UPDATE scrimmages SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "trip": rows = await sql`UPDATE international_trips SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "marketplace": rows = await sql`UPDATE marketplace SET status = 'archived' WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "player": rows = await sql`UPDATE player_profiles SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
@@ -2028,6 +2050,7 @@ export async function deleteListing(type: string, id: string, userId: string, is
       case "guest": rows = await sql`DELETE FROM guest_opportunities WHERE id = ${id} RETURNING id`; break;
       case "tournament": rows = await sql`DELETE FROM tournaments WHERE id = ${id} RETURNING id`; break;
       case "futsal": rows = await sql`DELETE FROM futsal_teams WHERE id = ${id} RETURNING id`; break;
+      case "scrimmage": rows = await sql`DELETE FROM scrimmages WHERE id = ${id} RETURNING id`; break;
       case "trip": rows = await sql`DELETE FROM international_trips WHERE id = ${id} RETURNING id`; break;
       case "marketplace": rows = await sql`DELETE FROM marketplace WHERE id = ${id} RETURNING id`; break;
       case "player": rows = await sql`DELETE FROM player_profiles WHERE id = ${id} RETURNING id`; break;
@@ -2054,6 +2077,7 @@ export async function deleteListing(type: string, id: string, userId: string, is
       case "guest": rows = await sql`DELETE FROM guest_opportunities WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "tournament": rows = await sql`DELETE FROM tournaments WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "futsal": rows = await sql`DELETE FROM futsal_teams WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "scrimmage": rows = await sql`DELETE FROM scrimmages WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "trip": rows = await sql`DELETE FROM international_trips WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "marketplace": rows = await sql`DELETE FROM marketplace WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "player": rows = await sql`DELETE FROM player_profiles WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;

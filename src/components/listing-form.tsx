@@ -89,6 +89,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   specialevent: "Add your special event to be discovered by local players and families.",
   recruiter: "I am a college recruiting advisor helping student-athletes navigate the college soccer recruiting process, from building highlight reels to communicating with coaches.",
   fundraiser: "Help our team reach its fundraising goal! Every donation makes a difference and supports our players.",
+  scrimmage: "We're looking for teams to scrimmage in our area. Contact us to set up a friendly match!",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -949,6 +950,24 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
+  scrimmage: [
+    { name: "teamName", label: "Team Name", required: true },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "level", label: "Level", required: true, options: ["Recreational", "Competitive", "Premier", "Select", "ECNL", "MLS Next", "Other"] },
+    { name: "ageGroup", label: "Age Group", required: true, type: "age-select" },
+    { name: "gender", label: "Gender", required: true, options: ["Boys", "Girls", "Coed"] },
+    { name: "availability", label: "Availability", required: true, options: ["Looking for Scrimmage", "Open to Scrimmages", "Looking for Regular Scrimmage Partners"] },
+    { name: "contactEmail", label: "Contact Email", required: true, type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "description", label: "Description", type: "textarea" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "imageUrl", label: "Team Photo", type: "image" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+  ],
 };
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -979,6 +998,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   blog: "Blog",
   youtube: "YouTube Channel",
   fundraiser: "Fundraiser",
+  scrimmage: "Scrimmage",
 };
 
 // ── Shared styles ──────────────────────────────────────────────

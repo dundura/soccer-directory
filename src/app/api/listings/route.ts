@@ -26,6 +26,7 @@ import {
   createTrainingAppListing,
   createBlogListing,
   createYoutubeChannelListing,
+  createScrimmageListing,
   updateListing,
   archiveListing,
   deleteListing,
@@ -154,6 +155,9 @@ export async function POST(req: Request) {
         break;
       case "youtube":
         slug = await createYoutubeChannelListing(data, session.user.id);
+        break;
+      case "scrimmage":
+        slug = await createScrimmageListing(data, session.user.id);
         break;
       case "fundraiser":
         slug = await createFundraiser({
