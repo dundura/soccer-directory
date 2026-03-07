@@ -2405,6 +2405,8 @@ export interface ListingPost {
   body: string;
   imageUrl?: string;
   videoUrl?: string;
+  ctaUrl?: string;
+  ctaLabel?: string;
   hidden: boolean;
   createdAt: string;
 }
@@ -2420,6 +2422,8 @@ function mapListingPost(r: Record<string, unknown>): ListingPost {
     body: r.body as string,
     imageUrl: r.image_url as string | undefined,
     videoUrl: r.video_url as string | undefined,
+    ctaUrl: r.cta_url as string | undefined,
+    ctaLabel: r.cta_label as string | undefined,
     hidden: r.hidden as boolean,
     createdAt: r.created_at as string,
   };
@@ -2447,13 +2451,13 @@ function generatePostSlug(body: string): string {
   return text.slice(0, 60).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || genId();
 }
 
-export async function createListingPost(listingType: string, listingId: string, userId: string, body: string, imageUrl?: string, videoUrl?: string): Promise<{ id: string; slug: string }> {
+export async function createListingPost(listingType: string, listingId: string, userId: string, body: string, imageUrl?: string, videoUrl?: string, ctaUrl?: string, ctaLabel?: string): Promise<{ id: string; slug: string }> {
   const id = genId();
   const baseSlug = generatePostSlug(body);
   let slug = baseSlug;
   const existing = await sql`SELECT id FROM listing_posts WHERE slug = ${slug} LIMIT 1`;
   if (existing.length > 0) slug = `${baseSlug}-${id.slice(0, 6)}`;
-  await sql`INSERT INTO listing_posts (id, slug, listing_type, listing_id, user_id, body, image_url, video_url) VALUES (${id}, ${slug}, ${listingType}, ${listingId}, ${userId}, ${body}, ${imageUrl || null}, ${videoUrl || null})`;
+  await sql`INSERT INTO listing_posts (id, slug, listing_type, listing_id, user_id, body, image_url, video_url, cta_url, cta_label) VALUES (${id}, ${slug}, ${listingType}, ${listingId}, ${userId}, ${body}, ${imageUrl || null}, ${videoUrl || null}, ${ctaUrl || null}, ${ctaLabel || null})`;
   return { id, slug };
 }
 
@@ -2467,13 +2471,13 @@ export async function updateListingPostBodyAdmin(id: string, body: string): Prom
   return rows.length > 0;
 }
 
-export async function updateListingPostMedia(id: string, userId: string, imageUrl: string | null, videoUrl: string | null): Promise<boolean> {
-  const rows = await sql`UPDATE listing_posts SET image_url = ${imageUrl}, video_url = ${videoUrl} WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
+export async function updateListingPostMedia(id: string, userId: string, imageUrl: string | null, videoUrl: string | null, ctaUrl?: string | null, ctaLabel?: string | null): Promise<boolean> {
+  const rows = await sql`UPDATE listing_posts SET image_url = ${imageUrl}, video_url = ${videoUrl}, cta_url = ${ctaUrl ?? null}, cta_label = ${ctaLabel ?? null} WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
   return rows.length > 0;
 }
 
-export async function updateListingPostMediaAdmin(id: string, imageUrl: string | null, videoUrl: string | null): Promise<boolean> {
-  const rows = await sql`UPDATE listing_posts SET image_url = ${imageUrl}, video_url = ${videoUrl} WHERE id = ${id} RETURNING id`;
+export async function updateListingPostMediaAdmin(id: string, imageUrl: string | null, videoUrl: string | null, ctaUrl?: string | null, ctaLabel?: string | null): Promise<boolean> {
+  const rows = await sql`UPDATE listing_posts SET image_url = ${imageUrl}, video_url = ${videoUrl}, cta_url = ${ctaUrl ?? null}, cta_label = ${ctaLabel ?? null} WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
 

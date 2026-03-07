@@ -1,14 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ImageUpload } from "@/components/image-upload";
+
+function insertBold(textarea: HTMLTextAreaElement, body: string, setBody: (v: string) => void) {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selected = body.slice(start, end);
+  if (selected) {
+    const newBody = body.slice(0, start) + `<b>${selected}</b>` + body.slice(end);
+    setBody(newBody);
+    setTimeout(() => { textarea.focus(); textarea.setSelectionRange(start + 3, end + 3); }, 0);
+  } else {
+    const newBody = body.slice(0, start) + "<b></b>" + body.slice(end);
+    setBody(newBody);
+    setTimeout(() => { textarea.focus(); textarea.setSelectionRange(start + 3, start + 3); }, 0);
+  }
+}
 
 export function CreatePostForm() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const listingType = searchParams.get("type") || "";
   const listingId = searchParams.get("id") || "";
@@ -18,6 +34,8 @@ export function CreatePostForm() {
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [ctaUrl, setCtaUrl] = useState("");
+  const [ctaLabel, setCtaLabel] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -59,6 +77,8 @@ export function CreatePostForm() {
           body: body.trim(),
           imageUrl: imageUrl || undefined,
           videoUrl: videoUrl || undefined,
+          ctaUrl: ctaUrl || undefined,
+          ctaLabel: ctaLabel || undefined,
         }),
       });
       if (res.ok) {
@@ -102,17 +122,31 @@ export function CreatePostForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-5">
-            {/* Body */}
+            {/* Body with formatting toolbar */}
             <div>
               <label className="block text-sm font-bold text-primary mb-1.5">Post Content</label>
-              <textarea
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                placeholder="Write your post here... Share news, updates, tips, or anything your audience would love to read."
-                rows={10}
-                className="w-full text-[15px] leading-relaxed px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-y"
-                autoFocus
-              />
+              <div className="border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent/30 focus-within:border-accent">
+                <div className="flex items-center gap-1 px-3 py-1.5 bg-surface border-b border-border">
+                  <button
+                    type="button"
+                    onClick={() => textareaRef.current && insertBold(textareaRef.current, body, setBody)}
+                    className="px-2 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
+                    title="Bold (select text first)"
+                  >
+                    B
+                  </button>
+                  <span className="text-[10px] text-muted ml-2">Select text then click B to bold</span>
+                </div>
+                <textarea
+                  ref={textareaRef}
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  placeholder="Write your post here... Share news, updates, tips, or anything your audience would love to read."
+                  rows={10}
+                  className="w-full text-[15px] leading-relaxed px-4 py-3 focus:outline-none resize-y"
+                  autoFocus
+                />
+              </div>
             </div>
 
             {/* Image */}
@@ -145,6 +179,28 @@ export function CreatePostForm() {
                 className="w-full text-sm px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
               />
               <p className="text-xs text-muted mt-1.5">Supports YouTube, YouTube Shorts, Vimeo, and Instagram posts/reels</p>
+            </div>
+
+            {/* CTA Button */}
+            <div>
+              <label className="block text-sm font-bold text-primary mb-1.5">Call-to-Action Button <span className="font-normal text-muted">(optional)</span></label>
+              <div className="flex gap-3">
+                <input
+                  type="url"
+                  value={ctaUrl}
+                  onChange={(e) => setCtaUrl(e.target.value)}
+                  placeholder="https://your-link.com"
+                  className="flex-1 text-sm px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+                />
+                <input
+                  type="text"
+                  value={ctaLabel}
+                  onChange={(e) => setCtaLabel(e.target.value)}
+                  placeholder="Learn More"
+                  className="w-40 text-sm px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+                />
+              </div>
+              <p className="text-xs text-muted mt-1.5">Add a button that links to your website, signup page, etc. Default label: &quot;Learn More&quot;</p>
             </div>
 
             {error && (

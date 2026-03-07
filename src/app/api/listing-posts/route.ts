@@ -44,7 +44,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { type, id, slug, body, imageUrl, videoUrl } = await req.json();
+    const { type, id, slug, body, imageUrl, videoUrl, ctaUrl, ctaLabel } = await req.json();
     if (!type || !id || !slug || !VALID_TYPES.includes(type)) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       }
     }
 
-    const post = await createListingPost(type, id, session.user.id, body.trim(), imageUrl || undefined, videoUrl || undefined);
+    const post = await createListingPost(type, id, session.user.id, body.trim(), imageUrl || undefined, videoUrl || undefined, ctaUrl || undefined, ctaLabel || undefined);
     return NextResponse.json({ success: true, id: post.id, slug: post.slug });
   } catch {
     return NextResponse.json({ error: "Failed to create post" }, { status: 500 });
@@ -97,7 +97,7 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { id, action, body, slug, imageUrl, videoUrl } = await req.json();
+    const { id, action, body, slug, imageUrl, videoUrl, ctaUrl, ctaLabel } = await req.json();
     if (action === "toggle_hidden") {
       if (isAdmin(session)) {
         const { toggleListingPostHiddenAdmin } = await import("@/lib/db");
@@ -136,8 +136,8 @@ export async function PATCH(req: Request) {
     if (action === "edit_media") {
       const { updateListingPostMedia, updateListingPostMediaAdmin } = await import("@/lib/db");
       const ok = isAdmin(session)
-        ? await updateListingPostMediaAdmin(id, imageUrl ?? null, videoUrl ?? null)
-        : await updateListingPostMedia(id, session.user.id, imageUrl ?? null, videoUrl ?? null);
+        ? await updateListingPostMediaAdmin(id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null)
+        : await updateListingPostMedia(id, session.user.id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null);
       if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 });
       return NextResponse.json({ success: true });
     }
