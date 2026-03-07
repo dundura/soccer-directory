@@ -13,6 +13,9 @@ import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
+const DEFAULT_SIDEBAR_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
+const DEFAULT_HERO_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
@@ -46,8 +49,8 @@ export default async function TikTokPagePage({ params }: Props) {
 
   const imgPos = page.imagePosition ?? 50;
   const heroPos = page.heroImagePosition ?? 50;
-  const heroImage = page.imageUrl || "color:#010101";
-  const sidebarImage = page.teamPhoto || page.logo || null;
+  const heroImage = page.imageUrl || DEFAULT_HERO_PHOTO;
+  const sidebarImage = page.teamPhoto || page.logo || DEFAULT_SIDEBAR_PHOTO;
 
   const videos = [page.videoUrl, page.videoUrl2, page.videoUrl3].filter(Boolean);
 
@@ -67,13 +70,7 @@ export default async function TikTokPagePage({ params }: Props) {
         {/* Sidebar */}
         <aside className="md:w-72 shrink-0 space-y-5">
           <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
-            {sidebarImage ? (
-              <img src={sidebarImage} alt={page.name} className="w-full aspect-square object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
-            ) : (
-              <div className="w-full aspect-square bg-primary flex items-center justify-center">
-                <svg className="w-16 h-16 text-white/80" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.72a8.2 8.2 0 004.77 1.52V6.79a4.85 4.85 0 01-1.01-.1z"/></svg>
-              </div>
-            )}
+            <img src={sidebarImage} alt={page.name} className="w-full aspect-square object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
           </div>
 
           <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
@@ -112,11 +109,7 @@ export default async function TikTokPagePage({ params }: Props) {
         <div className="flex-1 min-w-0 space-y-6">
           {/* Hero Banner */}
           <div className="relative rounded-2xl overflow-hidden h-48 md:h-64">
-            {heroImage.startsWith("color:") ? (
-              <div className="w-full h-full" style={{ backgroundColor: heroImage.replace("color:", "") }} />
-            ) : (
-              <img src={heroImage} alt={page.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${heroPos}%` }} />
-            )}
+            <img src={heroImage} alt={page.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${heroPos}%` }} />
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
               <InlineEditField ownerId={ownerId} listingType="tiktokpage" listingId={page.id} field="name" value={page.name} tag="h1" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1" />

@@ -13,6 +13,9 @@ import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
 
+const DEFAULT_SIDEBAR_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";
+const DEFAULT_HERO_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
@@ -46,8 +49,8 @@ export default async function InstagramPagePage({ params }: Props) {
 
   const imgPos = page.imagePosition ?? 50;
   const heroPos = page.heroImagePosition ?? 50;
-  const heroImage = page.imageUrl || "color:#E1306C";
-  const sidebarImage = page.teamPhoto || page.logo || null;
+  const heroImage = page.imageUrl || DEFAULT_HERO_PHOTO;
+  const sidebarImage = page.teamPhoto || page.logo || DEFAULT_SIDEBAR_PHOTO;
 
   const videos = [page.videoUrl, page.videoUrl2, page.videoUrl3].filter(Boolean);
 
@@ -68,13 +71,7 @@ export default async function InstagramPagePage({ params }: Props) {
         <aside className="md:w-72 shrink-0 space-y-5">
           {/* Page Image */}
           <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
-            {sidebarImage ? (
-              <img src={sidebarImage} alt={page.name} className="w-full aspect-square object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
-            ) : (
-              <div className="w-full aspect-square bg-primary flex items-center justify-center">
-                <span className="text-6xl">📸</span>
-              </div>
-            )}
+            <img src={sidebarImage} alt={page.name} className="w-full aspect-square object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
           </div>
 
           {/* Info Table */}
@@ -115,11 +112,7 @@ export default async function InstagramPagePage({ params }: Props) {
         <div className="flex-1 min-w-0 space-y-6">
           {/* Hero Banner */}
           <div className="relative rounded-2xl overflow-hidden h-48 md:h-64">
-            {heroImage.startsWith("color:") ? (
-              <div className="w-full h-full" style={{ backgroundColor: heroImage.replace("color:", "") }} />
-            ) : (
-              <img src={heroImage} alt={page.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${heroPos}%` }} />
-            )}
+            <img src={heroImage} alt={page.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${heroPos}%` }} />
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
               <InlineEditField ownerId={ownerId} listingType="instagrampage" listingId={page.id} field="name" value={page.name} tag="h1" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1" />
