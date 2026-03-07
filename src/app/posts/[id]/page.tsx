@@ -33,6 +33,15 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
 }
 
+function getVideoThumbnail(url?: string): string | null {
+  if (!url) return null;
+  // YouTube (regular + shorts)
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
+  if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+  // Vimeo - can't get thumbnail without API, return null
+  return null;
+}
+
 async function resolvePost(idOrSlug: string) {
   // Try by ID first, then by slug
   let post = await getListingPostById(idOrSlug);
@@ -46,10 +55,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post || post.hidden) return {};
   const listingName = await getListingNameById(post.listingType, post.listingId);
   const { ogMeta } = await import("@/lib/og");
-  const title = listingName ? `${listingName} — Update` : "Post";
-  const description = stripHtml(post.body).slice(0, 160);
+  const plainBody = stripHtml(post.body);
+  const title = listingName ? `${listingName} — ${plainBody.slice(0, 60) || "Update"}` : plainBody.slice(0, 60) || "Post";
+  const description = plainBody.slice(0, 160);
+  const ogImage = post.imageUrl || getVideoThumbnail(post.videoUrl);
   const canonical = post.slug ? `/posts/${post.slug}` : `/posts/${post.id}`;
-  return ogMeta(title, description, post.imageUrl, canonical);
+  return ogMeta(title, description, ogImage, canonical);
 }
 
 export default async function PostPage({ params }: Props) {
