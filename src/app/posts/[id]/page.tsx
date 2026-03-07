@@ -134,6 +134,7 @@ export default async function PostPage({ params }: Props) {
             videoUrl={post.videoUrl}
             ctaUrl={post.ctaUrl}
             ctaLabel={post.ctaLabel}
+            ogImageUrl={post.ogImageUrl}
             userId={post.userId}
           />
 

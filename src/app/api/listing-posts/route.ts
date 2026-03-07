@@ -112,7 +112,7 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { id, action, body, slug, imageUrl, videoUrl, ctaUrl, ctaLabel } = await req.json();
+    const { id, action, body, slug, imageUrl, videoUrl, ctaUrl, ctaLabel, ogImageUrl } = await req.json();
     if (action === "toggle_hidden") {
       if (isAdmin(session)) {
         const { toggleListingPostHiddenAdmin } = await import("@/lib/db");
@@ -151,8 +151,8 @@ export async function PATCH(req: Request) {
     if (action === "edit_media") {
       const { updateListingPostMedia, updateListingPostMediaAdmin } = await import("@/lib/db");
       const ok = isAdmin(session)
-        ? await updateListingPostMediaAdmin(id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null)
-        : await updateListingPostMedia(id, session.user.id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null);
+        ? await updateListingPostMediaAdmin(id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null, ogImageUrl ?? null)
+        : await updateListingPostMedia(id, session.user.id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null, ogImageUrl ?? null);
       if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 });
       return NextResponse.json({ success: true });
     }

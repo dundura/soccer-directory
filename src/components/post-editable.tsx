@@ -28,6 +28,7 @@ export function PostEditableContent({
   videoUrl,
   ctaUrl,
   ctaLabel,
+  ogImageUrl,
   userId,
 }: {
   postId: string;
@@ -37,6 +38,7 @@ export function PostEditableContent({
   videoUrl?: string;
   ctaUrl?: string;
   ctaLabel?: string;
+  ogImageUrl?: string;
   userId: string;
 }) {
   const { data: session } = useSession();
@@ -54,6 +56,7 @@ export function PostEditableContent({
   const [videoValue, setVideoValue] = useState(videoUrl || "");
   const [ctaUrlValue, setCtaUrlValue] = useState(ctaUrl || "");
   const [ctaLabelValue, setCtaLabelValue] = useState(ctaLabel || "");
+  const [ogImageValue, setOgImageValue] = useState(ogImageUrl || "");
   const [mediaSaving, setMediaSaving] = useState(false);
 
   const [editingSlug, setEditingSlug] = useState(false);
@@ -84,6 +87,7 @@ export function PostEditableContent({
         videoUrl: videoValue || null,
         ctaUrl: ctaUrlValue || null,
         ctaLabel: ctaLabelValue || null,
+        ogImageUrl: ogImageValue || null,
       }),
     });
     if (res.ok) {
@@ -238,8 +242,26 @@ export function PostEditableContent({
               </div>
               <p className="text-[10px] text-muted mt-1">Leave URL empty to remove button. Default label: &quot;Learn More&quot;</p>
             </div>
+            <div>
+              <label className="block text-xs font-bold text-primary mb-1">Social Media Preview Image <span className="font-normal text-muted">(optional)</span></label>
+              <p className="text-[10px] text-muted mb-1.5">This image shows when the post is shared on Facebook/Twitter. Not displayed in the post itself.</p>
+              {ogImageValue ? (
+                <div className="relative">
+                  <img src={ogImageValue} alt="OG Preview" className="w-full rounded-xl max-h-[150px] object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setOgImageValue("")}
+                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white text-sm flex items-center justify-center hover:bg-black/80"
+                  >
+                    &#x2715;
+                  </button>
+                </div>
+              ) : (
+                <ImageUpload onUploaded={(url) => setOgImageValue(url)} />
+              )}
+            </div>
             <div className="flex gap-2 justify-end">
-              <button onClick={() => { setEditingMedia(false); setImageValue(imageUrl || ""); setVideoValue(videoUrl || ""); setCtaUrlValue(ctaUrl || ""); setCtaLabelValue(ctaLabel || ""); }} className="px-4 py-2 rounded-lg text-xs font-medium text-muted hover:bg-surface transition-colors">Cancel</button>
+              <button onClick={() => { setEditingMedia(false); setImageValue(imageUrl || ""); setVideoValue(videoUrl || ""); setCtaUrlValue(ctaUrl || ""); setCtaLabelValue(ctaLabel || ""); setOgImageValue(ogImageUrl || ""); }} className="px-4 py-2 rounded-lg text-xs font-medium text-muted hover:bg-surface transition-colors">Cancel</button>
               <button onClick={saveMedia} disabled={mediaSaving} className="px-5 py-2 rounded-lg text-xs font-bold bg-accent text-white hover:bg-accent-hover transition-colors disabled:opacity-50">
                 {mediaSaving ? "Saving..." : "Save"}
               </button>
