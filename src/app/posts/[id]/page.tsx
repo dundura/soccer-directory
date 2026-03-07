@@ -50,18 +50,32 @@ async function resolvePost(idOrSlug: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const post = await resolvePost(id);
-  if (!post || post.hidden) return {};
-  const listingName = await getListingNameById(post.listingType, post.listingId);
-  const { ogMeta } = await import("@/lib/og");
-  const plainBody = stripHtml(post.body);
-  const title = listingName ? `${listingName} — ${plainBody.slice(0, 60) || "Update"}` : plainBody.slice(0, 60) || "Post";
-  const description = plainBody.slice(0, 160);
-  const listingImage = await getListingImageById(post.listingType, post.listingId);
-  const ogImage = post.imageUrl || getVideoThumbnail(post.videoUrl) || listingImage;
-  const canonical = post.slug ? `/posts/${post.slug}` : `/posts/${post.id}`;
-  return ogMeta(title, description, ogImage, canonical);
+  try {
+    const { id } = await params;
+    const post = await resolvePost(id);
+    if (!post || post.hidden) return {};
+    const listingName = await getListingNameById(post.listingType, post.listingId);
+    const { ogMeta } = await import("@/lib/og");
+    const plainBody = stripHtml(post.body);
+    const title = listingName ? `${listingName} — ${plainBody.slice(0, 60) || "Update"}` : plainBody.slice(0, 60) || "Post";
+    const description = plainBody.slice(0, 160);
+    let videoThumb = getVideoThumbnail(post.videoUrl);
+    if (!post.imageUrl && !videoThumb && post.videoUrl?.includes("tiktok.com")) {
+      try {
+        const oembedRes = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(post.videoUrl)}`);
+        if (oembedRes.ok) {
+          const data = await oembedRes.json();
+          if (data.thumbnail_url) videoThumb = data.thumbnail_url;
+        }
+      } catch { /* ignore */ }
+    }
+    const listingImage = await getListingImageById(post.listingType, post.listingId);
+    const ogImage = post.imageUrl || videoThumb || listingImage;
+    const canonical = post.slug ? `/posts/${post.slug}` : `/posts/${post.id}`;
+    return ogMeta(title, description, ogImage, canonical);
+  } catch {
+    return {};
+  }
 }
 
 export default async function PostPage({ params }: Props) {
