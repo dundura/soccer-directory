@@ -36,6 +36,7 @@ export function CreatePostForm() {
   const [videoUrl, setVideoUrl] = useState("");
   const [ctaUrl, setCtaUrl] = useState("");
   const [ctaLabel, setCtaLabel] = useState("");
+  const [ogImageUrl, setOgImageUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -79,6 +80,7 @@ export function CreatePostForm() {
           videoUrl: videoUrl || undefined,
           ctaUrl: ctaUrl || undefined,
           ctaLabel: ctaLabel || undefined,
+          ogImageUrl: ogImageUrl || undefined,
         }),
       });
       if (res.ok) {
@@ -178,7 +180,27 @@ export function CreatePostForm() {
                 placeholder="YouTube, YouTube Shorts, Vimeo, Instagram, or TikTok link"
                 className="w-full text-sm px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
               />
-              <p className="text-xs text-muted mt-1.5">Supports YouTube, YouTube Shorts, Vimeo, Instagram posts/reels, and TikTok. For Instagram videos, upload a screenshot above so it shows when shared on social media.</p>
+              <p className="text-xs text-muted mt-1.5">Supports YouTube, YouTube Shorts, Vimeo, Instagram posts/reels, and TikTok</p>
+            </div>
+
+            {/* Social Media Preview Image */}
+            <div>
+              <label className="block text-sm font-bold text-primary mb-1.5">Social Media Preview Image <span className="font-normal text-muted">(optional)</span></label>
+              <p className="text-xs text-muted mb-2">This image shows when your post is shared on Facebook, X, etc. Take a screenshot of your video and upload it here. It won't appear in the post itself.</p>
+              {ogImageUrl ? (
+                <div className="relative">
+                  <img src={ogImageUrl} alt="Preview" className="w-full rounded-xl max-h-[200px] object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setOgImageUrl("")}
+                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white text-sm flex items-center justify-center hover:bg-black/80 transition-colors"
+                  >
+                    &#x2715;
+                  </button>
+                </div>
+              ) : (
+                <ImageUpload onUploaded={(url) => setOgImageUrl(url)} />
+              )}
             </div>
 
             {/* CTA Button */}

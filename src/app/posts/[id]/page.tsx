@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       } catch { /* ignore */ }
     }
     const listingImage = await getListingImageById(post.listingType, post.listingId);
-    const ogImage = post.imageUrl || videoThumb || listingImage;
+    const ogImage = post.ogImageUrl || post.imageUrl || videoThumb || listingImage;
     const canonical = post.slug ? `/posts/${post.slug}` : `/posts/${post.id}`;
     return ogMeta(title, description, ogImage, canonical);
   } catch {

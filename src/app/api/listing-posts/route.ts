@@ -44,7 +44,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { type, id, slug, body, imageUrl, videoUrl, ctaUrl, ctaLabel } = await req.json();
+    const { type, id, slug, body, imageUrl, videoUrl, ctaUrl, ctaLabel, ogImageUrl } = await req.json();
     if (!type || !id || !slug || !VALID_TYPES.includes(type)) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
@@ -59,22 +59,22 @@ export async function POST(req: Request) {
       }
     }
 
-    // Auto-fetch TikTok thumbnail if no image provided
-    let finalImageUrl = imageUrl || undefined;
-    if (!finalImageUrl && videoUrl) {
+    // Auto-fetch TikTok thumbnail for OG preview if no preview image provided
+    let finalOgImageUrl = ogImageUrl || undefined;
+    if (!finalOgImageUrl && !imageUrl && videoUrl) {
       const tiktokMatch = videoUrl.match(/tiktok\.com/);
       if (tiktokMatch) {
         try {
           const oembedRes = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(videoUrl)}`);
           if (oembedRes.ok) {
             const oembedData = await oembedRes.json();
-            if (oembedData.thumbnail_url) finalImageUrl = oembedData.thumbnail_url;
+            if (oembedData.thumbnail_url) finalOgImageUrl = oembedData.thumbnail_url;
           }
         } catch { /* ignore — will just have no thumbnail */ }
       }
     }
 
-    const post = await createListingPost(type, id, session.user.id, body.trim(), finalImageUrl, videoUrl || undefined, ctaUrl || undefined, ctaLabel || undefined);
+    const post = await createListingPost(type, id, session.user.id, body.trim(), imageUrl || undefined, videoUrl || undefined, ctaUrl || undefined, ctaLabel || undefined, finalOgImageUrl);
     return NextResponse.json({ success: true, id: post.id, slug: post.slug });
   } catch {
     return NextResponse.json({ error: "Failed to create post" }, { status: 500 });
