@@ -496,6 +496,54 @@ export interface FacebookGroup extends ProfileFields {
   updatedAt?: string;
 }
 
+export interface InstagramPage extends ProfileFields {
+  id: string;
+  slug: string;
+  name: string;
+  ownerName: string;
+  category: string;
+  pageUrl: string;
+  followerCount?: string;
+  privacy: string;
+  city: string;
+  state: string;
+  country?: string;
+  description?: string;
+  website?: string;
+  email?: string;
+  phone?: string;
+  tagline?: string;
+  videoUrl2?: string;
+  videoUrl3?: string;
+  featured: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface TikTokPage extends ProfileFields {
+  id: string;
+  slug: string;
+  name: string;
+  ownerName: string;
+  category: string;
+  pageUrl: string;
+  followerCount?: string;
+  privacy: string;
+  city: string;
+  state: string;
+  country?: string;
+  description?: string;
+  website?: string;
+  email?: string;
+  phone?: string;
+  tagline?: string;
+  videoUrl2?: string;
+  videoUrl3?: string;
+  featured: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface Service extends ProfileFields {
   id: string;
   slug: string;
@@ -624,7 +672,25 @@ export interface YoutubeChannel extends ProfileFields {
   updatedAt?: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube" | "specialevent" | "recruiter" | "fundraiser";
+export interface Scrimmage extends ProfileFields {
+  id: string;
+  slug: string;
+  teamName: string;
+  city: string;
+  state: string;
+  country?: string;
+  level: string;
+  ageGroup: string;
+  gender: string;
+  availability: string;
+  contactEmail: string;
+  description?: string;
+  featured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "instagrampage" | "tiktokpage" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube" | "specialevent" | "recruiter" | "fundraiser" | "scrimmage";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";

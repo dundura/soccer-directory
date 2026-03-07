@@ -144,6 +144,8 @@ function Header() {
                 { label: "YouTube Channels", href: "/youtube-channels" },
                 { label: "Soccer Blogs", href: "/blogs" },
                 { label: "Facebook Groups", href: "/facebook-groups" },
+                { label: "Instagram Pages", href: "/instagram-pages" },
+                { label: "TikTok Pages", href: "/tiktok-pages" },
               ]}
             />
           </nav>

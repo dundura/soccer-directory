@@ -10,6 +10,7 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
   const [archiving, setArchiving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [archived, setArchived] = useState(false);
+  const [restoring, setRestoring] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
@@ -96,6 +97,24 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
     setDeleting(false);
   }
 
+  async function handleRestore() {
+    if (!listingType || !listingId) return;
+    if (!confirm("Restore this listing? It will be visible to the public again.")) return;
+    setRestoring(true);
+    try {
+      const res = await fetch("/api/listings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: listingType, id: listingId, action: "restore" }),
+      });
+      if (res.ok) {
+        setArchived(false);
+        router.refresh();
+      }
+    } catch { /* */ }
+    setRestoring(false);
+  }
+
   return (
     <div className="space-y-2">
       <a
@@ -178,13 +197,22 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
               {archiving ? "Archiving..." : "Archive Listing"}
             </button>
           ) : (
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="block w-full px-4 py-2 rounded-xl border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
-            >
-              {deleting ? "Deleting..." : "Delete Permanently"}
-            </button>
+            <>
+              <button
+                onClick={handleRestore}
+                disabled={restoring}
+                className="block w-full px-4 py-2 rounded-xl border border-green-200 text-sm font-medium text-green-600 hover:bg-green-50 transition-colors disabled:opacity-50"
+              >
+                {restoring ? "Restoring..." : "Restore Listing"}
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="block w-full px-4 py-2 rounded-xl border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+              >
+                {deleting ? "Deleting..." : "Delete Permanently"}
+              </button>
+            </>
           )}
         </>
       )}

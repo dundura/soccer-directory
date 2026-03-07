@@ -21,6 +21,8 @@ const TYPE_PATHS: Record<string, string> = {
   player: "guest-play/players",
   podcast: "podcasts",
   fbgroup: "facebook-groups",
+  instagrampage: "instagram-pages",
+  tiktokpage: "tiktok-pages",
   service: "services",
   tryout: "tryouts",
   specialevent: "special-events",
@@ -48,6 +50,8 @@ const TYPE_LABELS: Record<string, string> = {
   player: "Player Profile",
   podcast: "Podcast",
   fbgroup: "Facebook Group",
+  instagrampage: "Instagram Page",
+  tiktokpage: "TikTok Page",
   service: "Product / Service",
   tryout: "Tryout",
   specialevent: "Special Event",
@@ -325,6 +329,7 @@ function DashboardContent() {
   const [formDefaultType, setFormDefaultType] = useState<ListingType | undefined>(typeParam || undefined);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [archiving, setArchiving] = useState<string | null>(null);
+  const [restoring, setRestoring] = useState<string | null>(null);
 
   // Edit state
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
@@ -381,6 +386,22 @@ function DashboardContent() {
       }
     } catch { /* ignore */ }
     setArchiving(null);
+  }
+
+  async function handleRestore(listing: Listing) {
+    if (!confirm(`Restore "${listing.name}"? It will be visible to the public again.`)) return;
+    setRestoring(listing.id);
+    try {
+      const res = await fetch("/api/listings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: listing.type, id: listing.id, action: "restore" }),
+      });
+      if (res.ok) {
+        setListings((prev) => prev.map((l) => l.id === listing.id ? { ...l, status: "approved" } : l));
+      }
+    } catch { /* ignore */ }
+    setRestoring(null);
   }
 
   async function handleDelete(listing: Listing) {
@@ -582,13 +603,22 @@ function DashboardContent() {
                     </button>
                   </>
                 ) : (
-                  <button
-                    onClick={() => handleDelete(listing)}
-                    disabled={deleting === listing.id}
-                    className="px-4 py-2 rounded-xl border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
-                  >
-                    {deleting === listing.id ? "..." : "Delete"}
-                  </button>
+                  <>
+                    <button
+                      onClick={() => handleRestore(listing)}
+                      disabled={restoring === listing.id}
+                      className="px-4 py-2 rounded-xl border border-green-200 text-sm font-medium text-green-600 hover:bg-green-50 transition-colors disabled:opacity-50"
+                    >
+                      {restoring === listing.id ? "..." : "Restore"}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(listing)}
+                      disabled={deleting === listing.id}
+                      className="px-4 py-2 rounded-xl border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    >
+                      {deleting === listing.id ? "..." : "Delete"}
+                    </button>
+                  </>
                 )}
               </div>
             </div>

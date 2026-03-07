@@ -1,0 +1,60 @@
+import { NextResponse } from "next/server";
+import { Resend } from "resend";
+import { getListingContact } from "@/lib/db";
+import { verifyCaptcha } from "@/lib/captcha";
+
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const NOTIFY_EMAIL = "neil@anytime-soccer.com";
+
+type Props = { params: Promise<{ slug: string }> };
+
+export async function POST(req: Request, { params }: Props) {
+  try {
+    const { slug } = await params;
+    const { name, email, message, captchaToken } = await req.json();
+
+    if (!(await verifyCaptcha(captchaToken))) {
+      return NextResponse.json({ error: "Captcha verification failed" }, { status: 400 });
+    }
+
+    if (!name || !email || !message) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const listing = await getListingContact("tiktokpage", slug);
+    if (!listing) {
+      return NextResponse.json({ error: "Page not found" }, { status: 404 });
+    }
+
+    if (resend) {
+      const to = listing.email || NOTIFY_EMAIL;
+
+      await resend.emails.send({
+        from: "Soccer Near Me <notifications@soccer-near-me.com>",
+        to: [to],
+        bcc: to !== NOTIFY_EMAIL ? [NOTIFY_EMAIL] : undefined,
+        replyTo: email,
+        subject: `Contact request for TikTok page: ${listing.name}`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px;">
+            <h2 style="color: #1a365d;">New TikTok Page Contact Request</h2>
+            <p style="color: #666;">Someone wants to contact the owner of ${listing.name} on Soccer Near Me.</p>
+            <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+              <tr><td style="padding: 8px 0; color: #666; width: 120px;">Page</td><td style="padding: 8px 0; font-weight: bold;">${listing.name}</td></tr>
+              <tr><td style="padding: 8px 0; color: #666;">From</td><td style="padding: 8px 0; font-weight: bold;">${name}</td></tr>
+              <tr><td style="padding: 8px 0; color: #666;">Email</td><td style="padding: 8px 0;"><a href="mailto:${email}">${email}</a></td></tr>
+            </table>
+            <div style="background: #f7f7f7; padding: 16px; border-radius: 8px; margin: 16px 0;">
+              <p style="color: #333; line-height: 1.6; margin: 0; white-space: pre-wrap;">${message}</p>
+            </div>
+            <a href="https://www.soccer-near-me.com/tiktok-pages/${slug}" style="display: inline-block; padding: 12px 24px; background: #DC373E; color: white; text-decoration: none; border-radius: 8px; margin-top: 16px;">View Page</a>
+          </div>
+        `,
+      });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
+  }
+}

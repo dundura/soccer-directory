@@ -4,7 +4,7 @@ import { getListingPosts, createListingPost, deleteListingPost, toggleListingPos
 
 export const dynamic = "force-dynamic";
 
-const VALID_TYPES = ["club", "team", "trainer", "recruiter", "futsal", "camp", "specialevent", "tryout", "tournament", "player", "blog", "fbgroup", "podcast", "youtube", "service", "trainingapp", "ebook", "giveaway", "guest", "trip", "marketplace", "fundraiser"];
+const VALID_TYPES = ["club", "team", "trainer", "recruiter", "futsal", "camp", "specialevent", "tryout", "tournament", "player", "blog", "fbgroup", "instagrampage", "tiktokpage", "podcast", "youtube", "service", "trainingapp", "ebook", "giveaway", "guest", "trip", "marketplace", "fundraiser"];
 
 function isAdmin(session: { user?: { role?: string } } | null): boolean {
   return (session?.user as { role?: string } | undefined)?.role === "admin";

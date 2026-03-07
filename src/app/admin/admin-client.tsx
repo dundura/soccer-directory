@@ -38,7 +38,7 @@ const TYPE_PATHS: Record<string, string> = {
   guest: "guest-play", tournament: "tournaments", futsal: "futsal", trip: "international-trips",
   marketplace: "shop", equipment: "shop", books: "shop", showcase: "camps",
   player: "guest-play/players", service: "services",
-  podcast: "podcasts", fbgroup: "facebook-groups",
+  podcast: "podcasts", fbgroup: "facebook-groups", instagrampage: "instagram-pages", tiktokpage: "tiktok-pages",
   tryout: "tryouts", specialevent: "special-events", recruiter: "college-recruiting",
   trainingapp: "training-apps", ebook: "ebooks", giveaway: "giveaways",
   blog: "blogs",

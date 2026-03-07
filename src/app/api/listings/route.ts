@@ -17,6 +17,8 @@ import {
   createPlayerProfile,
   createPodcastListing,
   createFacebookGroupListing,
+  createInstagramPageListing,
+  createTikTokPageListing,
   createServiceListing,
   createTryoutListing,
   createSpecialEventListing,
@@ -117,6 +119,12 @@ export async function POST(req: Request) {
         break;
       case "fbgroup":
         slug = await createFacebookGroupListing(data, session.user.id);
+        break;
+      case "instagrampage":
+        slug = await createInstagramPageListing(data, session.user.id);
+        break;
+      case "tiktokpage":
+        slug = await createTikTokPageListing(data, session.user.id);
         break;
       case "service":
         slug = await createServiceListing(data, session.user.id);
@@ -228,16 +236,26 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { type, id } = await req.json();
+    const { type, id, action } = await req.json();
     const user = await getUserByEmail(session.user.email);
     const isAdmin = user?.role === "admin";
+
+    if (action === "restore") {
+      const { restoreListing } = await import("@/lib/db");
+      const restored = await restoreListing(type, id, session.user.id, isAdmin);
+      if (!restored) {
+        return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
+      }
+      return NextResponse.json({ success: true });
+    }
+
     const archived = await archiveListing(type, id, session.user.id, isAdmin);
     if (!archived) {
       return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
     }
     return NextResponse.json({ success: true });
   } catch {
-    return NextResponse.json({ error: "Failed to archive listing" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to update listing" }, { status: 500 });
   }
 }
 

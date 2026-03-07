@@ -147,6 +147,8 @@ function typeToPath(type: string): string {
     service: "services",
     podcast: "podcasts",
     fbgroup: "facebook-groups",
+    instagrampage: "instagram-pages",
+    tiktokpage: "tiktok-pages",
     tryout: "tryouts",
     specialevent: "special-events",
     recruiter: "college-recruiting",
