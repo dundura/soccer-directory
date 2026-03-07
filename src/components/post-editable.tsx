@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { VideoEmbed } from "./profile-ui";
+import { ImageUpload } from "./image-upload";
 
 export function PostEditableContent({
   postId,
@@ -28,6 +29,11 @@ export function PostEditableContent({
   const [bodyValue, setBodyValue] = useState(body);
   const [saving, setSaving] = useState(false);
 
+  const [editingMedia, setEditingMedia] = useState(false);
+  const [imageValue, setImageValue] = useState(imageUrl || "");
+  const [videoValue, setVideoValue] = useState(videoUrl || "");
+  const [mediaSaving, setMediaSaving] = useState(false);
+
   const [editingSlug, setEditingSlug] = useState(false);
   const [slugValue, setSlugValue] = useState(slug);
   const [slugSaving, setSlugSaving] = useState(false);
@@ -40,10 +46,22 @@ export function PostEditableContent({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: postId, action: "edit_body", body: bodyValue }),
     });
-    if (res.ok) {
-      setEditingBody(false);
-    }
+    if (res.ok) setEditingBody(false);
     setSaving(false);
+  }
+
+  async function saveMedia() {
+    setMediaSaving(true);
+    const res = await fetch("/api/listing-posts", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: postId, action: "edit_media", imageUrl: imageValue || null, videoUrl: videoValue || null }),
+    });
+    if (res.ok) {
+      setEditingMedia(false);
+      window.location.reload();
+    }
+    setMediaSaving(false);
   }
 
   async function saveSlug() {
@@ -56,7 +74,6 @@ export function PostEditableContent({
     });
     if (res.ok) {
       setEditingSlug(false);
-      // Redirect to new slug URL
       window.location.href = `/posts/${slugValue.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
     } else {
       const json = await res.json();
@@ -85,14 +102,14 @@ export function PostEditableContent({
             </div>
           </div>
         ) : (
-          <div className="group relative">
+          <div>
             <div className="text-[15px] leading-relaxed text-gray-800 whitespace-pre-line" dangerouslySetInnerHTML={{ __html: bodyValue }} />
             {canEdit && (
               <button
                 onClick={() => setEditingBody(true)}
-                className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-semibold text-accent hover:text-accent-hover bg-white/90 px-2 py-1 rounded-lg"
+                className="mt-2 text-xs font-semibold text-accent hover:text-accent-hover transition-colors"
               >
-                Edit
+                Edit Post
               </button>
             )}
           </div>
@@ -100,17 +117,67 @@ export function PostEditableContent({
       </div>
 
       {/* Image */}
-      {imageUrl && (
+      {imageUrl && !editingMedia && (
         <div className="px-4 pb-4">
           <img src={imageUrl} alt="" className="w-full rounded-xl object-cover" />
         </div>
       )}
 
       {/* Video */}
-      {videoUrl && (
+      {videoUrl && !editingMedia && (
         <div className="px-4 pb-4">
           <VideoEmbed url={videoUrl} />
         </div>
+      )}
+
+      {/* Media editor */}
+      {canEdit && (
+        editingMedia ? (
+          <div className="px-6 pb-4 space-y-3">
+            <div>
+              <label className="block text-xs font-bold text-primary mb-1">Image</label>
+              {imageValue ? (
+                <div className="relative">
+                  <img src={imageValue} alt="Preview" className="w-full rounded-xl max-h-[200px] object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setImageValue("")}
+                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white text-sm flex items-center justify-center hover:bg-black/80"
+                  >
+                    &#x2715;
+                  </button>
+                </div>
+              ) : (
+                <ImageUpload onUploaded={(url) => setImageValue(url)} />
+              )}
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-primary mb-1">Video URL</label>
+              <input
+                type="url"
+                value={videoValue}
+                onChange={(e) => setVideoValue(e.target.value)}
+                placeholder="YouTube, Shorts, Vimeo, or Instagram link"
+                className="w-full text-xs px-3 py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+              />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => { setEditingMedia(false); setImageValue(imageUrl || ""); setVideoValue(videoUrl || ""); }} className="px-4 py-2 rounded-lg text-xs font-medium text-muted hover:bg-surface transition-colors">Cancel</button>
+              <button onClick={saveMedia} disabled={mediaSaving} className="px-5 py-2 rounded-lg text-xs font-bold bg-accent text-white hover:bg-accent-hover transition-colors disabled:opacity-50">
+                {mediaSaving ? "Saving..." : "Save Media"}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="px-6 pb-3">
+            <button
+              onClick={() => setEditingMedia(true)}
+              className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors"
+            >
+              Edit Image / Video
+            </button>
+          </div>
+        )
       )}
 
       {/* Slug editor */}

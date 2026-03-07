@@ -97,7 +97,7 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { id, action, body, slug } = await req.json();
+    const { id, action, body, slug, imageUrl, videoUrl } = await req.json();
     if (action === "toggle_hidden") {
       if (isAdmin(session)) {
         const { toggleListingPostHiddenAdmin } = await import("@/lib/db");
@@ -131,6 +131,14 @@ export async function PATCH(req: Request) {
         const ok = await updateListingPostSlug(id, session.user.id, slug);
         if (!ok) return NextResponse.json({ error: "Slug taken or invalid" }, { status: 400 });
       }
+      return NextResponse.json({ success: true });
+    }
+    if (action === "edit_media") {
+      const { updateListingPostMedia, updateListingPostMediaAdmin } = await import("@/lib/db");
+      const ok = isAdmin(session)
+        ? await updateListingPostMediaAdmin(id, imageUrl ?? null, videoUrl ?? null)
+        : await updateListingPostMedia(id, session.user.id, imageUrl ?? null, videoUrl ?? null);
+      if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 });
       return NextResponse.json({ success: true });
     }
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });

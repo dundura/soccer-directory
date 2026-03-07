@@ -2467,6 +2467,16 @@ export async function updateListingPostBodyAdmin(id: string, body: string): Prom
   return rows.length > 0;
 }
 
+export async function updateListingPostMedia(id: string, userId: string, imageUrl: string | null, videoUrl: string | null): Promise<boolean> {
+  const rows = await sql`UPDATE listing_posts SET image_url = ${imageUrl}, video_url = ${videoUrl} WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function updateListingPostMediaAdmin(id: string, imageUrl: string | null, videoUrl: string | null): Promise<boolean> {
+  const rows = await sql`UPDATE listing_posts SET image_url = ${imageUrl}, video_url = ${videoUrl} WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
 export async function updateListingPostSlug(id: string, userId: string, slug: string): Promise<boolean> {
   const s = slug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   if (!s) return false;
