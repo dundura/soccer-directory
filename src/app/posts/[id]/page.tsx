@@ -38,6 +38,9 @@ function getVideoThumbnail(url?: string): string | null {
   // YouTube (regular + shorts)
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
   if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+  // Instagram reel/post
+  const igMatch = url.match(/instagram\.com\/(?:p|reel|reels)\/([\w-]+)/);
+  if (igMatch) return `https://www.instagram.com/p/${igMatch[1]}/media/?size=l`;
   // Vimeo - can't get thumbnail without API, return null
   return null;
 }
