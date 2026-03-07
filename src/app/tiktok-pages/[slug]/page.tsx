@@ -46,7 +46,7 @@ export default async function TikTokPagePage({ params }: Props) {
 
   const imgPos = page.imagePosition ?? 50;
   const heroPos = page.heroImagePosition ?? 50;
-  const heroImage = page.imageUrl || "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+  const heroImage = page.imageUrl || "https://vectorseek.com/vector_logo/tiktok-banner-black-logo-vector/";
   const sidebarImage = page.teamPhoto || page.logo || null;
 
   const videos = [page.videoUrl, page.videoUrl2, page.videoUrl3].filter(Boolean);
@@ -54,7 +54,7 @@ export default async function TikTokPagePage({ params }: Props) {
   const infoRows = [
     { label: "Owner", value: page.ownerName },
     { label: "Category", value: page.category },
-    ...(page.country ? [{ label: "Country", value: page.country }] : []),
+    ...(page.country && page.country !== "United States" ? [{ label: "Country", value: page.country }] : []),
     ...(page.followerCount ? [{ label: "Followers", value: page.followerCount }] : []),
     ...(page.pageUrl ? [{ label: "TikTok", value: "Visit Page", href: page.pageUrl }] : []),
     ...(page.website ? [{ label: "Website", value: "Visit Website", href: page.website }] : []),

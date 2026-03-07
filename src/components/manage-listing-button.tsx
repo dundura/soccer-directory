@@ -134,8 +134,8 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
         </a>
       )}
 
-      {/* Invite Review */}
-      {listingType && listingId && (
+      {/* Invite Review (not for Instagram/TikTok pages) */}
+      {listingType && listingId && listingType !== "instagrampage" && listingType !== "tiktokpage" && (
         <>
           {!showInviteForm ? (
             <button

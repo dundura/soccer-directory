@@ -46,7 +46,7 @@ export default async function InstagramPagePage({ params }: Props) {
 
   const imgPos = page.imagePosition ?? 50;
   const heroPos = page.heroImagePosition ?? 50;
-  const heroImage = page.imageUrl || "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
+  const heroImage = page.imageUrl || "http://pbsproracing.com/home-3/instagram-banner-logo-de-instagram-vector-logo-instagram-sin-fondo-1000x480/";
   const sidebarImage = page.teamPhoto || page.logo || null;
 
   const videos = [page.videoUrl, page.videoUrl2, page.videoUrl3].filter(Boolean);
@@ -54,7 +54,7 @@ export default async function InstagramPagePage({ params }: Props) {
   const infoRows = [
     { label: "Owner", value: page.ownerName },
     { label: "Category", value: page.category },
-    ...(page.country ? [{ label: "Country", value: page.country }] : []),
+    ...(page.country && page.country !== "United States" ? [{ label: "Country", value: page.country }] : []),
     ...(page.followerCount ? [{ label: "Followers", value: page.followerCount }] : []),
     ...(page.pageUrl ? [{ label: "Instagram", value: "Visit Page", href: page.pageUrl }] : []),
     ...(page.website ? [{ label: "Website", value: "Visit Website", href: page.website }] : []),
