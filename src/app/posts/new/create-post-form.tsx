@@ -175,10 +175,10 @@ export function CreatePostForm() {
                 type="url"
                 value={videoUrl}
                 onChange={(e) => setVideoUrl(e.target.value)}
-                placeholder="YouTube, YouTube Shorts, Vimeo, or Instagram link"
+                placeholder="YouTube, YouTube Shorts, Vimeo, Instagram, or TikTok link"
                 className="w-full text-sm px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
               />
-              <p className="text-xs text-muted mt-1.5">Supports YouTube, YouTube Shorts, Vimeo, and Instagram posts/reels</p>
+              <p className="text-xs text-muted mt-1.5">Supports YouTube, YouTube Shorts, Vimeo, Instagram posts/reels, and TikTok. For Instagram videos, upload a screenshot above so it shows when shared on social media.</p>
             </div>
 
             {/* CTA Button */}
