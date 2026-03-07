@@ -71,7 +71,7 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
       const res = await fetch("/api/reviews/invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: listingType, id: listingId, email: inviteEmail.trim() }),
+        body: JSON.stringify({ listingType, listingId, email: inviteEmail.trim() }),
       });
       const json = await res.json();
       if (res.ok) {
