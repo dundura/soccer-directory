@@ -711,6 +711,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "tagline", label: "Tagline" },
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
+    { name: "imageUrl", label: "Banner Image", type: "image" },
     { name: "teamPhoto", label: "Profile Image", type: "image" },
     { name: "videoUrl", label: "Featured Video (YouTube/Vimeo/Instagram)" },
     { name: "videoUrl2", label: "Video 2" },
