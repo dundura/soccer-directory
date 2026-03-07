@@ -55,25 +55,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const post = await resolvePost(id);
     if (!post || post.hidden) return {};
     const listingName = await getListingNameById(post.listingType, post.listingId);
-    const { ogMeta } = await import("@/lib/og");
     const plainBody = stripHtml(post.body);
     const title = listingName ? `${listingName} — ${plainBody.slice(0, 60) || "Update"}` : plainBody.slice(0, 60) || "Post";
     const description = plainBody.slice(0, 160);
-    let videoThumb = getVideoThumbnail(post.videoUrl);
-    if (!post.imageUrl && !videoThumb && post.videoUrl?.includes("tiktok.com")) {
+    let ogImage: string | null = post.ogImageUrl || post.imageUrl || null;
+    if (!ogImage) {
+      ogImage = getVideoThumbnail(post.videoUrl);
+    }
+    if (!ogImage) {
       try {
-        const oembedRes = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(post.videoUrl)}`);
-        if (oembedRes.ok) {
-          const data = await oembedRes.json();
-          if (data.thumbnail_url) videoThumb = data.thumbnail_url;
-        }
+        ogImage = await getListingImageById(post.listingType, post.listingId);
       } catch { /* ignore */ }
     }
-    const listingImage = await getListingImageById(post.listingType, post.listingId);
-    const ogImage = post.ogImageUrl || post.imageUrl || videoThumb || listingImage;
     const canonical = post.slug ? `/posts/${post.slug}` : `/posts/${post.id}`;
-    return ogMeta(title, description, ogImage, canonical);
-  } catch {
+    const finalImage = ogImage || "https://www.soccer-near-me.com/og-image.png";
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        siteName: "Soccer Near Me",
+        images: [{ url: finalImage, width: 1200, height: 630 }],
+        url: `https://www.soccer-near-me.com${canonical}`,
+        type: "article",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [finalImage],
+      },
+    };
+  } catch (e) {
+    console.error("generateMetadata error for post:", e);
     return {};
   }
 }
