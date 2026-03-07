@@ -116,19 +116,12 @@ export default async function InstagramPagePage({ params }: Props) {
           <div className="relative rounded-2xl overflow-hidden h-48 md:h-64">
             <img src={heroImage} alt={page.name} className="w-full h-full object-cover" style={{ objectPosition: `center ${heroPos}%` }} />
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
-            <div className="absolute bottom-0 left-0 p-6">
-              <InlineEditField ownerId={ownerId} listingType="instagrampage" listingId={page.id} field="name" value={page.name} tag="h1" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1" />
-              {page.tagline && (
-                <InlineEditField ownerId={ownerId} listingType="instagrampage" listingId={page.id} field="tagline" value={page.tagline} tag="p" className="text-white/80 text-sm font-medium" />
-              )}
-              <p className="text-white/70 text-sm">Owner: {page.ownerName}{page.country ? ` \u00b7 ${page.country}` : ""}</p>
-            </div>
           </div>
 
           {/* About */}
           {(page.description || page.pageUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">About This Page</h2>
+              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">{page.name}</h2>
               {page.description && (
                 <InlineEditField ownerId={ownerId} listingType="instagrampage" listingId={page.id} field="description" value={page.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
               )}
