@@ -5,6 +5,7 @@ import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ReviewSection } from "@/components/review-section";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
@@ -235,6 +236,7 @@ export default async function ServiceDetailPage({ params }: Props) {
         )}
 
         <div className="mt-8"><FeaturedArticles /></div>
+        <ListingPostsSidebar listingType="service" listingId={service.id} slug={slug} ownerId={ownerId} />
         <div className="mt-8"><AnytimeInlineCTA /></div>
       </div>
     </>

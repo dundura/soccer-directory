@@ -6,6 +6,7 @@ import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ContactBlogForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
@@ -273,6 +274,8 @@ export default async function BlogPage({ params }: Props) {
           )}
 
           <FeaturedArticles />
+
+          <ListingPostsSidebar listingType="blog" listingId={blog.id} slug={slug} ownerId={ownerId} />
 
           {/* Contact Author Form */}
           <div id="contact-author" className="bg-white rounded-2xl border-2 border-accent/20 p-6">

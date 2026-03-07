@@ -6,6 +6,7 @@ import { VideoEmbed, PhotoGallery } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ReviewSection } from "@/components/review-section";
 import { ContactGroupForm } from "./contact-form";
 import { AnytimeInlineCTA } from "@/components/ui";
@@ -178,6 +179,8 @@ export default async function FacebookGroupPage({ params }: Props) {
           </Suspense>
 
           <FeaturedArticles />
+
+          <ListingPostsSidebar listingType="fbgroup" listingId={group.id} slug={slug} ownerId={ownerId} />
 
           {/* Contact Form */}
           <div id="contact" className="bg-white rounded-2xl border-2 border-accent/20 p-6">

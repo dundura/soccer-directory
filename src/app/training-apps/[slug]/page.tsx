@@ -4,6 +4,7 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { AnnouncementSection } from "@/components/announcement-section";
@@ -220,6 +221,8 @@ export default async function TrainingAppDetailPage({ params }: Props) {
             </Suspense>
 
             <FeaturedArticles />
+
+            <ListingPostsSidebar listingType="trainingapp" listingId={app.id} slug={slug} ownerId={ownerId} />
 
             {/* Share */}
             <div className="border-t border-border pt-6 mt-6">

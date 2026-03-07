@@ -5,6 +5,7 @@ import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ContactYoutubeForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
@@ -254,6 +255,8 @@ export default async function YoutubeChannelPage({ params }: Props) {
           )}
 
           <FeaturedArticles />
+
+          <ListingPostsSidebar listingType="youtube" listingId={channel.id} slug={slug} ownerId={ownerId} />
 
           {/* Collaborate Form */}
           <div id="collaborate" className="bg-white rounded-2xl border-2 border-accent/20 p-6">

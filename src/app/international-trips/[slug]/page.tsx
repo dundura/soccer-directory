@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getTripBySlug, getTripSlugs, getListingOwner } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ReviewSection } from "@/components/review-section";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
@@ -180,6 +181,8 @@ export default async function TripDetailPage({ params }: Props) {
             </Suspense>
 
             <FeaturedArticles />
+
+            <ListingPostsSidebar listingType="trip" listingId={trip.id} slug={slug} ownerId={ownerId} />
 
             {trip.socialMedia && (trip.socialMedia.facebook || trip.socialMedia.instagram) && (
               <div className="bg-white rounded-2xl border border-border p-6 md:p-8">

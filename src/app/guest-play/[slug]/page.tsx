@@ -5,6 +5,7 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ReviewSection } from "@/components/review-section";
 import { RequestSpotForm } from "./request-spot-form";
 import { notFound } from "next/navigation";
@@ -165,6 +166,8 @@ export default async function GuestDetailPage({ params }: Props) {
             </Suspense>
 
             <FeaturedArticles />
+
+            <ListingPostsSidebar listingType="guest" listingId={opp.id} slug={slug} ownerId={ownerId} />
 
             {/* Request Spot Form */}
             <section id="request-spot" className="bg-white rounded-2xl border-2 border-accent/20 p-6 md:p-8">

@@ -7,6 +7,7 @@ import { JoinRosterButton } from "./join-roster-button";
 import { RosterList } from "./roster-list";
 import { InlineEdit } from "./inline-edit";
 import { PhotoGallery } from "./photo-gallery";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -226,6 +227,8 @@ export default async function FundraiserPage({ params }: Props) {
               </div>
             )}
           </div>
+
+          <ListingPostsSidebar listingType="fundraiser" listingId={fundraiser.id} slug={slug} ownerId={fundraiser.userId} />
         </div>
 
         {/* ── RIGHT COLUMN ── */}

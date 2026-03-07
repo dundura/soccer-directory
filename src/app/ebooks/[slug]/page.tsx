@@ -5,6 +5,7 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { PhotoGallery } from "@/components/profile-ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ReviewSection } from "@/components/review-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -129,6 +130,8 @@ export default async function EbookDetailPage({ params }: Props) {
             </Suspense>
 
             <FeaturedArticles />
+
+            <ListingPostsSidebar listingType="ebook" listingId={item.id} slug={slug} ownerId={ownerId} />
 
             {/* Sponsors */}
             {item.sponsors && item.sponsors.length > 0 && (
