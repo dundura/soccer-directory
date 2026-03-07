@@ -186,7 +186,7 @@ export function CreatePostForm() {
             {/* Social Media Preview Image */}
             <div>
               <label className="block text-sm font-bold text-primary mb-1.5">Social Media Preview Image <span className="font-normal text-muted">(optional)</span></label>
-              <p className="text-xs text-muted mb-2">This image shows when your post is shared on Facebook, X, etc. Take a screenshot of your video and upload it here. It won't appear in the post itself.</p>
+              <p className="text-xs text-muted mb-2">This image shows when your post is shared on Facebook, X, etc. It won't appear in the post itself. For Instagram videos, take a screenshot and upload it here. TikTok thumbnails are grabbed automatically.</p>
               {ogImageUrl ? (
                 <div className="relative">
                   <img src={ogImageUrl} alt="Preview" className="w-full rounded-xl max-h-[200px] object-cover" />
