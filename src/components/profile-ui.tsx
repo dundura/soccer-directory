@@ -1,25 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 // ── Video Embed ──────────────────────────────────────────────
 
-function getEmbedUrl(url: string): { src: string; type: "video" | "instagram" } | null {
+function getEmbedUrl(url: string): { src: string; type: "video" | "youtube" | "vimeo" | "instagram" } | null {
   // YouTube (regular, shorts, embeds, youtu.be)
   let match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
-  if (match) return { src: `https://www.youtube.com/embed/${match[1]}`, type: "video" };
+  if (match) return { src: `https://www.youtube.com/embed/${match[1]}?autoplay=1&mute=1&loop=1&playlist=${match[1]}&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`, type: "youtube" };
   // Vimeo
   match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (match) return { src: `https://player.vimeo.com/video/${match[1]}`, type: "video" };
+  if (match) return { src: `https://player.vimeo.com/video/${match[1]}?autoplay=1&muted=1&loop=1&title=0&byline=0&portrait=0&api=1`, type: "vimeo" };
   // Instagram post/reel
   match = url.match(/instagram\.com\/(?:p|reel|reels)\/([\w-]+)/);
   if (match) return { src: `https://www.instagram.com/p/${match[1]}/embed`, type: "instagram" };
   return null;
 }
 
+function MuteButton({ muted, onClick }: { muted: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="absolute bottom-3 right-3 z-10 w-9 h-9 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors backdrop-blur-sm"
+      aria-label={muted ? "Unmute" : "Mute"}
+    >
+      {muted ? (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+        </svg>
+      ) : (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 export function VideoEmbed({ url }: { url: string }) {
   const embed = getEmbedUrl(url);
+  const [muted, setMuted] = useState(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
   if (!embed) return null;
+
+  function toggleMute() {
+    const iframe = iframeRef.current;
+    if (!iframe?.contentWindow) return;
+    const next = !muted;
+
+    if (embed!.type === "youtube") {
+      iframe.contentWindow.postMessage(JSON.stringify({
+        event: "command",
+        func: next ? "mute" : "unMute",
+        args: [],
+      }), "*");
+    } else if (embed!.type === "vimeo") {
+      iframe.contentWindow.postMessage(JSON.stringify({
+        method: "setVolume",
+        value: next ? 0 : 1,
+      }), "https://player.vimeo.com");
+    }
+    setMuted(next);
+  }
+
   if (embed.type === "instagram") {
     return (
       <div className="rounded-xl overflow-hidden border border-border" style={{ maxWidth: 540 }}>
@@ -28,8 +74,9 @@ export function VideoEmbed({ url }: { url: string }) {
     );
   }
   return (
-    <div className="aspect-video rounded-xl overflow-hidden border border-border">
-      <iframe src={embed.src} className="w-full h-full" allowFullScreen allow="autoplay; encrypted-media" />
+    <div className="aspect-video rounded-xl overflow-hidden border border-border relative">
+      <iframe ref={iframeRef} src={embed.src} className="w-full h-full" allowFullScreen allow="autoplay; encrypted-media" />
+      <MuteButton muted={muted} onClick={toggleMute} />
     </div>
   );
 }
