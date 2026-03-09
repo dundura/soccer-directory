@@ -175,13 +175,13 @@ export default async function TournamentDetailPage({ params }: Props) {
             {/* Hero */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
               <HeroImage src={heroPhoto} alt={tournament.name} id={tournament.id} imagePosition={heroPos} />
-              <div className="p-7 flex gap-6 items-start">
+              <div className="p-7">
                 <img
                   src={logo}
                   alt={`${tournament.name} logo`}
-                  className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10"
+                  className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10 mb-4"
                 />
-                <div className="flex-1 min-w-0">
+                <div>
                   <InlineEditField ownerId={ownerId} listingType="tournament" listingId={tournament.id} field="name" value={tournament.name} tag="h1" className="text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
                   {tournament.tagline && (
                     <InlineEditField ownerId={ownerId} listingType="tournament" listingId={tournament.id} field="tagline" value={tournament.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
