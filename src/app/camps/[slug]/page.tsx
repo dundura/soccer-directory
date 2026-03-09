@@ -202,13 +202,13 @@ export default async function CampDetailPage({ params }: Props) {
             {/* Hero */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
               <HeroImage src={heroPhoto} alt={camp.name} id={camp.id} imagePosition={heroPos} />
-              <div className="p-7 flex gap-6 items-start">
+              <div className="p-7">
                 <img
                   src={logo}
                   alt={`${camp.name} logo`}
-                  className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10 bg-white"
+                  className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10 bg-white mb-4"
                 />
-                <div className="flex-1 min-w-0 relative z-20">
+                <div className="relative z-20">
                   <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="name" value={camp.name} tag="h1" className="text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
                   {camp.tagline && (
                     <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="tagline" value={camp.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />

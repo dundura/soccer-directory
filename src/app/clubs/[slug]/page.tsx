@@ -222,13 +222,13 @@ export default async function ClubDetailPage({ params }: Props) {
           {/* ====== Hero ====== */}
           <div className="order-1 lg:order-none lg:col-start-2 bg-white rounded-2xl overflow-hidden shadow-sm">
               <HeroImage src={heroPhoto} alt={club.name} id={club.id} imagePosition={heroPos} />
-              <div className="p-5 sm:p-7 sm:flex sm:gap-6 sm:items-start">
+              <div className="p-5 sm:p-7">
               <img
                 src={logo}
                 alt={`${club.name} logo`}
-                className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1 sm:p-1.5 bg-surface -mt-8 sm:-mt-10 relative z-10"
+                className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1 sm:p-1.5 bg-surface -mt-8 sm:-mt-10 relative z-10 mb-4"
               />
-              <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0">
+              <div>
                 <InlineEditField ownerId={ownerId} listingType="club" listingId={club.id} field="name" value={club.name} tag="h1" className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
                 {club.tagline && (
                   <InlineEditField ownerId={ownerId} listingType="club" listingId={club.id} field="tagline" value={club.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
