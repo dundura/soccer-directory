@@ -9,6 +9,7 @@ import { AdminCRM } from "@/components/admin-crm";
 import { AdminTodos } from "@/components/admin-todos";
 import { AdminResources } from "@/components/admin-resources";
 import { AdminContacts } from "@/components/admin-contacts";
+import { AdminUpload } from "@/components/admin-upload";
 import type { ListingType } from "@/lib/types";
 
 type User = { id: string; name: string; email: string; role: string; createdAt: string };
@@ -49,7 +50,7 @@ export default function AdminClient() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const TABS = ["users", "listings", "comments", "crm", "contacts", "todos", "resources", "food"] as const;
+  const TABS = ["users", "listings", "comments", "crm", "contacts", "todos", "resources", "food", "upload"] as const;
   type Tab = typeof TABS[number];
   const [tab, setTab] = useState<Tab>(() => {
     const hash = typeof window !== "undefined" ? window.location.hash.replace("#", "") : "";
@@ -287,6 +288,12 @@ export default function AdminClient() {
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "food" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
             >
               Food Tracker
+            </button>
+            <button
+              onClick={() => switchTab("upload")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "upload" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
+            >
+              File Upload
             </button>
           </div>
 
@@ -533,6 +540,7 @@ export default function AdminClient() {
           {tab === "todos" && <AdminTodos />}
           {tab === "resources" && <AdminResources />}
           {tab === "food" && <FoodTracker />}
+          {tab === "upload" && <AdminUpload />}
         </div>
       </div>
     </>
