@@ -5,6 +5,7 @@ import {
   getListingsByUserId,
   getListingData,
   getListingDataAdmin,
+  updateListingAdmin,
   getUserByEmail,
   createClubListing,
   createTeamListing,
@@ -227,7 +228,13 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Missing type, id, or data" }, { status: 400 });
     }
 
-    const updated = await updateListing(type, id, data, session.user.id);
+    let updated = await updateListing(type, id, data, session.user.id);
+    if (!updated && session.user.email) {
+      const user = await getUserByEmail(session.user.email);
+      if (user?.role === "admin") {
+        updated = await updateListingAdmin(type, id, data);
+      }
+    }
     if (!updated) {
       return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
     }
