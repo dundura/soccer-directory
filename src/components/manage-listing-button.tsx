@@ -23,11 +23,9 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
 
   if (!isOwner && !isAdmin) return null;
 
-  const editHref = isAdmin && !isOwner && listingType && listingId
-    ? `/admin?editType=${listingType}&editId=${listingId}`
-    : listingType && listingId
-      ? `/dashboard?editType=${listingType}&editId=${listingId}`
-      : "/dashboard";
+  const editHref = listingType && listingId
+    ? `/dashboard?editType=${listingType}&editId=${listingId}`
+    : "/dashboard";
 
   // Resolve slug for the current page from the URL
   const currentSlug = typeof window !== "undefined" ? window.location.pathname.split("/").pop() || "" : "";
@@ -226,9 +224,7 @@ export function EditSectionLink({ ownerId, listingType, listingId }: { ownerId: 
   const isOwner = session.user.id === ownerId;
   const isAdmin = (session.user as { role?: string }).role === "admin";
   if (!isOwner && !isAdmin) return null;
-  const href = isAdmin && !isOwner
-    ? `/admin?editType=${listingType}&editId=${listingId}`
-    : `/dashboard?editType=${listingType}&editId=${listingId}`;
+  const href = `/dashboard?editType=${listingType}&editId=${listingId}`;
   return (
     <a href={href} className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors">
       Edit

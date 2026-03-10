@@ -4,6 +4,7 @@ import { notifyNewListing } from "@/lib/notifications";
 import {
   getListingsByUserId,
   getListingData,
+  getListingDataAdmin,
   getUserByEmail,
   createClubListing,
   createTeamListing,
@@ -46,7 +47,14 @@ export async function GET(req: Request) {
 
     // Return single listing data for editing
     if (type && id) {
-      const data = await getListingData(type, id, session.user.id);
+      // Try owner-scoped first, fall back to admin if user is admin
+      let data = await getListingData(type, id, session.user.id);
+      if (!data && session.user.email) {
+        const user = await getUserByEmail(session.user.email);
+        if (user?.role === "admin") {
+          data = await getListingDataAdmin(type, id);
+        }
+      }
       if (!data) {
         return NextResponse.json({ error: "Listing not found" }, { status: 404 });
       }
