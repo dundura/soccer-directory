@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Turnstile } from "@/components/turnstile";
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";
@@ -11,6 +11,13 @@ export function ContactPodcastForm({ podcastName, slug }: { podcastName: string;
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaReady, setCaptchaReady] = useState(false);
+
+  // Allow submission after 3s even if captcha doesn't load (e.g. ad blockers)
+  useEffect(() => {
+    const timer = setTimeout(() => setCaptchaReady(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,7 +27,7 @@ export function ContactPodcastForm({ podcastName, slug }: { podcastName: string;
       const res = await fetch(`/api/podcasts/${slug}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, captchaToken }),
+        body: JSON.stringify({ ...form, captchaToken: captchaToken || undefined }),
       });
       if (!res.ok) {
         const json = await res.json();
@@ -64,7 +71,7 @@ export function ContactPodcastForm({ podcastName, slug }: { podcastName: string;
       </div>
       <Turnstile onSuccess={setCaptchaToken} />
       {error && <p className="text-accent text-sm">{error}</p>}
-      <button type="submit" disabled={submitting || !captchaToken} className="w-full py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
+      <button type="submit" disabled={submitting || (!captchaToken && !captchaReady)} className="w-full py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
         {submitting ? "Sending..." : "Send Guest Request"}
       </button>
     </form>
