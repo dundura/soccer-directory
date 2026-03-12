@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Tryout } from "@/lib/types";
+import { Tryout, Club, Team } from "@/lib/types";
 import { FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui";
 
 const PER_PAGE = 10;
 
-export function TryoutFilters({ tryouts }: { tryouts: Tryout[] }) {
+export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tryout[]; clubs?: Club[]; teams?: Team[] }) {
   const { data: session } = useSession();
   const isAdmin = (session?.user as { role?: string } | undefined)?.role === "admin";
 
@@ -18,8 +18,10 @@ export function TryoutFilters({ tryouts }: { tryouts: Tryout[] }) {
   const [page, setPage] = useState(1);
   const [viewAll, setViewAll] = useState(false);
 
-  const states = [...new Set(tryouts.map((t) => t.state))].sort();
-  const genders = [...new Set(tryouts.map((t) => t.gender))].sort();
+  const allStates = [...new Set([...tryouts.map((t) => t.state), ...clubs.map((c) => c.state), ...teams.map((t) => t.state)])].sort();
+  const allGenders = [...new Set([...tryouts.map((t) => t.gender), ...clubs.map((c) => c.gender), ...teams.map((t) => t.gender)])].sort();
+  const states = allStates;
+  const genders = allGenders;
 
   const filtered = tryouts.filter((t) => {
     if (tab === "current" && t.isPast) return false;
@@ -39,7 +41,29 @@ export function TryoutFilters({ tryouts }: { tryouts: Tryout[] }) {
     return true;
   });
 
+  // Filter clubs and teams (only show on "current" tab)
+  const filteredClubs = tab === "current" ? clubs.filter((c) => {
+    if (search) {
+      const q = search.toLowerCase();
+      if (!c.name.toLowerCase().includes(q) && !c.city.toLowerCase().includes(q) && !c.state.toLowerCase().includes(q)) return false;
+    }
+    if (state && c.state !== state) return false;
+    if (gender && c.gender !== gender) return false;
+    return true;
+  }) : [];
+
+  const filteredTeams = tab === "current" ? teams.filter((t) => {
+    if (search) {
+      const q = search.toLowerCase();
+      if (!t.name.toLowerCase().includes(q) && !t.city.toLowerCase().includes(q) && !t.state.toLowerCase().includes(q) && !(t.clubName || "").toLowerCase().includes(q)) return false;
+    }
+    if (state && t.state !== state) return false;
+    if (gender && t.gender !== gender) return false;
+    return true;
+  }) : [];
+
   const sorted = [...filtered].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+  const totalItems = sorted.length + filteredClubs.length + filteredTeams.length;
   const totalPages = Math.ceil(sorted.length / PER_PAGE);
   const visible = viewAll ? sorted : sorted.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -114,7 +138,10 @@ export function TryoutFilters({ tryouts }: { tryouts: Tryout[] }) {
         {/* View All / result count */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-muted">
-            {sorted.length} tryout{sorted.length !== 1 ? "s" : ""} found
+            {totalItems} result{totalItems !== 1 ? "s" : ""} found
+            {sorted.length > 0 && <> &middot; {sorted.length} tryout{sorted.length !== 1 ? "s" : ""}</>}
+            {filteredClubs.length > 0 && <> &middot; {filteredClubs.length} club{filteredClubs.length !== 1 ? "s" : ""}</>}
+            {filteredTeams.length > 0 && <> &middot; {filteredTeams.length} team{filteredTeams.length !== 1 ? "s" : ""}</>}
             {!viewAll && sorted.length > PER_PAGE && <> &middot; Page {page} of {totalPages}</>}
           </p>
           {sorted.length > PER_PAGE && (
@@ -127,7 +154,7 @@ export function TryoutFilters({ tryouts }: { tryouts: Tryout[] }) {
           )}
         </div>
 
-        {sorted.length === 0 ? (
+        {sorted.length === 0 && filteredClubs.length === 0 && filteredTeams.length === 0 ? (
           <EmptyState message={tab === "current" ? "No current tryouts found." : "No past tryouts found."} />
         ) : (
           <>
@@ -219,6 +246,124 @@ export function TryoutFilters({ tryouts }: { tryouts: Tryout[] }) {
                 </div>
               ))}
             </div>
+
+            {/* Clubs */}
+            {filteredClubs.length > 0 && (
+              <>
+                <div className="mt-10 mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary">Soccer Clubs</h2>
+                  <p className="text-sm text-muted">Clubs that may be holding tryouts — visit their page for details.</p>
+                </div>
+                <div className="space-y-4">
+                  {filteredClubs.map((club) => (
+                    <div
+                      key={club.id}
+                      className="group bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg transition-all flex flex-col sm:flex-row"
+                    >
+                      <a href={`/clubs/${club.slug}`} className="sm:w-48 shrink-0">
+                        <img
+                          src={club.teamPhoto && !club.teamPhoto.includes("idf.webp") ? club.teamPhoto : club.logo || club.imageUrl || fallbackImage}
+                          alt={club.name}
+                          className="w-full h-40 sm:h-full object-cover"
+                          style={{ objectPosition: `center ${club.imagePosition ?? 50}%` }}
+                        />
+                      </a>
+                      <div className="flex-1 p-4 sm:p-5 min-w-0">
+                        <a href={`/clubs/${club.slug}`} className="min-w-0">
+                          <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary group-hover:text-accent-hover transition-colors truncate">
+                            {club.name}
+                          </h3>
+                          <p className="text-muted text-sm">{club.city}, {club.state}</p>
+                        </a>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {club.level && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-accent/10 text-accent text-xs font-semibold">{club.level}</span>}
+                          {club.gender && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-surface text-primary text-xs font-semibold">{club.gender}</span>}
+                          {club.ageGroups && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-surface text-primary text-xs font-semibold">{club.ageGroups}</span>}
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-3 text-sm">
+                          {club.teamCount > 0 && <div><span className="text-muted">Teams:</span> <span className="font-medium text-primary">{club.teamCount}</span></div>}
+                          <div><span className="text-muted">Location:</span> <span className="font-medium text-primary">{club.city}, {club.state}</span></div>
+                        </div>
+                        <div className="flex items-center gap-3 mt-3">
+                          <a
+                            href={`/clubs/${club.slug}`}
+                            className="inline-flex items-center px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors"
+                          >
+                            View Details
+                          </a>
+                          <a
+                            href={`/clubs/${club.slug}`}
+                            className="inline-flex items-center px-4 py-2 rounded-lg border border-accent text-accent text-sm font-semibold hover:bg-accent hover:text-white transition-colors"
+                          >
+                            Register
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Teams */}
+            {filteredTeams.length > 0 && (
+              <>
+                <div className="mt-10 mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary">Soccer Teams</h2>
+                  <p className="text-sm text-muted">Teams that may be holding tryouts — visit their page for details.</p>
+                </div>
+                <div className="space-y-4">
+                  {filteredTeams.map((team) => (
+                    <div
+                      key={team.id}
+                      className="group bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg transition-all flex flex-col sm:flex-row"
+                    >
+                      <a href={`/teams/${team.slug}`} className="sm:w-48 shrink-0">
+                        <img
+                          src={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || team.imageUrl || fallbackImage}
+                          alt={team.name}
+                          className="w-full h-40 sm:h-full object-cover"
+                          style={{ objectPosition: `center ${team.imagePosition ?? 50}%` }}
+                        />
+                      </a>
+                      <div className="flex-1 p-4 sm:p-5 min-w-0">
+                        <a href={`/teams/${team.slug}`} className="min-w-0">
+                          <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary group-hover:text-accent-hover transition-colors truncate">
+                            {team.name}
+                          </h3>
+                          {team.clubName && <p className="text-muted text-sm">{team.clubName}</p>}
+                          <p className="text-muted text-sm">{team.city}, {team.state}</p>
+                        </a>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {team.level && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-accent/10 text-accent text-xs font-semibold">{team.level}</span>}
+                          {team.gender && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-surface text-primary text-xs font-semibold">{team.gender}</span>}
+                          {team.ageGroup && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-surface text-primary text-xs font-semibold">{team.ageGroup}</span>}
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-3 text-sm">
+                          {team.coach && <div><span className="text-muted">Coach:</span> <span className="font-medium text-primary">{team.coach}</span></div>}
+                          {team.season && <div><span className="text-muted">Season:</span> <span className="font-medium text-primary">{team.season}</span></div>}
+                          <div><span className="text-muted">Location:</span> <span className="font-medium text-primary">{team.city}, {team.state}</span></div>
+                        </div>
+                        <div className="flex items-center gap-3 mt-3">
+                          <a
+                            href={`/teams/${team.slug}`}
+                            className="inline-flex items-center px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors"
+                          >
+                            View Details
+                          </a>
+                          <a
+                            href={`/teams/${team.slug}`}
+                            className="inline-flex items-center px-4 py-2 rounded-lg border border-accent text-accent text-sm font-semibold hover:bg-accent hover:text-white transition-colors"
+                          >
+                            Register
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
 
             {/* Pagination */}
             {!viewAll && totalPages > 1 && (

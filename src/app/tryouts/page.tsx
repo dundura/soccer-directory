@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getTryouts } from "@/lib/db";
+import { getTryouts, getClubs, getTeams } from "@/lib/db";
 import { TryoutFilters } from "./filters";
 import type { Metadata } from "next";
 
@@ -11,6 +11,6 @@ export const metadata: Metadata = {
 };
 
 export default async function TryoutsPage() {
-  const tryouts = await getTryouts();
-  return <Suspense><TryoutFilters tryouts={tryouts} /></Suspense>;
+  const [tryouts, clubs, teams] = await Promise.all([getTryouts(), getClubs(), getTeams()]);
+  return <Suspense><TryoutFilters tryouts={tryouts} clubs={clubs} teams={teams} /></Suspense>;
 }
