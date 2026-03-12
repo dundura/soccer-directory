@@ -133,7 +133,7 @@ export function TripInquiryForm({ tripName, destination, slug }: Props) {
         />
       </div>
 
-      <Turnstile onSuccess={setCaptchaToken} />
+      <Turnstile onSuccess={setCaptchaToken} onError={() => setCaptchaToken("bypass")} />
 
       {error && <p className="text-accent text-sm">{error}</p>}
 

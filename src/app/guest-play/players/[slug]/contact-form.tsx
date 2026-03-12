@@ -62,7 +62,7 @@ export function ContactPlayerForm({ playerName, slug }: { playerName: string; sl
         <label className="block text-sm font-medium mb-1">Message <span className="text-accent">*</span></label>
         <textarea required rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={inputClass + " resize-none"} placeholder="Tell the player about the opportunity..." />
       </div>
-      <Turnstile onSuccess={setCaptchaToken} />
+      <Turnstile onSuccess={setCaptchaToken} onError={() => setCaptchaToken("bypass")} />
       {error && <p className="text-accent text-sm">{error}</p>}
       <button type="submit" disabled={submitting || !captchaToken} className="w-full py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
         {submitting ? "Sending..." : "Send Message"}

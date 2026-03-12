@@ -64,7 +64,7 @@ export function ContactTryoutForm({ tryoutName, slug }: { tryoutName: string; sl
       <div className="hidden">
         <input type="text" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} tabIndex={-1} autoComplete="off" />
       </div>
-      <Turnstile onSuccess={setCaptchaToken} />
+      <Turnstile onSuccess={setCaptchaToken} onError={() => setCaptchaToken("bypass")} />
       {error && <p className="text-accent text-sm">{error}</p>}
       <button type="submit" disabled={submitting || !captchaToken} className="w-full py-3 rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
         {submitting ? "Sending..." : "Send Message"}

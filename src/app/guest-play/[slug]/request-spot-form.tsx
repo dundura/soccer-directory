@@ -156,7 +156,7 @@ export function RequestSpotForm({ teamName, tournament, slug }: Props) {
         />
       </div>
 
-      <Turnstile onSuccess={setCaptchaToken} />
+      <Turnstile onSuccess={setCaptchaToken} onError={() => setCaptchaToken("bypass")} />
 
       {error && <p className="text-accent text-sm">{error}</p>}
 
