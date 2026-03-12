@@ -20,6 +20,19 @@ function insertBold(textarea: HTMLTextAreaElement, body: string, setBody: (v: st
   }
 }
 
+function insertLink(textarea: HTMLTextAreaElement, body: string, setBody: (v: string) => void) {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selected = body.slice(start, end);
+  const url = prompt("Enter URL:", "https://");
+  if (!url) return;
+  const text = selected || prompt("Enter link text:", "") || url;
+  const tag = `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+  const newBody = body.slice(0, start) + tag + body.slice(end);
+  setBody(newBody);
+  setTimeout(() => { textarea.focus(); }, 0);
+}
+
 export function CreatePostForm() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -137,7 +150,15 @@ export function CreatePostForm() {
                   >
                     B
                   </button>
-                  <span className="text-[10px] text-muted ml-2">Select text then click B to bold</span>
+                  <button
+                    type="button"
+                    onClick={() => textareaRef.current && insertLink(textareaRef.current, body, setBody)}
+                    className="px-2 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
+                    title="Insert link (select text first for link text)"
+                  >
+                    &#128279;
+                  </button>
+                  <span className="text-[10px] text-muted ml-2">Select text then B to bold, or click link icon to add a hyperlink</span>
                 </div>
                 <textarea
                   ref={textareaRef}

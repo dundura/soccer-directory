@@ -20,6 +20,19 @@ function insertBold(textarea: HTMLTextAreaElement, body: string, setBody: (v: st
   }
 }
 
+function insertLink(textarea: HTMLTextAreaElement, body: string, setBody: (v: string) => void) {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selected = body.slice(start, end);
+  const url = prompt("Enter URL:", "https://");
+  if (!url) return;
+  const text = selected || prompt("Enter link text:", "") || url;
+  const tag = `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+  const newBody = body.slice(0, start) + tag + body.slice(end);
+  setBody(newBody);
+  setTimeout(() => { textarea.focus(); }, 0);
+}
+
 export function PostEditableContent({
   postId,
   body,
@@ -131,7 +144,15 @@ export function PostEditableContent({
                 >
                   B
                 </button>
-                <span className="text-[10px] text-muted ml-2">Select text then click B to bold</span>
+                <button
+                  type="button"
+                  onClick={() => textareaRef.current && insertLink(textareaRef.current, bodyValue, setBodyValue)}
+                  className="px-2 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
+                  title="Insert link"
+                >
+                  &#128279;
+                </button>
+                <span className="text-[10px] text-muted ml-2">Select text then B to bold, or click link icon to add a hyperlink</span>
               </div>
               <textarea
                 ref={textareaRef}
@@ -150,7 +171,7 @@ export function PostEditableContent({
           </div>
         ) : (
           <div>
-            <div className="text-[15px] leading-relaxed text-gray-800 whitespace-pre-line" dangerouslySetInnerHTML={{ __html: bodyValue }} />
+            <div className="text-[15px] leading-relaxed text-gray-800 whitespace-pre-line [&_a]:text-accent [&_a]:underline [&_a]:hover:text-accent-hover" dangerouslySetInnerHTML={{ __html: bodyValue }} />
             {canEdit && (
               <button
                 onClick={() => setEditingBody(true)}
