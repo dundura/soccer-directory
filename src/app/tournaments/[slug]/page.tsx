@@ -79,8 +79,97 @@ export default async function TournamentDetailPage({ params }: Props) {
       <div className="max-w-[1100px] mx-auto px-6 pb-16">
         <div className="grid lg:grid-cols-[280px_1fr] gap-6 items-start">
 
-          {/* ====== LEFT SIDEBAR ====== */}
-          <aside className="flex flex-col gap-4 order-2 lg:order-1">
+          {/* ====== MAIN TOP (Hero + At a Glance) - appears first on mobile ====== */}
+          <div className="flex flex-col gap-5 lg:col-start-2 lg:row-start-1">
+
+            {/* Hero */}
+            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+              <HeroImage src={heroPhoto} alt={tournament.name} id={tournament.id} imagePosition={heroPos} />
+              <div className="p-7">
+                <img
+                  src={logo}
+                  alt={`${tournament.name} logo`}
+                  className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10 mb-4"
+                />
+                <div>
+                  <InlineEditField ownerId={ownerId} listingType="tournament" listingId={tournament.id} field="name" value={tournament.name} tag="h1" className="text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+                  {tournament.tagline && (
+                    <InlineEditField ownerId={ownerId} listingType="tournament" listingId={tournament.id} field="tagline" value={tournament.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                  )}
+                  <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
+                    {tournament.organizer} {" \u00b7 "} {tournament.city}, {tournament.state}
+                  </p>
+                  {tournament.description && (
+                    <div className="mb-0">
+                      <InlineEditField ownerId={ownerId} listingType="tournament" listingId={tournament.id} field="description" value={tournament.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                    </div>
+                  )}
+                  <div className="flex gap-2.5 mt-[18px] flex-wrap">
+                    {tournament.registrationUrl ? (
+                      <a
+                        href={tournament.registrationUrl}
+                        target="_blank"
+                        className="bg-[#DC373E] text-white px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-[#C42F36] transition-colors"
+                      >
+                        Register Now &rarr;
+                      </a>
+                    ) : (
+                      <a
+                        href={`/contact/tournament/${slug}`}
+                        className="bg-[#DC373E] text-white px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-[#C42F36] transition-colors"
+                      >
+                        Contact Organizer
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* At a Glance */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-3.5">
+                <h3 className="text-[15px] font-bold text-primary">At a Glance</h3>
+                <EditSectionLink ownerId={ownerId} listingType="tournament" listingId={tournament.id} />
+              </div>
+              <div className="grid grid-cols-2 gap-2.5 mt-1">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg leading-none">&#127942;</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Level</span>
+                  <span className="text-sm font-bold text-primary ml-auto">{tournament.level}</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg leading-none">&#9917;</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Format</span>
+                  <span className="text-sm font-bold text-primary ml-auto">{tournament.format}</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg leading-none">&#128197;</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Dates</span>
+                  <span className="text-sm font-bold text-primary ml-auto">{tournament.dates}</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg leading-none">&#128176;</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Entry Fee</span>
+                  <span className="text-sm font-bold text-primary ml-auto">{tournament.entryFee}</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg leading-none">&#127874;</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Ages</span>
+                  <span className="text-sm font-bold text-primary ml-auto">{tournament.ageGroups}</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg leading-none">&#128101;</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Gender</span>
+                  <span className="text-sm font-bold text-primary ml-auto">{tournament.gender}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* ====== LEFT SIDEBAR - appears second on mobile (above photos) ====== */}
+          <aside className="flex flex-col gap-4 lg:row-start-1 lg:row-span-3">
 
             {/* Photo + Name + CTA */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
@@ -171,92 +260,8 @@ export default async function TournamentDetailPage({ params }: Props) {
             <ListingPostsSidebar listingType="tournament" listingId={String(tournament.id)} slug={slug} ownerId={ownerId} />
           </aside>
 
-          {/* ====== RIGHT MAIN COLUMN ====== */}
-          <main className="flex flex-col gap-5 order-1 lg:order-2">
-
-            {/* Hero */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <HeroImage src={heroPhoto} alt={tournament.name} id={tournament.id} imagePosition={heroPos} />
-              <div className="p-7">
-                <img
-                  src={logo}
-                  alt={`${tournament.name} logo`}
-                  className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10 mb-4"
-                />
-                <div>
-                  <InlineEditField ownerId={ownerId} listingType="tournament" listingId={tournament.id} field="name" value={tournament.name} tag="h1" className="text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
-                  {tournament.tagline && (
-                    <InlineEditField ownerId={ownerId} listingType="tournament" listingId={tournament.id} field="tagline" value={tournament.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
-                  )}
-                  <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
-                    {tournament.organizer} {" \u00b7 "} {tournament.city}, {tournament.state}
-                  </p>
-                  {tournament.description && (
-                    <div className="mb-0">
-                      <InlineEditField ownerId={ownerId} listingType="tournament" listingId={tournament.id} field="description" value={tournament.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
-                    </div>
-                  )}
-                  <div className="flex gap-2.5 mt-[18px] flex-wrap">
-                    {tournament.registrationUrl ? (
-                      <a
-                        href={tournament.registrationUrl}
-                        target="_blank"
-                        className="bg-[#DC373E] text-white px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-[#C42F36] transition-colors"
-                      >
-                        Register Now &rarr;
-                      </a>
-                    ) : (
-                      <a
-                        href={`/contact/tournament/${slug}`}
-                        className="bg-[#DC373E] text-white px-[22px] py-[11px] rounded-lg text-sm font-bold hover:bg-[#C42F36] transition-colors"
-                      >
-                        Contact Organizer
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* At a Glance */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">At a Glance</h3>
-                <EditSectionLink ownerId={ownerId} listingType="tournament" listingId={tournament.id} />
-              </div>
-              <div className="grid grid-cols-2 gap-2.5 mt-1">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#127942;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Level</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{tournament.level}</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#9917;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Format</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{tournament.format}</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#128197;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Dates</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{tournament.dates}</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#128176;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Entry Fee</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{tournament.entryFee}</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#127874;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Ages</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{tournament.ageGroups}</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg leading-none">&#128101;</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Gender</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{tournament.gender}</span>
-                </div>
-              </div>
-            </div>
+          {/* ====== MAIN BOTTOM (Photos & rest) - appears third on mobile ====== */}
+          <main className="flex flex-col gap-5 lg:col-start-2">
 
             {/* Photos & Video */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -275,9 +280,7 @@ export default async function TournamentDetailPage({ params }: Props) {
 
             {/* ====== Sponsors ====== */}
             {tournament.sponsors && tournament.sponsors.length > 0 && (
-              <div className="order-8 lg:order-none lg:col-start-2">
-                <SponsorsSection sponsors={tournament.sponsors} />
-              </div>
+              <SponsorsSection sponsors={tournament.sponsors} />
             )}
 
             {/* Reviews */}
