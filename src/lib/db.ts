@@ -2299,8 +2299,7 @@ export async function getListingImages(type: string, id: string): Promise<string
     type = normalizeType(type);
     const table = TYPE_TO_TABLE[type];
     if (!table) return [];
-    const raw = [`SELECT * FROM ${table} WHERE id = `, " LIMIT 1"] as unknown as TemplateStringsArray;
-    const rows: Record<string, unknown>[] = await sql(raw, id);
+    const rows: Record<string, unknown>[] = await sql.query(`SELECT photos, team_photo, image_url, logo FROM ${table} WHERE id = $1 LIMIT 1`, [id]);
     if (!rows[0]) return [];
     const images: string[] = [];
     const row = rows[0];
