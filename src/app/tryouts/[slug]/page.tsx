@@ -209,10 +209,9 @@ export default async function TryoutDetailPage({ params }: Props) {
           </aside>
 
           {/* ====== RIGHT MAIN COLUMN ====== */}
-          <main className="flex flex-col gap-5 order-1 lg:order-none lg:col-start-2">
 
             {/* Hero */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <div className="order-1 lg:order-none lg:col-start-2 bg-white rounded-2xl overflow-hidden shadow-sm">
               <HeroImage src={heroPhoto} alt={tryout.name} id={tryout.id} imagePosition={heroPos} />
               <div className="p-5 sm:p-7 sm:flex sm:gap-6 sm:items-start">
                 <img
@@ -269,7 +268,7 @@ export default async function TryoutDetailPage({ params }: Props) {
 
             {/* Special Announcements */}
             {hasAnnouncements && (
-              <div className="space-y-4">
+              <div className="order-2 lg:order-none lg:col-start-2 space-y-4">
                 {(tryout.announcementHeading || tryout.announcementText || tryout.announcementImage) && (
                   <AnnouncementSection heading={tryout.announcementHeading} text={tryout.announcementText} image={tryout.announcementImage} ctaUrl={normalizeUrl(tryout.announcementCtaUrl || tryout.website)} ctaLabel={tryout.announcementCta || "Learn More →"} />
                 )}
@@ -283,7 +282,7 @@ export default async function TryoutDetailPage({ params }: Props) {
             )}
 
             {/* At a Glance */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className={`${hasAnnouncements ? "order-3" : "order-2"} lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm`}>
               <div className="flex items-center justify-between mb-3.5">
                 <h3 className="text-[15px] font-bold text-primary">At a Glance</h3>
                 <EditSectionLink ownerId={ownerId} listingType="tryout" listingId={tryout.id} />
@@ -332,7 +331,7 @@ export default async function TryoutDetailPage({ params }: Props) {
             </div>
 
             {/* Photos & Video */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
                 <h3 className="text-[15px] font-bold text-primary">Photos &amp; Video</h3>
                 <EditSectionLink ownerId={ownerId} listingType="tryout" listingId={tryout.id} />
@@ -343,30 +342,34 @@ export default async function TryoutDetailPage({ params }: Props) {
               {videoUrl && <VideoEmbed url={videoUrl} />}
             </div>
 
-            <FeaturedArticles />
+            <div className="order-6 lg:order-none lg:col-start-2">
+              <FeaturedArticles />
+            </div>
 
             {/* Contact Form */}
-            <div id="contact" className="bg-white rounded-2xl border-2 border-accent/20 p-6">
+            <div id="contact" className="order-7 lg:order-none lg:col-start-2 bg-white rounded-2xl border-2 border-accent/20 p-6">
               <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-1">Contact Organizer</h2>
               <p className="text-muted text-sm mb-5">Have questions about this tryout? Send a message to the organizer.</p>
               <ContactTryoutForm tryoutName={tryout.name} slug={slug} />
             </div>
 
             {/* Reviews */}
-            <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
-              <ReviewSection listingType="tryout" listingId={tryout.id} />
-            </Suspense>
+            <div className="order-8 lg:order-none lg:col-start-2">
+              <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
+                <ReviewSection listingType="tryout" listingId={tryout.id} />
+              </Suspense>
+            </div>
 
             {/* ====== Sponsors ====== */}
             {tryout.sponsors && tryout.sponsors.length > 0 && (
-              <div className="order-8 lg:order-none lg:col-start-2">
+              <div className="order-9 lg:order-none lg:col-start-2">
                 <SponsorsSection sponsors={tryout.sponsors} />
               </div>
             )}
 
-            <AnytimeInlineCTA />
-
-          </main>
+            <div className="order-10 lg:order-none lg:col-start-2">
+              <AnytimeInlineCTA />
+            </div>
         </div>
       </div>
     </>
