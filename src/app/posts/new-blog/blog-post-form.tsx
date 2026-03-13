@@ -33,7 +33,7 @@ function insertLink(textarea: HTMLTextAreaElement, body: string, setBody: (v: st
   setTimeout(() => { textarea.focus(); }, 0);
 }
 
-export function CreatePostForm() {
+export function BlogPostForm() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -44,6 +44,7 @@ export function CreatePostForm() {
   const listingSlug = searchParams.get("slug") || "";
   const listingName = searchParams.get("name") || "";
 
+  const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
@@ -61,7 +62,7 @@ export function CreatePostForm() {
 
   if (status === "loading") {
     return (
-      <div className="max-w-[700px] mx-auto px-6 py-16 text-center">
+      <div className="max-w-[800px] mx-auto px-6 py-16 text-center">
         <div className="animate-pulse text-muted">Loading...</div>
       </div>
     );
@@ -69,15 +70,15 @@ export function CreatePostForm() {
 
   if (!session?.user?.id || !listingType || !listingId) {
     return (
-      <div className="max-w-[700px] mx-auto px-6 py-16 text-center">
-        <p className="text-muted">Invalid link. Please go back to your listing and click Create Post.</p>
+      <div className="max-w-[800px] mx-auto px-6 py-16 text-center">
+        <p className="text-muted">Invalid link. Please go back to your dashboard and click Write Blog Post.</p>
       </div>
     );
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!body.trim()) return;
+    if (!title.trim() || !body.trim()) return;
     setSubmitting(true);
     setError("");
     try {
@@ -88,6 +89,7 @@ export function CreatePostForm() {
           type: listingType,
           id: listingId,
           slug: listingSlug,
+          title: title.trim(),
           body: body.trim(),
           imageUrl: imageUrl || undefined,
           videoUrl: videoUrl || undefined,
@@ -107,7 +109,7 @@ export function CreatePostForm() {
         }
       } else {
         const data = await res.json();
-        setError(data.error || "Failed to create post");
+        setError(data.error || "Failed to publish blog post");
       }
     } catch {
       setError("Something went wrong. Please try again.");
@@ -117,35 +119,70 @@ export function CreatePostForm() {
 
   return (
     <>
-      <div className="max-w-[700px] mx-auto px-6 py-3.5 text-sm text-muted">
+      <div className="max-w-[800px] mx-auto px-6 py-3.5 text-sm text-muted">
         {listingName ? (
           <>
             <span className="text-primary">{listingName}</span>
             {" \u203A "}
           </>
         ) : null}
-        <span>Create Post</span>
+        <span>Write Blog Post</span>
       </div>
 
-      <div className="max-w-[700px] mx-auto px-6 pb-16">
+      <div className="max-w-[800px] mx-auto px-6 pb-16">
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="px-6 pt-6 pb-2">
-            <h1 className="text-xl font-extrabold text-primary">Create a Post</h1>
+          {/* Header */}
+          <div className="bg-primary px-8 py-6">
+            <h1 className="text-2xl font-extrabold text-white font-[family-name:var(--font-display)]">Write a Blog Post</h1>
             {listingName && (
-              <p className="text-sm text-muted mt-1">Posting as {listingName}</p>
+              <p className="text-white/70 text-sm mt-1">Publishing as {listingName}</p>
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-5">
-            {/* Body with formatting toolbar */}
+          <form onSubmit={handleSubmit} className="px-8 py-8 space-y-6">
+            {/* Title */}
             <div>
-              <label className="block text-sm font-bold text-primary mb-1.5">Post Content</label>
+              <label className="block text-sm font-bold text-primary mb-2">Title *</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Give your blog post a title"
+                className="w-full text-2xl font-bold px-4 py-4 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent font-[family-name:var(--font-display)] placeholder:text-gray-300 placeholder:font-normal"
+                autoFocus
+                required
+              />
+            </div>
+
+            {/* Cover Image */}
+            <div>
+              <label className="block text-sm font-bold text-primary mb-2">Cover Image</label>
+              {imageUrl ? (
+                <div className="relative">
+                  <img src={imageUrl} alt="Cover" className="w-full rounded-xl max-h-[350px] object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setImageUrl("")}
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 text-white text-sm flex items-center justify-center hover:bg-black/80 transition-colors"
+                  >
+                    &#x2715;
+                  </button>
+                </div>
+              ) : (
+                <ImageUpload onUploaded={(url) => setImageUrl(url)} />
+              )}
+              <p className="text-xs text-muted mt-1.5">Add a cover image to make your blog post stand out</p>
+            </div>
+
+            {/* Body */}
+            <div>
+              <label className="block text-sm font-bold text-primary mb-2">Content *</label>
               <div className="border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent/30 focus-within:border-accent">
-                <div className="flex items-center gap-1 px-3 py-1.5 bg-surface border-b border-border">
+                <div className="flex items-center gap-1 px-3 py-2 bg-surface border-b border-border">
                   <button
                     type="button"
                     onClick={() => textareaRef.current && insertBold(textareaRef.current, body, setBody)}
-                    className="px-2 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
+                    className="px-2.5 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
                     title="Bold (select text first)"
                   >
                     B
@@ -153,8 +190,8 @@ export function CreatePostForm() {
                   <button
                     type="button"
                     onClick={() => textareaRef.current && insertLink(textareaRef.current, body, setBody)}
-                    className="px-2 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
-                    title="Insert link (select text first for link text)"
+                    className="px-2.5 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
+                    title="Insert link"
                   >
                     &#128279;
                   </button>
@@ -164,36 +201,19 @@ export function CreatePostForm() {
                   ref={textareaRef}
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
-                  placeholder="Write your post here... Share news, updates, tips, or anything your audience would love to read."
-                  rows={10}
-                  className="w-full text-[15px] leading-relaxed px-4 py-3 focus:outline-none resize-y"
-                  autoFocus
+                  placeholder="Write your blog post content here...
+
+Share your expertise, stories, training tips, match recaps, or anything your audience would love to read. Use paragraphs to organize your thoughts."
+                  rows={16}
+                  className="w-full text-[15px] leading-[1.8] px-5 py-4 focus:outline-none resize-y"
+                  required
                 />
               </div>
             </div>
 
-            {/* Image */}
-            <div>
-              <label className="block text-sm font-bold text-primary mb-1.5">Image</label>
-              {imageUrl ? (
-                <div className="relative">
-                  <img src={imageUrl} alt="Preview" className="w-full rounded-xl max-h-[300px] object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => setImageUrl("")}
-                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white text-sm flex items-center justify-center hover:bg-black/80 transition-colors"
-                  >
-                    &#x2715;
-                  </button>
-                </div>
-              ) : (
-                <ImageUpload onUploaded={(url) => setImageUrl(url)} />
-              )}
-            </div>
-
             {/* Video */}
             <div>
-              <label className="block text-sm font-bold text-primary mb-1.5">Video / Social Embed</label>
+              <label className="block text-sm font-bold text-primary mb-2">Embed Video <span className="font-normal text-muted">(optional)</span></label>
               <input
                 type="url"
                 value={videoUrl}
@@ -201,32 +221,11 @@ export function CreatePostForm() {
                 placeholder="YouTube, YouTube Shorts, Vimeo, Instagram, or TikTok link"
                 className="w-full text-sm px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
               />
-              <p className="text-xs text-muted mt-1.5">Supports YouTube, YouTube Shorts, Vimeo, Instagram posts/reels, and TikTok</p>
-            </div>
-
-            {/* Social Media Preview Image */}
-            <div>
-              <label className="block text-sm font-bold text-primary mb-1.5">Social Media Preview Image <span className="font-normal text-muted">(optional)</span></label>
-              <p className="text-xs text-muted mb-2">This image shows when your post is shared on Facebook, X, etc. It won't appear in the post itself. For Instagram videos, take a screenshot and upload it here. TikTok thumbnails are grabbed automatically.</p>
-              {ogImageUrl ? (
-                <div className="relative">
-                  <img src={ogImageUrl} alt="Preview" className="w-full rounded-xl max-h-[200px] object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => setOgImageUrl("")}
-                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white text-sm flex items-center justify-center hover:bg-black/80 transition-colors"
-                  >
-                    &#x2715;
-                  </button>
-                </div>
-              ) : (
-                <ImageUpload onUploaded={(url) => setOgImageUrl(url)} />
-              )}
             </div>
 
             {/* CTA Button */}
             <div>
-              <label className="block text-sm font-bold text-primary mb-1.5">Call-to-Action Button <span className="font-normal text-muted">(optional)</span></label>
+              <label className="block text-sm font-bold text-primary mb-2">Call-to-Action Button <span className="font-normal text-muted">(optional)</span></label>
               <div className="flex gap-3">
                 <input
                   type="url"
@@ -243,26 +242,46 @@ export function CreatePostForm() {
                   className="w-40 text-sm px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
                 />
               </div>
-              <p className="text-xs text-muted mt-1.5">Add a button that links to your website, signup page, etc. Default label: &quot;Learn More&quot;</p>
+              <p className="text-xs text-muted mt-1.5">Add a button linking to your website, signup page, etc.</p>
+            </div>
+
+            {/* Social Preview Image */}
+            <div>
+              <label className="block text-sm font-bold text-primary mb-2">Social Media Preview <span className="font-normal text-muted">(optional)</span></label>
+              <p className="text-xs text-muted mb-2">This image shows when your post is shared on Facebook, X, etc. If not set, the cover image will be used.</p>
+              {ogImageUrl ? (
+                <div className="relative">
+                  <img src={ogImageUrl} alt="Preview" className="w-full rounded-xl max-h-[200px] object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setOgImageUrl("")}
+                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white text-sm flex items-center justify-center hover:bg-black/80 transition-colors"
+                  >
+                    &#x2715;
+                  </button>
+                </div>
+              ) : (
+                <ImageUpload onUploaded={(url) => setOgImageUrl(url)} />
+              )}
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 font-medium">{error}</p>
+              <p className="text-sm text-red-600 font-medium bg-red-50 px-4 py-3 rounded-xl">{error}</p>
             )}
 
             {/* Actions */}
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex items-center gap-3 pt-4 border-t border-border">
               <button
                 type="submit"
-                disabled={submitting || !body.trim()}
-                className="px-8 py-3 rounded-xl text-sm font-bold bg-accent text-white hover:bg-accent-hover transition-colors disabled:opacity-50"
+                disabled={submitting || !title.trim() || !body.trim()}
+                className="px-10 py-3.5 rounded-xl text-sm font-bold bg-accent text-white hover:bg-accent-hover transition-colors disabled:opacity-50"
               >
-                {submitting ? "Publishing..." : "Publish Post"}
+                {submitting ? "Publishing..." : "Publish Blog Post"}
               </button>
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="px-6 py-3 rounded-xl text-sm font-medium text-muted hover:bg-surface transition-colors"
+                className="px-6 py-3.5 rounded-xl text-sm font-medium text-muted hover:bg-surface transition-colors"
               >
                 Cancel
               </button>
