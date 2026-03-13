@@ -141,21 +141,7 @@ export function BlogPostForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="px-8 py-8 space-y-6">
-            {/* Title */}
-            <div>
-              <label className="block text-sm font-bold text-primary mb-2">Title *</label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Give your blog post a title"
-                className="w-full text-2xl font-bold px-4 py-4 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent font-[family-name:var(--font-display)] placeholder:text-gray-300 placeholder:font-normal"
-                autoFocus
-                required
-              />
-            </div>
-
-            {/* Cover Image */}
+            {/* Cover Image - at the top */}
             <div>
               <label className="block text-sm font-bold text-primary mb-2">Cover Image</label>
               {imageUrl ? (
@@ -192,6 +178,20 @@ export function BlogPostForm() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-bold text-primary mb-2">Title *</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Give your blog post a title"
+                className="w-full text-2xl font-bold px-4 py-4 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent font-[family-name:var(--font-display)] placeholder:text-gray-300 placeholder:font-normal"
+                autoFocus
+                required
+              />
             </div>
 
             {/* Body - Rich Text Editor */}
