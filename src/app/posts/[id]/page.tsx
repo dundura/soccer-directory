@@ -208,22 +208,6 @@ export default async function PostPage({ params }: Props) {
 
         <div className="bg-white">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            {/* Profile link (always at top) */}
-            {listingName && listingSlug && (
-              <a
-                href={profileUrl}
-                className="flex items-center gap-4 px-5 py-4 rounded-xl bg-surface border border-border hover:border-primary/30 hover:shadow-sm transition-all group mb-8"
-              >
-                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg shrink-0">
-                  {listingName.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-primary group-hover:text-accent transition-colors">{listingName}</p>
-                  <p className="text-xs text-muted">View full profile &rarr;</p>
-                </div>
-              </a>
-            )}
-
             {/* Cover image */}
             {post.imageUrl && (
               <div className="mb-8">
@@ -254,6 +238,8 @@ export default async function PostPage({ params }: Props) {
                 ogImageUrl={post.ogImageUrl}
                 userId={post.userId}
                 blogLayout
+                profileName={listingName || undefined}
+                profileUrl={listingSlug ? profileUrl : undefined}
               />
             </div>
 

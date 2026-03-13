@@ -45,6 +45,8 @@ export function PostEditableContent({
   ogImageUrl,
   userId,
   blogLayout,
+  profileName,
+  profileUrl,
 }: {
   postId: string;
   title?: string;
@@ -57,6 +59,8 @@ export function PostEditableContent({
   ogImageUrl?: string;
   userId: string;
   blogLayout?: boolean;
+  profileName?: string;
+  profileUrl?: string;
 }) {
   const { data: session } = useSession();
   const isOwner = session?.user?.id === userId;
@@ -148,6 +152,40 @@ export function PostEditableContent({
 
   return (
     <>
+      {/* Profile card + edit controls (blog layout, always at top) */}
+      {blogLayout && profileName && profileUrl && (
+        <div className="mb-8">
+          <a
+            href={profileUrl}
+            className="flex items-center gap-4 px-5 py-4 rounded-xl bg-surface border border-border hover:border-primary/30 hover:shadow-sm transition-all group"
+          >
+            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg shrink-0">
+              {profileName.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-primary group-hover:text-accent transition-colors">{profileName}</p>
+              <p className="text-xs text-muted">View full profile &rarr;</p>
+            </div>
+          </a>
+          {isAdmin && !editingBody && !editingMedia && (
+            <div className="flex items-center gap-4 mt-3">
+              <button
+                onClick={() => setEditingBody(true)}
+                className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors"
+              >
+                Edit Post
+              </button>
+              <button
+                onClick={() => setEditingMedia(true)}
+                className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors"
+              >
+                Edit Image / Video / CTA
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Image - at the top (regular posts only; blog layout handles image in parent) */}
       {!blogLayout && imageUrl && !editingMedia && (
         <div className="px-4 pb-4">
