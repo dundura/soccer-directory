@@ -363,7 +363,7 @@ export function PostEditableContent({
       {blogLayout && (
         <style>{`
           .blog-article-body {
-            font-size: 16px;
+            font-size: 18px;
             line-height: 1.9;
             color: #333;
           }
