@@ -8,6 +8,7 @@ import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { PhotoGrid } from "@/components/photo-grid";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -392,9 +393,7 @@ export default async function TeamDetailPage({ params }: Props) {
                 <EditSectionLink ownerId={ownerId} listingType="team" listingId={team.id} />
               </div>
               <div className={`grid grid-cols-2 gap-1.5 ${videoUrl ? "mb-3" : ""}`}>
-                {teamPhotos.map((photo, i) => (
-                  <img key={i} src={photo} alt={`Team photo ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-lg block" style={{ objectPosition: `center ${imgPos}%` }} />
-                ))}
+                <PhotoGrid photos={teamPhotos} alt="Team photo" />
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
           </div>

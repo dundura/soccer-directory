@@ -5,6 +5,7 @@ import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { PhotoGrid } from "@/components/photo-grid";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ReviewSection } from "@/components/review-section";
 import { AnnouncementSection } from "@/components/announcement-section";
@@ -198,9 +199,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                   <EditSectionLink ownerId={ownerId} listingType="service" listingId={service.id} />
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {photos.map((photo, i) => (
-                    <img key={i} src={photo} alt={`${service.name} photo ${i + 1}`} className="w-full aspect-square object-cover rounded-xl" />
-                  ))}
+                  <PhotoGrid photos={photos} alt="Service photo" />
                 </div>
               </div>
             )}

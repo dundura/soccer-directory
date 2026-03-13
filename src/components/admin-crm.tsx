@@ -55,6 +55,7 @@ export function AdminCRM() {
   function startEdit(c: Contact) {
     setEditingId(c.id);
     setForm({ firstName: c.first_name, lastName: c.last_name, email: c.email, phone: c.phone, team: c.team, onboardingDate: c.onboarding_date, groupName: c.group_name, notes: c.notes });
+    setTimeout(() => document.getElementById("crm-form")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }
 
   async function handleDelete(id: number) {
@@ -101,7 +102,7 @@ export function AdminCRM() {
   return (
     <div className="space-y-6">
       {/* Add / Edit Form */}
-      <div className="bg-white rounded-2xl border border-border p-6">
+      <div id="crm-form" className="bg-white rounded-2xl border border-border p-6">
         <h3 className="font-[family-name:var(--font-display)] text-lg font-bold mb-4">
           {editingId ? "Edit Contact" : "Add Contact"}
         </h3>

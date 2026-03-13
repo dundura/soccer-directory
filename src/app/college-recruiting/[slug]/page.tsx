@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getRecruiterBySlug, getRecruiterSlugs, getListingOwner } from "@/lib/db";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { PhotoGrid } from "@/components/photo-grid";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
@@ -329,9 +330,7 @@ export default async function RecruiterDetailPage({ params }: Props) {
                 <EditSectionLink ownerId={ownerId} listingType="recruiter" listingId={recruiter.id} />
               </div>
               <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
-                {recruiterPhotos.map((photo, i) => (
-                  <img key={i} src={photo} alt={`Advisor photo ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-xl block" style={{ objectPosition: `center ${imgPos}%` }} />
-                ))}
+                <PhotoGrid photos={recruiterPhotos} alt="Recruiter photo" />
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
             </div>

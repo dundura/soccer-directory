@@ -4,6 +4,7 @@ import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { PhotoGrid } from "@/components/photo-grid";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { notFound } from "next/navigation";
@@ -284,9 +285,7 @@ export default async function FutsalDetailPage({ params }: Props) {
                 <EditSectionLink ownerId={ownerId} listingType="futsal" listingId={team.id} />
               </div>
               <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
-                {teamPhotos.map((photo, i) => (
-                  <img key={i} src={photo} alt={`Team photo ${i + 1}`} className="w-full aspect-square object-cover rounded-xl block" />
-                ))}
+                <PhotoGrid photos={teamPhotos} alt="Futsal photo" />
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
             </div>

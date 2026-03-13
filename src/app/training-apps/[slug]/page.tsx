@@ -4,6 +4,7 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { PhotoGrid } from "@/components/photo-grid";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
@@ -198,9 +199,7 @@ export default async function TrainingAppDetailPage({ params }: Props) {
                   <EditSectionLink ownerId={ownerId} listingType="trainingapp" listingId={app.id} />
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {photos.map((photo, i) => (
-                    <img key={i} src={photo} alt={`${app.name} photo ${i + 1}`} className="w-full aspect-square object-cover rounded-xl" />
-                  ))}
+                  <PhotoGrid photos={photos} alt="App photo" />
                 </div>
               </div>
             )}

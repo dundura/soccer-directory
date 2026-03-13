@@ -6,6 +6,7 @@ import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { FeaturedArticles } from "@/components/featured-articles";
+import { PhotoGrid } from "@/components/photo-grid";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { notFound } from "next/navigation";
@@ -336,9 +337,7 @@ export default async function TryoutDetailPage({ params }: Props) {
                 <EditSectionLink ownerId={ownerId} listingType="tryout" listingId={tryout.id} />
               </div>
               <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
-                {tryoutPhotos.map((photo, i) => (
-                  <img key={i} src={photo} alt={`Tryout photo ${i + 1}`} className="w-full aspect-square object-cover rounded-xl block" />
-                ))}
+                <PhotoGrid photos={tryoutPhotos} alt="Tryout photo" />
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
             </div>
