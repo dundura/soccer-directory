@@ -133,6 +133,13 @@ export function PostEditableContent({
 
   return (
     <>
+      {/* Image - at the top */}
+      {imageUrl && !editingMedia && (
+        <div className="px-4 pb-4">
+          <img src={imageUrl} alt="" className="w-full rounded-xl object-cover" />
+        </div>
+      )}
+
       {/* Title + Body */}
       <div className="px-6 pb-4">
         {editingBody ? (
@@ -196,13 +203,6 @@ export function PostEditableContent({
           </div>
         )}
       </div>
-
-      {/* Image */}
-      {imageUrl && !editingMedia && (
-        <div className="px-4 pb-4">
-          <img src={imageUrl} alt="" className="w-full rounded-xl object-cover" />
-        </div>
-      )}
 
       {/* Video */}
       {videoUrl && !editingMedia && (
