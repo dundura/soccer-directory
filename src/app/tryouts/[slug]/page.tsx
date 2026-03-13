@@ -102,10 +102,10 @@ export default async function TryoutDetailPage({ params }: Props) {
       </div>
 
       <div className="max-w-[1100px] mx-auto px-6 pb-16">
-        <div className="grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5 lg:gap-6 items-start">
 
           {/* ====== LEFT SIDEBAR ====== */}
-          <aside className="flex flex-col gap-4 order-2 lg:order-1">
+          <aside className="order-4 lg:order-none lg:[grid-row:span_10] flex flex-col gap-4">
 
             {/* Photo + Name + CTA */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
@@ -209,7 +209,7 @@ export default async function TryoutDetailPage({ params }: Props) {
           </aside>
 
           {/* ====== RIGHT MAIN COLUMN ====== */}
-          <main className="flex flex-col gap-5 order-1 lg:order-2">
+          <main className="flex flex-col gap-5 order-1 lg:order-none lg:col-start-2">
 
             {/* Hero */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
