@@ -72,7 +72,7 @@ export default function SitePopup() {
             It takes less than 2 minutes. No cost. No catch.
           </p>
           <Link
-            href="/list"
+            href="/dashboard"
             onClick={dismiss}
             className="bg-accent hover:bg-accent-hover text-white text-center px-6 py-4 rounded-full font-bold text-base transition-all hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(220,55,62,0.35)] hover:shadow-[0_6px_25px_rgba(220,55,62,0.45)]"
           >
