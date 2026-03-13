@@ -4,6 +4,7 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { AnnouncementSection } from "@/components/announcement-section";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
@@ -73,6 +74,16 @@ export default async function TryoutDetailPage({ params }: Props) {
   const tryoutPhotos = tryout.photos && tryout.photos.length > 0 ? tryout.photos : DEFAULT_PHOTOS;
   const logo = tryout.logo || DEFAULT_LOGO;
   const videoUrl = tryout.videoUrl === undefined || tryout.videoUrl === null ? DEFAULT_VIDEO : tryout.videoUrl || null;
+
+  const hasAnnouncements =
+    tryout.announcementHeading || tryout.announcementText || tryout.announcementImage ||
+    tryout.announcementHeading2 || tryout.announcementText2 || tryout.announcementImage2 ||
+    tryout.announcementHeading3 || tryout.announcementText3 || tryout.announcementImage3;
+
+  function normalizeUrl(url?: string) {
+    if (!url) return undefined;
+    return url.startsWith("http") ? url : `https://${url}`;
+  }
 
   return (
     <>
@@ -253,6 +264,21 @@ export default async function TryoutDetailPage({ params }: Props) {
                 </div>
               </div>
             </div>
+
+            {/* Special Announcements */}
+            {hasAnnouncements && (
+              <div className="space-y-4">
+                {(tryout.announcementHeading || tryout.announcementText || tryout.announcementImage) && (
+                  <AnnouncementSection heading={tryout.announcementHeading} text={tryout.announcementText} image={tryout.announcementImage} ctaUrl={normalizeUrl(tryout.announcementCtaUrl || tryout.website)} ctaLabel={tryout.announcementCta || "Learn More →"} />
+                )}
+                {(tryout.announcementHeading2 || tryout.announcementText2 || tryout.announcementImage2) && (
+                  <AnnouncementSection heading={tryout.announcementHeading2} text={tryout.announcementText2} image={tryout.announcementImage2} ctaUrl={normalizeUrl(tryout.announcementCtaUrl2 || tryout.website)} ctaLabel={tryout.announcementCta2 || "Learn More →"} />
+                )}
+                {(tryout.announcementHeading3 || tryout.announcementText3 || tryout.announcementImage3) && (
+                  <AnnouncementSection heading={tryout.announcementHeading3} text={tryout.announcementText3} image={tryout.announcementImage3} ctaUrl={normalizeUrl(tryout.announcementCtaUrl3 || tryout.website)} ctaLabel={tryout.announcementCta3 || "Learn More →"} />
+                )}
+              </div>
+            )}
 
             {/* At a Glance */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">

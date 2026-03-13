@@ -1,0 +1,15 @@
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_heading TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_text TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_image TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_cta TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_cta_url TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_heading_2 TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_text_2 TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_image_2 TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_cta_2 TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_cta_url_2 TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_heading_3 TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_text_3 TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_image_3 TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_cta_3 TEXT;
+ALTER TABLE tryouts ADD COLUMN IF NOT EXISTS announcement_cta_url_3 TEXT;

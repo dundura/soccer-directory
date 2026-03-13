@@ -4,8 +4,11 @@ const PINNED_SLUG = "top-7-soccer-training-apps-train-smarter-at-home";
 
 export async function FeaturedArticles() {
   const [posts, pinned] = await Promise.all([getBlogPosts(), getBlogPostBySlug(PINNED_SLUG)]);
-  const top2 = posts.filter((p) => p.slug !== PINNED_SLUG).slice(0, 2);
-  const articles = pinned ? [...top2, pinned] : posts.slice(0, 3);
+  const others = posts.filter((p) => p.slug !== PINNED_SLUG);
+  // Pick 2 random articles from the remaining posts
+  const shuffled = others.sort(() => Math.random() - 0.5);
+  const random2 = shuffled.slice(0, 2);
+  const articles = pinned ? [pinned, ...random2] : posts.slice(0, 3);
   if (articles.length === 0) return null;
 
   return (
