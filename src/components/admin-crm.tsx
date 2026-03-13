@@ -54,7 +54,7 @@ export function AdminCRM() {
 
   function startEdit(c: Contact) {
     setEditingId(c.id);
-    setForm({ firstName: c.first_name, lastName: c.last_name, email: c.email, phone: c.phone, team: c.team, onboardingDate: c.onboarding_date, groupName: c.group_name, notes: c.notes });
+    setForm({ firstName: c.first_name || "", lastName: c.last_name || "", email: c.email || "", phone: c.phone || "", team: c.team || "", onboardingDate: c.onboarding_date || "", groupName: c.group_name || "", notes: c.notes || "" });
     setTimeout(() => document.getElementById("crm-form")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }
 
