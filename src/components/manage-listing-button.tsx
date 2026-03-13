@@ -132,6 +132,16 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
         </a>
       )}
 
+      {/* Write Blog Post */}
+      {createPostHref && (
+        <a
+          href={createPostHref.replace("/posts/new?", "/posts/new-blog?")}
+          className="block w-full text-center px-4 py-2 rounded-xl border-2 border-accent/20 bg-accent/5 text-accent text-sm font-bold hover:bg-accent/10 transition-colors"
+        >
+          Write Blog Post
+        </a>
+      )}
+
       {/* Invite Review (not for Instagram/TikTok pages) */}
       {listingType && listingId && listingType !== "instagrampage" && listingType !== "tiktokpage" && (
         <>
