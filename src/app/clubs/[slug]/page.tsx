@@ -10,6 +10,7 @@ import { AnnouncementSection } from "@/components/announcement-section";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { PhotoGrid } from "@/components/photo-grid";
+import { ClickableImage } from "@/components/clickable-image";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -107,7 +108,7 @@ export default async function ClubDetailPage({ params }: Props) {
 
             {/* Photo + Club ID + Contact */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={club.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={club.name} className="w-full h-[200px] object-cover block" style={{ objectPosition: `center ${imgPos}%` }} />
+              <ClickableImage src={club.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={club.name} className="w-full h-[200px] object-cover block" style={{ objectPosition: `center ${imgPos}%` }} />
               <div className="text-center py-3.5 px-4">
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{club.name}</h3>
                 <p className="text-sm text-muted mt-1">{club.city}, {club.state}</p>

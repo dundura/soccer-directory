@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getRecruiterBySlug, getRecruiterSlugs, getListingOwner } from "@/lib/db";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { PhotoGrid } from "@/components/photo-grid";
+import { ClickableImage } from "@/components/clickable-image";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
@@ -83,7 +84,7 @@ export default async function RecruiterDetailPage({ params }: Props) {
     <>
       {/* Photo + Name + Contact */}
       <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <img src={recruiter.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={recruiter.name} className="w-full h-[200px] object-cover block" style={{ objectPosition: `center ${imgPos}%` }} />
+        <ClickableImage src={recruiter.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={recruiter.name} className="w-full h-[200px] object-cover block" style={{ objectPosition: `center ${imgPos}%` }} />
         <div className="text-center py-3.5 px-4">
           <h3 className="text-[15px] font-bold text-primary leading-snug">{recruiter.name}</h3>
           <p className="text-sm text-muted mt-1">{recruiter.city}, {recruiter.state}</p>

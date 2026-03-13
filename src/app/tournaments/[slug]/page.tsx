@@ -5,6 +5,7 @@ import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { PhotoGrid } from "@/components/photo-grid";
+import { ClickableImage } from "@/components/clickable-image";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { notFound } from "next/navigation";
@@ -83,7 +84,7 @@ export default async function TournamentDetailPage({ params }: Props) {
 
             {/* Photo + Name + CTA */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={tournament.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={tournament.name} className="w-full h-[200px] object-cover block" style={{ objectPosition: `center ${imgPos}%` }} />
+              <ClickableImage src={tournament.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={tournament.name} className="w-full h-[200px] object-cover block" style={{ objectPosition: `center ${imgPos}%` }} />
               <div className="text-center py-3.5 px-4">
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{tournament.name}</h3>
                 <p className="text-sm text-muted mt-1">{tournament.city}, {tournament.state}</p>

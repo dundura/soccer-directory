@@ -8,6 +8,7 @@ import { HeroImage } from "@/components/hero-image";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { PhotoGrid } from "@/components/photo-grid";
+import { ClickableImage } from "@/components/clickable-image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
@@ -83,7 +84,7 @@ export default async function TrainerDetailPage({ params }: Props) {
     <>
       {/* Photo + Name + Contact */}
       <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <img src={trainer.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={trainer.name} className="w-full h-[200px] object-cover block" style={{ objectPosition: `center ${imgPos}%` }} />
+        <ClickableImage src={trainer.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={trainer.name} className="w-full h-[200px] object-cover block" style={{ objectPosition: `center ${imgPos}%` }} />
         <div className="text-center py-3.5 px-4">
           <h3 className="text-[15px] font-bold text-primary leading-snug">{trainer.name}</h3>
           <p className="text-sm text-muted mt-1">{trainer.city}, {trainer.state}</p>
