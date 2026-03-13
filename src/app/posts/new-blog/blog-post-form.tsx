@@ -1,43 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ImageUpload } from "@/components/image-upload";
-
-function insertBold(textarea: HTMLTextAreaElement, body: string, setBody: (v: string) => void) {
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const selected = body.slice(start, end);
-  if (selected) {
-    const newBody = body.slice(0, start) + `<b>${selected}</b>` + body.slice(end);
-    setBody(newBody);
-    setTimeout(() => { textarea.focus(); textarea.setSelectionRange(start + 3, end + 3); }, 0);
-  } else {
-    const newBody = body.slice(0, start) + "<b></b>" + body.slice(end);
-    setBody(newBody);
-    setTimeout(() => { textarea.focus(); textarea.setSelectionRange(start + 3, start + 3); }, 0);
-  }
-}
-
-function insertLink(textarea: HTMLTextAreaElement, body: string, setBody: (v: string) => void) {
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const selected = body.slice(start, end);
-  const url = prompt("Enter URL:", "https://");
-  if (!url) return;
-  const text = selected || prompt("Enter link text:", "") || url;
-  const tag = `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-  const newBody = body.slice(0, start) + tag + body.slice(end);
-  setBody(newBody);
-  setTimeout(() => { textarea.focus(); }, 0);
-}
+import { RichTextEditor } from "@/components/rich-text-editor";
 
 export function BlogPostForm() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const listingType = searchParams.get("type") || "";
   const listingId = searchParams.get("id") || "";
@@ -53,12 +25,34 @@ export function BlogPostForm() {
   const [ogImageUrl, setOgImageUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [listingImages, setListingImages] = useState<string[]>([]);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/");
     }
   }, [status, router]);
+
+  // Fetch listing images and auto-populate body
+  useEffect(() => {
+    if (!listingType || !listingId || imagesLoaded) return;
+    fetch(`/api/listing-images?type=${listingType}&id=${listingId}`)
+      .then((r) => r.json())
+      .then((images: string[]) => {
+        setListingImages(images);
+        if (images.length > 0) {
+          // Auto-add up to 3 images into the body
+          const toAdd = images.slice(0, 3);
+          const imgHtml = toAdd.map((url) => `<img src="${url}" />`).join("\n<p></p>\n");
+          setBody(`<p></p>\n${imgHtml}\n<p></p>`);
+          // Use first image as cover if no cover set
+          if (!imageUrl) setImageUrl(toAdd[0]);
+        }
+        setImagesLoaded(true);
+      })
+      .catch(() => setImagesLoaded(true));
+  }, [listingType, listingId, imagesLoaded, imageUrl]);
 
   if (status === "loading") {
     return (
@@ -139,6 +133,13 @@ export function BlogPostForm() {
             )}
           </div>
 
+          {/* Formatting note */}
+          <div className="mx-8 mt-6 px-5 py-4 rounded-xl bg-blue-50 border border-blue-200">
+            <p className="text-sm text-blue-800">
+              <strong>Just focus on writing!</strong> Our team will review and format your blog post to make it look great before it goes live. Don&apos;t worry about making it perfect — just share your story, tips, or expertise.
+            </p>
+          </div>
+
           <form onSubmit={handleSubmit} className="px-8 py-8 space-y-6">
             {/* Title */}
             <div>
@@ -172,43 +173,36 @@ export function BlogPostForm() {
                 <ImageUpload onUploaded={(url) => setImageUrl(url)} />
               )}
               <p className="text-xs text-muted mt-1.5">Add a cover image to make your blog post stand out</p>
+
+              {/* Quick pick from listing images */}
+              {listingImages.length > 0 && !imageUrl && (
+                <div className="mt-3">
+                  <p className="text-xs font-medium text-muted mb-2">Or pick from your listing photos:</p>
+                  <div className="flex gap-2 flex-wrap">
+                    {listingImages.slice(0, 6).map((url, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setImageUrl(url)}
+                        className="w-16 h-16 rounded-lg overflow-hidden border-2 border-border hover:border-accent transition-colors"
+                      >
+                        <img src={url} alt="" className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Body */}
+            {/* Body - Rich Text Editor */}
             <div>
               <label className="block text-sm font-bold text-primary mb-2">Content *</label>
-              <div className="border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent/30 focus-within:border-accent">
-                <div className="flex items-center gap-1 px-3 py-2 bg-surface border-b border-border">
-                  <button
-                    type="button"
-                    onClick={() => textareaRef.current && insertBold(textareaRef.current, body, setBody)}
-                    className="px-2.5 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
-                    title="Bold (select text first)"
-                  >
-                    B
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => textareaRef.current && insertLink(textareaRef.current, body, setBody)}
-                    className="px-2.5 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
-                    title="Insert link"
-                  >
-                    &#128279;
-                  </button>
-                  <span className="text-[10px] text-muted ml-2">Select text then B to bold, or click link icon to add a hyperlink</span>
-                </div>
-                <textarea
-                  ref={textareaRef}
-                  value={body}
-                  onChange={(e) => setBody(e.target.value)}
-                  placeholder="Write your blog post content here...
-
-Share your expertise, stories, training tips, match recaps, or anything your audience would love to read. Use paragraphs to organize your thoughts."
-                  rows={16}
-                  className="w-full text-[15px] leading-[1.8] px-5 py-4 focus:outline-none resize-y"
-                  required
-                />
-              </div>
+              <RichTextEditor
+                content={body}
+                onChange={setBody}
+                placeholder="Write your blog post content here... Share your expertise, stories, training tips, match recaps, or anything your audience would love to read."
+                minHeight="350px"
+              />
             </div>
 
             {/* Video */}
@@ -273,7 +267,7 @@ Share your expertise, stories, training tips, match recaps, or anything your aud
             <div className="flex items-center gap-3 pt-4 border-t border-border">
               <button
                 type="submit"
-                disabled={submitting || !title.trim() || !body.trim()}
+                disabled={submitting || !title.trim() || !body.replace(/<[^>]*>/g, "").trim()}
                 className="px-10 py-3.5 rounded-xl text-sm font-bold bg-accent text-white hover:bg-accent-hover transition-colors disabled:opacity-50"
               >
                 {submitting ? "Publishing..." : "Publish Blog Post"}

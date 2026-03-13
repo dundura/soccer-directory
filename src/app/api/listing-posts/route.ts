@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getListingPosts, createListingPost, deleteListingPost, toggleListingPostHidden, getListingOwner } from "@/lib/db";
+import { getListingPosts, createListingPost, deleteListingPost, toggleListingPostHidden, getListingOwner, getListingNameById } from "@/lib/db";
+import { notifyNewPost } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +76,12 @@ export async function POST(req: Request) {
     }
 
     const post = await createListingPost(type, id, session.user.id, body.trim(), imageUrl || undefined, videoUrl || undefined, ctaUrl || undefined, ctaLabel || undefined, finalOgImageUrl, title?.trim() || undefined);
+
+    // Send notification email (fire and forget)
+    const listingName = await getListingNameById(type, id).catch(() => null);
+    const postUrl = `https://www.soccer-near-me.com/posts/${post.slug || post.id}`;
+    notifyNewPost(type, listingName || "Unknown Listing", (session.user as { name?: string }).name || "Unknown", title?.trim() || undefined, postUrl).catch(() => {});
+
     return NextResponse.json({ success: true, id: post.id, slug: post.slug });
   } catch {
     return NextResponse.json({ error: "Failed to create post" }, { status: 500 });

@@ -159,6 +159,48 @@ function typeToPath(type: string): string {
   return paths[type] || type;
 }
 
+// ── Post/Blog creation notification ─────────────────────────
+
+export async function notifyNewPost(
+  type: string,
+  listingName: string,
+  userName: string,
+  postTitle: string | undefined,
+  postUrl: string,
+) {
+  if (!resend) return;
+
+  const label = TYPE_LABELS[type] || type;
+  const isBlog = !!postTitle;
+  const subject = isBlog
+    ? `New Blog Post: "${postTitle}" by ${listingName}`
+    : `New Post by ${listingName}`;
+
+  try {
+    await resend.emails.send({
+      from: "Soccer Near Me <notifications@soccer-near-me.com>",
+      to: NOTIFY_EMAIL,
+      subject,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px;">
+          <h2 style="color: #1a365d;">New ${isBlog ? "Blog Post" : "Post"} Created</h2>
+          <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+            <tr><td style="padding: 8px 0; color: #666; width: 120px;">Listing</td><td style="padding: 8px 0; font-weight: bold;">${listingName}</td></tr>
+            <tr><td style="padding: 8px 0; color: #666;">Type</td><td style="padding: 8px 0;">${label}</td></tr>
+            <tr><td style="padding: 8px 0; color: #666;">Author</td><td style="padding: 8px 0;">${userName}</td></tr>
+            ${postTitle ? `<tr><td style="padding: 8px 0; color: #666;">Title</td><td style="padding: 8px 0; font-weight: bold;">${postTitle}</td></tr>` : ""}
+          </table>
+          <div style="margin-top: 16px;">
+            <a href="${postUrl}" style="display: inline-block; padding: 12px 24px; background: #DC373E; color: white; text-decoration: none; border-radius: 8px;">View Post</a>
+          </div>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error("Failed to send post notification email:", err);
+  }
+}
+
 // ── Featured listing notification ───────────────────────────
 
 export async function notifyListingFeatured(type: string, listingName: string, slug: string, ownerEmail: string) {

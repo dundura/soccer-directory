@@ -1,43 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ImageUpload } from "@/components/image-upload";
-
-function insertBold(textarea: HTMLTextAreaElement, body: string, setBody: (v: string) => void) {
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const selected = body.slice(start, end);
-  if (selected) {
-    const newBody = body.slice(0, start) + `<b>${selected}</b>` + body.slice(end);
-    setBody(newBody);
-    setTimeout(() => { textarea.focus(); textarea.setSelectionRange(start + 3, end + 3); }, 0);
-  } else {
-    const newBody = body.slice(0, start) + "<b></b>" + body.slice(end);
-    setBody(newBody);
-    setTimeout(() => { textarea.focus(); textarea.setSelectionRange(start + 3, start + 3); }, 0);
-  }
-}
-
-function insertLink(textarea: HTMLTextAreaElement, body: string, setBody: (v: string) => void) {
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const selected = body.slice(start, end);
-  const url = prompt("Enter URL:", "https://");
-  if (!url) return;
-  const text = selected || prompt("Enter link text:", "") || url;
-  const tag = `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-  const newBody = body.slice(0, start) + tag + body.slice(end);
-  setBody(newBody);
-  setTimeout(() => { textarea.focus(); }, 0);
-}
+import { RichTextEditor } from "@/components/rich-text-editor";
 
 export function CreatePostForm() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const listingType = searchParams.get("type") || "";
   const listingId = searchParams.get("id") || "";
@@ -77,7 +49,7 @@ export function CreatePostForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!body.trim()) return;
+    if (!body.replace(/<[^>]*>/g, "").trim()) return;
     setSubmitting(true);
     setError("");
     try {
@@ -137,39 +109,15 @@ export function CreatePostForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-5">
-            {/* Body with formatting toolbar */}
+            {/* Body - Rich Text Editor */}
             <div>
               <label className="block text-sm font-bold text-primary mb-1.5">Post Content</label>
-              <div className="border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent/30 focus-within:border-accent">
-                <div className="flex items-center gap-1 px-3 py-1.5 bg-surface border-b border-border">
-                  <button
-                    type="button"
-                    onClick={() => textareaRef.current && insertBold(textareaRef.current, body, setBody)}
-                    className="px-2 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
-                    title="Bold (select text first)"
-                  >
-                    B
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => textareaRef.current && insertLink(textareaRef.current, body, setBody)}
-                    className="px-2 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
-                    title="Insert link (select text first for link text)"
-                  >
-                    &#128279;
-                  </button>
-                  <span className="text-[10px] text-muted ml-2">Select text then B to bold, or click link icon to add a hyperlink</span>
-                </div>
-                <textarea
-                  ref={textareaRef}
-                  value={body}
-                  onChange={(e) => setBody(e.target.value)}
-                  placeholder="Write your post here... Share news, updates, tips, or anything your audience would love to read."
-                  rows={10}
-                  className="w-full text-[15px] leading-relaxed px-4 py-3 focus:outline-none resize-y"
-                  autoFocus
-                />
-              </div>
+              <RichTextEditor
+                content={body}
+                onChange={setBody}
+                placeholder="Write your post here... Share news, updates, tips, or anything your audience would love to read."
+                minHeight="200px"
+              />
             </div>
 
             {/* Image */}
@@ -207,7 +155,7 @@ export function CreatePostForm() {
             {/* Social Media Preview Image */}
             <div>
               <label className="block text-sm font-bold text-primary mb-1.5">Social Media Preview Image <span className="font-normal text-muted">(optional)</span></label>
-              <p className="text-xs text-muted mb-2">This image shows when your post is shared on Facebook, X, etc. It won't appear in the post itself. For Instagram videos, take a screenshot and upload it here. TikTok thumbnails are grabbed automatically.</p>
+              <p className="text-xs text-muted mb-2">This image shows when your post is shared on Facebook, X, etc. It won&apos;t appear in the post itself. For Instagram videos, take a screenshot and upload it here. TikTok thumbnails are grabbed automatically.</p>
               {ogImageUrl ? (
                 <div className="relative">
                   <img src={ogImageUrl} alt="Preview" className="w-full rounded-xl max-h-[200px] object-cover" />
@@ -254,7 +202,7 @@ export function CreatePostForm() {
             <div className="flex items-center gap-3 pt-2">
               <button
                 type="submit"
-                disabled={submitting || !body.trim()}
+                disabled={submitting || !body.replace(/<[^>]*>/g, "").trim()}
                 className="px-8 py-3 rounded-xl text-sm font-bold bg-accent text-white hover:bg-accent-hover transition-colors disabled:opacity-50"
               >
                 {submitting ? "Publishing..." : "Publish Post"}
