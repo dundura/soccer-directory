@@ -2743,6 +2743,10 @@ export interface ListingPost {
   videoUrl?: string;
   ctaUrl?: string;
   ctaLabel?: string;
+  ctaUrl2?: string;
+  ctaLabel2?: string;
+  ctaUrl3?: string;
+  ctaLabel3?: string;
   ogImageUrl?: string;
   hidden: boolean;
   createdAt: string;
@@ -2762,6 +2766,10 @@ function mapListingPost(r: Record<string, unknown>): ListingPost {
     videoUrl: r.video_url as string | undefined,
     ctaUrl: r.cta_url as string | undefined,
     ctaLabel: r.cta_label as string | undefined,
+    ctaUrl2: r.cta_url_2 as string | undefined,
+    ctaLabel2: r.cta_label_2 as string | undefined,
+    ctaUrl3: r.cta_url_3 as string | undefined,
+    ctaLabel3: r.cta_label_3 as string | undefined,
     ogImageUrl: r.og_image_url as string | undefined,
     hidden: r.hidden as boolean,
     createdAt: r.created_at as string,
@@ -2816,13 +2824,13 @@ export async function updateListingPostBodyAdmin(id: string, body: string, title
   return rows.length > 0;
 }
 
-export async function updateListingPostMedia(id: string, userId: string, imageUrl: string | null, videoUrl: string | null, ctaUrl?: string | null, ctaLabel?: string | null, ogImageUrl?: string | null): Promise<boolean> {
-  const rows = await sql`UPDATE listing_posts SET image_url = ${imageUrl}, video_url = ${videoUrl}, cta_url = ${ctaUrl ?? null}, cta_label = ${ctaLabel ?? null}, og_image_url = ${ogImageUrl ?? null} WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
+export async function updateListingPostMedia(id: string, userId: string, imageUrl: string | null, videoUrl: string | null, ctaUrl?: string | null, ctaLabel?: string | null, ogImageUrl?: string | null, ctaUrl2?: string | null, ctaLabel2?: string | null, ctaUrl3?: string | null, ctaLabel3?: string | null): Promise<boolean> {
+  const rows = await sql`UPDATE listing_posts SET image_url = ${imageUrl}, video_url = ${videoUrl}, cta_url = ${ctaUrl ?? null}, cta_label = ${ctaLabel ?? null}, cta_url_2 = ${ctaUrl2 ?? null}, cta_label_2 = ${ctaLabel2 ?? null}, cta_url_3 = ${ctaUrl3 ?? null}, cta_label_3 = ${ctaLabel3 ?? null}, og_image_url = ${ogImageUrl ?? null} WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
   return rows.length > 0;
 }
 
-export async function updateListingPostMediaAdmin(id: string, imageUrl: string | null, videoUrl: string | null, ctaUrl?: string | null, ctaLabel?: string | null, ogImageUrl?: string | null): Promise<boolean> {
-  const rows = await sql`UPDATE listing_posts SET image_url = ${imageUrl}, video_url = ${videoUrl}, cta_url = ${ctaUrl ?? null}, cta_label = ${ctaLabel ?? null}, og_image_url = ${ogImageUrl ?? null} WHERE id = ${id} RETURNING id`;
+export async function updateListingPostMediaAdmin(id: string, imageUrl: string | null, videoUrl: string | null, ctaUrl?: string | null, ctaLabel?: string | null, ogImageUrl?: string | null, ctaUrl2?: string | null, ctaLabel2?: string | null, ctaUrl3?: string | null, ctaLabel3?: string | null): Promise<boolean> {
+  const rows = await sql`UPDATE listing_posts SET image_url = ${imageUrl}, video_url = ${videoUrl}, cta_url = ${ctaUrl ?? null}, cta_label = ${ctaLabel ?? null}, cta_url_2 = ${ctaUrl2 ?? null}, cta_label_2 = ${ctaLabel2 ?? null}, cta_url_3 = ${ctaUrl3 ?? null}, cta_label_3 = ${ctaLabel3 ?? null}, og_image_url = ${ogImageUrl ?? null} WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
 
