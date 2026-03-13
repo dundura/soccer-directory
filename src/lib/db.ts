@@ -2294,6 +2294,31 @@ export async function getListingNameById(type: string, id: string): Promise<stri
   return (rows[0]?.name as string) || null;
 }
 
+export async function getListingImages(type: string, id: string): Promise<string[]> {
+  type = normalizeType(type);
+  const table = TYPE_TO_TABLE[type];
+  if (!table) return [];
+  const raw = [`SELECT photos, team_photo, image_url, logo FROM ${table} WHERE id = `, " LIMIT 1"] as unknown as TemplateStringsArray;
+  const rows: Record<string, unknown>[] = await sql(raw, id);
+  if (!rows[0]) return [];
+  const images: string[] = [];
+  const row = rows[0];
+  if (row.photos) {
+    try {
+      const parsed = JSON.parse(row.photos as string);
+      if (Array.isArray(parsed)) {
+        for (const url of parsed) {
+          if (typeof url === "string" && url.trim()) images.push(url.trim());
+        }
+      }
+    } catch { /* ignore */ }
+  }
+  if (row.team_photo && typeof row.team_photo === "string") images.push(row.team_photo);
+  if (row.image_url && typeof row.image_url === "string" && !images.includes(row.image_url)) images.push(row.image_url);
+  if (row.logo && typeof row.logo === "string" && !images.includes(row.logo)) images.push(row.logo);
+  return images;
+}
+
 export async function getListingImageById(type: string, id: string): Promise<string | null> {
   type = normalizeType(type);
   const table = TYPE_TO_TABLE[type];

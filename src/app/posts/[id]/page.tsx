@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getListingPostById, getListingPostBySlug, getListingNameById, getListingSlugById } from "@/lib/db";
+import { getListingPostById, getListingPostBySlug, getListingNameById, getListingSlugById, getListingImages } from "@/lib/db";
 import { ShareButtons } from "@/components/profile-ui";
 import { PostEditableContent } from "@/components/post-editable";
 
@@ -85,9 +85,10 @@ export default async function PostPage({ params }: Props) {
   const post = await resolvePost(id);
   if (!post || post.hidden) notFound();
 
-  const [listingName, listingSlug] = await Promise.all([
+  const [listingName, listingSlug, listingImages] = await Promise.all([
     getListingNameById(post.listingType, post.listingId),
     getListingSlugById(post.listingType, post.listingId),
+    post.title ? getListingImages(post.listingType, post.listingId) : Promise.resolve([]),
   ]);
 
   const typePath = TYPE_PATHS[post.listingType] || "clubs";
@@ -140,6 +141,17 @@ export default async function PostPage({ params }: Props) {
             ogImageUrl={post.ogImageUrl}
             userId={post.userId}
           />
+
+          {/* Listing images for blog posts */}
+          {post.title && listingImages.length > 0 && (
+            <div className="px-6 pb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {listingImages.slice(0, 4).map((img, i) => (
+                  <img key={i} src={img} alt="" className="w-full rounded-xl object-cover max-h-[280px]" />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Share */}
           <div className="px-6 py-4 border-t border-border">
