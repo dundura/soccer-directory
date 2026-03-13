@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getListingPostById, getListingPostBySlug, getListingNameById, getListingSlugById, getListingImages } from "@/lib/db";
 import { ShareButtons } from "@/components/profile-ui";
 import { PostEditableContent } from "@/components/post-editable";
+import { AnytimeInlineCTA } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -35,15 +36,18 @@ function stripHtml(html: string): string {
 
 function getVideoThumbnail(url?: string): string | null {
   if (!url) return null;
-  // YouTube (regular + shorts)
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
   if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
-  // Vimeo - can't get thumbnail without API, return null
   return null;
 }
 
+function estimateReadTime(html: string): string {
+  const words = stripHtml(html).split(/\s+/).length;
+  const minutes = Math.max(1, Math.round(words / 200));
+  return `${minutes} min`;
+}
+
 async function resolvePost(idOrSlug: string) {
-  // Try by ID first, then by slug
   let post = await getListingPostById(idOrSlug);
   if (!post) post = await getListingPostBySlug(idOrSlug);
   return post;
@@ -96,7 +100,103 @@ export default async function PostPage({ params }: Props) {
   const profileUrl = listingSlug ? `/${typePath}/${listingSlug}` : `/${typePath}`;
   const postUrl = `https://www.soccer-near-me.com/posts/${post.slug || post.id}`;
   const date = new Date(post.createdAt);
+  const isBlog = !!post.title;
 
+  // ── Blog post layout (matches /blog/[slug] style) ──
+  if (isBlog) {
+    return (
+      <>
+        {/* Navy header */}
+        <div className="bg-primary text-white py-12">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <a href={profileUrl} className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">
+              &larr; {listingName || typeLabel}
+            </a>
+            <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mt-4 mb-3">
+              {post.title}
+            </h1>
+            <div className="flex items-center gap-3 text-white/50 text-sm">
+              <span>{date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+              <span>&middot;</span>
+              <span>{estimateReadTime(post.body)} read</span>
+              {listingName && (
+                <>
+                  <span>&middot;</span>
+                  <span>By {listingName}</span>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            {/* Cover image */}
+            {post.imageUrl && (
+              <div className="mb-8">
+                <img src={post.imageUrl} alt="" className="w-full rounded-2xl object-cover max-h-[450px]" />
+              </div>
+            )}
+
+            {/* Article body */}
+            <div className="max-w-none mb-12">
+              <PostEditableContent
+                postId={post.id}
+                title={post.title}
+                body={post.body}
+                slug={post.slug || post.id}
+                imageUrl={post.imageUrl}
+                videoUrl={post.videoUrl}
+                ctaUrl={post.ctaUrl}
+                ctaLabel={post.ctaLabel}
+                ogImageUrl={post.ogImageUrl}
+                userId={post.userId}
+                blogLayout
+              />
+            </div>
+
+            {/* Listing images */}
+            {listingImages.length > 0 && (
+              <div className="mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {listingImages.slice(0, 4).map((img, i) => (
+                    <img key={i} src={img} alt="" className="w-full rounded-xl object-cover max-h-[280px]" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Share */}
+            <div className="py-6 border-t border-border mb-8">
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Share this article</p>
+              <ShareButtons url={postUrl} title={post.title || stripHtml(post.body).slice(0, 100)} />
+            </div>
+
+            {/* Profile link */}
+            {listingName && listingSlug && (
+              <a
+                href={profileUrl}
+                className="flex items-center gap-4 px-5 py-4 rounded-xl bg-surface border border-border hover:border-primary/30 hover:shadow-sm transition-all group mb-8"
+              >
+                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg shrink-0">
+                  {listingName.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-primary group-hover:text-accent transition-colors">{listingName}</p>
+                  <p className="text-xs text-muted">View full profile &rarr;</p>
+                </div>
+              </a>
+            )}
+
+            {/* CTA */}
+            <AnytimeInlineCTA />
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // ── Regular post layout (social-media-post card style) ──
   return (
     <>
       {/* Breadcrumb */}
@@ -109,7 +209,7 @@ export default async function PostPage({ params }: Props) {
             {" \u203A "}
           </>
         )}
-        <span>{post.title || "Post"}</span>
+        <span>Post</span>
       </div>
 
       <div className="max-w-[700px] mx-auto px-6 pb-16">
@@ -141,17 +241,6 @@ export default async function PostPage({ params }: Props) {
             ogImageUrl={post.ogImageUrl}
             userId={post.userId}
           />
-
-          {/* Listing images for blog posts */}
-          {post.title && listingImages.length > 0 && (
-            <div className="px-6 pb-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {listingImages.slice(0, 4).map((img, i) => (
-                  <img key={i} src={img} alt="" className="w-full rounded-xl object-cover max-h-[280px]" />
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Share */}
           <div className="px-6 py-4 border-t border-border">

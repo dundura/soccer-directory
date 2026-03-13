@@ -44,6 +44,7 @@ export function PostEditableContent({
   ctaLabel,
   ogImageUrl,
   userId,
+  blogLayout,
 }: {
   postId: string;
   title?: string;
@@ -55,6 +56,7 @@ export function PostEditableContent({
   ctaLabel?: string;
   ogImageUrl?: string;
   userId: string;
+  blogLayout?: boolean;
 }) {
   const { data: session } = useSession();
   const isOwner = session?.user?.id === userId;
@@ -131,17 +133,21 @@ export function PostEditableContent({
     setSlugSaving(false);
   }
 
+  const bodyClassName = blogLayout
+    ? "text-base leading-[1.9] text-gray-800 [&_a]:text-accent [&_a]:underline [&_a]:hover:text-accent-hover [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-primary [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:font-[family-name:var(--font-display)] [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-primary [&_h3]:mt-6 [&_h3]:mb-3 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_li]:mb-1 [&_blockquote]:border-l-[3px] [&_blockquote]:border-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted [&_blockquote]:my-6 [&_img]:rounded-xl [&_img]:my-6 [&_img]:max-w-full [&_strong]:font-bold [&_em]:italic"
+    : "text-[15px] leading-relaxed text-gray-800 whitespace-pre-line [&_a]:text-accent [&_a]:underline [&_a]:hover:text-accent-hover";
+
   return (
     <>
-      {/* Image - at the top */}
-      {imageUrl && !editingMedia && (
+      {/* Image - at the top (regular posts only; blog layout handles image in parent) */}
+      {!blogLayout && imageUrl && !editingMedia && (
         <div className="px-4 pb-4">
           <img src={imageUrl} alt="" className="w-full rounded-xl object-cover" />
         </div>
       )}
 
       {/* Title + Body */}
-      <div className="px-6 pb-4">
+      <div className={blogLayout ? "" : "px-6 pb-4"}>
         {editingBody ? (
           <div className="space-y-3">
             <input
@@ -175,7 +181,7 @@ export function PostEditableContent({
                 ref={textareaRef}
                 value={bodyValue}
                 onChange={(e) => setBodyValue(e.target.value)}
-                rows={8}
+                rows={blogLayout ? 16 : 8}
                 className="w-full text-[15px] leading-relaxed px-3 py-2.5 focus:outline-none resize-y"
               />
             </div>
@@ -188,10 +194,10 @@ export function PostEditableContent({
           </div>
         ) : (
           <div>
-            {titleValue && (
+            {!blogLayout && titleValue && (
               <h1 className="text-2xl font-extrabold text-primary mb-3 font-[family-name:var(--font-display)]">{titleValue}</h1>
             )}
-            <div className="text-[15px] leading-relaxed text-gray-800 whitespace-pre-line [&_a]:text-accent [&_a]:underline [&_a]:hover:text-accent-hover" dangerouslySetInnerHTML={{ __html: bodyValue }} />
+            <div className={bodyClassName} dangerouslySetInnerHTML={{ __html: bodyValue }} />
             {canEdit && (
               <button
                 onClick={() => setEditingBody(true)}
