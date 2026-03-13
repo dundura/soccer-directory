@@ -142,8 +142,8 @@ export default async function PostPage({ params }: Props) {
   if (isBlog) enrichedBody = stripInlineStyles(enrichedBody);
   enrichedBody = splitLongParagraphs(enrichedBody);
 
-  // Inject listing images spread throughout the body
-  if (listingImages.length > 0) {
+  // Inject listing images into body for regular posts only (blog posts show them under profile card)
+  if (!isBlog && listingImages.length > 0) {
     const bodyHasImages = /<img\s/i.test(enrichedBody);
     if (!bodyHasImages) {
       const imgs = listingImages.slice(0, 3);
@@ -228,6 +228,15 @@ export default async function PostPage({ params }: Props) {
             {post.imageUrl && (
               <div className="mb-8">
                 <img src={post.imageUrl} alt="" className="w-full rounded-2xl object-cover max-h-[450px]" />
+              </div>
+            )}
+
+            {/* Listing images under profile card */}
+            {listingImages.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                {listingImages.slice(0, 4).map((img, i) => (
+                  <img key={i} src={img} alt="" className="w-full rounded-xl object-cover max-h-[280px] cursor-pointer hover:opacity-90 transition-opacity" />
+                ))}
               </div>
             )}
 
