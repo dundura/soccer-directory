@@ -2,6 +2,7 @@ import { getClubs, getTeams, getTrainers, getCamps, getTournaments, getFutsalTea
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
 import { RotatingText } from "@/components/rotating-text";
+import SitePopup from "@/components/site-popup";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <SitePopup />
       {/* ── Hero ──────────────────────────────────── */}
       <section className="bg-surface px-4 sm:px-6 lg:px-8 pt-6 pb-0">
         <div className="relative bg-primary rounded-[20px] overflow-hidden max-w-7xl mx-auto">
