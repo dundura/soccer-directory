@@ -143,7 +143,7 @@ export function PostEditableContent({
   }
 
   const bodyClassName = blogLayout
-    ? "text-base leading-[1.9] text-gray-800 [&_a]:text-accent [&_a]:underline [&_a]:hover:text-accent-hover [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-primary [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:font-[family-name:var(--font-display)] [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-primary [&_h3]:mt-6 [&_h3]:mb-3 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_li]:mb-1 [&_blockquote]:border-l-[3px] [&_blockquote]:border-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted [&_blockquote]:my-6 [&_img]:rounded-xl [&_img]:my-6 [&_img]:max-w-full [&_strong]:font-bold [&_em]:italic"
+    ? "blog-article-body"
     : "text-[15px] leading-relaxed text-gray-800 whitespace-pre-line [&_a]:text-accent [&_a]:underline [&_a]:hover:text-accent-hover";
 
   return (
@@ -357,6 +357,110 @@ export function PostEditableContent({
           </div>
           {slugError && <p className="text-xs text-red-500 mt-1">{slugError}</p>}
         </div>
+      )}
+
+      {/* Blog article styles */}
+      {blogLayout && (
+        <style>{`
+          .blog-article-body {
+            font-size: 16px;
+            line-height: 1.9;
+            color: #333;
+          }
+          .blog-article-body h2 {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #1f4e79;
+            margin: 50px 0 20px;
+            line-height: 1.3;
+          }
+          .blog-article-body h3 {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #1f4e79;
+            margin: 35px 0 15px;
+            line-height: 1.3;
+          }
+          .blog-article-body h4 {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #1f4e79;
+            margin: 25px 0 10px;
+          }
+          .blog-article-body p {
+            margin-bottom: 20px;
+          }
+          .blog-article-body strong {
+            font-weight: 700;
+          }
+          .blog-article-body em {
+            font-style: italic;
+          }
+          .blog-article-body u {
+            text-decoration: underline;
+          }
+          .blog-article-body a {
+            color: #DC373E;
+            text-decoration: underline;
+          }
+          .blog-article-body a:hover {
+            color: #b52d33;
+          }
+          .blog-article-body ul {
+            list-style: disc;
+            padding-left: 30px;
+            margin-bottom: 20px;
+          }
+          .blog-article-body ol {
+            list-style: decimal;
+            padding-left: 30px;
+            margin-bottom: 20px;
+          }
+          .blog-article-body li {
+            margin-bottom: 10px;
+          }
+          .blog-article-body blockquote {
+            border-left: 4px solid #DC373E;
+            padding: 15px 20px;
+            margin: 30px 0;
+            background: #f9f9f9;
+            font-style: italic;
+            color: #555;
+          }
+          .blog-article-body img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin: 30px 0;
+            cursor: pointer;
+          }
+          .blog-article-body img:hover {
+            opacity: 0.9;
+          }
+          .blog-article-body hr {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 40px 0;
+          }
+          .blog-article-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+          }
+          .blog-article-body th {
+            background: #1f4e79;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+          }
+          .blog-article-body td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+          }
+          .blog-article-body tr:nth-child(even) td {
+            background: #f9fafb;
+          }
+        `}</style>
       )}
 
       {/* Lightbox */}

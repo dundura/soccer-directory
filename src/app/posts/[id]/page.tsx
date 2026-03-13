@@ -102,13 +102,74 @@ export default async function PostPage({ params }: Props) {
   const date = new Date(post.createdAt);
   const isBlog = !!post.title;
 
-  // Inject listing images into body if the body doesn't already contain them
-  let enrichedBody = post.body;
+  // Auto-split long paragraphs (max 5 sentences per paragraph)
+  function splitLongParagraphs(html: string): string {
+    return html.replace(/<p>([\s\S]*?)<\/p>/gi, (match, inner) => {
+      const text = inner.trim();
+      if (!text) return match;
+      // Split on sentence endings (. ! ?) followed by a space and uppercase letter
+      const sentences = text.split(/(?<=[.!?])\s+(?=[A-Z])/);
+      if (sentences.length <= 5) return match;
+      const chunks: string[] = [];
+      for (let i = 0; i < sentences.length; i += 5) {
+        chunks.push(`<p>${sentences.slice(i, i + 5).join(" ")}</p>`);
+      }
+      return chunks.join("\n");
+    });
+  }
+
+  // Also handle non-wrapped text blocks (plain text without <p> tags)
+  function ensureParagraphs(html: string): string {
+    // If no <p> tags at all, wrap text blocks in <p>
+    if (!/<p[\s>]/i.test(html)) {
+      const lines = html.split(/\n\n+/);
+      return lines.map((line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return "";
+        if (/^<(h[1-6]|ul|ol|blockquote|img|div|table|hr)/i.test(trimmed)) return trimmed;
+        return `<p>${trimmed}</p>`;
+      }).join("\n");
+    }
+    return html;
+  }
+
+  let enrichedBody = ensureParagraphs(post.body);
+  enrichedBody = splitLongParagraphs(enrichedBody);
+
+  // Inject listing images spread throughout the body
   if (listingImages.length > 0) {
-    const bodyHasImages = /<img\s/i.test(post.body);
+    const bodyHasImages = /<img\s/i.test(enrichedBody);
     if (!bodyHasImages) {
-      const imgs = listingImages.slice(0, 3).map((url) => `<img src="${url}" alt="" />`).join("\n");
-      enrichedBody = enrichedBody + "\n" + imgs;
+      const imgs = listingImages.slice(0, 3);
+      // Split body into paragraphs and distribute images evenly
+      const parts = enrichedBody.split(/(<\/p>)/i);
+      const totalCloseTags = parts.filter((p) => /<\/p>/i.test(p)).length;
+      if (totalCloseTags >= 2 && imgs.length > 0) {
+        const interval = Math.max(1, Math.floor(totalCloseTags / (imgs.length + 1)));
+        let closeCount = 0;
+        let imgIdx = 0;
+        const result: string[] = [];
+        for (const part of parts) {
+          result.push(part);
+          if (/<\/p>/i.test(part)) {
+            closeCount++;
+            if (imgIdx < imgs.length && closeCount % interval === 0) {
+              result.push(`\n<img src="${imgs[imgIdx]}" alt="" />\n`);
+              imgIdx++;
+            }
+          }
+        }
+        // Append remaining images
+        while (imgIdx < imgs.length) {
+          result.push(`\n<img src="${imgs[imgIdx]}" alt="" />\n`);
+          imgIdx++;
+        }
+        enrichedBody = result.join("");
+      } else {
+        // Fallback: append at end
+        const imgHtml = imgs.map((url) => `<img src="${url}" alt="" />`).join("\n");
+        enrichedBody = enrichedBody + "\n" + imgHtml;
+      }
     }
   }
 
@@ -141,6 +202,22 @@ export default async function PostPage({ params }: Props) {
 
         <div className="bg-white">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            {/* Profile link (always at top) */}
+            {listingName && listingSlug && (
+              <a
+                href={profileUrl}
+                className="flex items-center gap-4 px-5 py-4 rounded-xl bg-surface border border-border hover:border-primary/30 hover:shadow-sm transition-all group mb-8"
+              >
+                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg shrink-0">
+                  {listingName.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-primary group-hover:text-accent transition-colors">{listingName}</p>
+                  <p className="text-xs text-muted">View full profile &rarr;</p>
+                </div>
+              </a>
+            )}
+
             {/* Cover image */}
             {post.imageUrl && (
               <div className="mb-8">
@@ -170,22 +247,6 @@ export default async function PostPage({ params }: Props) {
               <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Share this article</p>
               <ShareButtons url={postUrl} title={post.title || stripHtml(post.body).slice(0, 100)} />
             </div>
-
-            {/* Profile link */}
-            {listingName && listingSlug && (
-              <a
-                href={profileUrl}
-                className="flex items-center gap-4 px-5 py-4 rounded-xl bg-surface border border-border hover:border-primary/30 hover:shadow-sm transition-all group mb-8"
-              >
-                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg shrink-0">
-                  {listingName.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-primary group-hover:text-accent transition-colors">{listingName}</p>
-                  <p className="text-xs text-muted">View full profile &rarr;</p>
-                </div>
-              </a>
-            )}
 
             {/* CTA */}
             <AnytimeInlineCTA />

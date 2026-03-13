@@ -119,7 +119,7 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { id, action, body, slug, imageUrl, videoUrl, ctaUrl, ctaLabel, ogImageUrl, title } = await req.json();
+    const { id, action, body, slug, imageUrl, videoUrl, ctaUrl, ctaLabel, ctaUrl2, ctaLabel2, ctaUrl3, ctaLabel3, ogImageUrl, title } = await req.json();
     if (action === "toggle_hidden") {
       if (isAdmin(session)) {
         const { toggleListingPostHiddenAdmin } = await import("@/lib/db");
@@ -158,8 +158,8 @@ export async function PATCH(req: Request) {
     if (action === "edit_media") {
       const { updateListingPostMedia, updateListingPostMediaAdmin } = await import("@/lib/db");
       const ok = isAdmin(session)
-        ? await updateListingPostMediaAdmin(id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null, ogImageUrl ?? null)
-        : await updateListingPostMedia(id, session.user.id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null, ogImageUrl ?? null);
+        ? await updateListingPostMediaAdmin(id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null, ogImageUrl ?? null, ctaUrl2 ?? null, ctaLabel2 ?? null, ctaUrl3 ?? null, ctaLabel3 ?? null)
+        : await updateListingPostMedia(id, session.user.id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null, ogImageUrl ?? null, ctaUrl2 ?? null, ctaLabel2 ?? null, ctaUrl3 ?? null, ctaLabel3 ?? null);
       if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 });
       return NextResponse.json({ success: true });
     }
