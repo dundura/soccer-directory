@@ -165,7 +165,7 @@ export function AdminTodos() {
                     </div>
                   </div>
                 ) : (
-                  <span className="max-w-[300px] truncate block">{t.notes}</span>
+                  <span className="whitespace-pre-wrap break-words">{t.notes}</span>
                 )}
               </td>
               <td className="px-4 py-2.5">
