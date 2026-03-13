@@ -2740,6 +2740,11 @@ function mapListingPost(r: Record<string, unknown>): ListingPost {
   };
 }
 
+export async function getMemberArticles(): Promise<(ListingPost & { listingName?: string; listingSlug?: string })[]> {
+  const rows = await sql`SELECT p.*, u.name as user_name FROM listing_posts p JOIN users u ON u.id = p.user_id WHERE p.title IS NOT NULL AND p.title != '' AND p.hidden = false ORDER BY p.created_at DESC LIMIT 50`;
+  return rows.map(mapListingPost);
+}
+
 export async function getListingPosts(listingType: string, listingId: string, includeHidden = false): Promise<ListingPost[]> {
   const rows = includeHidden
     ? await sql`SELECT p.*, u.name as user_name FROM listing_posts p JOIN users u ON u.id = p.user_id WHERE p.listing_type = ${listingType} AND p.listing_id = ${listingId} ORDER BY p.created_at DESC LIMIT 50`

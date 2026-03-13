@@ -1,4 +1,4 @@
-import { getBlogs } from "@/lib/db";
+import { getBlogs, getMemberArticles } from "@/lib/db";
 import { BlogFilters } from "./filters";
 import type { Metadata } from "next";
 
@@ -10,6 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogsPage() {
-  const blogs = await getBlogs();
-  return <BlogFilters blogs={blogs} />;
+  const [blogs, articles] = await Promise.all([getBlogs(), getMemberArticles()]);
+  return <BlogFilters blogs={blogs} articles={articles} />;
 }
