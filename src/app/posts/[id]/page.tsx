@@ -146,16 +146,23 @@ export default async function PostPage({ params }: Props) {
             <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2.5">Share this post</p>
             <ShareButtons url={postUrl} title={stripHtml(post.body).slice(0, 100)} />
           </div>
-        </article>
 
-        {/* Back link */}
-        {listingSlug && (
-          <div className="mt-6 text-center">
-            <a href={profileUrl} className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors">
-              &larr; Back to {listingName} profile
+          {/* Profile link */}
+          {listingName && listingSlug && (
+            <a
+              href={profileUrl}
+              className="flex items-center gap-4 mx-6 mb-6 px-5 py-4 rounded-xl bg-surface border border-border hover:border-primary/30 hover:shadow-sm transition-all group"
+            >
+              <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg shrink-0">
+                {listingName.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-primary group-hover:text-accent transition-colors">{listingName}</p>
+                <p className="text-xs text-muted">View full profile &rarr;</p>
+              </div>
             </a>
-          </div>
-        )}
+          )}
+        </article>
       </div>
     </>
   );
