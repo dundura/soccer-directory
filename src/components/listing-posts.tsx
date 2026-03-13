@@ -7,6 +7,7 @@ import { ImageUpload } from "./image-upload";
 interface Post {
   id: string;
   slug?: string;
+  title?: string;
   body: string;
   imageUrl?: string;
   videoUrl?: string;
@@ -171,8 +172,13 @@ export function ListingPostsSidebar({
           <div key={post.id} className={`px-4 py-3 ${post.hidden ? "opacity-50" : ""}`}>
             <div className="flex items-start gap-2">
               <a href={`/posts/${post.slug || post.id}`} className="flex-1 min-w-0 group">
-                <p className="text-[13px] text-primary leading-snug line-clamp-2 group-hover:text-accent transition-colors">
-                  {post.body}
+                {post.title && (
+                  <p className="text-[13px] font-bold text-primary leading-snug group-hover:text-accent transition-colors">
+                    {post.title}
+                  </p>
+                )}
+                <p className={`text-[13px] ${post.title ? "text-muted" : "text-primary"} leading-snug line-clamp-2 group-hover:text-accent transition-colors`}>
+                  {post.body.replace(/<[^>]*>/g, "")}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-[10px] text-muted">{timeAgo(post.createdAt)}</span>

@@ -35,6 +35,7 @@ function insertLink(textarea: HTMLTextAreaElement, body: string, setBody: (v: st
 
 export function PostEditableContent({
   postId,
+  title,
   body,
   slug,
   imageUrl,
@@ -45,6 +46,7 @@ export function PostEditableContent({
   userId,
 }: {
   postId: string;
+  title?: string;
   body: string;
   slug: string;
   imageUrl?: string;
@@ -61,6 +63,7 @@ export function PostEditableContent({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [editingBody, setEditingBody] = useState(false);
+  const [titleValue, setTitleValue] = useState(title || "");
   const [bodyValue, setBodyValue] = useState(body);
   const [saving, setSaving] = useState(false);
 
@@ -82,7 +85,7 @@ export function PostEditableContent({
     const res = await fetch("/api/listing-posts", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: postId, action: "edit_body", body: bodyValue }),
+      body: JSON.stringify({ id: postId, action: "edit_body", body: bodyValue, title: titleValue || undefined }),
     });
     if (res.ok) setEditingBody(false);
     setSaving(false);
@@ -130,10 +133,17 @@ export function PostEditableContent({
 
   return (
     <>
-      {/* Body */}
+      {/* Title + Body */}
       <div className="px-6 pb-4">
         {editingBody ? (
           <div className="space-y-3">
+            <input
+              type="text"
+              value={titleValue}
+              onChange={(e) => setTitleValue(e.target.value)}
+              placeholder="Post title (optional)"
+              className="w-full text-xl font-bold px-3 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent font-[family-name:var(--font-display)]"
+            />
             <div className="border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent/30">
               <div className="flex items-center gap-1 px-3 py-1.5 bg-surface border-b border-border">
                 <button
@@ -163,7 +173,7 @@ export function PostEditableContent({
               />
             </div>
             <div className="flex gap-2 justify-end">
-              <button onClick={() => { setEditingBody(false); setBodyValue(body); }} className="px-4 py-2 rounded-lg text-xs font-medium text-muted hover:bg-surface transition-colors">Cancel</button>
+              <button onClick={() => { setEditingBody(false); setBodyValue(body); setTitleValue(title || ""); }} className="px-4 py-2 rounded-lg text-xs font-medium text-muted hover:bg-surface transition-colors">Cancel</button>
               <button onClick={saveBody} disabled={saving} className="px-5 py-2 rounded-lg text-xs font-bold bg-accent text-white hover:bg-accent-hover transition-colors disabled:opacity-50">
                 {saving ? "Saving..." : "Save"}
               </button>
@@ -171,6 +181,9 @@ export function PostEditableContent({
           </div>
         ) : (
           <div>
+            {titleValue && (
+              <h1 className="text-2xl font-extrabold text-primary mb-3 font-[family-name:var(--font-display)]">{titleValue}</h1>
+            )}
             <div className="text-[15px] leading-relaxed text-gray-800 whitespace-pre-line [&_a]:text-accent [&_a]:underline [&_a]:hover:text-accent-hover" dangerouslySetInnerHTML={{ __html: bodyValue }} />
             {canEdit && (
               <button

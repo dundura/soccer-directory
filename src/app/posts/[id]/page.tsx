@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getListingPostById, getListingPostBySlug, getListingNameById, getListingSlugById, getListingImageById } from "@/lib/db";
+import { getListingPostById, getListingPostBySlug, getListingNameById, getListingSlugById } from "@/lib/db";
 import { ShareButtons } from "@/components/profile-ui";
 import { PostEditableContent } from "@/components/post-editable";
 
@@ -50,25 +50,16 @@ async function resolvePost(idOrSlug: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  try {
-    const { id } = await params;
-    const post = await resolvePost(id);
-    if (!post || post.hidden) return {};
-    const listingName = await getListingNameById(post.listingType, post.listingId);
-    const plainBody = stripHtml(post.body);
-    const title = listingName ? `${listingName} — ${plainBody.slice(0, 60) || "Update"}` : plainBody.slice(0, 60) || "Post";
-    const description = plainBody.slice(0, 160);
-    let ogImage: string | null = post.ogImageUrl || post.imageUrl || null;
-    if (!ogImage) {
-      ogImage = getVideoThumbnail(post.videoUrl);
-    }
-    if (!ogImage) {
-      try {
-        ogImage = await getListingImageById(post.listingType, post.listingId);
-      } catch { /* ignore */ }
-    }
-    const canonical = post.slug ? `/posts/${post.slug}` : `/posts/${post.id}`;
-    const finalImage = ogImage || "https://www.soccer-near-me.com/og-image.png";
+  const { id } = await params;
+  const post = await resolvePost(id);
+  if (!post || post.hidden) return {};
+  const listingName = await getListingNameById(post.listingType, post.listingId);
+  const plainBody = stripHtml(post.body);
+  const title = post.title || (listingName ? `${listingName} — ${plainBody.slice(0, 60) || "Update"}` : plainBody.slice(0, 60) || "Post");
+  const description = post.title ? `${post.title} — ${plainBody.slice(0, 120)}` : plainBody.slice(0, 160);
+  const ogImage = post.ogImageUrl || post.imageUrl || getVideoThumbnail(post.videoUrl) || "https://www.soccer-near-me.com/og-image.png";
+  const canonical = post.slug ? `/posts/${post.slug}` : `/posts/${post.id}`;
+  const finalImage = ogImage;
     return {
       title,
       description,
@@ -87,10 +78,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         images: [finalImage],
       },
     };
-  } catch (e) {
-    console.error("generateMetadata error for post:", e);
-    return {};
-  }
 }
 
 export default async function PostPage({ params }: Props) {
@@ -121,7 +108,7 @@ export default async function PostPage({ params }: Props) {
             {" \u203A "}
           </>
         )}
-        <span>Post</span>
+        <span>{post.title || "Post"}</span>
       </div>
 
       <div className="max-w-[700px] mx-auto px-6 pb-16">
@@ -143,6 +130,7 @@ export default async function PostPage({ params }: Props) {
           {/* Editable body + slug */}
           <PostEditableContent
             postId={post.id}
+            title={post.title}
             body={post.body}
             slug={post.slug || post.id}
             imageUrl={post.imageUrl}

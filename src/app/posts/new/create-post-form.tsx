@@ -44,6 +44,7 @@ export function CreatePostForm() {
   const listingSlug = searchParams.get("slug") || "";
   const listingName = searchParams.get("name") || "";
 
+  const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
@@ -88,6 +89,7 @@ export function CreatePostForm() {
           type: listingType,
           id: listingId,
           slug: listingSlug,
+          title: title.trim() || undefined,
           body: body.trim(),
           imageUrl: imageUrl || undefined,
           videoUrl: videoUrl || undefined,
@@ -137,6 +139,19 @@ export function CreatePostForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-5">
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-bold text-primary mb-1.5">Title</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Give your post a title"
+                className="w-full text-lg font-bold px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent font-[family-name:var(--font-display)]"
+                autoFocus
+              />
+            </div>
+
             {/* Body with formatting toolbar */}
             <div>
               <label className="block text-sm font-bold text-primary mb-1.5">Post Content</label>
@@ -167,7 +182,6 @@ export function CreatePostForm() {
                   placeholder="Write your post here... Share news, updates, tips, or anything your audience would love to read."
                   rows={10}
                   className="w-full text-[15px] leading-relaxed px-4 py-3 focus:outline-none resize-y"
-                  autoFocus
                 />
               </div>
             </div>

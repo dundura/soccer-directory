@@ -2705,6 +2705,7 @@ function mapGuestPostComment(r: Record<string, unknown>): GuestPostComment {
 export interface ListingPost {
   id: string;
   slug?: string;
+  title?: string;
   listingType: string;
   listingId: string;
   userId: string;
@@ -2723,6 +2724,7 @@ function mapListingPost(r: Record<string, unknown>): ListingPost {
   return {
     id: r.id as string,
     slug: r.slug as string | undefined,
+    title: r.title as string | undefined,
     listingType: r.listing_type as string,
     listingId: r.listing_id as string,
     userId: r.user_id as string,
@@ -2760,23 +2762,24 @@ function generatePostSlug(body: string): string {
   return text.slice(0, 60).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || genId();
 }
 
-export async function createListingPost(listingType: string, listingId: string, userId: string, body: string, imageUrl?: string, videoUrl?: string, ctaUrl?: string, ctaLabel?: string, ogImageUrl?: string): Promise<{ id: string; slug: string }> {
+export async function createListingPost(listingType: string, listingId: string, userId: string, body: string, imageUrl?: string, videoUrl?: string, ctaUrl?: string, ctaLabel?: string, ogImageUrl?: string, title?: string): Promise<{ id: string; slug: string }> {
   const id = genId();
-  const baseSlug = generatePostSlug(body);
+  const slugSource = title || body;
+  const baseSlug = generatePostSlug(slugSource);
   let slug = baseSlug;
   const existing = await sql`SELECT id FROM listing_posts WHERE slug = ${slug} LIMIT 1`;
   if (existing.length > 0) slug = `${baseSlug}-${id.slice(0, 6)}`;
-  await sql`INSERT INTO listing_posts (id, slug, listing_type, listing_id, user_id, body, image_url, video_url, cta_url, cta_label, og_image_url) VALUES (${id}, ${slug}, ${listingType}, ${listingId}, ${userId}, ${body}, ${imageUrl || null}, ${videoUrl || null}, ${ctaUrl || null}, ${ctaLabel || null}, ${ogImageUrl || null})`;
+  await sql`INSERT INTO listing_posts (id, slug, listing_type, listing_id, user_id, body, image_url, video_url, cta_url, cta_label, og_image_url, title) VALUES (${id}, ${slug}, ${listingType}, ${listingId}, ${userId}, ${body}, ${imageUrl || null}, ${videoUrl || null}, ${ctaUrl || null}, ${ctaLabel || null}, ${ogImageUrl || null}, ${title || null})`;
   return { id, slug };
 }
 
-export async function updateListingPostBody(id: string, userId: string, body: string): Promise<boolean> {
-  const rows = await sql`UPDATE listing_posts SET body = ${body} WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
+export async function updateListingPostBody(id: string, userId: string, body: string, title?: string): Promise<boolean> {
+  const rows = await sql`UPDATE listing_posts SET body = ${body}, title = ${title || null} WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
   return rows.length > 0;
 }
 
-export async function updateListingPostBodyAdmin(id: string, body: string): Promise<boolean> {
-  const rows = await sql`UPDATE listing_posts SET body = ${body} WHERE id = ${id} RETURNING id`;
+export async function updateListingPostBodyAdmin(id: string, body: string, title?: string): Promise<boolean> {
+  const rows = await sql`UPDATE listing_posts SET body = ${body}, title = ${title || null} WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
 
