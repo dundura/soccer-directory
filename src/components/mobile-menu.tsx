@@ -22,13 +22,13 @@ const navGroups: NavGroup[] = [
       {
         label: "Events",
         links: [
+          { label: "Tryouts", href: "/tryouts" },
           { label: "Camps", href: "/camps" },
-          { label: "Special Events", href: "/special-events" },
           { label: "College Showcases", href: "/camps?type=College+Showcase" },
           { label: "Player ID Camps", href: "/camps?type=Player+ID+Camp" },
-          { label: "Tryouts", href: "/tryouts" },
           { label: "US Tournaments", href: "/tournaments?region=US" },
           { label: "Int'l Tournaments", href: "/tournaments?region=International" },
+          { label: "Special Events", href: "/special-events" },
           { label: "Fundraisers", href: "/fundraiser" },
         ],
       },
