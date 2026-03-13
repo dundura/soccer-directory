@@ -92,7 +92,7 @@ export default async function PostPage({ params }: Props) {
   const [listingName, listingSlug, listingImages] = await Promise.all([
     getListingNameById(post.listingType, post.listingId),
     getListingSlugById(post.listingType, post.listingId),
-    post.title ? getListingImages(post.listingType, post.listingId) : Promise.resolve([]),
+    getListingImages(post.listingType, post.listingId),
   ]);
 
   const typePath = TYPE_PATHS[post.listingType] || "clubs";
@@ -101,6 +101,16 @@ export default async function PostPage({ params }: Props) {
   const postUrl = `https://www.soccer-near-me.com/posts/${post.slug || post.id}`;
   const date = new Date(post.createdAt);
   const isBlog = !!post.title;
+
+  // Inject listing images into body if the body doesn't already contain them
+  let enrichedBody = post.body;
+  if (listingImages.length > 0) {
+    const bodyHasImages = /<img\s/i.test(post.body);
+    if (!bodyHasImages) {
+      const imgs = listingImages.slice(0, 3).map((url) => `<img src="${url}" alt="" />`).join("\n");
+      enrichedBody = enrichedBody + "\n" + imgs;
+    }
+  }
 
   // ── Blog post layout (matches /blog/[slug] style) ──
   if (isBlog) {
@@ -143,7 +153,7 @@ export default async function PostPage({ params }: Props) {
               <PostEditableContent
                 postId={post.id}
                 title={post.title}
-                body={post.body}
+                body={enrichedBody}
                 slug={post.slug || post.id}
                 imageUrl={post.imageUrl}
                 videoUrl={post.videoUrl}
@@ -154,17 +164,6 @@ export default async function PostPage({ params }: Props) {
                 blogLayout
               />
             </div>
-
-            {/* Listing images */}
-            {listingImages.length > 0 && (
-              <div className="mb-12">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {listingImages.slice(0, 4).map((img, i) => (
-                    <img key={i} src={img} alt="" className="w-full rounded-xl object-cover max-h-[280px]" />
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Share */}
             <div className="py-6 border-t border-border mb-8">
@@ -232,7 +231,7 @@ export default async function PostPage({ params }: Props) {
           <PostEditableContent
             postId={post.id}
             title={post.title}
-            body={post.body}
+            body={enrichedBody}
             slug={post.slug || post.id}
             imageUrl={post.imageUrl}
             videoUrl={post.videoUrl}

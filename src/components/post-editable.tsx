@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { VideoEmbed } from "./profile-ui";
 import { ImageUpload } from "./image-upload";
@@ -81,6 +81,15 @@ export function PostEditableContent({
   const [slugValue, setSlugValue] = useState(slug);
   const [slugSaving, setSlugSaving] = useState(false);
   const [slugError, setSlugError] = useState("");
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const handleBodyClick = useCallback((e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === "IMG") {
+      e.preventDefault();
+      setLightboxSrc((target as HTMLImageElement).src);
+    }
+  }, []);
 
   async function saveBody() {
     setSaving(true);
@@ -197,7 +206,7 @@ export function PostEditableContent({
             {!blogLayout && titleValue && (
               <h1 className="text-2xl font-extrabold text-primary mb-3 font-[family-name:var(--font-display)]">{titleValue}</h1>
             )}
-            <div className={bodyClassName} dangerouslySetInnerHTML={{ __html: bodyValue }} />
+            <div className={`${bodyClassName} [&_img]:cursor-pointer [&_img]:hover:opacity-90 [&_img]:transition-opacity`} onClick={handleBodyClick} dangerouslySetInnerHTML={{ __html: bodyValue }} />
             {canEdit && (
               <button
                 onClick={() => setEditingBody(true)}
@@ -347,6 +356,27 @@ export function PostEditableContent({
             )}
           </div>
           {slugError && <p className="text-xs text-red-500 mt-1">{slugError}</p>}
+        </div>
+      )}
+
+      {/* Lightbox */}
+      {lightboxSrc && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 cursor-pointer"
+          onClick={() => setLightboxSrc(null)}
+        >
+          <button
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 text-white text-xl flex items-center justify-center hover:bg-white/30 transition-colors"
+            onClick={() => setLightboxSrc(null)}
+          >
+            &#x2715;
+          </button>
+          <img
+            src={lightboxSrc}
+            alt=""
+            className="max-w-full max-h-[90vh] rounded-xl object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
     </>
