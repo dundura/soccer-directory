@@ -583,6 +583,12 @@ function DashboardContent() {
                         Dashboard
                       </a>
                     )}
+                    <a
+                      href={`/posts/new?type=${listing.type}&id=${listing.id}&slug=${listing.slug}&name=${encodeURIComponent(listing.name)}`}
+                      className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
+                    >
+                      Write Post
+                    </a>
                     <button
                       onClick={() => handleEdit(listing)}
                       disabled={editLoading}
