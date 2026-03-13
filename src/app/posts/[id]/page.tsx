@@ -102,6 +102,11 @@ export default async function PostPage({ params }: Props) {
   const date = new Date(post.createdAt);
   const isBlog = !!post.title;
 
+  // Strip inline styles so the blog-article-body CSS class controls formatting
+  function stripInlineStyles(html: string): string {
+    return html.replace(/\s*style="[^"]*"/gi, "");
+  }
+
   // Auto-split long paragraphs (max 5 sentences per paragraph)
   function splitLongParagraphs(html: string): string {
     return html.replace(/<p>([\s\S]*?)<\/p>/gi, (match, inner) => {
@@ -134,6 +139,7 @@ export default async function PostPage({ params }: Props) {
   }
 
   let enrichedBody = ensureParagraphs(post.body);
+  if (isBlog) enrichedBody = stripInlineStyles(enrichedBody);
   enrichedBody = splitLongParagraphs(enrichedBody);
 
   // Inject listing images spread throughout the body
