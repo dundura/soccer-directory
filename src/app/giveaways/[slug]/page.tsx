@@ -1,17 +1,21 @@
 import { Suspense } from "react";
 import { getMarketplaceItemBySlug, getGiveawaySlugs, getListingOwner } from "@/lib/db";
-import { Badge } from "@/components/ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
-import { PhotoGallery } from "@/components/profile-ui";
+import { ShareButtons } from "@/components/profile-ui";
+import { PhotoGrid } from "@/components/photo-grid";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ReviewSection } from "@/components/review-section";
+import { AnnouncementSection } from "@/components/announcement-section";
+import { AnytimeInlineCTA } from "@/components/ui";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
 
 export const dynamic = "force-dynamic";
+
+const DEFAULT_IMAGE = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -37,91 +41,130 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   );
 }
 
-const DEFAULT_IMAGE = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
-
 export default async function GiveawayDetailPage({ params }: Props) {
   const { slug } = await params;
   const item = await getMarketplaceItemBySlug(slug);
   if (!item) notFound();
-  const ownerId = await getListingOwner("giveaway", slug);
 
-  const mainImage = item.imageUrl || DEFAULT_IMAGE;
+  let ownerId: string | null = null;
+  try {
+    ownerId = await getListingOwner("giveaway", slug);
+  } catch {
+    ownerId = null;
+  }
+
+  const pageUrl = `https://www.soccer-near-me.com/giveaways/${slug}`;
+  const image = item.imageUrl || DEFAULT_IMAGE;
+  const photos = item.photos && item.photos.length > 0 ? item.photos : [];
 
   return (
     <>
-      <div className="bg-primary text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <a href="/giveaways" className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">&larr; Back to Giveaways</a>
-          <div className="flex flex-wrap gap-2 mb-4">
-            <Badge variant="green">Giveaway</Badge>
-            {item.condition && <Badge variant="default">{item.condition}</Badge>}
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <InlineEditField ownerId={ownerId} listingType="giveaway" listingId={item.id} field="name" value={item.name} tag="h1" className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2" />
-              {item.tagline && (
-                <InlineEditField ownerId={ownerId} listingType="giveaway" listingId={item.id} field="tagline" value={item.tagline} tag="p" className="text-white/80 text-sm font-medium" />
-              )}
-              <p className="text-white/60 text-lg">{item.city}, {item.state}</p>
-            </div>
-            <ManageListingButton ownerId={ownerId} listingType="giveaway" listingId={item.id} />
-          </div>
+      {/* Breadcrumb */}
+      <div className="max-w-4xl mx-auto px-6 py-3.5 text-sm text-muted flex items-center justify-between">
+        <div>
+          <a href="/giveaways" className="text-primary hover:underline">Giveaways</a>
+          {" \u203A "}
+          <span>{item.condition || "Giveaway"}</span>
+          {" \u203A "}
+          <span>{item.name}</span>
         </div>
+        <ManageListingButton ownerId={ownerId} listingType="giveaway" listingId={item.id} />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar */}
-          <div className="lg:w-[280px] shrink-0 space-y-6">
-            <div className="bg-white rounded-2xl border border-border overflow-hidden">
-              <img src={mainImage} alt={item.name} className="w-full h-48 object-cover" />
-              <div className="p-6 space-y-4">
-                <div>
-                  <p className="text-xs text-muted font-medium uppercase tracking-wide">Value</p>
-                  <p className="font-[family-name:var(--font-display)] font-bold text-2xl text-accent">{item.price}</p>
-                </div>
-                {item.condition && (
-                  <div>
-                    <p className="text-xs text-muted font-medium uppercase tracking-wide">Type</p>
-                    <p className="font-medium">{item.condition}</p>
-                  </div>
-                )}
-                <div>
-                  <p className="text-xs text-muted font-medium uppercase tracking-wide">Location</p>
-                  <p className="font-medium">{item.city}, {item.state}{item.country && item.country !== "United States" ? `, ${item.country}` : ""}</p>
-                </div>
-                <hr className="border-border" />
-                <a
-                  href={`/contact/giveaway/${slug}`}
-                  className="block w-full py-3 rounded-xl bg-accent text-white text-center font-semibold hover:bg-accent-hover transition-colors"
-                >
-                  Claim This Giveaway
-                </a>
-              </div>
-            </div>
+      <div className="max-w-4xl mx-auto px-6 pb-16">
+        <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+          {/* Product Image */}
+          <div className="bg-surface flex items-center justify-center p-8">
+            <img
+              src={image}
+              alt={item.name}
+              className="max-h-[400px] w-auto object-contain rounded-xl"
+            />
           </div>
 
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
-            <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
-              <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Description</h2>
-              <InlineEditField ownerId={ownerId} listingType="giveaway" listingId={item.id} field="description" value={item.description} tag="p" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap" multiline />
+          {/* Product Info */}
+          <div className="p-6 md:p-8">
+            <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
+              <div>
+                <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold mb-2">
+                  {item.condition || "Giveaway"}
+                </span>
+                <InlineEditField ownerId={ownerId} listingType="giveaway" listingId={item.id} field="name" value={item.name} tag="h1" className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight" />
+                {item.tagline && (
+                  <InlineEditField ownerId={ownerId} listingType="giveaway" listingId={item.id} field="tagline" value={item.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                )}
+                <p className="text-sm text-muted mt-1">
+                  {item.city}, {item.state}{item.country && item.country !== "United States" ? `, ${item.country}` : ""}
+                </p>
+              </div>
+              {item.price && (
+                <div className="text-2xl font-bold text-primary">
+                  {item.price}
+                </div>
+              )}
             </div>
 
-            {item.aboutAuthor && (
-              <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
-                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About the Provider</h2>
-                <InlineEditField ownerId={ownerId} listingType="giveaway" listingId={item.id} field="aboutAuthor" value={item.aboutAuthor} tag="p" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap" multiline />
+            {item.description && (
+              <div className="mb-6">
+                <InlineEditField ownerId={ownerId} listingType="giveaway" listingId={item.id} field="description" value={item.description} tag="p" className="text-gray-600 leading-relaxed whitespace-pre-line" multiline />
               </div>
             )}
 
-            {item.photos && item.photos.length > 0 && (
-              <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Photos</h2>
+            {/* Action Buttons */}
+            <div className="flex gap-3 flex-wrap mb-6">
+              <a
+                href={`/contact/giveaway/${slug}`}
+                className="bg-accent text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-accent-hover transition-colors"
+              >
+                Claim This Giveaway &rarr;
+              </a>
+            </div>
+
+            {/* Free Giveaway Announcement */}
+            <div className="space-y-4 mb-6">
+              <AnnouncementSection
+                heading="Free Giveaway"
+                text={`${item.name} — valued at ${item.price || "Free"}. Claim yours today!`}
+                image={image}
+                ctaUrl={`/contact/giveaway/${slug}`}
+                ctaLabel="Claim Now →"
+              />
+            </div>
+
+            {/* Details */}
+            <div className="border-t border-border pt-6 grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-muted font-medium">Type</span>
+                <p className="font-bold text-primary">{item.condition || "Giveaway"}</p>
+              </div>
+              <div>
+                <span className="text-muted font-medium">Value</span>
+                <p className="font-bold text-primary">{item.price}</p>
+              </div>
+              <div>
+                <span className="text-muted font-medium">Location</span>
+                <p className="font-bold text-primary">{item.city}, {item.state}</p>
+              </div>
+            </div>
+
+            {/* About the Provider */}
+            {item.aboutAuthor && (
+              <div className="border-t border-border pt-6 mt-6">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight mb-3">About the Provider</h2>
+                <InlineEditField ownerId={ownerId} listingType="giveaway" listingId={item.id} field="aboutAuthor" value={item.aboutAuthor} tag="p" className="text-gray-600 leading-relaxed whitespace-pre-line" multiline />
+              </div>
+            )}
+
+            {/* Additional Photos */}
+            {photos.length > 0 && (
+              <div className="border-t border-border pt-6 mt-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-[15px] font-bold text-primary">Photos</h3>
                   <EditSectionLink ownerId={ownerId} listingType="giveaway" listingId={item.id} />
                 </div>
-                <PhotoGallery photos={item.photos} />
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <PhotoGrid photos={photos} alt="Giveaway photo" />
+                </div>
               </div>
             )}
 
@@ -133,12 +176,20 @@ export default async function GiveawayDetailPage({ params }: Props) {
 
             <ListingPostsSidebar listingType="giveaway" listingId={item.id} slug={slug} ownerId={ownerId} />
 
-            {/* Sponsors */}
-            {item.sponsors && item.sponsors.length > 0 && (
-              <SponsorsSection sponsors={item.sponsors} />
-            )}
+            {/* Share */}
+            <div className="border-t border-border pt-6 mt-6">
+              <h4 className="text-sm font-bold mb-2.5">Share this listing</h4>
+              <ShareButtons url={pageUrl} title={item.name} />
+            </div>
           </div>
-</div>
+        </div>
+
+        {/* Sponsors */}
+        {item.sponsors && item.sponsors.length > 0 && (
+          <SponsorsSection sponsors={item.sponsors} />
+        )}
+
+        <div className="mt-8"><AnytimeInlineCTA /></div>
       </div>
     </>
   );
