@@ -11,6 +11,7 @@ import { ContactPodcastForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ClickableImage } from "@/components/clickable-image";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +70,7 @@ export default async function PodcastPage({ params }: Props) {
           {/* Cover Art */}
           <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
             {sidebarImage ? (
-              <img src={sidebarImage} alt={podcast.name} className="w-full aspect-square object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
+              <ClickableImage src={sidebarImage} alt={podcast.name} className="w-full aspect-square object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
             ) : (
               <div className="w-full aspect-square bg-primary flex items-center justify-center">
                 <span className="text-6xl">🎙️</span>
