@@ -240,7 +240,7 @@ export function ListingPostsSidebar({
                   </p>
                 )}
                 <p className={`text-[13px] ${post.title ? "text-muted" : "text-primary"} leading-snug line-clamp-2 group-hover:text-accent transition-colors`}>
-                  {post.body.replace(/<[^>]*>/g, "")}
+                  {post.body.replace(/<[^>]*>/g, "").slice(0, 150)}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-[10px] text-muted">{timeAgo(post.createdAt)}</span>
