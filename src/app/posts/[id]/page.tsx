@@ -142,8 +142,8 @@ export default async function PostPage({ params }: Props) {
   if (isBlog) enrichedBody = stripInlineStyles(enrichedBody);
   enrichedBody = splitLongParagraphs(enrichedBody);
 
-  // Inject listing images spread throughout the body
-  if (listingImages.length > 0) {
+  // Inject listing images spread throughout the body (only for non-blog posts)
+  if (listingImages.length > 0 && !isBlog) {
     const bodyHasImages = /<img\s/i.test(enrichedBody);
     if (!bodyHasImages) {
       const imgs = listingImages.slice(0, 3);
