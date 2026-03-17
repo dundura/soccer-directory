@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, lazy, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { VideoEmbed } from "./profile-ui";
 import { ImageUpload } from "./image-upload";
+
+const RichTextEditor = lazy(() => import("./rich-text-editor").then((m) => ({ default: m.RichTextEditor })));
 
 function insertBold(textarea: HTMLTextAreaElement, body: string, setBody: (v: string) => void) {
   const start = textarea.selectionStart;
@@ -204,34 +206,14 @@ export function PostEditableContent({
               placeholder="Post title (optional)"
               className="w-full text-xl font-bold px-3 py-2.5 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent font-[family-name:var(--font-display)]"
             />
-            <div className="border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent/30">
-              <div className="flex items-center gap-1 px-3 py-1.5 bg-surface border-b border-border">
-                <button
-                  type="button"
-                  onClick={() => textareaRef.current && insertBold(textareaRef.current, bodyValue, setBodyValue)}
-                  className="px-2 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
-                  title="Bold"
-                >
-                  B
-                </button>
-                <button
-                  type="button"
-                  onClick={() => textareaRef.current && insertLink(textareaRef.current, bodyValue, setBodyValue)}
-                  className="px-2 py-1 rounded text-xs font-bold text-primary hover:bg-white transition-colors"
-                  title="Insert link"
-                >
-                  &#128279;
-                </button>
-                <span className="text-[10px] text-muted ml-2">Select text then B to bold, or click link icon to add a hyperlink</span>
-              </div>
-              <textarea
-                ref={textareaRef}
-                value={bodyValue}
-                onChange={(e) => setBodyValue(e.target.value)}
-                rows={blogLayout ? 16 : 8}
-                className="w-full text-[15px] leading-relaxed px-3 py-2.5 focus:outline-none resize-y"
+            <Suspense fallback={<div className="border border-border rounded-xl p-4 text-sm text-muted">Loading editor...</div>}>
+              <RichTextEditor
+                content={bodyValue}
+                onChange={setBodyValue}
+                placeholder="Start writing..."
+                minHeight={blogLayout ? "400px" : "200px"}
               />
-            </div>
+            </Suspense>
             <div className="flex gap-2 justify-end">
               <button onClick={() => { setEditingBody(false); setBodyValue(body); setTitleValue(title || ""); }} className="px-4 py-2 rounded-lg text-xs font-medium text-muted hover:bg-surface transition-colors">Cancel</button>
               <button onClick={saveBody} disabled={saving} className="px-5 py-2 rounded-lg text-xs font-bold bg-accent text-white hover:bg-accent-hover transition-colors disabled:opacity-50">
