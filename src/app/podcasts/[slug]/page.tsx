@@ -107,6 +107,15 @@ export default async function PodcastPage({ params }: Props) {
             </table>
           </div>
 
+          {/* Social Links */}
+          {podcast.socialMedia && (
+            <SocialLinks
+              website={podcast.website}
+              facebook={podcast.socialMedia.facebook}
+              instagram={podcast.socialMedia.instagram}
+            />
+          )}
+
           {/* Be a Guest CTA */}
           <a href="#be-a-guest" className="block w-full py-3 text-center rounded-xl bg-accent text-white font-semibold hover:bg-accent-hover transition-colors">
             Be a Guest
@@ -117,7 +126,6 @@ export default async function PodcastPage({ params }: Props) {
           {/* Posts & Blog - desktop sidebar */}
           <div className="hidden md:block space-y-5">
             <ListingPostsSidebar listingType="podcast" listingId={podcast.id} slug={slug} ownerId={ownerId} />
-            <FeaturedArticles />
           </div>
         </aside>
 
@@ -280,11 +288,13 @@ export default async function PodcastPage({ params }: Props) {
             </div>
           )}
 
-          {/* Posts & Blog - mobile only (shown in sidebar on desktop) */}
+          {/* Posts - mobile only (shown in sidebar on desktop) */}
           <div className="md:hidden">
             <ListingPostsSidebar listingType="podcast" listingId={podcast.id} slug={slug} ownerId={ownerId} />
-            <FeaturedArticles />
           </div>
+
+          {/* Featured Articles */}
+          <FeaturedArticles />
 
           {/* Be a Guest Form */}
           <div id="be-a-guest" className="bg-white rounded-2xl border-2 border-accent/20 p-6">
@@ -295,15 +305,6 @@ export default async function PodcastPage({ params }: Props) {
             <p className="text-muted text-sm mb-5">Have a story to share or expertise to offer? Reach out to appear on {podcast.name}.</p>
             <ContactPodcastForm podcastName={podcast.name} slug={slug} />
           </div>
-
-          {/* Social Links */}
-          {podcast.socialMedia && (
-            <SocialLinks
-              website={podcast.website}
-              facebook={podcast.socialMedia.facebook}
-              instagram={podcast.socialMedia.instagram}
-            />
-          )}
 
           {/* Reviews */}
           <ReviewSection listingType="podcast" listingId={podcast.id} />
