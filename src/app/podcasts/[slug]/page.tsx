@@ -112,6 +112,12 @@ export default async function PodcastPage({ params }: Props) {
           </a>
 
           {ownerId && <ManageListingButton listingType="podcast" listingId={podcast.id} ownerId={ownerId} />}
+
+          {/* Posts & Blog - desktop sidebar */}
+          <div className="hidden md:block space-y-5">
+            <ListingPostsSidebar listingType="podcast" listingId={podcast.id} slug={slug} ownerId={ownerId} />
+            <FeaturedArticles />
+          </div>
         </aside>
 
         {/* ── Main Content ── */}
@@ -273,9 +279,11 @@ export default async function PodcastPage({ params }: Props) {
             </div>
           )}
 
-          <FeaturedArticles />
-
-          <ListingPostsSidebar listingType="podcast" listingId={podcast.id} slug={slug} ownerId={ownerId} />
+          {/* Posts & Blog - mobile only (shown in sidebar on desktop) */}
+          <div className="md:hidden">
+            <ListingPostsSidebar listingType="podcast" listingId={podcast.id} slug={slug} ownerId={ownerId} />
+            <FeaturedArticles />
+          </div>
 
           {/* Be a Guest Form */}
           <div id="be-a-guest" className="bg-white rounded-2xl border-2 border-accent/20 p-6">
