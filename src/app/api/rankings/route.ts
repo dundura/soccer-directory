@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 const GOTSPORT_URL = 'https://system.gotsport.com/api/v1/team_ranking_data';
 
 const REGION_NAMES: Record<number, string> = { 1: 'Northeast', 2: 'Midwest', 3: 'South', 4: 'West' };
@@ -97,6 +99,10 @@ export async function GET(request: Request) {
         totalAvailable: pagination.total_count || teams.length,
         lastUpdated: allTeams[0]?.ranking_date || new Date().toISOString(),
         source: 'GotSport',
+      },
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=1800',
       },
     });
 
