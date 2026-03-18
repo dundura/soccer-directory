@@ -168,11 +168,31 @@ const STRETCHING = buildStretch([
   { name: 'Hamstring Stretch', tip: 'Final stretch. Hinge forward. Let gravity do the work.', voice: 'Final Hamstring Stretch. Let your body relax. Great work today.', img: `${G}/99rWm7w.gif` },
 ])
 
+// ── CARDIO: INTERVAL RUN/WALK ─────────────────────────────
+const CARDIO_INTERVALS: Exercise[] = [
+  { name: 'Warm-Up Walk', dur: 60, type: 'work', tip: 'Easy pace. Get the blood flowing. Loosen up.', voice: 'Warm-up walk. Easy pace. Get those legs moving.' },
+  { name: 'Jog', dur: 60, type: 'work', tip: 'Light jog. Find your rhythm. Steady breathing.', voice: 'Light jog. Find your rhythm. Steady breathing.' },
+  { name: 'Walk', dur: 30, type: 'rest', tip: 'Recover. Slow it down. Control your breathing.', voice: 'Walk it out. Catch your breath.' },
+  { name: 'Run', dur: 60, type: 'work', tip: 'Pick up the pace. Strong arms. Drive your knees.', voice: 'Run! Pick up the pace. Strong arms. Drive those knees!' },
+  { name: 'Walk', dur: 30, type: 'rest', tip: 'Recover. You\'re doing great.', voice: 'Walk. Recover. You\'re doing great.' },
+  { name: 'Sprint', dur: 30, type: 'work', tip: 'All out! Maximum effort. Leave nothing behind.', voice: 'Sprint! All out! Maximum effort! Go go go!' },
+  { name: 'Walk', dur: 45, type: 'rest', tip: 'Recover from the sprint. Deep breaths.', voice: 'Walk it off. Deep breaths. Recover.' },
+  { name: 'Run', dur: 60, type: 'work', tip: 'Back to a strong run. Push through.', voice: 'Run! Back at it. Strong pace. Push through!' },
+  { name: 'Walk', dur: 30, type: 'rest', tip: 'Recover. Two more intervals.', voice: 'Walk. Two more. You\'ve got this.' },
+  { name: 'Sprint', dur: 30, type: 'work', tip: 'All out again! Dig deep. This is where you grow.', voice: 'Sprint! Dig deep! This is where champions are made!' },
+  { name: 'Walk', dur: 45, type: 'rest', tip: 'Recover. One more push.', voice: 'Walk. Recover. One more big push coming.' },
+  { name: 'Run', dur: 60, type: 'work', tip: 'Strong run. Keep the form. Almost there.', voice: 'Run! Strong form. Almost there. Keep pushing!' },
+  { name: 'Walk', dur: 30, type: 'rest', tip: 'Last recovery. Final sprint coming.', voice: 'Walk. Last recovery. Final sprint is next.' },
+  { name: 'Sprint', dur: 30, type: 'work', tip: 'Final sprint! Everything you\'ve got. Empty the tank.', voice: 'Final Sprint! Everything you\'ve got! Empty the tank!' },
+  { name: 'Cool-Down Walk', dur: 60, type: 'rest', tip: 'Slow walk. Let your heart rate come down. Great work.', voice: 'Cool down. Slow walk. Amazing work today. You crushed it.' },
+]
+
 // ── EXPORTS ───────────────────────────────────────────────
 export const WORKOUTS: WorkoutPlan[] = [
   // Soccer
   { id: 'soccer-fitness', name: 'Soccer Fitness', label: 'SOCCER FITNESS', description: 'Speed, agility, and conditioning for the pitch', icon: '\u26BD', exercises: SOCCER_FITNESS },
   { id: 'soccer-full', name: 'Soccer Full Body', label: 'SOCCER FULL BODY', description: 'Bodyweight strength for soccer players', icon: '\u26BD', exercises: SOCCER_FULL_BODY },
+  { id: 'cardio', name: 'Interval Run/Walk', label: 'INTERVAL RUN/WALK', description: 'Run, walk, sprint intervals for cardio', icon: '\uD83C\uDFC3', exercises: CARDIO_INTERVALS },
   { id: 'stretch', name: 'Stretching', label: 'STRETCHING', description: 'Recovery and flexibility for athletes', icon: '\uD83E\uDDD8', exercises: STRETCHING },
   // Dumbbell
   { id: 'db-full', name: 'Full Body', label: 'FULL BODY', description: 'Hit every muscle group with dumbbells', icon: '\uD83C\uDFCB\uFE0F', exercises: DB_FULL_BODY },

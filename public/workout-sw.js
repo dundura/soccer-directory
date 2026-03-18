@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'anytime15-v1';
+const CACHE_VERSION = 'anytime15-v2';
 const CACHE_FILES = ['/workout'];
 
 self.addEventListener('install', (event) => {
