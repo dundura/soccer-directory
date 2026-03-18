@@ -8,6 +8,8 @@ type Screen = 'choose' | 'start' | 'workout' | 'done'
 export default function WorkoutApp() {
   const [screen, setScreen] = useState<Screen>('choose')
   const [plan, setPlan] = useState<WorkoutPlan>(WORKOUTS[0])
+  const [workDur, setWorkDur] = useState(60)
+  const [restDur, setRestDur] = useState(30)
   const [idx, setIdx] = useState(0)
   const [timeLeft, setTimeLeft] = useState(60)
   const [elapsed, setElapsed] = useState(0)
@@ -29,7 +31,7 @@ export default function WorkoutApp() {
   useEffect(() => { elapsedRef.current = elapsed }, [elapsed])
   useEffect(() => { voiceOnRef.current = voiceOn }, [voiceOn])
 
-  const WORKOUT = plan.exercises
+  const WORKOUT = plan.exercises.map(e => ({ ...e, dur: e.type === 'work' ? workDur : restDur }))
   const TOTAL_SECONDS = WORKOUT.reduce((s, e) => s + e.dur, 0)
   const currentEx = WORKOUT[idx]
   const nextEx = WORKOUT[idx + 1] ?? null
@@ -273,7 +275,7 @@ export default function WorkoutApp() {
           {/* HEADER */}
           <div className="w-header">
             <div className="w-logo">IRON 15</div>
-            <div className="w-meta">~15 MIN &middot; 60s WORK &middot; 30s REST</div>
+            <div className="w-meta">~{Math.round(TOTAL_SECONDS / 60)} MIN &middot; {workDur}s WORK &middot; {restDur}s REST</div>
           </div>
 
           {/* ── CHOOSE SCREEN ── */}
@@ -301,7 +303,7 @@ export default function WorkoutApp() {
                       <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{w.description}</div>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--muted)', whiteSpace: 'nowrap', marginLeft: 12 }}>
-                      {w.exercises.filter(e => e.type === 'work').length} exercises &middot; ~15 min
+                      {w.exercises.filter(e => e.type === 'work').length} exercises
                     </div>
                   </button>
                 ))}
@@ -314,11 +316,12 @@ export default function WorkoutApp() {
             <div className="w-start">
               <div className="w-hero">{plan.label}<br /><span>WORKOUT</span></div>
               <div className="w-badges">
-                <div className="w-badge hi">~15 Minutes</div>
-                <div className="w-badge">10 Exercises</div>
-                <div className="w-badge">60s Work</div>
-                <div className="w-badge">30s Rest</div>
+                <div className="w-badge hi">~{Math.round(TOTAL_SECONDS / 60)} Minutes</div>
+                <div className="w-badge">{WORKOUT.filter(e => e.type === 'work').length} Exercises</div>
+                <div className="w-badge">{workDur}s Work</div>
+                <div className="w-badge">{restDur}s Rest</div>
               </div>
+
 
               <div className="w-preview">
                 <div className="w-prev-hdr">
@@ -343,10 +346,40 @@ export default function WorkoutApp() {
                 </ul>
               </div>
 
-              <button className="w-voice" onClick={() => setVoiceOn(v => !v)}>
-                <div className={`w-sw${voiceOn ? ' on' : ''}`}><div className="w-knob" /></div>
-                Voice Cues
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, width: '100%', alignItems: 'center' }}>
+                <div className="w-voice">
+                  <span style={{ width: 80 }}>Work</span>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {[30, 45, 60, 90].map(d => (
+                      <button key={d} onClick={() => setWorkDur(d)} style={{
+                        padding: '5px 12px', borderRadius: 16, border: '1px solid',
+                        fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all .12s',
+                        borderColor: workDur === d ? 'var(--accent)' : 'var(--border)',
+                        background: workDur === d ? 'var(--accent)' : 'transparent',
+                        color: workDur === d ? '#fff' : 'var(--muted)',
+                      }}>{d}s</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="w-voice">
+                  <span style={{ width: 80 }}>Rest</span>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {[15, 20, 30, 45].map(d => (
+                      <button key={d} onClick={() => setRestDur(d)} style={{
+                        padding: '5px 12px', borderRadius: 16, border: '1px solid',
+                        fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all .12s',
+                        borderColor: restDur === d ? 'var(--text)' : 'var(--border)',
+                        background: restDur === d ? 'var(--text)' : 'transparent',
+                        color: restDur === d ? '#fff' : 'var(--muted)',
+                      }}>{d}s</button>
+                    ))}
+                  </div>
+                </div>
+                <button className="w-voice" onClick={() => setVoiceOn(v => !v)}>
+                  <span style={{ width: 80 }}>Voice</span>
+                  <div className={`w-sw${voiceOn ? ' on' : ''}`}><div className="w-knob" /></div>
+                </button>
+              </div>
 
               <button className="w-btn-start" onClick={startWorkout}>START WORKOUT</button>
               <button
@@ -474,7 +507,7 @@ export default function WorkoutApp() {
               </div>
               <div className="w-stats">
                 <div className="w-stat"><div className="w-stat-val">10</div><div className="w-stat-lbl">Exercises</div></div>
-                <div className="w-stat"><div className="w-stat-val">15</div><div className="w-stat-lbl">Minutes</div></div>
+                <div className="w-stat"><div className="w-stat-val">{Math.round(TOTAL_SECONDS / 60)}</div><div className="w-stat-lbl">Minutes</div></div>
                 <div className="w-stat"><div className="w-stat-val">~120</div><div className="w-stat-lbl">Cal Burned</div></div>
                 <div className="w-stat"><div className="w-stat-val">&#128170;</div><div className="w-stat-lbl">Effort</div></div>
               </div>
