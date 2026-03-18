@@ -1,7 +1,7 @@
 {
-  "name": "Iron 15 – Dumbbell Workout",
-  "short_name": "Iron 15",
-  "description": "15-minute timed dumbbell workout with voice coaching",
+  "name": "Anytime 15 – Soccer & Fitness Workouts",
+  "short_name": "Anytime 15",
+  "description": "15-minute soccer fitness, strength, and stretching workouts with voice coaching",
   "start_url": "/workout",
   "scope": "/workout",
   "display": "standalone",

@@ -301,39 +301,52 @@ export default function WorkoutApp() {
 
           {/* HEADER */}
           <div className="w-header">
-            <div className="w-logo">IRON 15</div>
+            <div className="w-logo">ANYTIME 15</div>
             <div className="w-meta">~{Math.round(TOTAL_SECONDS / 60)} MIN &middot; {workDur}s WORK &middot; {restDur}s REST</div>
           </div>
 
           {/* ── CHOOSE SCREEN ── */}
           {screen === 'choose' && (
             <div className="w-start">
-              <div className="w-hero">IRON<br /><span>15</span></div>
+              <div className="w-hero">ANYTIME<br /><span>15</span></div>
               <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: -8 }}>Choose your workout</p>
-              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {WORKOUTS.map((w) => (
-                  <button
-                    key={w.id}
-                    onClick={() => { setPlan(w); setScreen('start'); }}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      width: '100%', padding: '18px 20px',
-                      background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12,
-                      cursor: 'pointer', textAlign: 'left', transition: 'all .15s',
-                      boxShadow: '0 1px 4px rgba(15,49,84,0.04)',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none' }}
-                  >
-                    <div>
-                      <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 22, letterSpacing: 1, color: 'var(--text)' }}>{w.label}</div>
-                      <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{w.description}</div>
-                    </div>
-                    <div style={{ fontSize: 12, color: 'var(--muted)', whiteSpace: 'nowrap', marginLeft: 12 }}>
-                      {w.exercises.filter(e => e.type === 'work').length} exercises
-                    </div>
-                  </button>
-                ))}
+
+              {/* Soccer */}
+              <div style={{ width: '100%' }}>
+                <div style={{ fontSize: 10, letterSpacing: 2, textTransform: 'uppercase' as const, color: 'var(--muted)', marginBottom: 8, fontWeight: 700 }}>{'\u26BD'} Soccer</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {WORKOUTS.filter(w => w.id.startsWith('soccer') || w.id === 'stretch').map((w) => (
+                    <button key={w.id} onClick={() => { setPlan(w); setScreen('start'); }} style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '16px 18px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, cursor: 'pointer', textAlign: 'left', transition: 'all .15s', boxShadow: '0 1px 4px rgba(15,49,84,0.04)' }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none' }}>
+                      <div style={{ fontSize: 24, width: 40, textAlign: 'center', flexShrink: 0 }}>{w.icon}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 20, letterSpacing: 1, color: 'var(--text)' }}>{w.label}</div>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>{w.description}</div>
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)', whiteSpace: 'nowrap' }}>{w.exercises.filter(e => e.type === 'work').length} ex</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Dumbbell */}
+              <div style={{ width: '100%' }}>
+                <div style={{ fontSize: 10, letterSpacing: 2, textTransform: 'uppercase' as const, color: 'var(--muted)', marginBottom: 8, fontWeight: 700 }}>{'\uD83C\uDFCB\uFE0F'} Dumbbell</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {WORKOUTS.filter(w => w.id.startsWith('db')).map((w) => (
+                    <button key={w.id} onClick={() => { setPlan(w); setScreen('start'); }} style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '16px 18px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, cursor: 'pointer', textAlign: 'left', transition: 'all .15s', boxShadow: '0 1px 4px rgba(15,49,84,0.04)' }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none' }}>
+                      <div style={{ fontSize: 24, width: 40, textAlign: 'center', flexShrink: 0 }}>{w.icon}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 20, letterSpacing: 1, color: 'var(--text)' }}>{w.label}</div>
+                        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>{w.description}</div>
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)', whiteSpace: 'nowrap' }}>{w.exercises.filter(e => e.type === 'work').length} ex</div>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}

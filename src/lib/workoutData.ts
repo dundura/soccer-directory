@@ -14,6 +14,7 @@ export interface WorkoutPlan {
   name: string
   label: string
   description: string
+  icon: string
   exercises: Exercise[]
 }
 
@@ -35,239 +36,153 @@ function buildWorkout(exercises: Omit<Exercise, 'type' | 'dur'>[]): Exercise[] {
   return result
 }
 
-// ExerciseDB CDN base
+function buildStretch(exercises: Omit<Exercise, 'type' | 'dur'>[]): Exercise[] {
+  const result: Exercise[] = []
+  exercises.forEach((ex, i) => {
+    result.push({ ...ex, dur: 45, type: 'work' })
+    if (i < exercises.length - 1) {
+      const next = exercises[i + 1]
+      result.push({
+        name: 'Transition',
+        dur: 10,
+        type: 'rest',
+        tip: `Switch to ${next.name}.`,
+        voice: `Next up, ${next.name}.`,
+      })
+    }
+  })
+  return result
+}
+
 const G = 'https://static.exercisedb.dev/media'
 
-// ── FULL BODY ─────────────────────────────────────────────
-const FULL_BODY = buildWorkout([
-  { name: 'Dumbbell Squat',
-    tip: 'Feet shoulder-width. Drive through heels. Chest proud.',
-    voice: 'Dumbbell Squats! Drive those heels in. Chest up, core tight. Let\'s go!',
-    img: `${G}/yn8yg1r.gif` },
-  { name: 'Romanian Deadlift',
-    tip: 'Soft knee bend. Hinge from hips. Feel that hamstring stretch.',
-    voice: 'Romanian Deadlifts! Hinge at the hips. Feel those hamstrings load. Control it.',
-    img: `${G}/rR0LJzx.gif` },
-  { name: 'Bent-Over Row',
-    tip: 'Hinge forward 45\u00B0. Drive elbows to ceiling. Squeeze your back.',
-    voice: 'Bent Over Rows! Pull those elbows to the sky. Squeeze at the top.',
-    img: `${G}/BJ0Hz5L.gif` },
-  { name: 'Dumbbell Push Press',
-    tip: 'Slight knee dip, then explode the dumbbells overhead. Lock out.',
-    voice: 'Push Press! Dip and drive. Use those legs to get the weight up.',
-    img: `${G}/Xy4jlWA.gif` },
-  { name: 'Alternating Lunges',
-    tip: 'Big step, drop back knee toward the floor. Push through front heel.',
-    voice: 'Alternating Lunges! Big step, drop that knee. Power back up. Alternate sides.',
-    img: `${G}/qx4fgX7.gif` },
-  { name: 'Bicep Curl',
-    tip: 'Elbows pinned to sides. Full range. Control the weight down.',
-    voice: 'Bicep Curls! Elbows stay pinned. Squeeze hard at the top. No swinging.',
-    img: `${G}/DsgkuIt.gif` },
-  { name: 'Lateral Raise',
-    tip: 'Slight bend in elbows. Raise to shoulder height. Slow and controlled.',
-    voice: 'Lateral Raises! Arms slightly bent. Raise to shoulder level. Feel that burn.',
-    img: `${G}/DsgkuIt.gif` },
-  { name: 'Renegade Row',
-    tip: 'Plank on dumbbells. Row one arm at a time. Brace core. No hip twist.',
-    voice: 'Renegade Rows! Into your plank. Row each arm. Hips stay square!',
-    img: `${G}/C0MA9bC.gif` },
-  { name: 'Goblet Squat',
-    tip: 'Hold one dumbbell at chest. Drive elbows to push knees wide. Sit deep.',
-    voice: 'Goblet Squats! Dumbbell to your chest. Elbows drive knees wide. Deep squat.',
-    img: `${G}/yn8yg1r.gif` },
-  { name: 'Sit & Press',
-    tip: 'Sit up and press dumbbells overhead simultaneously. Control back down.',
-    voice: 'Sit and Press! Sit up, press overhead. Last exercise! Finish strong!',
-    img: `${G}/PdmaD0N.gif` },
+// ── DUMBBELL: FULL BODY ───────────────────────────────────
+const DB_FULL_BODY = buildWorkout([
+  { name: 'Dumbbell Squat', tip: 'Feet shoulder-width. Drive through heels. Chest proud.', voice: 'Dumbbell Squats! Drive those heels in. Chest up, core tight. Let\'s go!', img: `${G}/yn8yg1r.gif` },
+  { name: 'Romanian Deadlift', tip: 'Soft knee bend. Hinge from hips. Feel that hamstring stretch.', voice: 'Romanian Deadlifts! Hinge at the hips. Feel those hamstrings load. Control it.', img: `${G}/rR0LJzx.gif` },
+  { name: 'Bent-Over Row', tip: 'Hinge forward 45\u00B0. Drive elbows to ceiling. Squeeze your back.', voice: 'Bent Over Rows! Pull those elbows to the sky. Squeeze at the top.', img: `${G}/BJ0Hz5L.gif` },
+  { name: 'Dumbbell Push Press', tip: 'Slight knee dip, then explode the dumbbells overhead. Lock out.', voice: 'Push Press! Dip and drive. Use those legs to get the weight up.', img: `${G}/Xy4jlWA.gif` },
+  { name: 'Alternating Lunges', tip: 'Big step, drop back knee toward the floor. Push through front heel.', voice: 'Alternating Lunges! Big step, drop that knee. Power back up.', img: `${G}/qx4fgX7.gif` },
+  { name: 'Bicep Curl', tip: 'Elbows pinned to sides. Full range. Control the weight down.', voice: 'Bicep Curls! Elbows stay pinned. Squeeze hard at the top.', img: `${G}/DsgkuIt.gif` },
+  { name: 'Lateral Raise', tip: 'Slight bend in elbows. Raise to shoulder height. Slow and controlled.', voice: 'Lateral Raises! Arms slightly bent. Raise to shoulder level.', img: `${G}/DsgkuIt.gif` },
+  { name: 'Renegade Row', tip: 'Plank on dumbbells. Row one arm at a time. Brace core.', voice: 'Renegade Rows! Into your plank. Row each arm. Hips stay square!', img: `${G}/C0MA9bC.gif` },
+  { name: 'Goblet Squat', tip: 'Hold one dumbbell at chest. Drive elbows to push knees wide.', voice: 'Goblet Squats! Dumbbell to your chest. Elbows drive knees wide.', img: `${G}/yn8yg1r.gif` },
+  { name: 'Sit & Press', tip: 'Sit up and press dumbbells overhead simultaneously.', voice: 'Sit and Press! Last exercise! Finish strong!', img: `${G}/PdmaD0N.gif` },
 ])
 
-// ── UPPER BODY ────────────────────────────────────────────
-const UPPER_BODY = buildWorkout([
-  { name: 'Dumbbell Push Press',
-    tip: 'Slight knee dip, then explode the dumbbells overhead. Lock out.',
-    voice: 'Push Press! Dip and drive. Explode those dumbbells overhead!',
-    img: `${G}/Xy4jlWA.gif` },
-  { name: 'Dumbbell Bench Press',
-    tip: 'Lie back, press dumbbells up. Lower slow, press explosive.',
-    voice: 'Dumbbell Bench Press! Control it down, power it up. Big chest!',
-    img: `${G}/SpYC0Kp.gif` },
-  { name: 'Lateral Raise',
-    tip: 'Slight bend in elbows. Raise to shoulder height. Slow and controlled.',
-    voice: 'Lateral Raises! Shoulder level. Control the weight. Feel that burn.',
-    img: `${G}/DsgkuIt.gif` },
-  { name: 'Arnold Press',
-    tip: 'Start palms facing you, rotate as you press overhead. Full range.',
-    voice: 'Arnold Press! Rotate and press. Full range of motion. Shoulders on fire!',
-    img: `${G}/Xy4jlWA.gif` },
-  { name: 'Front Raise',
-    tip: 'Arms straight, raise dumbbells to eye level. Slow on the way down.',
-    voice: 'Front Raises! Straight arms, eye level. Control the negative.',
-    img: `${G}/3eGE2JC.gif` },
-  { name: 'Tricep Kickback',
-    tip: 'Hinge forward, extend arms behind you. Squeeze the triceps.',
-    voice: 'Tricep Kickbacks! Hinge forward, extend and squeeze. Lock it out!',
-    img: `${G}/W6PxUkg.gif` },
-  { name: 'Chest Fly',
-    tip: 'Arms wide, slight bend in elbows. Squeeze chest at the top.',
-    voice: 'Chest Flys! Wide arms, squeeze at the top. Feel that stretch and squeeze.',
-    img: `${G}/SpYC0Kp.gif` },
-  { name: 'Overhead Tricep Extension',
-    tip: 'One dumbbell overhead, both hands. Lower behind head, press up.',
-    voice: 'Overhead Tricep Extensions! Lower behind your head. Press it up. Triceps burning!',
-    img: `${G}/PdmaD0N.gif` },
-  { name: 'Dumbbell Shrug',
-    tip: 'Heavy dumbbells at sides. Shrug shoulders to ears. Hold at top.',
-    voice: 'Dumbbell Shrugs! Shoulders to ears. Hold and squeeze at the top.',
-    img: `${G}/NJzBsGJ.gif` },
-  { name: 'Push-Up to Renegade Row',
-    tip: 'Push-up, then row each dumbbell. Core tight the whole time.',
-    voice: 'Push-Up to Row! Push-up, row left, row right. Last one! Finish strong!',
-    img: `${G}/C0MA9bC.gif` },
+// ── DUMBBELL: UPPER BODY ──────────────────────────────────
+const DB_UPPER = buildWorkout([
+  { name: 'Dumbbell Push Press', tip: 'Slight knee dip, then explode overhead.', voice: 'Push Press! Dip and drive!', img: `${G}/Xy4jlWA.gif` },
+  { name: 'Dumbbell Bench Press', tip: 'Lie back, press up. Lower slow, press explosive.', voice: 'Bench Press! Control down, power up!', img: `${G}/SpYC0Kp.gif` },
+  { name: 'Lateral Raise', tip: 'Raise to shoulder height. Slow and controlled.', voice: 'Lateral Raises! Feel that burn!', img: `${G}/DsgkuIt.gif` },
+  { name: 'Arnold Press', tip: 'Start palms facing you, rotate as you press.', voice: 'Arnold Press! Rotate and press!', img: `${G}/Xy4jlWA.gif` },
+  { name: 'Front Raise', tip: 'Arms straight, raise to eye level.', voice: 'Front Raises! Control the negative.', img: `${G}/3eGE2JC.gif` },
+  { name: 'Tricep Kickback', tip: 'Hinge forward, extend arms behind you.', voice: 'Tricep Kickbacks! Extend and squeeze!', img: `${G}/W6PxUkg.gif` },
+  { name: 'Chest Fly', tip: 'Arms wide, squeeze chest at the top.', voice: 'Chest Flys! Squeeze at the top!', img: `${G}/SpYC0Kp.gif` },
+  { name: 'Overhead Tricep Extension', tip: 'Lower behind head, press up.', voice: 'Overhead Extensions! Triceps burning!', img: `${G}/PdmaD0N.gif` },
+  { name: 'Dumbbell Shrug', tip: 'Shrug shoulders to ears. Hold at top.', voice: 'Shrugs! Shoulders to ears!', img: `${G}/NJzBsGJ.gif` },
+  { name: 'Push-Up to Row', tip: 'Push-up, then row each dumbbell.', voice: 'Push-Up to Row! Last one! Finish strong!', img: `${G}/C0MA9bC.gif` },
 ])
 
-// ── LOWER BODY ────────────────────────────────────────────
-const LOWER_BODY = buildWorkout([
-  { name: 'Goblet Squat',
-    tip: 'Hold one dumbbell at chest. Drive elbows to push knees wide. Sit deep.',
-    voice: 'Goblet Squats! Dumbbell at chest, sit deep. Elbows push those knees wide!',
-    img: `${G}/yn8yg1r.gif` },
-  { name: 'Romanian Deadlift',
-    tip: 'Soft knee bend. Hinge from hips. Feel that hamstring stretch.',
-    voice: 'Romanian Deadlifts! Hinge at the hips. Load those hamstrings. Control it.',
-    img: `${G}/rR0LJzx.gif` },
-  { name: 'Walking Lunges',
-    tip: 'Big step forward, drop back knee. Push through front heel to next step.',
-    voice: 'Walking Lunges! Big steps, drop that knee. Keep moving forward!',
-    img: `${G}/qx4fgX7.gif` },
-  { name: 'Sumo Squat',
-    tip: 'Wide stance, toes out. Hold dumbbell between legs. Drive up through heels.',
-    voice: 'Sumo Squats! Wide stance, dumbbell low. Drive through those heels!',
-    img: `${G}/yn8yg1r.gif` },
-  { name: 'Bulgarian Split Squat (L)',
-    tip: 'Back foot elevated. Drop straight down. All the weight on front leg.',
-    voice: 'Bulgarian Split Squats, left leg! Back foot up. Drop down. Feel that burn!',
-    img: `${G}/qx4fgX7.gif` },
-  { name: 'Bulgarian Split Squat (R)',
-    tip: 'Switch legs. Back foot elevated. Drop straight down. Push through front heel.',
-    voice: 'Switch sides! Right leg now. Same form. Drop and drive!',
-    img: `${G}/qx4fgX7.gif` },
-  { name: 'Dumbbell Calf Raise',
-    tip: 'Hold dumbbells at sides. Rise onto toes. Pause at top. Slow down.',
-    voice: 'Calf Raises! Up on those toes. Squeeze at the top. Slow on the way down.',
-    img: `${G}/nUwVh7b.gif` },
-  { name: 'Stiff-Leg Deadlift',
-    tip: 'Legs nearly straight. Hinge from hips. Maximum hamstring stretch.',
-    voice: 'Stiff-Leg Deadlifts! Straight legs, deep hinge. Feel that hamstring stretch!',
-    img: `${G}/5eLRITT.gif` },
-  { name: 'Squat Pulse',
-    tip: 'Stay low in squat position. Small pulses up and down. Don\'t stand up.',
-    voice: 'Squat Pulses! Stay low. Small pulses. Do not stand up. Burn those quads!',
-    img: `${G}/yn8yg1r.gif` },
-  { name: 'Jump Squat',
-    tip: 'Bodyweight. Squat down, explode up. Land soft. Repeat.',
-    voice: 'Jump Squats! Explode up, land soft. Last exercise! Give it everything!',
-    img: `${G}/yn8yg1r.gif` },
+// ── DUMBBELL: LOWER BODY ──────────────────────────────────
+const DB_LOWER = buildWorkout([
+  { name: 'Goblet Squat', tip: 'Dumbbell at chest, sit deep.', voice: 'Goblet Squats! Sit deep!', img: `${G}/yn8yg1r.gif` },
+  { name: 'Romanian Deadlift', tip: 'Hinge from hips. Feel the hamstrings.', voice: 'Romanian Deadlifts! Control it.', img: `${G}/rR0LJzx.gif` },
+  { name: 'Walking Lunges', tip: 'Big step forward, drop back knee.', voice: 'Walking Lunges! Keep moving forward!', img: `${G}/qx4fgX7.gif` },
+  { name: 'Sumo Squat', tip: 'Wide stance, toes out. Drive through heels.', voice: 'Sumo Squats! Wide and deep!', img: `${G}/yn8yg1r.gif` },
+  { name: 'Bulgarian Split Squat (L)', tip: 'Back foot elevated. Drop straight down.', voice: 'Bulgarian Split Squats, left leg!', img: `${G}/qx4fgX7.gif` },
+  { name: 'Bulgarian Split Squat (R)', tip: 'Switch legs. Same form.', voice: 'Switch sides! Right leg now!', img: `${G}/qx4fgX7.gif` },
+  { name: 'Dumbbell Calf Raise', tip: 'Rise onto toes. Pause at top.', voice: 'Calf Raises! Squeeze at the top!', img: `${G}/nUwVh7b.gif` },
+  { name: 'Stiff-Leg Deadlift', tip: 'Legs nearly straight. Maximum hamstring stretch.', voice: 'Stiff-Leg Deadlifts! Feel that stretch!', img: `${G}/5eLRITT.gif` },
+  { name: 'Squat Pulse', tip: 'Stay low. Small pulses. Don\'t stand up.', voice: 'Squat Pulses! Stay low! Burn those quads!', img: `${G}/yn8yg1r.gif` },
+  { name: 'Jump Squat', tip: 'Squat down, explode up. Land soft.', voice: 'Jump Squats! Last one! Give it everything!', img: `${G}/yn8yg1r.gif` },
 ])
 
-// ── BACK ──────────────────────────────────────────────────
-const BACK = buildWorkout([
-  { name: 'Bent-Over Row',
-    tip: 'Hinge forward 45\u00B0. Drive elbows to ceiling. Squeeze your back.',
-    voice: 'Bent Over Rows! Pull those elbows to the sky. Squeeze at the top.',
-    img: `${G}/BJ0Hz5L.gif` },
-  { name: 'Single-Arm Row (L)',
-    tip: 'One hand on bench. Pull dumbbell to hip. Squeeze lat at the top.',
-    voice: 'Single Arm Row, left side! Pull to your hip. Squeeze that lat!',
-    img: `${G}/C0MA9bC.gif` },
-  { name: 'Single-Arm Row (R)',
-    tip: 'Switch sides. Pull dumbbell to hip. Keep core braced.',
-    voice: 'Switch sides! Right arm now. Same form. Pull and squeeze!',
-    img: `${G}/C0MA9bC.gif` },
-  { name: 'Renegade Row',
-    tip: 'Plank on dumbbells. Row one arm at a time. Brace core. No hip twist.',
-    voice: 'Renegade Rows! Plank position. Row each arm. Keep those hips square!',
-    img: `${G}/C0MA9bC.gif` },
-  { name: 'Reverse Fly',
-    tip: 'Hinge forward, arms hang down. Raise arms out to sides. Squeeze shoulder blades.',
-    voice: 'Reverse Flys! Hinge forward. Arms wide. Squeeze those shoulder blades together!',
-    img: `${G}/v1qBec9.gif` },
-  { name: 'Dumbbell Pullover',
-    tip: 'Lie back, one dumbbell overhead. Lower behind head, pull back over chest.',
-    voice: 'Dumbbell Pullovers! Stretch back behind your head. Pull it over. Feel those lats!',
-    img: `${G}/9XjtHvS.gif` },
-  { name: 'Wide Row',
-    tip: 'Hinge forward, elbows flare out wide at 90\u00B0. Squeeze upper back.',
-    voice: 'Wide Rows! Elbows out wide. Squeeze that upper back. Feel it!',
-    img: `${G}/wt6rwjk.gif` },
-  { name: 'Dumbbell Shrug',
-    tip: 'Heavy dumbbells at sides. Shrug shoulders to ears. Hold at top.',
-    voice: 'Dumbbell Shrugs! Shoulders to ears. Hold and squeeze. Build those traps!',
-    img: `${G}/NJzBsGJ.gif` },
-  { name: 'Prone Y-Raise',
-    tip: 'Lie face down. Arms in Y-shape. Raise up. Squeeze between shoulder blades.',
-    voice: 'Y-Raises! Face down, arms in a Y. Raise and squeeze. Upper back on fire!',
-    img: `${G}/PbzNu7c.gif` },
-  { name: 'Superman Row',
-    tip: 'Lie face down, row dumbbells. Lift chest off floor as you pull.',
-    voice: 'Superman Rows! Chest off the floor. Row and hold. Last one! Finish strong!',
-    img: `${G}/XUUD0Fs.gif` },
+// ── DUMBBELL: BACK ────────────────────────────────────────
+const DB_BACK = buildWorkout([
+  { name: 'Bent-Over Row', tip: 'Drive elbows to ceiling. Squeeze your back.', voice: 'Bent Over Rows! Squeeze at the top.', img: `${G}/BJ0Hz5L.gif` },
+  { name: 'Single-Arm Row (L)', tip: 'Pull dumbbell to hip. Squeeze lat.', voice: 'Single Arm Row, left side!', img: `${G}/C0MA9bC.gif` },
+  { name: 'Single-Arm Row (R)', tip: 'Switch sides. Pull to hip.', voice: 'Switch sides! Right arm!', img: `${G}/C0MA9bC.gif` },
+  { name: 'Renegade Row', tip: 'Plank on dumbbells. Row one arm at a time.', voice: 'Renegade Rows! Hips stay square!', img: `${G}/C0MA9bC.gif` },
+  { name: 'Reverse Fly', tip: 'Hinge forward. Raise arms to sides.', voice: 'Reverse Flys! Squeeze those shoulder blades!', img: `${G}/v1qBec9.gif` },
+  { name: 'Dumbbell Pullover', tip: 'Lower behind head, pull back over chest.', voice: 'Pullovers! Feel those lats!', img: `${G}/9XjtHvS.gif` },
+  { name: 'Wide Row', tip: 'Elbows flare out wide. Squeeze upper back.', voice: 'Wide Rows! Upper back on fire!', img: `${G}/wt6rwjk.gif` },
+  { name: 'Dumbbell Shrug', tip: 'Shoulders to ears. Hold at top.', voice: 'Shrugs! Build those traps!', img: `${G}/NJzBsGJ.gif` },
+  { name: 'Prone Y-Raise', tip: 'Face down. Arms in Y. Raise and squeeze.', voice: 'Y-Raises! Upper back on fire!', img: `${G}/PbzNu7c.gif` },
+  { name: 'Superman Row', tip: 'Chest off floor, row dumbbells.', voice: 'Superman Rows! Last one! Finish strong!', img: `${G}/XUUD0Fs.gif` },
 ])
 
-// ── ARMS ──────────────────────────────────────────────────
-const ARMS = buildWorkout([
-  { name: 'Bicep Curl',
-    tip: 'Elbows pinned to sides. Full range. Control the weight down.',
-    voice: 'Bicep Curls! Elbows pinned. Squeeze hard at the top. No swinging!',
-    img: `${G}/DsgkuIt.gif` },
-  { name: 'Tricep Kickback',
-    tip: 'Hinge forward, extend arms behind you. Squeeze the triceps.',
-    voice: 'Tricep Kickbacks! Hinge forward. Extend and squeeze. Lock it out!',
-    img: `${G}/W6PxUkg.gif` },
-  { name: 'Hammer Curl',
-    tip: 'Palms face each other. Curl up. Targets the brachialis.',
-    voice: 'Hammer Curls! Palms facing in. Curl and squeeze. Build those arms!',
-    img: `${G}/DsgkuIt.gif` },
-  { name: 'Overhead Tricep Extension',
-    tip: 'One dumbbell overhead, both hands. Lower behind head, press up.',
-    voice: 'Overhead Extensions! Lower behind your head. Press it up. Feel those triceps!',
-    img: `${G}/PdmaD0N.gif` },
-  { name: 'Concentration Curl (L)',
-    tip: 'Sit down, elbow on inner thigh. Curl with full focus. Squeeze.',
-    voice: 'Concentration Curls, left arm! Elbow on thigh. Full squeeze at the top.',
-    img: `${G}/DsgkuIt.gif` },
-  { name: 'Concentration Curl (R)',
-    tip: 'Switch arms. Same focus. Full range of motion.',
-    voice: 'Switch arms! Right side now. Same focus. Squeeze it!',
-    img: `${G}/DsgkuIt.gif` },
-  { name: 'Close-Grip Press',
-    tip: 'Dumbbells together, press up. Elbows stay close to body. Tricep focus.',
-    voice: 'Close Grip Press! Dumbbells together. Press up. Elbows in. Triceps on fire!',
-    img: `${G}/RxayqAZ.gif` },
-  { name: 'Zottman Curl',
-    tip: 'Curl up with palms up, rotate to palms down at top, lower slowly.',
-    voice: 'Zottman Curls! Curl up, rotate at the top, slow negative. Full forearm burn!',
-    img: `${G}/DsgkuIt.gif` },
-  { name: 'Diamond Push-Up',
-    tip: 'Hands together in diamond shape. Push-up. Targets triceps.',
-    voice: 'Diamond Push-Ups! Hands together. Tricep focused. Almost done!',
-    img: `${G}/soIB2rj.gif` },
-  { name: '21s Curl',
-    tip: '7 bottom half, 7 top half, 7 full range. No rest between.',
-    voice: 'Twenty-Ones! Seven bottom, seven top, seven full. Last exercise! Empty the tank!',
-    img: `${G}/DsgkuIt.gif` },
+// ── DUMBBELL: ARMS ────────────────────────────────────────
+const DB_ARMS = buildWorkout([
+  { name: 'Bicep Curl', tip: 'Elbows pinned. Full range.', voice: 'Bicep Curls! No swinging!', img: `${G}/DsgkuIt.gif` },
+  { name: 'Tricep Kickback', tip: 'Hinge forward, extend and squeeze.', voice: 'Tricep Kickbacks! Lock it out!', img: `${G}/W6PxUkg.gif` },
+  { name: 'Hammer Curl', tip: 'Palms face each other. Curl up.', voice: 'Hammer Curls! Build those arms!', img: `${G}/DsgkuIt.gif` },
+  { name: 'Overhead Tricep Extension', tip: 'Lower behind head, press up.', voice: 'Overhead Extensions! Feel those triceps!', img: `${G}/PdmaD0N.gif` },
+  { name: 'Concentration Curl (L)', tip: 'Elbow on thigh. Full squeeze.', voice: 'Concentration Curls, left arm!', img: `${G}/DsgkuIt.gif` },
+  { name: 'Concentration Curl (R)', tip: 'Switch arms. Same focus.', voice: 'Switch arms! Right side!', img: `${G}/DsgkuIt.gif` },
+  { name: 'Close-Grip Press', tip: 'Dumbbells together, press up. Tricep focus.', voice: 'Close Grip Press! Triceps on fire!', img: `${G}/RxayqAZ.gif` },
+  { name: 'Zottman Curl', tip: 'Curl up, rotate at top, lower slowly.', voice: 'Zottman Curls! Full forearm burn!', img: `${G}/DsgkuIt.gif` },
+  { name: 'Diamond Push-Up', tip: 'Hands together. Targets triceps.', voice: 'Diamond Push-Ups! Almost done!', img: `${G}/soIB2rj.gif` },
+  { name: '21s Curl', tip: '7 bottom half, 7 top half, 7 full range.', voice: 'Twenty-Ones! Last exercise! Empty the tank!', img: `${G}/DsgkuIt.gif` },
+])
+
+// ── SOCCER FITNESS ────────────────────────────────────────
+const SOCCER_FITNESS = buildWorkout([
+  { name: 'High Knees', tip: 'Drive knees to chest. Stay on the balls of your feet. Fast pace.', voice: 'High Knees! Pump those arms. Drive the knees up. Let\'s go!', img: `${G}/ealLwvX.gif` },
+  { name: 'Burpees', tip: 'Drop, chest to floor, explode up with a jump. Full range.', voice: 'Burpees! Drop, push, jump. Maximum effort!', img: `${G}/dK9394r.gif` },
+  { name: 'Mountain Climbers', tip: 'Plank position. Drive knees to chest alternating. Fast.', voice: 'Mountain Climbers! Drive those knees. Keep your hips low!', img: `${G}/RJgzwny.gif` },
+  { name: 'Jumping Jacks', tip: 'Arms overhead, feet wide. Snap back to center. Stay light.', voice: 'Jumping Jacks! Arms up, feet wide. Keep the tempo!', img: `${G}/1g5bPpA.gif` },
+  { name: 'Squat Jumps', tip: 'Squat down, explode up. Land soft on the balls of your feet.', voice: 'Squat Jumps! Explode up, land soft. Power through!', img: `${G}/6FMU51h.gif` },
+  { name: 'Plank Hold', tip: 'Forearms down, body straight. Core tight. Don\'t let hips sag.', voice: 'Plank Hold! Core tight. Straight line from head to heels. Hold it!', img: `${G}/VBAWRPG.gif` },
+  { name: 'Bicycle Crunches', tip: 'Opposite elbow to knee. Rotate your torso. Controlled.', voice: 'Bicycle Crunches! Elbow to knee. Rotate and squeeze!', img: `${G}/tZkGYZ9.gif` },
+  { name: 'Speed Skaters', tip: 'Leap side to side. Land on one foot. Touch the ground.', voice: 'Speed Skaters! Leap and land. Stay low and explosive!', img: `${G}/zfNHMN9.gif` },
+  { name: 'Burpees', tip: 'Second round. Push harder. Don\'t slow down.', voice: 'Burpees again! Dig deep. You\'ve got this!', img: `${G}/dK9394r.gif` },
+  { name: 'Mountain Climbers', tip: 'Last exercise. Sprint those knees. Empty the tank.', voice: 'Mountain Climbers! Final push! Give it everything you\'ve got!', img: `${G}/RJgzwny.gif` },
+])
+
+// ── SOCCER FULL BODY ──────────────────────────────────────
+const SOCCER_FULL_BODY = buildWorkout([
+  { name: 'Push-Ups', tip: 'Chest to floor, push up. Keep core tight the whole time.', voice: 'Push-Ups! Chest to the floor. Core tight. Full range!', img: `${G}/I4hDWkc.gif` },
+  { name: 'Bodyweight Squats', tip: 'Sit back and down. Knees track over toes. Drive up.', voice: 'Bodyweight Squats! Sit deep. Drive through those heels!', img: `${G}/9E25EOx.gif` },
+  { name: 'Walking Lunges', tip: 'Big step forward, drop back knee. Push through front heel.', voice: 'Walking Lunges! Big steps. Drop that knee!', img: `${G}/IZVHb27.gif` },
+  { name: 'Glute Bridge', tip: 'Lie on back, feet flat. Drive hips to ceiling. Squeeze glutes.', voice: 'Glute Bridges! Drive those hips up. Squeeze at the top!', img: `${G}/196HJGw.gif` },
+  { name: 'Side Plank (L)', tip: 'Left forearm down. Stack feet. Hips up. Hold.', voice: 'Side Plank, left side! Hips up. Hold it steady!', img: `${G}/5VXmnV5.gif` },
+  { name: 'Side Plank (R)', tip: 'Switch sides. Right forearm down. Hips up.', voice: 'Switch sides! Right side plank. Stay strong!', img: `${G}/5VXmnV5.gif` },
+  { name: 'Leg Raises', tip: 'Lie on back. Raise legs to 90\u00B0. Lower slowly. Don\'t arch.', voice: 'Leg Raises! Slow and controlled. Core stays engaged!', img: `${G}/WhuFnR7.gif` },
+  { name: 'Superman', tip: 'Lie face down. Raise arms and legs off floor. Hold and squeeze.', voice: 'Superman! Arms and legs up. Squeeze your back!', img: `${G}/4GqRrAk.gif` },
+  { name: 'Squat Jumps', tip: 'Squat down, explode up. Land soft.', voice: 'Squat Jumps! Explosive power! Land soft!', img: `${G}/6FMU51h.gif` },
+  { name: 'Push-Ups', tip: 'Last exercise. Go until you can\'t. Then do one more.', voice: 'Push-Ups! Final exercise! Give it everything!', img: `${G}/I4hDWkc.gif` },
+])
+
+// ── STRETCHING ────────────────────────────────────────────
+const STRETCHING = buildStretch([
+  { name: 'Hamstring Stretch', tip: 'Stand tall. Hinge forward, reach for toes. Hold and breathe.', voice: 'Hamstring Stretch. Hinge forward. Breathe into the stretch.', img: `${G}/99rWm7w.gif` },
+  { name: 'Quad Stretch', tip: 'Stand on one leg. Pull foot to glute. Keep knees together.', voice: 'Quad Stretch. Pull your foot to your glute. Hold steady.', img: `${G}/BWnJR72.gif` },
+  { name: 'Hip Flexor Stretch', tip: 'Lunge position. Push hips forward. Feel the front of the hip open.', voice: 'Hip Flexor Stretch. Push those hips forward. Open up.', img: `${G}/tFGKm99.gif` },
+  { name: 'Shoulder Stretch', tip: 'Arm across body. Pull with opposite hand. Hold.', voice: 'Shoulder Stretch. Arm across. Hold and breathe.', img: `${G}/Uto7l43.gif` },
+  { name: 'Tricep Stretch', tip: 'Arm overhead, elbow bent. Pull elbow with opposite hand.', voice: 'Tricep Stretch. Reach down your back. Pull and hold.', img: `${G}/Z5YStHW.gif` },
+  { name: 'Seated Forward Fold', tip: 'Sit with legs straight. Reach for toes. Relax into it.', voice: 'Seated Forward Fold. Reach for your toes. Relax and breathe.', img: `${G}/QFmz6ch.gif` },
+  { name: 'Butterfly Stretch', tip: 'Sit with soles together. Press knees down. Lean forward.', voice: 'Butterfly Stretch. Soles together. Press those knees down.', img: `${G}/hC6oYY5.gif` },
+  { name: 'Piriformis Stretch', tip: 'Cross ankle over knee. Pull standing leg toward you.', voice: 'Piriformis Stretch. Ankle over knee. Feel the deep glute stretch.', img: `${G}/QY39eBr.gif` },
+  { name: 'Hip Flexor Stretch', tip: 'Switch sides. Lunge position. Push hips forward.', voice: 'Hip Flexor Stretch, other side. Push forward and hold.', img: `${G}/tFGKm99.gif` },
+  { name: 'Hamstring Stretch', tip: 'Final stretch. Hinge forward. Let gravity do the work.', voice: 'Final Hamstring Stretch. Let your body relax. Great work today.', img: `${G}/99rWm7w.gif` },
 ])
 
 // ── EXPORTS ───────────────────────────────────────────────
 export const WORKOUTS: WorkoutPlan[] = [
-  { id: 'full', name: 'Full Body', label: 'FULL BODY', description: 'Hit every muscle group in 15 minutes', exercises: FULL_BODY },
-  { id: 'upper', name: 'Upper Body', label: 'UPPER BODY', description: 'Chest, shoulders, and triceps', exercises: UPPER_BODY },
-  { id: 'lower', name: 'Lower Body', label: 'LOWER BODY', description: 'Quads, hamstrings, glutes, and calves', exercises: LOWER_BODY },
-  { id: 'back', name: 'Back', label: 'BACK', description: 'Lats, traps, and rear delts', exercises: BACK },
-  { id: 'arms', name: 'Arms', label: 'ARMS', description: 'Biceps, triceps, and forearms', exercises: ARMS },
+  // Soccer
+  { id: 'soccer-fitness', name: 'Soccer Fitness', label: 'SOCCER FITNESS', description: 'Speed, agility, and conditioning for the pitch', icon: '\u26BD', exercises: SOCCER_FITNESS },
+  { id: 'soccer-full', name: 'Soccer Full Body', label: 'SOCCER FULL BODY', description: 'Bodyweight strength for soccer players', icon: '\u26BD', exercises: SOCCER_FULL_BODY },
+  { id: 'stretch', name: 'Stretching', label: 'STRETCHING', description: 'Recovery and flexibility for athletes', icon: '\uD83E\uDDD8', exercises: STRETCHING },
+  // Dumbbell
+  { id: 'db-full', name: 'Full Body', label: 'FULL BODY', description: 'Hit every muscle group with dumbbells', icon: '\uD83C\uDFCB\uFE0F', exercises: DB_FULL_BODY },
+  { id: 'db-upper', name: 'Upper Body', label: 'UPPER BODY', description: 'Chest, shoulders, and triceps', icon: '\uD83C\uDFCB\uFE0F', exercises: DB_UPPER },
+  { id: 'db-lower', name: 'Lower Body', label: 'LOWER BODY', description: 'Quads, hamstrings, glutes, and calves', icon: '\uD83C\uDFCB\uFE0F', exercises: DB_LOWER },
+  { id: 'db-back', name: 'Back', label: 'BACK', description: 'Lats, traps, and rear delts', icon: '\uD83C\uDFCB\uFE0F', exercises: DB_BACK },
+  { id: 'db-arms', name: 'Arms', label: 'ARMS', description: 'Biceps, triceps, and forearms', icon: '\uD83C\uDFCB\uFE0F', exercises: DB_ARMS },
 ]
 
-export const WORKOUT = FULL_BODY
+export const WORKOUT = DB_FULL_BODY
 export const IMGS: Record<string, string> = {}
-export const TOTAL_SECONDS = FULL_BODY.reduce((s, e) => s + e.dur, 0)
+export const TOTAL_SECONDS = DB_FULL_BODY.reduce((s, e) => s + e.dur, 0)
 export const CIRCUMFERENCE = 2 * Math.PI * 64
