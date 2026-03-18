@@ -6,8 +6,8 @@
   "scope": "/workout",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a0a0a",
-  "theme_color": "#e8ff47",
+  "background_color": "#ECF1F7",
+  "theme_color": "#0F3154",
   "icons": [
     {
       "src": "/icons/workout-192.png",

@@ -161,16 +161,15 @@ export default function WorkoutApp() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
         :root {
-          --bg:#0a0a0a; --surface:#111; --card:#161616;
-          --accent:#e8ff47; --accent2:#ff4747;
-          --text:#f0f0f0; --muted:#555; --border:#222;
-          --rest:#47c4ff;
+          --bg:#ECF1F7; --surface:#E1E8EF; --card:#FFFFFF;
+          --accent:#DC373E; --accent2:#C42F36;
+          --text:#0F3154; --muted:#6B7D8E; --border:#E1E8EF;
+          --rest:#1A4268;
         }
         .workout-root { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100dvh; display:flex; flex-direction:column; align-items:center; }
-        .workout-root::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:9999; opacity:.3; }
         .w-app { width:100%; max-width:480px; min-height:100dvh; display:flex; flex-direction:column; padding:0 20px 40px; }
         .w-header { display:flex; align-items:center; justify-content:space-between; padding:22px 0 14px; border-bottom:1px solid var(--border); }
-        .w-logo { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:3px; color:var(--accent); }
+        .w-logo { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:3px; color:var(--text); }
         .w-meta { font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
 
         /* START */
@@ -179,10 +178,10 @@ export default function WorkoutApp() {
         .w-hero span { display:block; color:var(--accent); }
         .w-badges { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
         .w-badge { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:5px 13px; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); }
-        .w-badge.hi { border-color:var(--accent); color:var(--accent); }
+        .w-badge.hi { border-color:var(--accent); color:var(--accent); background:rgba(220,55,62,0.08); }
 
         .w-preview { width:100%; background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
-        .w-prev-hdr { padding:12px 18px; background:var(--surface); font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; }
+        .w-prev-hdr { padding:12px 18px; background:#F5F8FB; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; }
         .w-prev-list { list-style:none; max-height:230px; overflow-y:auto; }
         .w-prev-list::-webkit-scrollbar { width:3px; }
         .w-prev-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
@@ -195,15 +194,16 @@ export default function WorkoutApp() {
         .w-prev-name { flex:1; }
         .w-prev-dur { font-family:'Bebas Neue',sans-serif; font-size:14px; color:var(--accent); flex-shrink:0; }
         .w-prev-item.ri .w-prev-dur { color:var(--rest); }
+        .w-prev-item.ri { color:var(--rest); opacity:.75; background:rgba(26,66,104,0.04); }
 
         .w-voice { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; cursor:pointer; user-select:none; background:none; border:none; }
         .w-sw { width:36px; height:20px; background:var(--border); border-radius:10px; position:relative; transition:background .2s; flex-shrink:0; }
-        .w-sw.on { background:var(--accent); }
+        .w-sw.on { background:var(--text); }
         .w-knob { width:14px; height:14px; background:#fff; border-radius:50%; position:absolute; top:3px; left:3px; transition:left .2s; }
         .w-sw.on .w-knob { left:19px; }
 
-        .w-btn-start { width:100%; padding:20px; background:var(--accent); color:#000; font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:4px; border:none; border-radius:12px; cursor:pointer; transition:transform .1s,box-shadow .2s; box-shadow:0 0 40px rgba(232,255,71,.2); }
-        .w-btn-start:hover { transform:translateY(-2px); box-shadow:0 0 60px rgba(232,255,71,.35); }
+        .w-btn-start { width:100%; padding:20px; background:var(--accent); color:#fff; font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:4px; border:none; border-radius:12px; cursor:pointer; transition:transform .1s,box-shadow .2s; box-shadow:0 4px 20px rgba(220,55,62,.25); }
+        .w-btn-start:hover { transform:translateY(-2px); box-shadow:0 6px 30px rgba(220,55,62,.35); }
         .w-btn-start:active { transform:translateY(0); }
 
         /* WORKOUT */
@@ -212,15 +212,15 @@ export default function WorkoutApp() {
         .w-prog-fill { height:100%; border-radius:2px; transition:width .5s linear,background .3s; }
         .w-prog-lbl { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-top:5px; }
 
-        .w-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; position:relative; transition:border-color .3s; }
+        .w-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; position:relative; transition:border-color .3s; box-shadow:0 2px 10px rgba(15,49,84,0.06); }
         .w-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; z-index:2; transition:background .3s; }
 
-        .w-img-wrap { width:100%; height:200px; background:#0c0c0c; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+        .w-img-wrap { width:100%; height:200px; background:#F5F8FB; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
         .w-img { width:100%; height:100%; object-fit:cover; display:block; transition:opacity .5s; }
         .w-img-overlay { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent,rgba(0,0,0,.7)); height:60px; pointer-events:none; }
         .w-img-ph { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--muted); font-size:11px; letter-spacing:1px; text-transform:uppercase; }
-        .w-rest-vis { width:100%; height:200px; background:linear-gradient(135deg,#0a1829,#0a0f18); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
-        .w-rest-lbl { font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:3px; color:var(--rest); opacity:.8; }
+        .w-rest-vis { width:100%; height:200px; background:linear-gradient(135deg,#0F3154,#1A4268); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
+        .w-rest-lbl { font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:3px; color:#fff; opacity:.8; }
 
         .w-info { padding:14px 18px; }
         .w-phase { font-size:10px; letter-spacing:3px; text-transform:uppercase; margin-bottom:4px; }
@@ -236,13 +236,13 @@ export default function WorkoutApp() {
 
         .w-controls { display:flex; gap:10px; }
         .w-btn { flex:1; padding:14px; border:1px solid var(--border); background:var(--card); color:var(--text); font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:2px; border-radius:10px; cursor:pointer; transition:all .15s; }
-        .w-btn:hover { background:var(--surface); border-color:var(--accent); }
-        .w-btn.pr { background:var(--accent); color:#000; border-color:var(--accent); }
-        .w-btn.pr:hover { background:#d4eb3c; }
-        .w-btn.dn { border-color:var(--accent2); color:var(--accent2); }
-        .w-btn.dn:hover { background:var(--accent2); color:#fff; }
+        .w-btn:hover { background:var(--surface); border-color:var(--text); }
+        .w-btn.pr { background:var(--accent); color:#fff; border-color:var(--accent); }
+        .w-btn.pr:hover { background:var(--accent2); }
+        .w-btn.dn { border-color:var(--muted); color:var(--muted); }
+        .w-btn.dn:hover { background:var(--text); color:#fff; }
 
-        .w-upnext { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:11px 16px; display:flex; align-items:center; gap:12px; }
+        .w-upnext { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:11px 16px; display:flex; align-items:center; gap:12px; box-shadow:0 1px 4px rgba(15,49,84,0.04); }
         .w-un-thumb { width:32px; height:32px; border-radius:5px; object-fit:cover; background:var(--border); flex-shrink:0; }
         .w-un-lbl { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
         .w-un-name { font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:1px; }
@@ -250,11 +250,12 @@ export default function WorkoutApp() {
 
         /* DONE */
         .w-done { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; gap:28px; }
-        .w-done-title { font-family:'Bebas Neue',sans-serif; font-size:80px; line-height:.9; color:var(--accent); }
+        .w-done-title { font-family:'Bebas Neue',sans-serif; font-size:80px; line-height:.9; color:var(--text); }
         .w-done-sub { font-size:15px; color:var(--muted); line-height:1.7; }
         .w-stats { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; }
         .w-stat { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:18px; text-align:center; }
         .w-stat-val { font-family:'Bebas Neue',sans-serif; font-size:40px; color:var(--accent); }
+        .w-stat { box-shadow:0 1px 4px rgba(15,49,84,0.04); }
         .w-stat-lbl { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
 
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }

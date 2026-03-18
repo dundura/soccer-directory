@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="icon" href="/logo.png" />
         <link rel="manifest" href="/workout-manifest.json" />
-        <meta name="theme-color" content="#e8ff47" />
+        <meta name="theme-color" content="#0F3154" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
