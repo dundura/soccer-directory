@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { WORKOUT, IMGS, TOTAL_SECONDS, CIRCUMFERENCE, type Exercise } from '@/lib/workoutData'
+import { WORKOUTS, CIRCUMFERENCE, type WorkoutPlan } from '@/lib/workoutData'
 
-type Screen = 'start' | 'workout' | 'done'
+type Screen = 'choose' | 'start' | 'workout' | 'done'
 
 export default function WorkoutApp() {
-  const [screen, setScreen] = useState<Screen>('start')
+  const [screen, setScreen] = useState<Screen>('choose')
+  const [plan, setPlan] = useState<WorkoutPlan>(WORKOUTS[0])
   const [idx, setIdx] = useState(0)
   const [timeLeft, setTimeLeft] = useState(60)
   const [elapsed, setElapsed] = useState(0)
@@ -28,6 +29,8 @@ export default function WorkoutApp() {
   useEffect(() => { elapsedRef.current = elapsed }, [elapsed])
   useEffect(() => { voiceOnRef.current = voiceOn }, [voiceOn])
 
+  const WORKOUT = plan.exercises
+  const TOTAL_SECONDS = WORKOUT.reduce((s, e) => s + e.dur, 0)
   const currentEx = WORKOUT[idx]
   const nextEx = WORKOUT[idx + 1] ?? null
   const isRest = currentEx?.type === 'rest'
@@ -103,7 +106,7 @@ export default function WorkoutApp() {
     setImgLoaded(false)
     setScreen('workout')
     startTimer()
-    setTimeout(() => speak("Let's go! Fifteen minute dumbbell workout. " + WORKOUT[0].voice), 200)
+    setTimeout(() => speak("Let's go! Fifteen minute " + plan.name + " workout. " + WORKOUT[0].voice), 200)
   }, [startTimer, speak])
 
   const togglePause = useCallback(() => {
@@ -133,7 +136,7 @@ export default function WorkoutApp() {
     if (window.confirm('Stop workout? Progress will be lost.')) {
       stopTimer()
       window.speechSynthesis.cancel()
-      setScreen('start')
+      setScreen('choose')
       setPaused(false)
     }
   }, [stopTimer])
@@ -141,7 +144,7 @@ export default function WorkoutApp() {
   const resetWorkout = useCallback(() => {
     stopTimer()
     window.speechSynthesis.cancel()
-    setScreen('start')
+    setScreen('choose')
     setIdx(0)
     setElapsed(0)
     setPaused(false)
@@ -273,10 +276,43 @@ export default function WorkoutApp() {
             <div className="w-meta">~15 MIN &middot; 60s WORK &middot; 30s REST</div>
           </div>
 
+          {/* ── CHOOSE SCREEN ── */}
+          {screen === 'choose' && (
+            <div className="w-start">
+              <div className="w-hero">IRON<br /><span>15</span></div>
+              <p style={{ color: 'var(--muted)', fontSize: 14, marginTop: -8 }}>Choose your workout</p>
+              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {WORKOUTS.map((w) => (
+                  <button
+                    key={w.id}
+                    onClick={() => { setPlan(w); setScreen('start'); }}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      width: '100%', padding: '18px 20px',
+                      background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12,
+                      cursor: 'pointer', textAlign: 'left', transition: 'all .15s',
+                      boxShadow: '0 1px 4px rgba(15,49,84,0.04)',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none' }}
+                  >
+                    <div>
+                      <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 22, letterSpacing: 1, color: 'var(--text)' }}>{w.label}</div>
+                      <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{w.description}</div>
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--muted)', whiteSpace: 'nowrap', marginLeft: 12 }}>
+                      {w.exercises.filter(e => e.type === 'work').length} exercises &middot; ~15 min
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* ── START SCREEN ── */}
           {screen === 'start' && (
             <div className="w-start">
-              <div className="w-hero">FEEL<br /><span>THE BURN</span></div>
+              <div className="w-hero">{plan.label}<br /><span>WORKOUT</span></div>
               <div className="w-badges">
                 <div className="w-badge hi">~15 Minutes</div>
                 <div className="w-badge">10 Exercises</div>
@@ -313,6 +349,12 @@ export default function WorkoutApp() {
               </button>
 
               <button className="w-btn-start" onClick={startWorkout}>START WORKOUT</button>
+              <button
+                onClick={() => setScreen('choose')}
+                style={{ background: 'none', border: 'none', color: 'var(--muted)', fontSize: 13, cursor: 'pointer', marginTop: 4, letterSpacing: 1, textTransform: 'uppercase' as const }}
+              >
+                &larr; Back to workouts
+              </button>
             </div>
           )}
 
@@ -436,7 +478,7 @@ export default function WorkoutApp() {
                 <div className="w-stat"><div className="w-stat-val">~120</div><div className="w-stat-lbl">Cal Burned</div></div>
                 <div className="w-stat"><div className="w-stat-val">&#128170;</div><div className="w-stat-lbl">Effort</div></div>
               </div>
-              <button className="w-btn-start" onClick={resetWorkout}>DO IT AGAIN</button>
+              <button className="w-btn-start" onClick={resetWorkout}>CHOOSE ANOTHER</button>
             </div>
           )}
 
