@@ -247,11 +247,11 @@ export default function WorkoutApp() {
         .w-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; position:relative; transition:border-color .3s; box-shadow:0 2px 10px rgba(15,49,84,0.06); }
         .w-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; z-index:2; transition:background .3s; }
 
-        .w-img-wrap { width:100%; height:200px; background:#F5F8FB; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
-        .w-img { width:100%; height:100%; object-fit:cover; display:block; transition:opacity .5s; }
+        .w-img-wrap { width:100%; height:240px; background:#F5F8FB; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+        .w-img { width:100%; height:100%; object-fit:contain; display:block; transition:opacity .5s; }
         .w-img-overlay { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent,rgba(0,0,0,.7)); height:60px; pointer-events:none; }
         .w-img-ph { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--muted); font-size:11px; letter-spacing:1px; text-transform:uppercase; }
-        .w-rest-vis { width:100%; height:200px; background:linear-gradient(135deg,#0F3154,#1A4268); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
+        .w-rest-vis { width:100%; height:240px; background:linear-gradient(135deg,#0F3154,#1A4268); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; overflow:hidden; }
         .w-rest-lbl { font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:3px; color:#fff; opacity:.8; }
 
         .w-info { padding:14px 18px; }
@@ -446,7 +446,7 @@ export default function WorkoutApp() {
                   <div className="w-rest-vis" style={{ position: 'relative' }}>
                     {nextEx?.img ? (
                       <>
-                        <img src={nextEx.img} alt={nextEx.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.3 }} />
+                        <img src={nextEx.img} alt={nextEx.name} style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: 0.3 }} />
                         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                           <div className="w-rest-lbl">Up Next: {nextEx.name}</div>
                         </div>
