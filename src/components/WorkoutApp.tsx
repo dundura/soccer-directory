@@ -17,11 +17,14 @@ export default function WorkoutApp() {
   const [voiceOn, setVoiceOn] = useState(true)
   const [imgLoaded, setImgLoaded] = useState(false)
 
+  const WORKOUT = plan.exercises.map(e => ({ ...e, dur: e.type === 'work' ? workDur : restDur }))
+
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const idxRef = useRef(0)
   const timeLeftRef = useRef(60)
   const pausedRef = useRef(false)
   const elapsedRef = useRef(0)
+  const workoutRef = useRef(WORKOUT)
   const voiceOnRef = useRef(true)
 
   // Keep refs in sync
@@ -30,14 +33,33 @@ export default function WorkoutApp() {
   useEffect(() => { pausedRef.current = paused }, [paused])
   useEffect(() => { elapsedRef.current = elapsed }, [elapsed])
   useEffect(() => { voiceOnRef.current = voiceOn }, [voiceOn])
-
-  const WORKOUT = plan.exercises.map(e => ({ ...e, dur: e.type === 'work' ? workDur : restDur }))
+  useEffect(() => { workoutRef.current = WORKOUT }, [WORKOUT])
   const TOTAL_SECONDS = WORKOUT.reduce((s, e) => s + e.dur, 0)
   const currentEx = WORKOUT[idx]
   const nextEx = WORKOUT[idx + 1] ?? null
   const isRest = currentEx?.type === 'rest'
   const totalDur = currentEx?.dur ?? 60
   const ringOffset = CIRCUMFERENCE * (1 - timeLeft / totalDur)
+
+  // ── BEEP ───────────────────────────────────────────────────
+  const beep = useCallback((freq = 880, duration = 150, count = 1) => {
+    if (typeof window === 'undefined') return
+    try {
+      const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+      for (let i = 0; i < count; i++) {
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.frequency.value = freq
+        osc.type = 'sine'
+        gain.gain.value = 0.3
+        const start = ctx.currentTime + i * (duration / 1000 + 0.08)
+        osc.start(start)
+        osc.stop(start + duration / 1000)
+      }
+    } catch { /* audio not available */ }
+  }, [])
 
   // ── VOICE ──────────────────────────────────────────────────
   const speak = useCallback((text: string) => {
@@ -60,6 +82,7 @@ export default function WorkoutApp() {
     stopTimer()
     intervalRef.current = setInterval(() => {
       if (pausedRef.current) return
+      const W = workoutRef.current
 
       const newTime = timeLeftRef.current - 1
       const newElapsed = elapsedRef.current + 1
@@ -69,23 +92,25 @@ export default function WorkoutApp() {
       timeLeftRef.current = newTime
       elapsedRef.current = newElapsed
 
-      const ex = WORKOUT[idxRef.current]
+      const ex = W[idxRef.current]
       if (newTime === 10 && ex.type === 'work') {
         setTimeout(() => speak('Ten seconds left! Push through!'), 0)
       }
-      if (newTime === 5) {
-        setTimeout(() => speak('Five, four, three, two, one!'), 0)
+      if (newTime === 3) {
+        beep(660, 120, 3)
+        setTimeout(() => speak('Three, two, one!'), 0)
       }
 
       if (newTime <= 0) {
+        beep(1100, 200, 1) // single high beep = new exercise
         const nextIdx = idxRef.current + 1
-        if (nextIdx < WORKOUT.length) {
+        if (nextIdx < W.length) {
           idxRef.current = nextIdx
           setIdx(nextIdx)
           setImgLoaded(false)
-          setTimeLeft(WORKOUT[nextIdx].dur)
-          timeLeftRef.current = WORKOUT[nextIdx].dur
-          setTimeout(() => speak(WORKOUT[nextIdx].voice), 100)
+          setTimeLeft(W[nextIdx].dur)
+          timeLeftRef.current = W[nextIdx].dur
+          setTimeout(() => speak(W[nextIdx].voice), 100)
         } else {
           stopTimer()
           setScreen('done')
@@ -93,7 +118,7 @@ export default function WorkoutApp() {
         }
       }
     }, 1000)
-  }, [speak, stopTimer])
+  }, [speak, stopTimer, beep])
 
   // ── CONTROLS ───────────────────────────────────────────────
   const startWorkout = useCallback(() => {
@@ -108,8 +133,9 @@ export default function WorkoutApp() {
     setImgLoaded(false)
     setScreen('workout')
     startTimer()
-    setTimeout(() => speak("Let's go! Fifteen minute " + plan.name + " workout. " + WORKOUT[0].voice), 200)
-  }, [startTimer, speak])
+    beep(1100, 200, 1)
+    setTimeout(() => speak("Let's go! " + plan.name + " workout. " + WORKOUT[0].voice), 200)
+  }, [startTimer, speak, beep, WORKOUT, plan.name])
 
   const togglePause = useCallback(() => {
     const next = !pausedRef.current
@@ -119,14 +145,15 @@ export default function WorkoutApp() {
   }, [speak])
 
   const skipEx = useCallback(() => {
+    const W = workoutRef.current
     const nextIdx = idxRef.current + 1
-    if (nextIdx < WORKOUT.length) {
+    if (nextIdx < W.length) {
       idxRef.current = nextIdx
       setIdx(nextIdx)
       setImgLoaded(false)
-      setTimeLeft(WORKOUT[nextIdx].dur)
-      timeLeftRef.current = WORKOUT[nextIdx].dur
-      speak(WORKOUT[nextIdx].voice)
+      setTimeLeft(W[nextIdx].dur)
+      timeLeftRef.current = W[nextIdx].dur
+      speak(W[nextIdx].voice)
     } else {
       stopTimer()
       setScreen('done')
@@ -416,9 +443,20 @@ export default function WorkoutApp() {
 
                 {/* Visual */}
                 {isRest ? (
-                  <div className="w-rest-vis">
-                    <div style={{ fontSize: 56 }}>{'\uD83D\uDE2E\u200D\uD83D\uDCA8'}</div>
-                    <div className="w-rest-lbl">Rest &amp; Recover</div>
+                  <div className="w-rest-vis" style={{ position: 'relative' }}>
+                    {nextEx?.img ? (
+                      <>
+                        <img src={nextEx.img} alt={nextEx.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.3 }} />
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                          <div className="w-rest-lbl">Up Next: {nextEx.name}</div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ fontSize: 56 }}>{'\uD83D\uDE2E\u200D\uD83D\uDCA8'}</div>
+                        <div className="w-rest-lbl">Rest &amp; Recover</div>
+                      </>
+                    )}
                   </div>
                 ) : (
                   <div className="w-img-wrap">

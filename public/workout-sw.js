@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'iron15-v2';
+const CACHE_VERSION = 'iron15-v3';
 const CACHE_FILES = ['/workout'];
 
 self.addEventListener('install', (event) => {
