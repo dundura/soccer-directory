@@ -187,11 +187,26 @@ const CARDIO_INTERVALS: Exercise[] = [
   { name: 'Cool-Down Walk', dur: 60, type: 'rest', tip: 'Slow walk. Let your heart rate come down. Great work.', voice: 'Cool down. Slow walk. Amazing work today. You crushed it.' },
 ]
 
+// ── PLYOMETRICS ───────────────────────────────────────────
+const PLYOMETRICS = buildWorkout([
+  { name: 'Squat Jumps', tip: 'Squat deep, explode up. Land soft on the balls of your feet.', voice: 'Squat Jumps! Explode up, land soft. Maximum power!', img: `${G}/6FMU51h.gif` },
+  { name: 'Box Jump (Imaginary)', tip: 'Swing arms, jump up onto an imaginary box. Land with bent knees. Step down.', voice: 'Box Jumps! Swing and explode. Land soft with bent knees!', img: `${G}/6FMU51h.gif` },
+  { name: 'Lateral Bounds', tip: 'Leap side to side. Push off one foot, land on the other. Stay low and explosive.', voice: 'Lateral Bounds! Leap side to side. Stay low and explosive!', img: `${G}/zfNHMN9.gif` },
+  { name: 'Tuck Jumps', tip: 'Jump high, pull knees to chest at the top. Land soft and repeat immediately.', voice: 'Tuck Jumps! Knees to chest. Maximum height every rep!', img: `${G}/6FMU51h.gif` },
+  { name: 'Split Squat Jumps', tip: 'Lunge position. Jump and switch legs mid-air. Land in a lunge. Repeat.', voice: 'Split Squat Jumps! Jump and switch. Explosive legs!', img: `${G}/qx4fgX7.gif` },
+  { name: 'Broad Jump', tip: 'Swing arms, jump forward as far as you can. Land soft. Walk back and repeat.', voice: 'Broad Jumps! Swing and launch forward. Maximum distance!', img: `${G}/6FMU51h.gif` },
+  { name: 'Single-Leg Hop (L)', tip: 'Hop forward on left leg. Drive knee up. Stay balanced. Quick hops.', voice: 'Single Leg Hops, left leg! Drive that knee. Stay balanced!', img: `${G}/ealLwvX.gif` },
+  { name: 'Single-Leg Hop (R)', tip: 'Switch to right leg. Same explosive hops. Drive the knee.', voice: 'Switch legs! Right leg now. Same power. Drive and hop!', img: `${G}/ealLwvX.gif` },
+  { name: 'Burpee Jump', tip: 'Burpee with maximum jump at the top. Full extension. Land and go again.', voice: 'Burpee Jumps! Drop, push, explode sky high! Almost done!', img: `${G}/dK9394r.gif` },
+  { name: 'Star Jumps', tip: 'Jump up, spread arms and legs into a star. Snap back together before landing.', voice: 'Star Jumps! Spread wide at the top. Last exercise! Give it everything!', img: `${G}/1g5bPpA.gif` },
+])
+
 // ── EXPORTS ───────────────────────────────────────────────
 export const WORKOUTS: WorkoutPlan[] = [
   // Soccer
   { id: 'soccer-fitness', name: 'Soccer Fitness', label: 'SOCCER FITNESS', description: 'Speed, agility, and conditioning for the pitch', icon: '\u26BD', exercises: SOCCER_FITNESS },
   { id: 'soccer-full', name: 'Soccer Full Body', label: 'SOCCER FULL BODY', description: 'Bodyweight strength for soccer players', icon: '\u26BD', exercises: SOCCER_FULL_BODY },
+  { id: 'plyo', name: 'Plyometrics', label: 'PLYOMETRICS', description: 'Explosive jumping and power for speed and agility', icon: '\uD83D\uDCA5', exercises: PLYOMETRICS },
   { id: 'cardio', name: 'Interval Run/Walk', label: 'INTERVAL RUN/WALK', description: 'Run, walk, sprint intervals for cardio', icon: '\uD83C\uDFC3', exercises: CARDIO_INTERVALS },
   { id: 'stretch', name: 'Stretching', label: 'STRETCHING', description: 'Recovery and flexibility for athletes', icon: '\uD83E\uDDD8', exercises: STRETCHING },
   // Dumbbell

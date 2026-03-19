@@ -316,7 +316,7 @@ export default function WorkoutApp() {
               <div style={{ width: '100%' }}>
                 <div style={{ fontSize: 10, letterSpacing: 2, textTransform: 'uppercase' as const, color: 'var(--muted)', marginBottom: 8, fontWeight: 700 }}>{'\u26BD'} Soccer</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {WORKOUTS.filter(w => w.id.startsWith('soccer') || w.id === 'stretch' || w.id === 'cardio').map((w) => (
+                  {WORKOUTS.filter(w => w.id.startsWith('soccer') || w.id === 'stretch' || w.id === 'cardio' || w.id === 'plyo').map((w) => (
                     <button key={w.id} onClick={() => { setPlan(w); setScreen('start'); }} style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '16px 18px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, cursor: 'pointer', textAlign: 'left', transition: 'all .15s', boxShadow: '0 1px 4px rgba(15,49,84,0.04)' }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none' }}>
