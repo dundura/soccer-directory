@@ -201,12 +201,27 @@ const PLYOMETRICS = buildWorkout([
   { name: 'Star Jumps', tip: 'Jump up, spread arms and legs into a star. Snap back together before landing.', voice: 'Star Jumps! Spread wide at the top. Last exercise! Give it everything!', img: `${G}/1g5bPpA.gif` },
 ])
 
+// ── SPEED & AGILITY (youth focused) ───────────────────────
+const SPEED_AGILITY = buildWorkout([
+  { name: 'A-Skip', tip: 'Drive knee up, skip forward. Quick ground contact. Pump your arms.', voice: 'A-Skips! Drive that knee. Quick feet off the ground. Arms pumping!', img: `${G}/ealLwvX.gif` },
+  { name: 'High Knees Sprint', tip: 'Sprint in place with knees as high as possible. Stay on your toes. Max speed.', voice: 'High Knees Sprint! Knees up, fast as you can. Stay on those toes!', img: `${G}/ealLwvX.gif` },
+  { name: 'Lateral Shuffle', tip: 'Low athletic stance. Shuffle side to side. Stay low, feet never cross.', voice: 'Lateral Shuffle! Stay low. Quick feet. Don\'t let those feet cross!', img: `${G}/zfNHMN9.gif` },
+  { name: 'Fast Feet', tip: 'Tiny rapid steps in place. As fast as possible. Stay light on your toes.', voice: 'Fast Feet! Tiny rapid steps. As fast as you can. Light on those toes!', img: `${G}/ealLwvX.gif` },
+  { name: 'Backpedal & Sprint', tip: 'Backpedal 5 steps, then explode forward into a sprint. Repeat.', voice: 'Backpedal and Sprint! Five steps back, then explode forward!', img: `${G}/ealLwvX.gif` },
+  { name: 'Carioca', tip: 'Side step with crossover. Right foot over, left foot behind. Quick hips. Switch halfway.', voice: 'Carioca! Crossover steps. Quick hips. Switch direction halfway!', img: `${G}/zfNHMN9.gif` },
+  { name: 'Acceleration Starts', tip: 'Start from a crouched position. Explode out for 5 strides. Walk back. Repeat.', voice: 'Acceleration Starts! Crouch low, explode out. Five fast strides!', img: `${G}/dK9394r.gif` },
+  { name: 'T-Drill', tip: 'Sprint forward, shuffle left, shuffle right, backpedal. Hit each point fast.', voice: 'T-Drill! Sprint, shuffle, shuffle, backpedal. Fast transitions!', img: `${G}/zfNHMN9.gif` },
+  { name: '5-10-5 Shuttle', tip: 'Start in the middle. Sprint 5 yards right, 10 yards left, 5 yards back. Explode on each turn.', voice: 'Five-Ten-Five Shuttle! Sprint right, cut left, cut back. Explode on the cuts!', img: `${G}/zfNHMN9.gif` },
+  { name: 'Sprint & Decelerate', tip: 'Sprint hard for 5 seconds, then slow down in 3 steps. Control the stop. Repeat.', voice: 'Sprint and Decelerate! Full speed, then control the stop. This is how you get fast!', img: `${G}/ealLwvX.gif` },
+])
+
 // ── EXPORTS ───────────────────────────────────────────────
 export const WORKOUTS: WorkoutPlan[] = [
   // Soccer
   { id: 'soccer-fitness', name: 'Soccer Fitness', label: 'SOCCER FITNESS', description: 'Speed, agility, and conditioning for the pitch', icon: '\u26BD', exercises: SOCCER_FITNESS },
   { id: 'soccer-full', name: 'Soccer Full Body', label: 'SOCCER FULL BODY', description: 'Bodyweight strength for soccer players', icon: '\u26BD', exercises: SOCCER_FULL_BODY },
   { id: 'plyo', name: 'Plyometrics', label: 'PLYOMETRICS', description: 'Explosive jumping and power for speed and agility', icon: '\uD83D\uDCA5', exercises: PLYOMETRICS },
+  { id: 'speed', name: 'Speed & Agility', label: 'SPEED & AGILITY', description: 'Get faster with sprints, shuffles, and footwork drills', icon: '\u26A1', exercises: SPEED_AGILITY },
   { id: 'cardio', name: 'Interval Run/Walk', label: 'INTERVAL RUN/WALK', description: 'Run, walk, sprint intervals for cardio', icon: '\uD83C\uDFC3', exercises: CARDIO_INTERVALS },
   { id: 'stretch', name: 'Stretching', label: 'STRETCHING', description: 'Recovery and flexibility for athletes', icon: '\uD83E\uDDD8', exercises: STRETCHING },
   // Dumbbell
