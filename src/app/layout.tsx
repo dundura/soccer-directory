@@ -199,6 +199,7 @@ function Footer() {
           <div>
             <h4 className="font-[family-name:var(--font-display)] text-white font-semibold mb-4 text-sm">For Clubs & Coaches</h4>
             <div className="flex flex-col gap-2 text-sm">
+              <a href="/why-list" className="hover:text-white transition-colors">Why List?</a>
               <a href="/dashboard" className="hover:text-white transition-colors">Get Listed</a>
               <a href="/dashboard" className="hover:text-white transition-colors">Manage Listings</a>
               <a href="/dashboard" className="hover:text-white transition-colors">Post a Camp</a>
