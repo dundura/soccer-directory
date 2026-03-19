@@ -2915,6 +2915,20 @@ export async function deleteCrmGroup(id: number) {
   await sql`DELETE FROM crm_groups WHERE id = ${id}`;
 }
 
+// ── CRM Comments ──────────────────────────────────────────────
+
+export async function getCrmComments() {
+  return await sql`SELECT * FROM crm_comments ORDER BY created_at ASC`;
+}
+
+export async function addCrmComment(contactId: number, body: string, authorName: string, authorEmail: string) {
+  await sql`INSERT INTO crm_comments (contact_id, body, author_name, author_email) VALUES (${contactId}, ${body}, ${authorName}, ${authorEmail})`;
+}
+
+export async function deleteCrmComment(id: number) {
+  await sql`DELETE FROM crm_comments WHERE id = ${id}`;
+}
+
 // ── Admin Todos ──────────────────────────────────────────────
 export async function getAdminTodos() {
   return await sql`SELECT * FROM admin_todos ORDER BY project ASC, created_at DESC`;
