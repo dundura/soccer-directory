@@ -333,12 +333,22 @@ export default function WorkoutApp() {
 
               {/* Dumbbell (collapsible) */}
               <div style={{ width: '100%' }}>
-                <button onClick={() => setDbOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 8px', fontSize: 10, letterSpacing: 2, textTransform: 'uppercase' as const, color: 'var(--muted)', fontWeight: 700 }}>
-                  <span>{'\uD83C\uDFCB\uFE0F'} Dumbbell ({WORKOUTS.filter(w => w.id.startsWith('db')).length})</span>
-                  <span style={{ fontSize: 14, transition: 'transform .2s', transform: dbOpen ? 'rotate(180deg)' : 'rotate(0)' }}>{'\u25BE'}</span>
+                <div style={{ fontSize: 10, letterSpacing: 2, textTransform: 'uppercase' as const, color: 'var(--muted)', marginBottom: 8, fontWeight: 700 }}>{'\uD83C\uDFCB\uFE0F'} Dumbbell</div>
+                <button onClick={() => setDbOpen(o => !o)} style={{
+                  display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '16px 18px',
+                  background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12,
+                  cursor: 'pointer', textAlign: 'left', transition: 'all .15s',
+                  boxShadow: '0 1px 4px rgba(15,49,84,0.04)',
+                }}>
+                  <div style={{ fontSize: 24, width: 40, textAlign: 'center', flexShrink: 0 }}>{'\uD83C\uDFCB\uFE0F'}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 20, letterSpacing: 1, color: 'var(--text)' }}>DUMBBELL WORKOUTS</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>{WORKOUTS.filter(w => w.id.startsWith('db')).length} workouts &mdash; Full Body, Upper, Lower, Back, Arms</div>
+                  </div>
+                  <div style={{ fontSize: 18, color: 'var(--muted)', transition: 'transform .2s', transform: dbOpen ? 'rotate(180deg)' : 'rotate(0)', flexShrink: 0 }}>{'\u25BE'}</div>
                 </button>
                 {dbOpen && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
                     {WORKOUTS.filter(w => w.id.startsWith('db')).map((w) => (
                       <button key={w.id} onClick={() => { setPlan(w); setScreen('start'); }} style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '16px 18px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, cursor: 'pointer', textAlign: 'left', transition: 'all .15s', boxShadow: '0 1px 4px rgba(15,49,84,0.04)' }}
                         onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
