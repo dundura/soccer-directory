@@ -73,6 +73,7 @@ export default function AdminClient() {
   const [listingTypeFilter, setListingTypeFilter] = useState("all");
   const [listingStatusFilter, setListingStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [collapsedTypes, setCollapsedTypes] = useState<Set<string>>(new Set());
 
   // Hero tagline setting
   const [heroTagline, setHeroTagline] = useState("");
@@ -395,93 +396,100 @@ export default function AdminClient() {
                 <span className="text-sm text-muted self-center">{filteredListings.length} results</span>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b-2 border-border text-left">
-                      <th className="py-3 px-3 font-bold text-primary">Name</th>
-                      <th className="py-3 px-3 font-bold text-primary">Type</th>
-                      <th className="py-3 px-3 font-bold text-primary">Status</th>
-                      <th className="py-3 px-3 font-bold text-primary">Featured</th>
-                      <th className="py-3 px-3 font-bold text-primary">Owner</th>
-                      <th className="py-3 px-3 font-bold text-primary">Created</th>
-                      <th className="py-3 px-3 font-bold text-primary">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredListings.map((listing) => {
-                      const owner = userMap.get(listing.userId);
-                      return (
-                        <tr key={`${listing.type}-${listing.id}`} className="border-b border-border hover:bg-surface/50">
-                          <td className="py-3 px-3">
-                            <a href={`/${TYPE_PATHS[listing.type] || listing.type}/${listing.slug}`} className="font-medium text-primary hover:underline">
-                              {listing.name}
-                            </a>
-                          </td>
-                          <td className="py-3 px-3">
-                            <span className="text-xs font-semibold bg-surface px-2 py-1 rounded-full">
-                              {TYPE_LABELS[listing.type] || listing.type}
-                            </span>
-                          </td>
-                          <td className="py-3 px-3">
-                            <span className={`text-xs font-bold px-2 py-1 rounded-full ${
-                              listing.status === "approved" ? "bg-green-100 text-green-700" :
-                              listing.status === "pending" ? "bg-yellow-100 text-yellow-700" :
-                              "bg-red-100 text-red-700"
-                            }`}>
-                              {listing.status}
-                            </span>
-                          </td>
-                          <td className="py-3 px-3">
-                            {listing.featured ? (
-                              <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-1 rounded-full">Featured</span>
-                            ) : (
-                              <span className="text-xs text-muted">—</span>
+              {/* Grouped by type */}
+              <div className="space-y-3">
+                {(() => {
+                  const typeGroups = new Map<string, typeof filteredListings>();
+                  for (const l of filteredListings) {
+                    const key = l.type;
+                    if (!typeGroups.has(key)) typeGroups.set(key, []);
+                    typeGroups.get(key)!.push(l);
+                  }
+                  const sorted = Array.from(typeGroups.entries()).sort((a, b) => (TYPE_LABELS[a[0]] || a[0]).localeCompare(TYPE_LABELS[b[0]] || b[0]));
+                  return sorted.map(([type, items]) => {
+                    const isCollapsed = collapsedTypes.has(type);
+                    return (
+                      <div key={type} className="bg-white rounded-2xl border border-border overflow-hidden">
+                        <button
+                          onClick={() => setCollapsedTypes(prev => { const n = new Set(prev); n.has(type) ? n.delete(type) : n.add(type); return n; })}
+                          className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-surface/30 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <svg className={`w-4 h-4 text-muted shrink-0 transition-transform duration-200 ${isCollapsed ? "-rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                            <span className="font-bold text-sm text-primary">{TYPE_LABELS[type] || type}</span>
+                            <span className="text-xs text-muted">({items.length})</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">{items.filter(l => l.status === "approved").length} approved</span>
+                            {items.filter(l => l.status === "pending").length > 0 && (
+                              <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-semibold">{items.filter(l => l.status === "pending").length} pending</span>
                             )}
-                          </td>
-                          <td className="py-3 px-3 text-muted">{owner?.name || "—"}</td>
-                          <td className="py-3 px-3 text-muted">{new Date(listing.createdAt).toLocaleDateString()}</td>
-                          <td className="py-3 px-3">
-                            <div className="flex gap-2">
-                              {listing.status !== "approved" && (
-                                <button
-                                  onClick={() => adminAction({ action: "updateStatus", type: listing.type, id: listing.id, status: "approved" })}
-                                  disabled={actionLoading !== null}
-                                  className="text-xs px-2.5 py-1 rounded-lg bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors disabled:opacity-50"
-                                >
-                                  Approve
-                                </button>
-                              )}
-                              {listing.status === "approved" && (
-                                <button
-                                  onClick={() => adminAction({ action: "updateStatus", type: listing.type, id: listing.id, status: "rejected" })}
-                                  disabled={actionLoading !== null}
-                                  className="text-xs px-2.5 py-1 rounded-lg border border-red-200 text-[#DC373E] hover:bg-red-50 transition-colors disabled:opacity-50"
-                                >
-                                  Reject
-                                </button>
-                              )}
-                              <button
-                                onClick={() => adminAction({ action: "updateFeatured", type: listing.type, id: listing.id, featured: !listing.featured, name: listing.name, slug: listing.slug })}
-                                disabled={actionLoading !== null}
-                                className="text-xs px-2.5 py-1 rounded-lg border border-border hover:bg-surface transition-colors disabled:opacity-50"
-                              >
-                                {listing.featured ? "Unfeature" : "Feature"}
-                              </button>
-                              <button
-                                onClick={() => handleEdit(listing)}
-                                disabled={editLoading}
-                                className="text-xs px-2.5 py-1 rounded-lg bg-accent/10 text-accent-hover border border-accent/20 hover:bg-accent/20 transition-colors disabled:opacity-50"
-                              >
-                                Edit
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                          </div>
+                        </button>
+                        {!isCollapsed && (
+                          <div className="border-t border-border overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="bg-surface/50 text-left">
+                                  <th className="py-2 px-3 font-semibold text-primary">Name</th>
+                                  <th className="py-2 px-3 font-semibold text-primary">Status</th>
+                                  <th className="py-2 px-3 font-semibold text-primary">Featured</th>
+                                  <th className="py-2 px-3 font-semibold text-primary">Owner</th>
+                                  <th className="py-2 px-3 font-semibold text-primary">Created</th>
+                                  <th className="py-2 px-3 font-semibold text-primary">Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {items.map((listing) => {
+                                  const owner = userMap.get(listing.userId);
+                                  return (
+                                    <tr key={`${listing.type}-${listing.id}`} className="border-t border-border hover:bg-surface/30">
+                                      <td className="py-2.5 px-3">
+                                        <a href={`/${TYPE_PATHS[listing.type] || listing.type}/${listing.slug}`} className="font-medium text-primary hover:underline">
+                                          {listing.name}
+                                        </a>
+                                      </td>
+                                      <td className="py-2.5 px-3">
+                                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                                          listing.status === "approved" ? "bg-green-100 text-green-700" :
+                                          listing.status === "pending" ? "bg-yellow-100 text-yellow-700" :
+                                          "bg-red-100 text-red-700"
+                                        }`}>
+                                          {listing.status}
+                                        </span>
+                                      </td>
+                                      <td className="py-2.5 px-3">
+                                        {listing.featured ? (
+                                          <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Featured</span>
+                                        ) : (
+                                          <span className="text-xs text-muted">&mdash;</span>
+                                        )}
+                                      </td>
+                                      <td className="py-2.5 px-3 text-muted">{owner?.name || "&mdash;"}</td>
+                                      <td className="py-2.5 px-3 text-muted">{new Date(listing.createdAt).toLocaleDateString()}</td>
+                                      <td className="py-2.5 px-3">
+                                        <div className="flex gap-2">
+                                          {listing.status !== "approved" && (
+                                            <button onClick={() => adminAction({ action: "updateStatus", type: listing.type, id: listing.id, status: "approved" })} disabled={actionLoading !== null} className="text-xs px-2.5 py-1 rounded-lg bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors disabled:opacity-50">Approve</button>
+                                          )}
+                                          {listing.status === "approved" && (
+                                            <button onClick={() => adminAction({ action: "updateStatus", type: listing.type, id: listing.id, status: "rejected" })} disabled={actionLoading !== null} className="text-xs px-2.5 py-1 rounded-lg border border-red-200 text-[#DC373E] hover:bg-red-50 transition-colors disabled:opacity-50">Reject</button>
+                                          )}
+                                          <button onClick={() => adminAction({ action: "updateFeatured", type: listing.type, id: listing.id, featured: !listing.featured, name: listing.name, slug: listing.slug })} disabled={actionLoading !== null} className="text-xs px-2.5 py-1 rounded-lg border border-border hover:bg-surface transition-colors disabled:opacity-50">{listing.featured ? "Unfeature" : "Feature"}</button>
+                                          <button onClick={() => handleEdit(listing)} disabled={editLoading} className="text-xs px-2.5 py-1 rounded-lg bg-accent/10 text-accent-hover border border-accent/20 hover:bg-accent/20 transition-colors disabled:opacity-50">Edit</button>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </>
           )}
