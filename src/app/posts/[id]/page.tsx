@@ -208,10 +208,10 @@ export default async function PostPage({ params }: Props) {
 
         <div className="bg-white">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            {/* Cover image */}
-            {post.imageUrl && (
+            {/* Cover image — fall back to listing image if none */}
+            {(post.imageUrl || listingImages[0]) && (
               <div className="mb-8">
-                <img src={post.imageUrl} alt="" className="w-full rounded-2xl object-cover max-h-[450px]" />
+                <img src={post.imageUrl || listingImages[0]} alt="" className="w-full rounded-2xl object-cover max-h-[450px]" />
               </div>
             )}
 
