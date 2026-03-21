@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 
@@ -23,7 +23,15 @@ interface InvitationRecord {
 
 const inputClass = "w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent";
 
-export function ReviewSection({ listingType, listingId }: { listingType: string; listingId: string }) {
+export function ReviewSection(props: { listingType: string; listingId: string }) {
+  return (
+    <Suspense fallback={null}>
+      <ReviewSectionInner {...props} />
+    </Suspense>
+  );
+}
+
+function ReviewSectionInner({ listingType, listingId }: { listingType: string; listingId: string }) {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const reviewToken = searchParams.get("reviewToken");
