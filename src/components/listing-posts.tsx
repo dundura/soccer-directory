@@ -181,10 +181,13 @@ export function ListingPostsSidebar({
     <div id="create-post" className="bg-white rounded-2xl shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
         <h4 className="text-sm font-bold">Our Posts</h4>
-        {canManage && !showForm && (
-          <button onClick={() => setShowForm(true)} className="text-[11px] font-semibold text-accent hover:text-accent-hover transition-colors">
+        {canManage && (
+          <a
+            href={`/posts/new-blog?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(slug)}&name=${encodeURIComponent(typeof document !== "undefined" ? document.querySelector("h1")?.textContent || "" : "")}&post=true`}
+            className="text-[11px] font-semibold text-accent hover:text-accent-hover transition-colors"
+          >
             + Create Post
-          </button>
+          </a>
         )}
       </div>
 
