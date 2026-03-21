@@ -471,11 +471,17 @@ export default function WorkoutApp() {
                     ))}
                   </div>
                 </div>
-                <div className="w-set-row">
-                  <span className="w-set-label">Rounds</span>
-                  <div className="w-pills">
+                <div className="w-voice">
+                  <span style={{ width: 80 }}>Rounds</span>
+                  <div style={{ display: 'flex', gap: 4 }}>
                     {[1, 2, 3, 4].map(r => (
-                      <button key={r} className={`w-pill${rounds === r ? ' active' : ''}`} onClick={() => setRounds(r)}>{r}</button>
+                      <button key={r} onClick={() => setRounds(r)} style={{
+                        padding: '5px 12px', borderRadius: 16, border: '1px solid',
+                        fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all .12s',
+                        borderColor: rounds === r ? 'var(--accent)' : 'var(--border)',
+                        background: rounds === r ? 'var(--accent)' : 'transparent',
+                        color: rounds === r ? '#fff' : 'var(--muted)',
+                      }}>{r}x</button>
                     ))}
                   </div>
                 </div>
