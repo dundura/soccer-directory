@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -25,14 +25,15 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
   const isAdmin = (session.user as { role?: string }).role === "admin";
 
   // Check featured status for admins
-  useState(() => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
     if (isAdmin && listingType && listingId && !featureChecked) {
       fetch(`/api/admin?action=checkFeatured&type=${listingType}&id=${listingId}`)
         .then(r => r.json())
         .then(d => { setFeatured(!!d.featured); setFeatureChecked(true); })
         .catch(() => setFeatureChecked(true));
     }
-  });
+  }, [isAdmin, listingType, listingId, featureChecked]);
 
   async function handleToggleFeatured() {
     if (!listingType || !listingId) return;
