@@ -86,7 +86,7 @@ export function RichTextEditor({ content, onChange, placeholder, minHeight = "30
   };
 
   return (
-    <div className="border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent/30 focus-within:border-accent">
+    <div className="border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent/30 focus-within:border-accent bg-white">
       {/* Toolbar */}
       <div className="flex items-center gap-0.5 px-3 py-2 bg-surface border-b border-border flex-wrap">
         <ToolbarButton active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold">
