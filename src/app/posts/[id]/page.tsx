@@ -64,6 +64,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ogImage = post.ogImageUrl || post.imageUrl || getVideoThumbnail(post.videoUrl) || "https://www.soccer-near-me.com/og-image.png";
   const canonical = post.slug ? `/posts/${post.slug}` : `/posts/${post.id}`;
   const finalImage = ogImage;
+
+    // Extract YouTube embed URL for video OG tags
+    function getEmbedUrl(videoUrl: string | null | undefined): string | null {
+      if (!videoUrl) return null;
+      const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
+      if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+      const vimeoMatch = videoUrl.match(/vimeo\.com\/(\d+)/);
+      if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+      return null;
+    }
+    const embedUrl = getEmbedUrl(post.videoUrl);
+
     return {
       title,
       description,
@@ -73,14 +85,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         siteName: "Soccer Near Me",
         images: [{ url: finalImage, width: 1200, height: 630 }],
         url: `https://www.soccer-near-me.com${canonical}`,
-        type: "article",
+        type: embedUrl ? "video.other" : "article",
+        ...(embedUrl ? { videos: [{ url: embedUrl, width: 1280, height: 720, type: "text/html" }] } : {}),
       },
       twitter: {
-        card: "summary_large_image",
+        card: embedUrl ? "player" : "summary_large_image",
         title,
         description,
         images: [finalImage],
+        ...(embedUrl ? { players: { playerUrl: embedUrl, width: 1280, height: 720 } } : {}),
       },
+      ...(embedUrl ? { other: {
+        "og:video:url": embedUrl,
+        "og:video:secure_url": embedUrl,
+        "og:video:type": "text/html",
+        "og:video:width": "1280",
+        "og:video:height": "720",
+      } } : {}),
     };
 }
 
