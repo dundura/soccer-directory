@@ -131,6 +131,7 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <div className="bg-white rounded-t-[24px] -mt-4 relative z-10 shadow-[0_-4px_20px_rgba(15,49,84,0.06)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Featured Clubs ─────────────────────── */}
@@ -436,6 +437,7 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
+      </div>
       </div>
     </>
   );
