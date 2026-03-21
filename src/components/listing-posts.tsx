@@ -183,7 +183,7 @@ export function ListingPostsSidebar({
         <h4 className="text-sm font-bold">Our Posts</h4>
         {canManage && (
           <a
-            href={`/posts/new-blog?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(slug)}&name=${encodeURIComponent(typeof document !== "undefined" ? document.querySelector("h1")?.textContent || "" : "")}&post=true`}
+            href={`/posts/new-post?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(slug)}&name=${encodeURIComponent(typeof document !== "undefined" ? document.querySelector("h1")?.textContent || "" : "")}`}
             className="text-[11px] font-semibold text-accent hover:text-accent-hover transition-colors"
           >
             + Create Post

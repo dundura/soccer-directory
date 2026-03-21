@@ -41,6 +41,12 @@ export function BlogPostForm() {
       .then((r) => r.json())
       .then((images: string[]) => {
         setListingImages(images);
+        if (images.length > 0) {
+          const toAdd = images.slice(0, 3);
+          const imgHtml = toAdd.map((url) => `<img src="${url}" />`).join("\n<p></p>\n");
+          setBody(`<p></p>\n${imgHtml}\n<p></p>`);
+          if (!imageUrl) setImageUrl(toAdd[0]);
+        }
         setImagesLoaded(true);
       })
       .catch(() => setImagesLoaded(true));
