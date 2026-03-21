@@ -7,6 +7,17 @@ import { ImageUpload } from "./image-upload";
 
 const RichTextEditor = lazy(() => import("./rich-text-editor").then((m) => ({ default: m.RichTextEditor })));
 
+const VIDEO_REGEX = /youtube\.com|youtu\.be|vimeo\.com|tiktok\.com|instagram\.com\/(?:p|reel)/;
+
+function CtaVideoEmbed({ ctaUrl, videoUrl }: { ctaUrl: string; videoUrl?: string }) {
+  if (videoUrl || !VIDEO_REGEX.test(ctaUrl)) return null;
+  return (
+    <div className="mb-4">
+      <VideoEmbed url={ctaUrl} />
+    </div>
+  );
+}
+
 function insertBold(textarea: HTMLTextAreaElement, body: string, setBody: (v: string) => void) {
   const start = textarea.selectionStart;
   const end = textarea.selectionEnd;
@@ -249,11 +260,7 @@ export function PostEditableContent({
       {/* CTA - embed video if URL is a video link, plus show button */}
       {ctaUrl && !editingMedia && (
         <div className="px-6 pb-4">
-          {!videoUrl && /youtube\.com|youtu\.be|vimeo\.com|tiktok\.com|instagram\.com\/(?:p|reel)/.test(ctaUrl) && (
-            <div className="mb-4">
-              <VideoEmbed url={ctaUrl} />
-            </div>
-          )}
+          <CtaVideoEmbed ctaUrl={ctaUrl} videoUrl={videoUrl} />
           <a
             href={ctaUrl}
             target="_blank"
