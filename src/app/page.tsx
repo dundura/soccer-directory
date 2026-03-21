@@ -19,6 +19,18 @@ export default async function HomePage() {
   const featuredFutsal = futsalTeams.filter((t) => t.featured).slice(0, 3);
   const featuredPosts = blogPosts.slice(0, 3);
 
+  // New listings: most recent across all types, sorted by created date
+  const allListings = [
+    ...clubs.map(c => ({ ...c, _type: 'club', _path: 'clubs', _subtitle: `${c.city}, ${c.state}` })),
+    ...teams.map(t => ({ ...t, _type: 'team', _path: 'teams', _subtitle: `${t.city}, ${t.state}` })),
+    ...trainers.map(t => ({ ...t, _type: 'trainer', _path: 'trainers', _subtitle: `${t.city}, ${t.state}` })),
+    ...camps.map(c => ({ ...c, _type: 'camp', _path: 'camps', _subtitle: `${c.city}, ${c.state}` })),
+    ...tournaments.map(t => ({ ...t, _type: 'tournament', _path: 'tournaments', _subtitle: `${t.city}, ${t.state}` })),
+    ...futsalTeams.map(t => ({ ...t, _type: 'futsal', _path: 'futsal', _subtitle: `${t.city}, ${t.state}` })),
+  ].sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()).slice(0, 6);
+
+  const TYPE_BADGE_MAP: Record<string, string> = { club: 'Club', team: 'Team', trainer: 'Trainer', camp: 'Camp', tournament: 'Tournament', futsal: 'Futsal' };
+
   const BLOG_COVER_IMAGES = [
     "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp",
     "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg",
@@ -334,6 +346,33 @@ export default async function HomePage() {
             ))}
           </div>
         </section>
+
+        {/* ── New Listings ────────────────────────── */}
+        {allListings.length > 0 && (
+          <section className="py-16 border-t border-border">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">New Listings</h2>
+                <p className="text-muted mt-1">Recently added to Soccer Near Me</p>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {allListings.map((listing) => (
+                <ListingCard
+                  key={`${listing._type}-${listing.id}`}
+                  href={`/${listing._path}/${listing.slug}`}
+                  title={listing.name}
+                  subtitle={listing._subtitle}
+                  image={listing.teamPhoto || listing.logo || listing.imageUrl || undefined}
+                  badges={[{ label: TYPE_BADGE_MAP[listing._type] || listing._type, variant: "blue" }]}
+                  details={[]}
+                  imagePosition={listing.imagePosition}
+                  cta={`View ${TYPE_BADGE_MAP[listing._type] || 'Listing'}`}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── Blog Preview ───────────────────────── */}
         <section className="py-16 border-t border-border">
