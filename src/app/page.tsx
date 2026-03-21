@@ -19,7 +19,7 @@ export default async function HomePage() {
   const featuredFutsal = futsalTeams.filter((t) => t.featured).slice(0, 3);
   const featuredPosts = blogPosts.slice(0, 3);
 
-  // New listings: most recent across all types, sorted by created date
+  // New listings: random selection across all types
   const allListings = [
     ...clubs.map(c => ({ ...c, _type: 'club', _path: 'clubs', _subtitle: `${c.city}, ${c.state}` })),
     ...teams.map(t => ({ ...t, _type: 'team', _path: 'teams', _subtitle: `${t.city}, ${t.state}` })),
@@ -27,7 +27,7 @@ export default async function HomePage() {
     ...camps.map(c => ({ ...c, _type: 'camp', _path: 'camps', _subtitle: `${c.city}, ${c.state}` })),
     ...tournaments.map(t => ({ ...t, _type: 'tournament', _path: 'tournaments', _subtitle: `${t.city}, ${t.state}` })),
     ...futsalTeams.map(t => ({ ...t, _type: 'futsal', _path: 'futsal', _subtitle: `${t.city}, ${t.state}` })),
-  ].sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()).slice(0, 6);
+  ].sort(() => Math.random() - 0.5).slice(0, 6);
 
   const TYPE_BADGE_MAP: Record<string, string> = { club: 'Club', team: 'Team', trainer: 'Trainer', camp: 'Camp', tournament: 'Tournament', futsal: 'Futsal' };
 
