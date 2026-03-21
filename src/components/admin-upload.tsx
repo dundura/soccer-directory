@@ -1,12 +1,32 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 interface UploadedFile {
   name: string;
+  label: string;
   cdnUrl: string;
   size: string;
   timestamp: number;
+  hidden: boolean;
+}
+
+const STORAGE_KEY = "snm_admin_uploads";
+
+function loadFiles(): UploadedFile[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFiles(files: UploadedFile[]) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(files));
+  } catch { /* storage full */ }
 }
 
 export function AdminUpload() {
@@ -16,6 +36,23 @@ export function AdminUpload() {
   const [error, setError] = useState("");
   const [folder, setFolder] = useState("soccer-directory/uploads");
   const [copied, setCopied] = useState<string | null>(null);
+  const [showHidden, setShowHidden] = useState(false);
+  const [editingLabel, setEditingLabel] = useState<number | null>(null);
+  const [editingValue, setEditingValue] = useState("");
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    setFiles(loadFiles());
+  }, []);
+
+  // Save to localStorage whenever files change
+  const updateFiles = useCallback((updater: (prev: UploadedFile[]) => UploadedFile[]) => {
+    setFiles((prev) => {
+      const next = updater(prev);
+      saveFiles(next);
+      return next;
+    });
+  }, []);
 
   const formatSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`;
@@ -48,21 +85,23 @@ export function AdminUpload() {
 
       if (!putRes.ok) throw new Error("Failed to upload file to S3");
 
-      setFiles((prev) => [
+      updateFiles((prev) => [
         {
           name: file.name,
+          label: "",
           cdnUrl: data.cdnUrl,
           size: formatSize(file.size),
           timestamp: Date.now(),
+          hidden: false,
         },
         ...prev,
       ]);
-    } catch (err: any) {
-      setError(err.message || "Upload failed");
+    } catch (err: unknown) {
+      setError((err as Error).message || "Upload failed");
     } finally {
       setUploading(false);
     }
-  }, [folder]);
+  }, [folder, updateFiles]);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -85,6 +124,22 @@ export function AdminUpload() {
     setCopied(url);
     setTimeout(() => setCopied(null), 2000);
   };
+
+  const handleRenameLabel = (timestamp: number, label: string) => {
+    updateFiles((prev) => prev.map((f) => f.timestamp === timestamp ? { ...f, label } : f));
+    setEditingLabel(null);
+  };
+
+  const handleToggleHidden = (timestamp: number) => {
+    updateFiles((prev) => prev.map((f) => f.timestamp === timestamp ? { ...f, hidden: !f.hidden } : f));
+  };
+
+  const handleDelete = (timestamp: number) => {
+    updateFiles((prev) => prev.filter((f) => f.timestamp !== timestamp));
+  };
+
+  const visibleFiles = files.filter((f) => !f.hidden);
+  const hiddenFiles = files.filter((f) => f.hidden);
 
   return (
     <div>
@@ -151,49 +206,134 @@ export function AdminUpload() {
       )}
 
       {/* Uploaded files list */}
-      {files.length > 0 && (
+      {visibleFiles.length > 0 && (
         <div className="mt-8">
           <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">
-            Uploaded Files ({files.length})
+            Uploaded Files ({visibleFiles.length})
           </h3>
           <div className="space-y-3">
-            {files.map((f) => (
+            {visibleFiles.map((f) => (
               <div
                 key={f.timestamp}
-                className="bg-white border border-border rounded-xl p-4 flex items-center justify-between gap-4"
+                className="bg-white border border-border rounded-xl p-4"
               >
-                <div className="min-w-0 flex-1">
-                  <p className="font-medium text-primary truncate text-sm">
-                    {f.name}
-                  </p>
-                  <p className="text-xs text-muted mt-0.5">{f.size}</p>
-                  <p className="text-xs text-accent-hover truncate mt-1 font-mono">
-                    {f.cdnUrl}
-                  </p>
-                </div>
-                <div className="flex gap-2 shrink-0">
-                  <button
-                    onClick={() => copyUrl(f.cdnUrl)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                      copied === f.cdnUrl
-                        ? "bg-green-100 text-green-700"
-                        : "bg-surface text-muted hover:bg-gray-200"
-                    }`}
-                  >
-                    {copied === f.cdnUrl ? "Copied!" : "Copy URL"}
-                  </button>
-                  <a
-                    href={f.cdnUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1.5 bg-accent/10 text-accent-hover rounded-lg text-xs font-semibold hover:bg-accent/20 transition-colors"
-                  >
-                    Open
-                  </a>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    {/* Editable label */}
+                    {editingLabel === f.timestamp ? (
+                      <input
+                        autoFocus
+                        value={editingValue}
+                        onChange={(e) => setEditingValue(e.target.value)}
+                        onBlur={() => handleRenameLabel(f.timestamp, editingValue)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleRenameLabel(f.timestamp, editingValue);
+                          if (e.key === "Escape") setEditingLabel(null);
+                        }}
+                        className="w-full text-sm font-semibold px-2 py-1 border border-accent rounded-lg focus:outline-none"
+                        placeholder="Give this file a name..."
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <p
+                          className="font-semibold text-primary text-sm cursor-pointer hover:text-accent transition-colors"
+                          onClick={() => { setEditingLabel(f.timestamp); setEditingValue(f.label || ""); }}
+                          title="Click to name this file"
+                        >
+                          {f.label || <span className="text-muted italic">Click to add a name...</span>}
+                        </p>
+                      </div>
+                    )}
+                    <p className="text-xs text-muted mt-0.5">{f.name} &middot; {f.size} &middot; {new Date(f.timestamp).toLocaleDateString()}</p>
+                    <p className="text-xs text-accent-hover truncate mt-1 font-mono">
+                      {f.cdnUrl}
+                    </p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => copyUrl(f.cdnUrl)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                        copied === f.cdnUrl
+                          ? "bg-green-100 text-green-700"
+                          : "bg-surface text-muted hover:bg-gray-200"
+                      }`}
+                    >
+                      {copied === f.cdnUrl ? "Copied!" : "Copy URL"}
+                    </button>
+                    <a
+                      href={f.cdnUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-accent/10 text-accent-hover rounded-lg text-xs font-semibold hover:bg-accent/20 transition-colors"
+                    >
+                      Open
+                    </a>
+                    <button
+                      onClick={() => handleToggleHidden(f.timestamp)}
+                      className="px-3 py-1.5 bg-surface text-muted rounded-lg text-xs font-semibold hover:bg-gray-200 transition-colors"
+                      title="Hide from view"
+                    >
+                      Hide
+                    </button>
+                    <button
+                      onClick={() => handleDelete(f.timestamp)}
+                      className="px-3 py-1.5 bg-red-50 text-[#DC373E] rounded-lg text-xs font-semibold hover:bg-red-100 transition-colors"
+                      title="Remove from list (file stays on CDN)"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Hidden files */}
+      {hiddenFiles.length > 0 && (
+        <div className="mt-6">
+          <button
+            onClick={() => setShowHidden(!showHidden)}
+            className="text-sm text-muted hover:text-primary font-semibold transition-colors"
+          >
+            {showHidden ? "Hide" : "Show"} {hiddenFiles.length} hidden file{hiddenFiles.length !== 1 ? "s" : ""}
+          </button>
+          {showHidden && (
+            <div className="space-y-2 mt-3">
+              {hiddenFiles.map((f) => (
+                <div
+                  key={f.timestamp}
+                  className="bg-surface border border-border rounded-xl p-3 flex items-center justify-between gap-4 opacity-60"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-primary truncate">{f.label || f.name}</p>
+                    <p className="text-xs text-muted truncate font-mono">{f.cdnUrl}</p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => copyUrl(f.cdnUrl)}
+                      className="px-3 py-1.5 bg-surface text-muted rounded-lg text-xs font-semibold hover:bg-gray-200 transition-colors"
+                    >
+                      Copy
+                    </button>
+                    <button
+                      onClick={() => handleToggleHidden(f.timestamp)}
+                      className="px-3 py-1.5 bg-accent/10 text-accent-hover rounded-lg text-xs font-semibold hover:bg-accent/20 transition-colors"
+                    >
+                      Show
+                    </button>
+                    <button
+                      onClick={() => handleDelete(f.timestamp)}
+                      className="px-3 py-1.5 bg-red-50 text-[#DC373E] rounded-lg text-xs font-semibold hover:bg-red-100 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
