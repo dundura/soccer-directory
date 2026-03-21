@@ -12,28 +12,28 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
   const [archived, setArchived] = useState(false);
   const [restoring, setRestoring] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
-  const [featured, setFeatured] = useState(false);
+  const [featured, setFeatured] = useState<boolean | null>(null);
   const [featureLoading, setFeatureLoading] = useState(false);
-  const [featureChecked, setFeatureChecked] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
   const [inviteMsg, setInviteMsg] = useState("");
+
+  useEffect(() => {
+    if (listingType && listingId && session?.user?.id) {
+      const role = (session.user as { role?: string }).role;
+      if (role === "admin") {
+        fetch(`/api/admin?action=checkFeatured&type=${listingType}&id=${listingId}`)
+          .then(r => r.json())
+          .then(d => setFeatured(!!d.featured))
+          .catch(() => {});
+      }
+    }
+  }, [listingType, listingId, session]);
 
   if (!session?.user?.id) return null;
 
   const isOwner = session.user.id === ownerId;
   const isAdmin = (session.user as { role?: string }).role === "admin";
-
-  // Check featured status for admins
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (isAdmin && listingType && listingId && !featureChecked) {
-      fetch(`/api/admin?action=checkFeatured&type=${listingType}&id=${listingId}`)
-        .then(r => r.json())
-        .then(d => { setFeatured(!!d.featured); setFeatureChecked(true); })
-        .catch(() => setFeatureChecked(true));
-    }
-  }, [isAdmin, listingType, listingId, featureChecked]);
 
   async function handleToggleFeatured() {
     if (!listingType || !listingId) return;
