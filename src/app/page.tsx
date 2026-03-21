@@ -17,7 +17,7 @@ export default async function HomePage() {
   const featuredCamps = camps.filter((c) => c.featured).slice(0, 3);
   const featuredTournaments = tournaments.filter((t) => t.featured).slice(0, 3);
   const featuredFutsal = futsalTeams.filter((t) => t.featured).slice(0, 3);
-  const featuredPosts = blogPosts.filter((p) => p.featured).slice(0, 3);
+  const featuredPosts = blogPosts.slice(0, 3);
 
   const BLOG_COVER_IMAGES = [
     "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp",
