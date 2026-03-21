@@ -216,12 +216,26 @@ const SPEED_AGILITY = buildWorkout([
 ])
 
 // ── EXPORTS ───────────────────────────────────────────────
+const OUTDOOR_SPEED = buildWorkout([
+  { name: 'Dynamic Warm-Up Jog', tip: 'Light jog across the field. Loosen up. Get the blood flowing.', voice: 'Dynamic Warm-Up Jog! Light pace across the field. Get loose!', img: `${G}/ealLwvX.gif` },
+  { name: 'High Knees to Midfield', tip: 'Drive knees up. Pump arms. Sprint to the halfway line.', voice: 'High Knees to Midfield! Knees up, arms pumping!', img: `${G}/ealLwvX.gif` },
+  { name: 'Butt Kicks', tip: 'Heels to glutes as you jog. Stay on your toes.', voice: 'Butt Kicks! Heels to glutes. Stay light!', img: `${G}/ealLwvX.gif` },
+  { name: 'Sideline-to-Sideline Shuttle', tip: 'Sprint sideline to sideline. Touch the line each time. Explode out of the turn.', voice: 'Sideline Shuttles! Sprint, touch, turn, sprint! Explode out of each turn!', img: `${G}/zfNHMN9.gif` },
+  { name: 'Diagonal Sprint', tip: 'Sprint corner flag to opposite corner flag. Maximum speed on the diagonal.', voice: 'Diagonal Sprint! Corner to corner. Full speed!', img: `${G}/dK9394r.gif` },
+  { name: 'Penalty Box Agility', tip: 'Start at the corner of the box. Sprint along the lines, touching each corner. Quick direction changes.', voice: 'Penalty Box Agility! Sprint the box outline. Sharp turns at every corner!', img: `${G}/zfNHMN9.gif` },
+  { name: '18-Yard Box Sprint', tip: 'Sprint from the goal line to the 18-yard line and back. Repeat.', voice: 'Eighteen Yard Box Sprints! Goal line to the box and back. Go!', img: `${G}/dK9394r.gif` },
+  { name: 'Cone Weave Sprint', tip: 'Weave through cones or markers. Stay low. Quick cuts. Sprint straight after the last cone.', voice: 'Cone Weave Sprint! Low and quick through the cones. Explode out!', img: `${G}/zfNHMN9.gif` },
+  { name: 'Full-Field Sprint', tip: 'Sprint the entire length of the field. Maximum effort. Walk back recovery.', voice: 'Full Field Sprint! End to end. Everything you have!', img: `${G}/dK9394r.gif` },
+  { name: 'Cool-Down Jog', tip: 'Slow jog around the field. Bring the heart rate down. Deep breaths.', voice: 'Cool-Down Jog. Slow pace. Deep breaths. Great work today.', img: `${G}/ealLwvX.gif` },
+])
+
 export const WORKOUTS: WorkoutPlan[] = [
   // Soccer
   { id: 'soccer-fitness', name: 'Soccer Fitness', label: 'SOCCER FITNESS', description: 'Speed, agility, and conditioning for the pitch', icon: '\u26BD', exercises: SOCCER_FITNESS },
   { id: 'soccer-full', name: 'Soccer Full Body', label: 'SOCCER FULL BODY', description: 'Bodyweight strength for soccer players', icon: '\u26BD', exercises: SOCCER_FULL_BODY },
   { id: 'plyo', name: 'Plyometrics', label: 'PLYOMETRICS', description: 'Explosive jumping and power for speed and agility', icon: '\uD83D\uDCA5', exercises: PLYOMETRICS },
   { id: 'speed', name: 'Speed & Agility', label: 'SPEED & AGILITY', description: 'Get faster with sprints, shuffles, and footwork drills', icon: '\u26A1', exercises: SPEED_AGILITY },
+  { id: 'outdoor-speed', name: 'Outdoor Speed', label: 'OUTDOOR SPEED', description: 'Field sprints, shuttles, and agility for the soccer field', icon: '\uD83C\uDFDF\uFE0F', exercises: OUTDOOR_SPEED },
   { id: 'cardio', name: 'Interval Run/Walk', label: 'INTERVAL RUN/WALK', description: 'Run, walk, sprint intervals for cardio', icon: '\uD83C\uDFC3', exercises: CARDIO_INTERVALS },
   { id: 'stretch', name: 'Stretching', label: 'STRETCHING', description: 'Recovery and flexibility for athletes', icon: '\uD83E\uDDD8', exercises: STRETCHING },
   // Dumbbell

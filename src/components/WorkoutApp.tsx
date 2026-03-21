@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { WORKOUTS, CIRCUMFERENCE, type WorkoutPlan } from '@/lib/workoutData'
 
-type Screen = 'choose' | 'start' | 'workout' | 'done'
+type Screen = 'choose' | 'start' | 'prep' | 'workout' | 'done'
 
 export default function WorkoutApp() {
   const [screen, setScreen] = useState<Screen>('choose')
@@ -17,6 +17,9 @@ export default function WorkoutApp() {
   const [voiceOn, setVoiceOn] = useState(true)
   const [imgLoaded, setImgLoaded] = useState(false)
   const [dbOpen, setDbOpen] = useState(false)
+  const [rounds, setRounds] = useState(1)
+  const [currentRound, setCurrentRound] = useState(1)
+  const currentRoundRef = useRef(1)
 
   const WORKOUT = plan.exercises.map(e => ({ ...e, dur: e.type === 'work' ? workDur : restDur }))
 
@@ -35,7 +38,8 @@ export default function WorkoutApp() {
   useEffect(() => { elapsedRef.current = elapsed }, [elapsed])
   useEffect(() => { voiceOnRef.current = voiceOn }, [voiceOn])
   useEffect(() => { workoutRef.current = WORKOUT }, [WORKOUT])
-  const TOTAL_SECONDS = WORKOUT.reduce((s, e) => s + e.dur, 0)
+  const SINGLE_ROUND_SECONDS = WORKOUT.reduce((s, e) => s + e.dur, 0)
+  const TOTAL_SECONDS = SINGLE_ROUND_SECONDS * rounds
   const currentEx = WORKOUT[idx]
   const nextEx = WORKOUT[idx + 1] ?? null
   const isRest = currentEx?.type === 'rest'
@@ -103,7 +107,7 @@ export default function WorkoutApp() {
       }
 
       if (newTime <= 0) {
-        beep(1100, 200, 1) // single high beep = new exercise
+        beep(1100, 200, 1)
         const nextIdx = idxRef.current + 1
         if (nextIdx < W.length) {
           idxRef.current = nextIdx
@@ -112,6 +116,16 @@ export default function WorkoutApp() {
           setTimeLeft(W[nextIdx].dur)
           timeLeftRef.current = W[nextIdx].dur
           setTimeout(() => speak(W[nextIdx].voice), 100)
+        } else if (currentRoundRef.current < rounds) {
+          const nextRound = currentRoundRef.current + 1
+          currentRoundRef.current = nextRound
+          setCurrentRound(nextRound)
+          idxRef.current = 0
+          setIdx(0)
+          setImgLoaded(false)
+          setTimeLeft(W[0].dur)
+          timeLeftRef.current = W[0].dur
+          setTimeout(() => speak('Round ' + nextRound + "! Let's go! " + W[0].voice), 100)
         } else {
           stopTimer()
           setScreen('done')
@@ -123,20 +137,44 @@ export default function WorkoutApp() {
 
   // ── CONTROLS ───────────────────────────────────────────────
   const startWorkout = useCallback(() => {
-    idxRef.current = 0
-    elapsedRef.current = 0
-    timeLeftRef.current = WORKOUT[0].dur
-    setIdx(0)
-    setElapsed(0)
-    setTimeLeft(WORKOUT[0].dur)
-    setPaused(false)
-    pausedRef.current = false
-    setImgLoaded(false)
-    setScreen('workout')
-    startTimer()
-    beep(1100, 200, 1)
-    setTimeout(() => speak("Let's go! " + plan.name + " workout. " + WORKOUT[0].voice), 200)
-  }, [startTimer, speak, beep, WORKOUT, plan.name])
+    currentRoundRef.current = 1
+    setCurrentRound(1)
+
+    // 20-second prep countdown
+    setScreen('prep')
+    setTimeLeft(20)
+    timeLeftRef.current = 20
+    speak("Get ready! First exercise: " + WORKOUT[0].name + ". Starting in 20 seconds.")
+
+    const prepEnd = Date.now() + 20000
+    stopTimer()
+    intervalRef.current = setInterval(() => {
+      const remaining = Math.ceil((prepEnd - Date.now()) / 1000)
+      const t = Math.max(0, remaining)
+      setTimeLeft(t)
+      timeLeftRef.current = t
+      if (t === 3) {
+        beep(660, 120, 3)
+        speak("Three, two, one!")
+      }
+      if (t <= 0) {
+        if (intervalRef.current) clearInterval(intervalRef.current)
+        idxRef.current = 0
+        elapsedRef.current = 0
+        timeLeftRef.current = WORKOUT[0].dur
+        setIdx(0)
+        setElapsed(0)
+        setTimeLeft(WORKOUT[0].dur)
+        setPaused(false)
+        pausedRef.current = false
+        setImgLoaded(false)
+        setScreen('workout')
+        startTimer()
+        beep(1100, 200, 1)
+        setTimeout(() => speak("Let's go! " + WORKOUT[0].voice), 200)
+      }
+    }, 250)
+  }, [startTimer, stopTimer, speak, beep, WORKOUT])
 
   const togglePause = useCallback(() => {
     const next = !pausedRef.current
@@ -178,6 +216,8 @@ export default function WorkoutApp() {
     setIdx(0)
     setElapsed(0)
     setPaused(false)
+    setCurrentRound(1)
+    currentRoundRef.current = 1
   }, [stopTimer])
 
   useEffect(() => () => stopTimer(), [stopTimer])
@@ -382,7 +422,7 @@ export default function WorkoutApp() {
               <div className="w-preview">
                 <div className="w-prev-hdr">
                   <span>Today&apos;s Workout</span>
-                  <span style={{ color: 'var(--accent)' }}>1 Round</span>
+                  <span style={{ color: 'var(--accent)' }}>{rounds} Round{rounds > 1 ? 's' : ''}</span>
                 </div>
                 <ul className="w-prev-list">
                   {(() => { let n = 0; return WORKOUT.map((ex, i) => {
@@ -431,6 +471,14 @@ export default function WorkoutApp() {
                     ))}
                   </div>
                 </div>
+                <div className="w-set-row">
+                  <span className="w-set-label">Rounds</span>
+                  <div className="w-pills">
+                    {[1, 2, 3, 4].map(r => (
+                      <button key={r} className={`w-pill${rounds === r ? ' active' : ''}`} onClick={() => setRounds(r)}>{r}</button>
+                    ))}
+                  </div>
+                </div>
                 <button className="w-voice" onClick={() => setVoiceOn(v => !v)}>
                   <span style={{ width: 80 }}>Voice</span>
                   <div className={`w-sw${voiceOn ? ' on' : ''}`}><div className="w-knob" /></div>
@@ -448,6 +496,17 @@ export default function WorkoutApp() {
           )}
 
           {/* ── WORKOUT SCREEN ── */}
+          {screen === 'prep' && (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', gap: 16, padding: 24 }}>
+              <div style={{ fontSize: 48, fontWeight: 900, color: 'var(--primary)', lineHeight: 0.9 }}>GET READY</div>
+              <div style={{ fontSize: 15, color: 'var(--muted)' }}>First exercise:</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--primary)' }}>{WORKOUT[0]?.name}</div>
+              {WORKOUT[0]?.img && <img src={WORKOUT[0].img} alt={WORKOUT[0]?.name} style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 16 }} />}
+              <div style={{ fontSize: 64, fontWeight: 900, color: 'var(--accent)', lineHeight: 1 }}>{timeLeft}</div>
+              <div style={{ fontSize: 14, color: 'var(--muted)' }}>seconds</div>
+            </div>
+          )}
+
           {screen === 'workout' && currentEx && (
             <div className="w-workout">
               {/* Progress */}
@@ -459,7 +518,7 @@ export default function WorkoutApp() {
                   }} />
                 </div>
                 <div className="w-prog-lbl">
-                  <span>{Math.round(pct)}%</span>
+                  <span>{rounds > 1 ? `Round ${currentRound}/${rounds} · ` : ''}{Math.round(pct)}%</span>
                   <span>{elapsedMins}:{String(elapsedSecs).padStart(2, '0')} / {totalMins}:00</span>
                 </div>
               </div>
