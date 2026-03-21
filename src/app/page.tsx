@@ -140,6 +140,7 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <div className="bg-white mt-6 rounded-t-[24px]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Featured Clubs ─────────────────────── */}
@@ -179,7 +180,7 @@ export default async function HomePage() {
         {newListings.length > 0 && (
           <section className="py-10 border-t border-border">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="font-[family-name:var(--font-display)] text-lg font-bold">New Listings</h3>
+              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">New Listings</h2>
             </div>
             <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
               {newListings.map((listing) => (
@@ -448,6 +449,7 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
+      </div>
       </div>
     </>
   );
