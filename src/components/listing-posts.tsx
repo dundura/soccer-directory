@@ -49,6 +49,11 @@ export function ListingPostsSidebar({
   const [imageUrl, setImageUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [listingName, setListingName] = useState("");
+
+  useEffect(() => {
+    setListingName(document.querySelector("h1")?.textContent || "");
+  }, []);
 
   function fetchPosts() {
     fetch(`/api/listing-posts?type=${listingType}&id=${listingId}&slug=${slug}`)
@@ -127,7 +132,7 @@ export function ListingPostsSidebar({
           <h4 className="text-sm font-bold">Our Blog</h4>
           {canManage && (
             <a
-              href={`/posts/new-blog?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(slug)}&name=${encodeURIComponent(typeof document !== "undefined" ? document.querySelector("h1")?.textContent || "" : "")}`}
+              href={`/posts/new-blog?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(slug)}&name=${encodeURIComponent(listingName)}`}
               className="text-[11px] font-semibold text-accent hover:text-accent-hover transition-colors"
             >
               + Write Article
@@ -183,7 +188,7 @@ export function ListingPostsSidebar({
         <h4 className="text-sm font-bold">Our Posts</h4>
         {canManage && (
           <a
-            href={`/posts/new-post?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(slug)}&name=${encodeURIComponent(typeof document !== "undefined" ? document.querySelector("h1")?.textContent || "" : "")}`}
+            href={`/posts/new-post?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(slug)}&name=${encodeURIComponent(listingName)}`}
             className="text-[11px] font-semibold text-accent hover:text-accent-hover transition-colors"
           >
             + Create Post
