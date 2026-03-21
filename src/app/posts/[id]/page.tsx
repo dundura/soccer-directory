@@ -142,42 +142,7 @@ export default async function PostPage({ params }: Props) {
   if (isBlog) enrichedBody = stripInlineStyles(enrichedBody);
   enrichedBody = splitLongParagraphs(enrichedBody);
 
-  // Inject listing images spread throughout the body (only for non-blog posts)
-  if (listingImages.length > 0 && !isBlog) {
-    const bodyHasImages = /<img\s/i.test(enrichedBody);
-    if (!bodyHasImages) {
-      const imgs = listingImages.slice(0, 3);
-      // Split body into paragraphs and distribute images evenly
-      const parts = enrichedBody.split(/(<\/p>)/i);
-      const totalCloseTags = parts.filter((p) => /<\/p>/i.test(p)).length;
-      if (totalCloseTags >= 2 && imgs.length > 0) {
-        const interval = Math.max(1, Math.floor(totalCloseTags / (imgs.length + 1)));
-        let closeCount = 0;
-        let imgIdx = 0;
-        const result: string[] = [];
-        for (const part of parts) {
-          result.push(part);
-          if (/<\/p>/i.test(part)) {
-            closeCount++;
-            if (imgIdx < imgs.length && closeCount % interval === 0) {
-              result.push(`\n<img src="${imgs[imgIdx]}" alt="" />\n`);
-              imgIdx++;
-            }
-          }
-        }
-        // Append remaining images
-        while (imgIdx < imgs.length) {
-          result.push(`\n<img src="${imgs[imgIdx]}" alt="" />\n`);
-          imgIdx++;
-        }
-        enrichedBody = result.join("");
-      } else {
-        // Fallback: append at end
-        const imgHtml = imgs.map((url) => `<img src="${url}" alt="" />`).join("\n");
-        enrichedBody = enrichedBody + "\n" + imgHtml;
-      }
-    }
-  }
+  // Images only show if the user explicitly added them to the post
 
   // ── Blog post layout (matches /blog/[slug] style) ──
   if (isBlog) {
