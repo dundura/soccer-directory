@@ -140,7 +140,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <div className="bg-white mt-6 rounded-t-[24px]">
+      <div className="bg-white mt-6 rounded-[24px] mx-4 sm:mx-6 lg:mx-8 mb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Featured Clubs ─────────────────────── */}
