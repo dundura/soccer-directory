@@ -130,8 +130,18 @@ export function PostForm() {
 
         {/* Preview Image */}
         <div>
-          <label className="block text-sm font-semibold text-primary mb-2">Preview Image URL (optional — for social sharing)</label>
-          <input type="url" value={ogImageUrl} onChange={(e) => setOgImageUrl(e.target.value)} placeholder="https://... (image shown when link is shared)" className="w-full px-4 py-3 rounded-xl border border-border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent/30" />
+          <label className="block text-sm font-semibold text-primary mb-2">Preview Image (optional — shown when link is shared on social media)</label>
+          {ogImageUrl ? (
+            <div className="relative inline-block">
+              <img src={ogImageUrl} alt="Preview" className="max-h-[160px] rounded-xl object-cover" />
+              <button type="button" onClick={() => setOgImageUrl("")} className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white text-sm flex items-center justify-center hover:bg-black/80">&#x2715;</button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <ImageUpload onUploaded={(url) => setOgImageUrl(url)} />
+              <input type="url" value={ogImageUrl} onChange={(e) => setOgImageUrl(e.target.value)} placeholder="Or paste an image URL" className="w-full px-4 py-3 rounded-xl border border-border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent/30" />
+            </div>
+          )}
         </div>
 
         {error && <p className="text-accent text-sm">{error}</p>}

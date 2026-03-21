@@ -253,7 +253,10 @@ export function BlogPostForm() {
                   </button>
                 </div>
               ) : (
-                <ImageUpload onUploaded={(url) => setOgImageUrl(url)} />
+                <div className="space-y-2">
+                  <ImageUpload onUploaded={(url) => setOgImageUrl(url)} />
+                  <input type="url" value={ogImageUrl} onChange={(e) => setOgImageUrl(e.target.value)} placeholder="Or paste an image URL" className="w-full px-4 py-3 rounded-xl border border-border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent/30" />
+                </div>
               )}
             </div>
 
