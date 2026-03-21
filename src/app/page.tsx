@@ -3,6 +3,7 @@ import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
 import { RotatingText } from "@/components/rotating-text";
 import SitePopup from "@/components/site-popup";
+import { ListingCarousel } from "@/components/listing-carousel";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,7 @@ export default async function HomePage() {
     if (seenUsers.has(uid)) continue;
     seenUsers.add(uid);
     newListings.push(l);
-    if (newListings.length >= 6) break;
+    if (newListings.length >= 18) break;
   }
 
   const TYPE_BADGE_MAP: Record<string, string> = { club: 'Club', team: 'Team', trainer: 'Trainer', camp: 'Camp', tournament: 'Tournament', futsal: 'Futsal' };
@@ -176,35 +177,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── New Listings (single row) ─────────── */}
-        {newListings.length > 0 && (
-          <section className="py-10 border-t border-border">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">New Listings</h2>
-            </div>
-            <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
-              {newListings.map((listing) => (
-                <a
-                  key={`${listing._type}-${listing.id}`}
-                  href={`/${listing._path}/${listing.slug}`}
-                  className="flex-shrink-0 w-56 bg-surface rounded-xl border border-border p-4 hover:shadow-md hover:-translate-y-0.5 transition-all group"
-                >
-                  {(listing.teamPhoto || listing.logo || listing.imageUrl) && (
-                    <img
-                      src={listing.teamPhoto || listing.logo || listing.imageUrl}
-                      alt={listing.name}
-                      className="w-full h-28 object-cover rounded-lg mb-3"
-                      style={{ objectPosition: listing.imagePosition ? `center ${listing.imagePosition}%` : 'center' }}
-                    />
-                  )}
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-accent">{TYPE_BADGE_MAP[listing._type]}</span>
-                  <p className="text-sm font-bold text-primary mt-1 leading-snug group-hover:text-accent-hover transition-colors line-clamp-2">{listing.name}</p>
-                  <p className="text-xs text-muted mt-1">{listing._subtitle}</p>
-                </a>
-              ))}
-            </div>
-          </section>
-        )}
+        {/* ── New Listings Carousel ─────────────── */}
+        <ListingCarousel listings={newListings.map(l => ({ ...l, slug: l.slug }))} />
 
         {/* ── Featured Teams ─────────────────────── */}
         <section className="py-16 border-t border-border">
