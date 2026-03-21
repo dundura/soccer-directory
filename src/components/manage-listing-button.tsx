@@ -12,6 +12,9 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
   const [archived, setArchived] = useState(false);
   const [restoring, setRestoring] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
+  const [featured, setFeatured] = useState(false);
+  const [featureLoading, setFeatureLoading] = useState(false);
+  const [featureChecked, setFeatureChecked] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
   const [inviteMsg, setInviteMsg] = useState("");
@@ -20,6 +23,30 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
 
   const isOwner = session.user.id === ownerId;
   const isAdmin = (session.user as { role?: string }).role === "admin";
+
+  // Check featured status for admins
+  useState(() => {
+    if (isAdmin && listingType && listingId && !featureChecked) {
+      fetch(`/api/admin?action=checkFeatured&type=${listingType}&id=${listingId}`)
+        .then(r => r.json())
+        .then(d => { setFeatured(!!d.featured); setFeatureChecked(true); })
+        .catch(() => setFeatureChecked(true));
+    }
+  });
+
+  async function handleToggleFeatured() {
+    if (!listingType || !listingId) return;
+    setFeatureLoading(true);
+    try {
+      await fetch("/api/admin", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "updateFeatured", type: listingType, id: listingId, featured: !featured }),
+      });
+      setFeatured(!featured);
+    } catch { /* */ }
+    setFeatureLoading(false);
+  }
 
   if (!isOwner && !isAdmin) return null;
 
@@ -121,6 +148,21 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
       >
         Edit Listing
       </a>
+
+      {/* Feature toggle (admin only) */}
+      {isAdmin && listingType && listingId && (
+        <button
+          onClick={handleToggleFeatured}
+          disabled={featureLoading}
+          className={`block w-full text-center px-4 py-2 rounded-xl border-2 text-sm font-bold transition-colors disabled:opacity-50 ${
+            featured
+              ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
+              : "border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
+          }`}
+        >
+          {featureLoading ? "Updating..." : featured ? "★ Featured — Unfeature" : "☆ Feature on Homepage"}
+        </button>
+      )}
 
       {/* Create Post */}
       {createPostHref && (
