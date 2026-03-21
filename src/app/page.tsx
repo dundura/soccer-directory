@@ -22,22 +22,26 @@ export default async function HomePage() {
   const featuredPosts = blogPosts.slice(0, 3);
 
   // New listings: random, one per creator
-  const allListingsPool = [
-    ...clubs.map(c => ({ ...c, _type: 'club', _path: 'clubs', _subtitle: `${c.city}, ${c.state}` })),
-    ...teams.map(t => ({ ...t, _type: 'team', _path: 'teams', _subtitle: `${t.city}, ${t.state}` })),
-    ...trainers.map(t => ({ ...t, _type: 'trainer', _path: 'trainers', _subtitle: `${t.city}, ${t.state}` })),
-    ...camps.map(c => ({ ...c, _type: 'camp', _path: 'camps', _subtitle: `${c.city}, ${c.state}` })),
-    ...tournaments.map(t => ({ ...t, _type: 'tournament', _path: 'tournaments', _subtitle: `${t.city}, ${t.state}` })),
-    ...futsalTeams.map(t => ({ ...t, _type: 'futsal', _path: 'futsal', _subtitle: `${t.city}, ${t.state}` })),
-  ].sort(() => Math.random() - 0.5);
-  const seenUsers = new Set<string>();
-  const newListings: typeof allListingsPool = [];
-  for (const l of allListingsPool) {
-    const uid = (l as unknown as Record<string, string>).userId || l.id;
-    if (seenUsers.has(uid)) continue;
-    seenUsers.add(uid);
-    newListings.push(l);
-    if (newListings.length >= 18) break;
+  let newListings: { id: string; name: string; slug: string; _type: string; _path: string; _subtitle: string; teamPhoto?: string | null; logo?: string | null; imageUrl?: string | null; imagePosition?: number }[] = [];
+  try {
+    const allListingsPool = [
+      ...clubs.map(c => ({ id: c.id, name: c.name, slug: c.slug, teamPhoto: c.teamPhoto, logo: c.logo, imageUrl: c.imageUrl, imagePosition: c.imagePosition, userId: (c as any).userId, _type: 'club', _path: 'clubs', _subtitle: `${c.city || ''}, ${c.state || ''}` })),
+      ...teams.map(t => ({ id: t.id, name: t.name, slug: t.slug, teamPhoto: t.teamPhoto, logo: t.logo, imageUrl: t.imageUrl, imagePosition: t.imagePosition, userId: (t as any).userId, _type: 'team', _path: 'teams', _subtitle: `${t.city || ''}, ${t.state || ''}` })),
+      ...trainers.map(t => ({ id: t.id, name: t.name, slug: t.slug, teamPhoto: t.teamPhoto, logo: t.logo, imageUrl: t.imageUrl, imagePosition: t.imagePosition, userId: (t as any).userId, _type: 'trainer', _path: 'trainers', _subtitle: `${t.city || ''}, ${t.state || ''}` })),
+      ...camps.map(c => ({ id: c.id, name: c.name, slug: c.slug, teamPhoto: c.teamPhoto, logo: c.logo, imageUrl: c.imageUrl, imagePosition: c.imagePosition, userId: (c as any).userId, _type: 'camp', _path: 'camps', _subtitle: `${c.city || ''}, ${c.state || ''}` })),
+      ...tournaments.map(t => ({ id: t.id, name: t.name, slug: t.slug, teamPhoto: t.teamPhoto, logo: t.logo, imageUrl: t.imageUrl, imagePosition: t.imagePosition, userId: (t as any).userId, _type: 'tournament', _path: 'tournaments', _subtitle: `${t.city || ''}, ${t.state || ''}` })),
+      ...futsalTeams.map(t => ({ id: t.id, name: t.name, slug: t.slug, teamPhoto: t.teamPhoto, logo: t.logo, imageUrl: t.imageUrl, imagePosition: t.imagePosition, userId: (t as any).userId, _type: 'futsal', _path: 'futsal', _subtitle: `${t.city || ''}, ${t.state || ''}` })),
+    ].sort(() => Math.random() - 0.5);
+    const seenUsers = new Set<string>();
+    for (const l of allListingsPool) {
+      const uid = l.userId || l.id;
+      if (seenUsers.has(uid)) continue;
+      seenUsers.add(uid);
+      newListings.push(l);
+      if (newListings.length >= 18) break;
+    }
+  } catch (e) {
+    console.error('Error building new listings:', e);
   }
 
   const TYPE_BADGE_MAP: Record<string, string> = { club: 'Club', team: 'Team', trainer: 'Trainer', camp: 'Camp', tournament: 'Tournament', futsal: 'Futsal' };
