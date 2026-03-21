@@ -19,15 +19,24 @@ export default async function HomePage() {
   const featuredFutsal = futsalTeams.filter((t) => t.featured).slice(0, 3);
   const featuredPosts = blogPosts.slice(0, 3);
 
-  // New listings: random selection across all types
-  const allListings = [
+  // New listings: random, one per creator
+  const allListingsPool = [
     ...clubs.map(c => ({ ...c, _type: 'club', _path: 'clubs', _subtitle: `${c.city}, ${c.state}` })),
     ...teams.map(t => ({ ...t, _type: 'team', _path: 'teams', _subtitle: `${t.city}, ${t.state}` })),
     ...trainers.map(t => ({ ...t, _type: 'trainer', _path: 'trainers', _subtitle: `${t.city}, ${t.state}` })),
     ...camps.map(c => ({ ...c, _type: 'camp', _path: 'camps', _subtitle: `${c.city}, ${c.state}` })),
     ...tournaments.map(t => ({ ...t, _type: 'tournament', _path: 'tournaments', _subtitle: `${t.city}, ${t.state}` })),
     ...futsalTeams.map(t => ({ ...t, _type: 'futsal', _path: 'futsal', _subtitle: `${t.city}, ${t.state}` })),
-  ].sort(() => Math.random() - 0.5).slice(0, 6);
+  ].sort(() => Math.random() - 0.5);
+  const seenUsers = new Set<string>();
+  const newListings: typeof allListingsPool = [];
+  for (const l of allListingsPool) {
+    const uid = (l as unknown as Record<string, string>).userId || l.id;
+    if (seenUsers.has(uid)) continue;
+    seenUsers.add(uid);
+    newListings.push(l);
+    if (newListings.length >= 6) break;
+  }
 
   const TYPE_BADGE_MAP: Record<string, string> = { club: 'Club', team: 'Team', trainer: 'Trainer', camp: 'Camp', tournament: 'Tournament', futsal: 'Futsal' };
 
@@ -166,6 +175,36 @@ export default async function HomePage() {
             ))}
           </div>
         </section>
+
+        {/* ── New Listings (single row) ─────────── */}
+        {newListings.length > 0 && (
+          <section className="py-10 border-t border-border">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-[family-name:var(--font-display)] text-lg font-bold">New Listings</h3>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+              {newListings.map((listing) => (
+                <a
+                  key={`${listing._type}-${listing.id}`}
+                  href={`/${listing._path}/${listing.slug}`}
+                  className="flex-shrink-0 w-56 bg-surface rounded-xl border border-border p-4 hover:shadow-md hover:-translate-y-0.5 transition-all group"
+                >
+                  {(listing.teamPhoto || listing.logo || listing.imageUrl) && (
+                    <img
+                      src={listing.teamPhoto || listing.logo || listing.imageUrl}
+                      alt={listing.name}
+                      className="w-full h-28 object-cover rounded-lg mb-3"
+                      style={{ objectPosition: listing.imagePosition ? `center ${listing.imagePosition}%` : 'center' }}
+                    />
+                  )}
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-accent">{TYPE_BADGE_MAP[listing._type]}</span>
+                  <p className="text-sm font-bold text-primary mt-1 leading-snug group-hover:text-accent-hover transition-colors line-clamp-2">{listing.name}</p>
+                  <p className="text-xs text-muted mt-1">{listing._subtitle}</p>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── Featured Teams ─────────────────────── */}
         <section className="py-16 border-t border-border">
@@ -347,33 +386,6 @@ export default async function HomePage() {
             ))}
           </div>
         </section>
-
-        {/* ── New Listings ────────────────────────── */}
-        {allListings.length > 0 && (
-          <section className="py-16 border-t border-border">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">New Listings</h2>
-                <p className="text-muted mt-1">Recently added to Soccer Near Me</p>
-              </div>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {allListings.map((listing) => (
-                <ListingCard
-                  key={`${listing._type}-${listing.id}`}
-                  href={`/${listing._path}/${listing.slug}`}
-                  title={listing.name}
-                  subtitle={listing._subtitle}
-                  image={listing.teamPhoto || listing.logo || listing.imageUrl || undefined}
-                  badges={[{ label: TYPE_BADGE_MAP[listing._type] || listing._type, variant: "blue" }]}
-                  details={[]}
-                  imagePosition={listing.imagePosition}
-                  cta={`View ${TYPE_BADGE_MAP[listing._type] || 'Listing'}`}
-                />
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* ── Blog Preview ───────────────────────── */}
         <section className="py-16 border-t border-border">
