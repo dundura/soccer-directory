@@ -4,6 +4,7 @@ import { HeroSearchBar } from "@/components/hero-search";
 import { RotatingText } from "@/components/rotating-text";
 import SitePopup from "@/components/site-popup";
 import { ListingCarousel } from "@/components/listing-carousel";
+import { SectionCarousel } from "@/components/section-carousel";
 
 export const dynamic = "force-dynamic";
 
@@ -12,12 +13,12 @@ export default async function HomePage() {
     getClubs(), getTeams(), getTrainers(), getCamps(), getTournaments(), getFutsalTeams(), getBlogPosts(),
   ]);
 
-  const featuredClubs = clubs.filter((c) => c.featured).slice(0, 3);
-  const featuredTeams = teams.filter((t) => t.featured).slice(0, 3);
-  const featuredTrainers = trainers.filter((t) => t.featured).slice(0, 3);
-  const featuredCamps = camps.filter((c) => c.featured).slice(0, 3);
-  const featuredTournaments = tournaments.filter((t) => t.featured).slice(0, 3);
-  const featuredFutsal = futsalTeams.filter((t) => t.featured).slice(0, 3);
+  const featuredClubs = clubs.filter((c) => c.featured).sort(() => Math.random() - 0.5).slice(0, 10);
+  const featuredTeams = teams.filter((t) => t.featured).sort(() => Math.random() - 0.5).slice(0, 10);
+  const featuredTrainers = trainers.filter((t) => t.featured).sort(() => Math.random() - 0.5).slice(0, 10);
+  const featuredCamps = camps.filter((c) => c.featured).sort(() => Math.random() - 0.5).slice(0, 10);
+  const featuredTournaments = tournaments.filter((t) => t.featured).sort(() => Math.random() - 0.5).slice(0, 10);
+  const featuredFutsal = futsalTeams.filter((t) => t.featured).sort(() => Math.random() - 0.5).slice(0, 10);
   const featuredPosts = blogPosts.slice(0, 3);
 
   // New listings: random, one per creator
@@ -146,18 +147,10 @@ export default async function HomePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Featured Clubs ─────────────────────── */}
-        <section className="py-16">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Featured Clubs</h2>
-              <p className="text-muted mt-1">Top youth soccer organizations</p>
-            </div>
-            <a href="/clubs" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {featuredClubs.map((club) => (
+        <SectionCarousel title="Featured Clubs" subtitle="Top youth soccer organizations" viewAllHref="/clubs">
+          {featuredClubs.map((club) => (
+            <div key={club.id} className="flex-shrink-0 w-[320px]">
               <ListingCard
-                key={club.id}
                 href={`/clubs/${club.slug}`}
                 title={club.name}
                 subtitle={`${club.city}, ${club.state}`}
@@ -174,85 +167,31 @@ export default async function HomePage() {
                 imagePosition={club.imagePosition}
                 cta="View Club"
               />
-            ))}
-          </div>
-        </section>
+            </div>
+          ))}
+        </SectionCarousel>
 
         {/* ── New Listings Carousel ─────────────── */}
         <ListingCarousel listings={newListings.map(l => ({ ...l, slug: l.slug }))} />
 
         {/* ── Featured Teams ─────────────────────── */}
-        <section className="py-16 border-t border-border">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Teams Looking for Players</h2>
-              <p className="text-muted mt-1">Open roster spots across the region</p>
+        <SectionCarousel title="Teams Looking for Players" subtitle="Open roster spots across the region" viewAllHref="/teams">
+          {featuredTeams.map((team) => (
+            <div key={team.id} className="flex-shrink-0 w-[320px]">
+              <ListingCard href={`/teams/${team.slug}`} title={team.name} subtitle={`${team.clubName} · ${team.city}, ${team.state}`} image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || team.imageUrl || undefined} badges={[{ label: team.level, variant: "blue" }, { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" }, ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : [])]} details={[{ label: "Birth Year", value: team.ageGroup }, { label: "Coach", value: team.coach }, { label: "Season", value: team.season }]} featured imagePosition={team.imagePosition} cta="View Team" />
             </div>
-            <a href="/teams" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {featuredTeams.map((team) => (
-              <ListingCard
-                key={team.id}
-                href={`/teams/${team.slug}`}
-                title={team.name}
-                subtitle={`${team.clubName} · ${team.city}, ${team.state}`}
-                image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || team.imageUrl || undefined}
-                badges={[
-                  { label: team.level, variant: "blue" },
-                  { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
-                  ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : []),
-                ]}
-                details={[
-                  { label: "Birth Year", value: team.ageGroup },
-                  { label: "Coach", value: team.coach },
-                  ...(team.positionsNeeded ? [{ label: "Positions", value: team.positionsNeeded }] : []),
-                  { label: "Season", value: team.season },
-                ]}
-                featured
-                imagePosition={team.imagePosition}
-                cta="View Team"
-              />
-            ))}
-          </div>
-        </section>
+          ))}
+        </SectionCarousel>
 
         {/* ── Featured Futsal Teams ─────────────── */}
         {featuredFutsal.length > 0 && (
-          <section className="py-16 border-t border-border">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Futsal Teams</h2>
-                <p className="text-muted mt-1">Find futsal teams near you</p>
+          <SectionCarousel title="Futsal Teams" subtitle="Find futsal teams near you" viewAllHref="/futsal">
+            {featuredFutsal.map((team) => (
+              <div key={team.id} className="flex-shrink-0 w-[320px]">
+                <ListingCard href={`/futsal/${team.slug}`} title={team.name} subtitle={`${team.clubName || ""} · ${team.city}, ${team.state}`} image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || team.imageUrl || undefined} badges={[{ label: team.level, variant: "blue" }, { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" }, { label: team.format, variant: "orange" }]} details={[{ label: "Age Group", value: team.ageGroup }, { label: "Coach", value: team.coach }, { label: "Season", value: team.season }]} featured imagePosition={team.imagePosition} cta="View Team" />
               </div>
-              <a href="/futsal" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {featuredFutsal.map((team) => (
-                <ListingCard
-                  key={team.id}
-                  href={`/futsal/${team.slug}`}
-                  title={team.name}
-                  subtitle={`${team.clubName || ""} · ${team.city}, ${team.state}`}
-                  image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || team.imageUrl || undefined}
-                  badges={[
-                    { label: team.level, variant: "blue" },
-                    { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
-                    { label: team.format, variant: "orange" },
-                    ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : []),
-                  ]}
-                  details={[
-                    { label: "Age Group", value: team.ageGroup },
-                    { label: "Coach", value: team.coach },
-                    { label: "Season", value: team.season },
-                  ]}
-                  featured
-                  imagePosition={team.imagePosition}
-                  cta="View Team"
-                />
-              ))}
-            </div>
-          </section>
+            ))}
+          </SectionCarousel>
         )}
 
         {/* ── Anytime CTA Mid-page ──────────────── */}
@@ -261,149 +200,53 @@ export default async function HomePage() {
         </section>
 
         {/* ── Featured Trainers ──────────────────── */}
-        <section className="py-16 border-t border-border">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Private Trainers</h2>
-              <p className="text-muted mt-1">Verified coaches offering 1-on-1 and small group training</p>
+        <SectionCarousel title="Private Trainers" subtitle="Verified coaches offering 1-on-1 and small group training" viewAllHref="/trainers">
+          {featuredTrainers.map((trainer) => (
+            <div key={trainer.id} className="flex-shrink-0 w-[320px]">
+              <ListingCard href={`/trainers/${trainer.slug}`} title={trainer.name} subtitle={`${trainer.city}, ${trainer.state}`} image={trainer.teamPhoto && !trainer.teamPhoto.includes("idf.webp") ? trainer.teamPhoto : trainer.logo || trainer.imageUrl || undefined} badges={[{ label: trainer.specialty, variant: "green" }]} details={[{ label: "Price", value: trainer.priceRange }, { label: "Rating", value: `⭐ ${trainer.rating} (${trainer.reviewCount})` }, { label: "Experience", value: trainer.experience }]} featured={trainer.featured} imagePosition={trainer.imagePosition} cta="View Trainer" />
             </div>
-            <a href="/trainers" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {featuredTrainers.map((trainer) => (
-              <ListingCard
-                key={trainer.id}
-                href={`/trainers/${trainer.slug}`}
-                title={trainer.name}
-                subtitle={`${trainer.city}, ${trainer.state}`}
-                image={trainer.teamPhoto && !trainer.teamPhoto.includes("idf.webp") ? trainer.teamPhoto : trainer.logo || trainer.imageUrl || undefined}
-                badges={[
-                  { label: trainer.specialty, variant: "green" },
-                ]}
-                details={[
-                  { label: "Price", value: trainer.priceRange },
-                  { label: "Rating", value: `⭐ ${trainer.rating} (${trainer.reviewCount})` },
-                  { label: "Experience", value: trainer.experience },
-                  { label: "Area", value: trainer.serviceArea },
-                ]}
-                featured={trainer.featured}
-                imagePosition={trainer.imagePosition}
-                cta="View Trainer"
-              />
-            ))}
-          </div>
-        </section>
+          ))}
+        </SectionCarousel>
 
         {/* ── Featured Camps ─────────────────────── */}
-        <section className="py-16 border-t border-border">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Upcoming Camps & Clinics</h2>
-              <p className="text-muted mt-1">Registration open for summer 2026</p>
+        <SectionCarousel title="Upcoming Camps & Clinics" subtitle="Registration open for summer 2026" viewAllHref="/camps">
+          {featuredCamps.map((camp) => (
+            <div key={camp.id} className="flex-shrink-0 w-[320px]">
+              <ListingCard href={`/camps/${camp.slug}`} title={camp.name} subtitle={`${camp.organizerName} · ${camp.city}, ${camp.state}`} image={camp.teamPhoto && !camp.teamPhoto.includes("idf.webp") ? camp.teamPhoto : camp.logo || camp.imageUrl || undefined} badges={[{ label: camp.campType, variant: "orange" }, { label: camp.gender }]} details={[{ label: "Ages", value: camp.ageRange }, { label: "Dates", value: camp.dates }, { label: "Price", value: camp.price }]} featured={camp.featured} imagePosition={camp.imagePosition} cta="View Camp" />
             </div>
-            <a href="/camps" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {featuredCamps.map((camp) => (
-              <ListingCard
-                key={camp.id}
-                href={`/camps/${camp.slug}`}
-                title={camp.name}
-                subtitle={`${camp.organizerName} · ${camp.city}, ${camp.state}`}
-                image={camp.teamPhoto && !camp.teamPhoto.includes("idf.webp") ? camp.teamPhoto : camp.logo || camp.imageUrl || undefined}
-                badges={[
-                  { label: camp.campType, variant: "orange" },
-                  { label: camp.gender },
-                ]}
-                details={[
-                  { label: "Ages", value: camp.ageRange },
-                  { label: "Dates", value: camp.dates },
-                  { label: "Price", value: camp.price },
-                ]}
-                featured={camp.featured}
-                imagePosition={camp.imagePosition}
-                cta="View Camp"
-              />
-            ))}
-          </div>
-        </section>
+          ))}
+        </SectionCarousel>
 
         {/* ── Featured Tournaments ──────────────── */}
-        <section className="py-16 border-t border-border">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">Upcoming Tournaments</h2>
-              <p className="text-muted mt-1">Register your team for top events</p>
+        <SectionCarousel title="Upcoming Tournaments" subtitle="Register your team for top events" viewAllHref="/tournaments">
+          {featuredTournaments.map((tournament) => (
+            <div key={tournament.id} className="flex-shrink-0 w-[320px]">
+              <ListingCard href={`/tournaments/${tournament.slug}`} title={tournament.name} subtitle={`${tournament.organizer} · ${tournament.city}, ${tournament.state}`} image={tournament.teamPhoto && !tournament.teamPhoto.includes("idf.webp") ? tournament.teamPhoto : tournament.logo || tournament.imageUrl || undefined} badges={[{ label: tournament.level, variant: "blue" }, { label: tournament.format, variant: "orange" }]} details={[{ label: "Dates", value: tournament.dates }, { label: "Ages", value: tournament.ageGroups }, { label: "Entry Fee", value: tournament.entryFee }]} featured={tournament.featured} imagePosition={tournament.imagePosition} cta="View Tournament" />
             </div>
-            <a href="/tournaments" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all →</a>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {featuredTournaments.map((tournament) => (
-              <ListingCard
-                key={tournament.id}
-                href={`/tournaments/${tournament.slug}`}
-                title={tournament.name}
-                subtitle={`${tournament.organizer} · ${tournament.city}, ${tournament.state}`}
-                image={tournament.teamPhoto && !tournament.teamPhoto.includes("idf.webp") ? tournament.teamPhoto : tournament.logo || tournament.imageUrl || undefined}
-                badges={[
-                  { label: tournament.level, variant: "blue" },
-                  { label: tournament.format, variant: "orange" },
-                ]}
-                details={[
-                  { label: "Dates", value: tournament.dates },
-                  { label: "Ages", value: tournament.ageGroups },
-                  { label: "Entry Fee", value: tournament.entryFee },
-                ]}
-                featured={tournament.featured}
-                imagePosition={tournament.imagePosition}
-                cta="View Tournament"
-              />
-            ))}
-          </div>
-        </section>
+          ))}
+        </SectionCarousel>
 
         {/* ── Blog Preview ───────────────────────── */}
-        <section className="py-16 border-t border-border">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">From the Blog</h2>
-              <p className="text-muted mt-1">Guides and tips for soccer parents</p>
-            </div>
-            <a href="/blog" className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">All articles →</a>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {featuredPosts.map((post, i) => (
-              <a
-                key={post.id}
-                href={`/blog/${post.slug}`}
-                className="group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all"
-              >
-                <div className="relative">
-                  <img
-                    src={post.coverImage && post.coverImage.startsWith("http") ? post.coverImage : BLOG_COVER_IMAGES[i % BLOG_COVER_IMAGES.length]}
-                    alt={post.title}
-                    className="w-full h-44 object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <Badge variant="orange">{post.category}</Badge>
-                    <h3 className="font-[family-name:var(--font-display)] text-base font-bold mt-1.5 text-white leading-snug line-clamp-2 drop-shadow-sm">
-                      {post.title}
-                    </h3>
-                  </div>
+        <SectionCarousel title="From the Blog" subtitle="Guides and tips for soccer parents" viewAllHref="/blog">
+          {featuredPosts.map((post, i) => (
+            <a key={post.id} href={`/blog/${post.slug}`} className="flex-shrink-0 w-[320px] group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all">
+              <div className="relative">
+                <img src={post.coverImage && post.coverImage.startsWith("http") ? post.coverImage : BLOG_COVER_IMAGES[i % BLOG_COVER_IMAGES.length]} alt={post.title} className="w-full h-44 object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <Badge variant="orange">{post.category}</Badge>
+                  <h3 className="font-[family-name:var(--font-display)] text-base font-bold mt-1.5 text-white leading-snug line-clamp-2 drop-shadow-sm">{post.title}</h3>
                 </div>
-                <div className="p-4 pt-3">
-                  <p className="text-muted text-sm line-clamp-2">{post.excerpt}</p>
-                  <div className="flex items-center gap-3 text-xs text-muted mt-2">
-                    <span>{post.date}</span>
-                    <span>&middot;</span>
-                    <span>{post.readTime} read</span>
-                  </div>
+              </div>
+              <div className="p-4 pt-3">
+                <p className="text-muted text-sm line-clamp-2">{post.excerpt}</p>
+                <div className="flex items-center gap-3 text-xs text-muted mt-2">
+                  <span>{post.date}</span><span>&middot;</span><span>{post.readTime} read</span>
                 </div>
-              </a>
-            ))}
-          </div>
-        </section>
+              </div>
+            </a>
+          ))}
+        </SectionCarousel>
 
         {/* ── List Your Club CTA ─────────────────── */}
         <section className="py-16 border-t border-border">
