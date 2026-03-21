@@ -138,7 +138,7 @@ export function BlogPostForm() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="px-8 py-8 space-y-6">
+          <form onSubmit={handleSubmit} className="px-8 py-8 space-y-6 bg-white rounded-2xl border border-border">
             {/* Cover Image - at the top */}
             <div>
               <label className="block text-sm font-bold text-primary mb-2">Cover Image</label>

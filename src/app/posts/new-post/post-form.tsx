@@ -19,6 +19,9 @@ export function PostForm() {
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [ctaUrl, setCtaUrl] = useState("");
+  const [ctaLabel, setCtaLabel] = useState("");
+  const [ogImageUrl, setOgImageUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -50,6 +53,9 @@ export function PostForm() {
           body: body.trim(),
           imageUrl: imageUrl || undefined,
           videoUrl: videoUrl || undefined,
+          ctaUrl: ctaUrl || undefined,
+          ctaLabel: ctaLabel || undefined,
+          ogImageUrl: ogImageUrl || undefined,
         }),
       });
       if (!res.ok) throw new Error("Failed to create post");
@@ -78,7 +84,7 @@ export function PostForm() {
         {listingName && <p className="text-muted text-sm mt-1">Posting as {listingName}</p>}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-2xl p-6 md:p-8 border border-border">
         {/* Body */}
         <div>
           <label className="block text-sm font-semibold text-primary mb-2">Post Content *</label>
@@ -108,6 +114,24 @@ export function PostForm() {
             placeholder="YouTube, Vimeo, or Instagram URL"
             className="w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30"
           />
+        </div>
+
+        {/* CTA Button */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-primary mb-2">CTA Button Label (optional)</label>
+            <input type="text" value={ctaLabel} onChange={(e) => setCtaLabel(e.target.value)} placeholder="e.g. Learn More, Sign Up" className="w-full px-4 py-3 rounded-xl border border-border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent/30" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-primary mb-2">CTA URL (optional)</label>
+            <input type="url" value={ctaUrl} onChange={(e) => setCtaUrl(e.target.value)} placeholder="https://..." className="w-full px-4 py-3 rounded-xl border border-border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent/30" />
+          </div>
+        </div>
+
+        {/* Preview Image */}
+        <div>
+          <label className="block text-sm font-semibold text-primary mb-2">Preview Image URL (optional — for social sharing)</label>
+          <input type="url" value={ogImageUrl} onChange={(e) => setOgImageUrl(e.target.value)} placeholder="https://... (image shown when link is shared)" className="w-full px-4 py-3 rounded-xl border border-border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent/30" />
         </div>
 
         {error && <p className="text-accent text-sm">{error}</p>}
