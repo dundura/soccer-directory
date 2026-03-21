@@ -21,7 +21,7 @@ export function AdminCRM() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [newGroup, setNewGroup] = useState("");
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [showGroupManager, setShowGroupManager] = useState(false);
   const [expandedComments, setExpandedComments] = useState<Set<number>>(new Set());
   const [commentingId, setCommentingId] = useState<number | null>(null);
@@ -104,7 +104,7 @@ export function AdminCRM() {
   }
 
   function toggleCollapse(name: string) {
-    setCollapsed((s) => { const n = new Set(s); n.has(name) ? n.delete(name) : n.add(name); return n; });
+    setExpanded((s) => { const n = new Set(s); n.has(name) ? n.delete(name) : n.add(name); return n; });
   }
 
   function toggleComments(contactId: number) {
@@ -283,19 +283,19 @@ export function AdminCRM() {
       {/* Contacts by Group */}
       {groups.map((group) => {
         const gc = contacts.filter((c) => c.group_name === group.name);
-        const isCollapsed = collapsed.has(group.name);
+        const isExpanded = expanded.has(group.name);
         return (
           <div key={group.id} className="bg-white rounded-2xl border border-border overflow-hidden">
             <button onClick={() => toggleCollapse(group.name)} className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-surface/50 transition-colors">
               <span className="font-bold text-sm text-primary">{group.name}</span>
-              <span className="text-xs text-muted">{gc.length} contact{gc.length !== 1 ? "s" : ""} {isCollapsed ? "+" : "\u2212"}</span>
+              <span className="text-xs text-muted">{gc.length} contact{gc.length !== 1 ? "s" : ""} {isExpanded ? "\u2212" : "+"}</span>
             </button>
-            {!isCollapsed && gc.length > 0 && (
+            {isExpanded && gc.length > 0 && (
               <div className="border-t border-border overflow-x-auto">
                 {renderContactTable(gc)}
               </div>
             )}
-            {!isCollapsed && gc.length === 0 && (
+            {isExpanded && gc.length === 0 && (
               <div className="border-t border-border px-5 py-3 text-sm text-muted">No contacts in this group.</div>
             )}
           </div>
@@ -307,9 +307,9 @@ export function AdminCRM() {
         <div className="bg-white rounded-2xl border border-border overflow-hidden">
           <button onClick={() => toggleCollapse("__ungrouped")} className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-surface/50 transition-colors">
             <span className="font-bold text-sm text-muted">No Group</span>
-            <span className="text-xs text-muted">{ungrouped.length} contact{ungrouped.length !== 1 ? "s" : ""} {collapsed.has("__ungrouped") ? "+" : "\u2212"}</span>
+            <span className="text-xs text-muted">{ungrouped.length} contact{ungrouped.length !== 1 ? "s" : ""} {expanded.has("__ungrouped") ? "\u2212" : "+"}</span>
           </button>
-          {!collapsed.has("__ungrouped") && (
+          {expanded.has("__ungrouped") && (
             <div className="border-t border-border overflow-x-auto">
               {renderContactTable(ungrouped)}
             </div>
