@@ -246,9 +246,14 @@ export function PostEditableContent({
         </div>
       )}
 
-      {/* CTA Button */}
+      {/* CTA - embed video if URL is a video link, plus show button */}
       {ctaUrl && !editingMedia && (
         <div className="px-6 pb-4">
+          {!videoUrl && /youtube\.com|youtu\.be|vimeo\.com|tiktok\.com|instagram\.com\/(?:p|reel)/.test(ctaUrl) && (
+            <div className="mb-4">
+              <VideoEmbed url={ctaUrl} />
+            </div>
+          )}
           <a
             href={ctaUrl}
             target="_blank"
