@@ -140,8 +140,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 relative z-10">
-      <div className="bg-white rounded-[24px] shadow-[0_4px_20px_rgba(15,49,84,0.06)] px-6 sm:px-8 lg:px-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Featured Clubs ─────────────────────── */}
         <section className="py-16">
@@ -449,7 +448,6 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
-      </div>
       </div>
     </>
   );
