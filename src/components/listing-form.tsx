@@ -88,6 +88,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   trip: "Join us for an unforgettable international soccer experience! Players will train with local coaches, compete against international teams, and immerse themselves in a new soccer culture.",
   marketplace: "Quality soccer equipment available for purchase. Great condition and ready for the next player!",
   equipment: "Quality soccer equipment available for purchase. Great condition and ready for the next player!",
+  books: "Quality soccer equipment available for purchase. Great condition and ready for the next player!",
   soccerbook: "A soccer book for players, coaches, or parents. Share your knowledge and help others grow in the game.",
   photovideo: "Professional photography and videography services for soccer teams, players, and events.",
   showcase: "Join us for a competitive college showcase event! Get exposure in front of college coaches and recruiters.",
