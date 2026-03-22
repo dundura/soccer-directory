@@ -707,7 +707,79 @@ export interface Scrimmage extends ProfileFields {
   updatedAt: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "instagrampage" | "tiktokpage" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube" | "specialevent" | "recruiter" | "fundraiser" | "scrimmage";
+export interface SoccerBook extends ProfileFields {
+  id: string;
+  slug: string;
+  name: string;
+  author: string;
+  category: string;
+  city: string;
+  state: string;
+  country?: string;
+  price?: string;
+  description?: string;
+  website?: string;
+  email?: string;
+  announcementHeading?: string;
+  announcementText?: string;
+  announcementImage?: string;
+  announcementCta?: string;
+  announcementCtaUrl?: string;
+  announcementHeading2?: string;
+  announcementText2?: string;
+  announcementImage2?: string;
+  announcementCta2?: string;
+  announcementCtaUrl2?: string;
+  announcementHeading3?: string;
+  announcementText3?: string;
+  announcementImage3?: string;
+  announcementCta3?: string;
+  announcementCtaUrl3?: string;
+  aboutAuthor?: string;
+  featured: boolean;
+  status?: string;
+  userId?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface PhotoVideoService extends ProfileFields {
+  id: string;
+  slug: string;
+  name: string;
+  providerName: string;
+  category: string;
+  city: string;
+  state: string;
+  country?: string;
+  price?: string;
+  description?: string;
+  website?: string;
+  email?: string;
+  announcementHeading?: string;
+  announcementText?: string;
+  announcementImage?: string;
+  announcementCta?: string;
+  announcementCtaUrl?: string;
+  announcementHeading2?: string;
+  announcementText2?: string;
+  announcementImage2?: string;
+  announcementCta2?: string;
+  announcementCtaUrl2?: string;
+  announcementHeading3?: string;
+  announcementText3?: string;
+  announcementImage3?: string;
+  announcementCta3?: string;
+  announcementCtaUrl3?: string;
+  aboutAuthor?: string;
+  featured: boolean;
+  status?: string;
+  userId?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "instagrampage" | "tiktokpage" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube" | "specialevent" | "recruiter" | "fundraiser" | "scrimmage" | "soccerbook" | "photovideo";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";
