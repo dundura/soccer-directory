@@ -97,6 +97,12 @@ export default function WorkoutApp() {
       timeLeftRef.current = newTime
       elapsedRef.current = newElapsed
 
+      // Halfway voice cue
+      const totalSecs = W.reduce((s: number, e: {dur: number}) => s + e.dur, 0)
+      if (newElapsed >= Math.floor(totalSecs / 2) && newElapsed < Math.floor(totalSecs / 2) + 2) {
+        setTimeout(() => speak('Halfway there! Keep pushing!'), 0)
+      }
+
       const ex = W[idxRef.current]
       if (newTime === 10 && ex.type === 'work') {
         setTimeout(() => speak('Ten seconds left! Push through!'), 0)
@@ -446,7 +452,7 @@ export default function WorkoutApp() {
                 <div className="w-voice">
                   <span style={{ width: 80 }}>Work</span>
                   <div style={{ display: 'flex', gap: 4 }}>
-                    {[30, 45, 60, 90].map(d => (
+                    {[15, 30, 45, 60, 90].map(d => (
                       <button key={d} onClick={() => setWorkDur(d)} style={{
                         padding: '5px 12px', borderRadius: 16, border: '1px solid',
                         fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all .12s',
