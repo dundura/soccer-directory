@@ -141,7 +141,7 @@ export async function POST(req: Request) {
       case "service":
         slug = await createServiceListing(data, session.user.id);
         break;
-      case "books":
+      case "soccerbook":
         slug = await createSoccerBookListing(data, session.user.id);
         break;
       case "photovideo":

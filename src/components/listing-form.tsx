@@ -88,7 +88,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   trip: "Join us for an unforgettable international soccer experience! Players will train with local coaches, compete against international teams, and immerse themselves in a new soccer culture.",
   marketplace: "Quality soccer equipment available for purchase. Great condition and ready for the next player!",
   equipment: "Quality soccer equipment available for purchase. Great condition and ready for the next player!",
-  books: "A soccer book for players, coaches, or parents. Share your knowledge and help others grow in the game.",
+  soccerbook: "A soccer book for players, coaches, or parents. Share your knowledge and help others grow in the game.",
   photovideo: "Professional photography and videography services for soccer teams, players, and events.",
   showcase: "Join us for a competitive college showcase event! Get exposure in front of college coaches and recruiters.",
   player: "A dedicated soccer player looking for new opportunities to compete and grow. Open to guest play, tryouts, and showcase events.",
@@ -792,7 +792,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
-  books: [
+  soccerbook: [
     { name: "name", label: "Book Title", required: true },
     { name: "author", label: "Author Name", required: true },
     { name: "category", label: "Category", required: true, options: ["Soccer Strategy", "Player Development", "Coaching", "Parent Guide", "Biography", "Fiction", "Youth Soccer", "Other"] },
@@ -1064,7 +1064,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   instagrampage: "Instagram Page",
   tiktokpage: "TikTok Page",
   service: "Other Product / Service",
-  books: "Book & Author",
+  soccerbook: "Book & Author",
   photovideo: "Photo & Video Service",
   tryout: "Tryout",
   specialevent: "Special Event",
