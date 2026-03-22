@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 
 export default async function PhotoVideoServicesPage() {
   const services = await getPhotoVideoServices();
-  return <Suspense><PhotoVideoFilters items={services} /></Suspense>;
+  return <Suspense><PhotoVideoFilters services={services} /></Suspense>;
 }

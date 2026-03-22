@@ -20,7 +20,7 @@ const CATEGORIES = [
 ];
 const PER_PAGE = 10;
 
-export function PhotoVideoPhotoVideoFilters({ services }: { services: PhotoVideoService[] }) {
+export function PhotoVideoFilters({ services }: { services: PhotoVideoService[] }) {
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { getSoccerBooks } from "@/lib/db";
-import { BookFilters } from "./filters";
+import { SoccerBookFilters } from "./filters";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 
 export default async function BooksPage() {
   const books = await getSoccerBooks();
-  return <Suspense><BookFilters items={books} /></Suspense>;
+  return <Suspense><SoccerBookFilters soccerbooks={books} /></Suspense>;
 }
