@@ -107,7 +107,9 @@ function Header() {
                   items: [
                     { label: "Coaches & Trainers", href: "/trainers", desc: "Private & group training", icon: "🎯" },
                     { label: "Training Apps", href: "/training-apps", desc: "Soccer training apps", icon: "📱" },
-                    { label: "Products & Services", href: "/services", desc: "Soccer products & services", icon: "🛒" },
+                    { label: "Books & Authors", href: "/books-and-authors", desc: "Soccer books & authors", icon: "📚" },
+                    { label: "Photo & Video Services", href: "/photo-video-services", desc: "Photography & videography", icon: "📸" },
+                    { label: "Other Products & Services", href: "/services", desc: "Soccer products & services", icon: "🛒" },
                   ],
                 },
                 {
@@ -193,7 +195,9 @@ function Footer() {
               <a href="/international-trips" className="hover:text-white transition-colors">International Trips</a>
               <a href="/tournaments" className="hover:text-white transition-colors">Find Tournaments</a>
               <a href="/shop" className="hover:text-white transition-colors">Recommendations</a>
-              <a href="/services" className="hover:text-white transition-colors">Products & Services</a>
+              <a href="/books-and-authors" className="hover:text-white transition-colors">Books & Authors</a>
+              <a href="/photo-video-services" className="hover:text-white transition-colors">Photo & Video Services</a>
+              <a href="/services" className="hover:text-white transition-colors">Other Products & Services</a>
             </div>
           </div>
           <div>

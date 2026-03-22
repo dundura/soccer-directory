@@ -22,6 +22,8 @@ import {
   createInstagramPageListing,
   createTikTokPageListing,
   createServiceListing,
+  createSoccerBookListing,
+  createPhotoVideoServiceListing,
   createTryoutListing,
   createSpecialEventListing,
   createRecruiterListing,
@@ -138,6 +140,12 @@ export async function POST(req: Request) {
         break;
       case "service":
         slug = await createServiceListing(data, session.user.id);
+        break;
+      case "books":
+        slug = await createSoccerBookListing(data, session.user.id);
+        break;
+      case "photovideo":
+        slug = await createPhotoVideoServiceListing(data, session.user.id);
         break;
       case "tryout":
         slug = await createTryoutListing(data, session.user.id);

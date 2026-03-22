@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { Club, Team, TeamEvent, Trainer, Recruiter, Camp, Tryout, SpecialEvent, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, Podcast, TopEpisode, FacebookGroup, InstagramPage, TikTokPage, Service, TrainingApp, Blog, FeaturedPost, YoutubeChannel, FeaturedVideo, ProfileFields, MediaLink, Sponsor, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment, Scrimmage } from "./types";
+import type { Club, Team, TeamEvent, Trainer, Recruiter, Camp, Tryout, SpecialEvent, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, Podcast, TopEpisode, FacebookGroup, InstagramPage, TikTokPage, Service, TrainingApp, Blog, FeaturedPost, YoutubeChannel, FeaturedVideo, ProfileFields, MediaLink, Sponsor, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment, Scrimmage, SoccerBook, PhotoVideoService } from "./types";
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -894,7 +894,7 @@ export async function updateUserRole(userId: string, role: string): Promise<void
 }
 
 export async function getAllListings() {
-  const [clubs, teams, trainers, recruiters, camps, guests, tournaments, futsals, trips, marketplace, players, podcasts, fbgroups, services, tryouts, specialEvents, trainingApps, blogRows, youtubeRows, scrimmageRows] = await Promise.all([
+  const [clubs, teams, trainers, recruiters, camps, guests, tournaments, futsals, trips, marketplace, players, podcasts, fbgroups, services, tryouts, specialEvents, trainingApps, blogRows, youtubeRows, scrimmageRows, soccerBookRows, photoVideoRows] = await Promise.all([
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'club' as type FROM clubs ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'team' as type FROM teams ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'trainer' as type FROM trainers ORDER BY created_at DESC`,
@@ -915,8 +915,10 @@ export async function getAllListings() {
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'blog' as type FROM blogs ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'youtube' as type FROM youtube_channels ORDER BY created_at DESC`,
     sql`SELECT id, slug, team_name as name, status, featured, user_id, created_at, 'scrimmage' as type FROM scrimmages ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'soccerbook' as type FROM books ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'photovideo' as type FROM photo_video_services ORDER BY created_at DESC`,
   ]);
-  return [...clubs, ...teams, ...trainers, ...recruiters, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace, ...players, ...podcasts, ...fbgroups, ...services, ...tryouts, ...specialEvents, ...trainingApps, ...blogRows, ...youtubeRows, ...scrimmageRows].map((r) => ({
+  return [...clubs, ...teams, ...trainers, ...recruiters, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace, ...players, ...podcasts, ...fbgroups, ...services, ...tryouts, ...specialEvents, ...trainingApps, ...blogRows, ...youtubeRows, ...scrimmageRows, ...soccerBookRows, ...photoVideoRows].map((r) => ({
     id: r.id as string,
     slug: r.slug as string,
     name: r.name as string,
@@ -953,6 +955,8 @@ export async function updateListingStatus(type: string, id: string, status: stri
     case "blog": await sql`UPDATE blogs SET status = ${status} WHERE id = ${id}`; break;
     case "youtube": await sql`UPDATE youtube_channels SET status = ${status} WHERE id = ${id}`; break;
     case "scrimmage": await sql`UPDATE scrimmages SET status = ${status} WHERE id = ${id}`; break;
+    case "soccerbook": await sql`UPDATE books SET status = ${status} WHERE id = ${id}`; break;
+    case "photovideo": await sql`UPDATE photo_video_services SET status = ${status} WHERE id = ${id}`; break;
   }
 }
 
@@ -981,6 +985,8 @@ export async function updateListingFeatured(type: string, id: string, featured: 
     case "blog": await sql`UPDATE blogs SET featured = ${featured} WHERE id = ${id}`; break;
     case "youtube": await sql`UPDATE youtube_channels SET featured = ${featured} WHERE id = ${id}`; break;
     case "scrimmage": await sql`UPDATE scrimmages SET featured = ${featured} WHERE id = ${id}`; break;
+    case "soccerbook": await sql`UPDATE books SET featured = ${featured} WHERE id = ${id}`; break;
+    case "photovideo": await sql`UPDATE photo_video_services SET featured = ${featured} WHERE id = ${id}`; break;
   }
 }
 
@@ -992,7 +998,7 @@ const TYPE_TO_TABLE: Record<string, string> = {
   trip: "international_trips", marketplace: "marketplace", player: "player_profiles",
   podcast: "podcasts", fbgroup: "facebook_groups", instagrampage: "instagram_pages", tiktokpage: "tiktok_pages", service: "services",
   tryout: "tryouts", specialevent: "special_events", trainingapp: "training_apps", blog: "blogs", youtube: "youtube_channels",
-  scrimmage: "scrimmages",
+  scrimmage: "scrimmages", soccerbook: "books", photovideo: "photo_video_services",
 };
 
 const FIELD_TO_COLUMN: Record<string, string> = {
@@ -1032,7 +1038,7 @@ export async function patchListingField(
 
 // ── Listings by User ─────────────────────────────────────────
 export async function getListingsByUserId(userId: string) {
-  const [clubRows, teamRows, trainerRows, recruiterRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows, podcastRows, fbgroupRows, instagramRows, tiktokRows, serviceRows, tryoutRows, specialEventRows, trainingAppRows, blogRows, youtubeRows, fundraiserRows, scrimmageRows] = await Promise.all([
+  const [clubRows, teamRows, trainerRows, recruiterRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows, podcastRows, fbgroupRows, instagramRows, tiktokRows, serviceRows, tryoutRows, specialEventRows, trainingAppRows, blogRows, youtubeRows, fundraiserRows, scrimmageRows, soccerBookRows, photoVideoRows] = await Promise.all([
     sql`SELECT id, slug, name, status, 'club' as type FROM clubs WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'team' as type FROM teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'trainer' as type FROM trainers WHERE user_id = ${userId} ORDER BY created_at DESC`,
@@ -1056,8 +1062,10 @@ export async function getListingsByUserId(userId: string) {
     sql`SELECT id, slug, name, status, 'youtube' as type FROM youtube_channels WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, title as name, CASE WHEN active THEN 'approved' ELSE 'archived' END as status, 'fundraiser' as type FROM fundraisers WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, team_name as name, status, 'scrimmage' as type FROM scrimmages WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, 'soccerbook' as type FROM books WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, 'photovideo' as type FROM photo_video_services WHERE user_id = ${userId} ORDER BY created_at DESC`,
   ]);
-  return [...clubRows, ...teamRows, ...trainerRows, ...recruiterRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows, ...playerRows, ...podcastRows, ...fbgroupRows, ...instagramRows, ...tiktokRows, ...serviceRows, ...tryoutRows, ...specialEventRows, ...trainingAppRows, ...blogRows, ...youtubeRows, ...fundraiserRows, ...scrimmageRows] as { id: string; slug: string; name: string; status: string; type: string }[];
+  return [...clubRows, ...teamRows, ...trainerRows, ...recruiterRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows, ...playerRows, ...podcastRows, ...fbgroupRows, ...instagramRows, ...tiktokRows, ...serviceRows, ...tryoutRows, ...specialEventRows, ...trainingAppRows, ...blogRows, ...youtubeRows, ...fundraiserRows, ...scrimmageRows, ...soccerBookRows, ...photoVideoRows] as { id: string; slug: string; name: string; status: string; type: string }[];
 }
 
 // ── Create Listings ──────────────────────────────────────────
@@ -1261,6 +1269,22 @@ export async function createServiceListing(data: Record<string, string>, userId:
   return slug;
 }
 
+export async function createSoccerBookListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  const pf = profileFields(data);
+  await sql`INSERT INTO books (id, slug, name, author, category, city, country, state, price, description, website, email, phone, image_url, video_url, image_position, hero_image_position, photos, tagline, sponsors, about_author, announcement_heading, announcement_text, announcement_image, announcement_cta, announcement_cta_url, announcement_heading_2, announcement_text_2, announcement_image_2, announcement_cta_2, announcement_cta_url_2, announcement_heading_3, announcement_text_3, announcement_image_3, announcement_cta_3, announcement_cta_url_3, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.author || null}, ${data.category}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.price || null}, ${data.description || null}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${data.imageUrl || null}, ${data.videoUrl || null}, ${Number(data.imagePosition) || 50}, ${Number(data.heroImagePosition) || 50}, ${pf.photos}, ${pf.tagline}, ${pf.sponsors}, ${data.aboutAuthor || null}, ${data.announcementHeading || null}, ${data.announcementText || null}, ${data.announcementImage || null}, ${data.announcementCta || null}, ${data.announcementCtaUrl || null}, ${data.announcementHeading2 || null}, ${data.announcementText2 || null}, ${data.announcementImage2 || null}, ${data.announcementCta2 || null}, ${data.announcementCtaUrl2 || null}, ${data.announcementHeading3 || null}, ${data.announcementText3 || null}, ${data.announcementImage3 || null}, ${data.announcementCta3 || null}, ${data.announcementCtaUrl3 || null}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
+export async function createPhotoVideoServiceListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  const pf = profileFields(data);
+  await sql`INSERT INTO photo_video_services (id, slug, name, provider_name, category, city, country, state, price, description, website, email, phone, image_url, video_url, image_position, hero_image_position, photos, tagline, sponsors, about_author, announcement_heading, announcement_text, announcement_image, announcement_cta, announcement_cta_url, announcement_heading_2, announcement_text_2, announcement_image_2, announcement_cta_2, announcement_cta_url_2, announcement_heading_3, announcement_text_3, announcement_image_3, announcement_cta_3, announcement_cta_url_3, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.providerName}, ${data.category}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.price || null}, ${data.description || null}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${data.imageUrl || null}, ${data.videoUrl || null}, ${Number(data.imagePosition) || 50}, ${Number(data.heroImagePosition) || 50}, ${pf.photos}, ${pf.tagline}, ${pf.sponsors}, ${data.aboutAuthor || null}, ${data.announcementHeading || null}, ${data.announcementText || null}, ${data.announcementImage || null}, ${data.announcementCta || null}, ${data.announcementCtaUrl || null}, ${data.announcementHeading2 || null}, ${data.announcementText2 || null}, ${data.announcementImage2 || null}, ${data.announcementCta2 || null}, ${data.announcementCtaUrl2 || null}, ${data.announcementHeading3 || null}, ${data.announcementText3 || null}, ${data.announcementImage3 || null}, ${data.announcementCta3 || null}, ${data.announcementCtaUrl3 || null}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
 export async function createTrainingAppListing(data: Record<string, string>, userId: string) {
   const id = genId();
   const slug = slugify(data.name);
@@ -1302,7 +1326,100 @@ export async function getServiceSlugs(): Promise<string[]> {
   return rows.map((r) => r.slug as string);
 }
 
+
 function mapService(r: Record<string, unknown>): Service {
+  return {
+    id: r.id as string, slug: r.slug as string, name: r.name as string,
+    providerName: r.provider_name as string, category: r.category as string,
+    city: r.city as string, state: r.state as string, country: r.country as string | undefined,
+    price: r.price as string | undefined, description: r.description as string | undefined,
+    website: r.website as string | undefined, email: r.email as string | undefined,
+    announcementHeading: r.announcement_heading as string | undefined,
+    announcementText: r.announcement_text as string | undefined,
+    announcementImage: r.announcement_image as string | undefined,
+    announcementCta: r.announcement_cta as string | undefined,
+    announcementCtaUrl: r.announcement_cta_url as string | undefined,
+    announcementHeading2: r.announcement_heading_2 as string | undefined,
+    announcementText2: r.announcement_text_2 as string | undefined,
+    announcementImage2: r.announcement_image_2 as string | undefined,
+    announcementCta2: r.announcement_cta_2 as string | undefined,
+    announcementCtaUrl2: r.announcement_cta_url_2 as string | undefined,
+    announcementHeading3: r.announcement_heading_3 as string | undefined,
+    announcementText3: r.announcement_text_3 as string | undefined,
+    announcementImage3: r.announcement_image_3 as string | undefined,
+    announcementCta3: r.announcement_cta_3 as string | undefined,
+    announcementCtaUrl3: r.announcement_cta_url_3 as string | undefined,
+    aboutAuthor: r.about_author as string | undefined,
+    featured: r.featured as boolean, status: r.status as string | undefined,
+    userId: r.user_id as string | undefined, createdAt: r.created_at as string,
+    updatedAt: r.updated_at as string | undefined,
+    ...mapProfileFields(r),
+  };
+}
+
+// ── Soccer Books ─────────────────────────────────────────────
+export async function getSoccerBooks(): Promise<SoccerBook[]> {
+  const rows = await sql`SELECT * FROM books WHERE status = 'approved' ORDER BY featured DESC, name ASC`;
+  return rows.map(mapSoccerBook);
+}
+
+export async function getSoccerBookBySlug(slug: string): Promise<SoccerBook | null> {
+  const rows = await sql`SELECT * FROM books WHERE slug = ${slug} AND status = 'approved' LIMIT 1`;
+  return rows[0] ? mapSoccerBook(rows[0]) : null;
+}
+
+export async function getSoccerBookSlugs(): Promise<string[]> {
+  const rows = await sql`SELECT slug FROM books WHERE status = 'approved'`;
+  return rows.map((r) => r.slug as string);
+}
+
+function mapSoccerBook(r: Record<string, unknown>): SoccerBook {
+  return {
+    id: r.id as string, slug: r.slug as string, name: r.name as string,
+    author: r.author as string, category: r.category as string,
+    city: r.city as string, state: r.state as string, country: r.country as string | undefined,
+    price: r.price as string | undefined, description: r.description as string | undefined,
+    website: r.website as string | undefined, email: r.email as string | undefined,
+    announcementHeading: r.announcement_heading as string | undefined,
+    announcementText: r.announcement_text as string | undefined,
+    announcementImage: r.announcement_image as string | undefined,
+    announcementCta: r.announcement_cta as string | undefined,
+    announcementCtaUrl: r.announcement_cta_url as string | undefined,
+    announcementHeading2: r.announcement_heading_2 as string | undefined,
+    announcementText2: r.announcement_text_2 as string | undefined,
+    announcementImage2: r.announcement_image_2 as string | undefined,
+    announcementCta2: r.announcement_cta_2 as string | undefined,
+    announcementCtaUrl2: r.announcement_cta_url_2 as string | undefined,
+    announcementHeading3: r.announcement_heading_3 as string | undefined,
+    announcementText3: r.announcement_text_3 as string | undefined,
+    announcementImage3: r.announcement_image_3 as string | undefined,
+    announcementCta3: r.announcement_cta_3 as string | undefined,
+    announcementCtaUrl3: r.announcement_cta_url_3 as string | undefined,
+    aboutAuthor: r.about_author as string | undefined,
+    featured: r.featured as boolean, status: r.status as string | undefined,
+    userId: r.user_id as string | undefined, createdAt: r.created_at as string,
+    updatedAt: r.updated_at as string | undefined,
+    ...mapProfileFields(r),
+  };
+}
+
+// ── Photo/Video Services ─────────────────────────────────────
+export async function getPhotoVideoServices(): Promise<PhotoVideoService[]> {
+  const rows = await sql`SELECT * FROM photo_video_services WHERE status = 'approved' ORDER BY featured DESC, name ASC`;
+  return rows.map(mapPhotoVideoService);
+}
+
+export async function getPhotoVideoServiceBySlug(slug: string): Promise<PhotoVideoService | null> {
+  const rows = await sql`SELECT * FROM photo_video_services WHERE slug = ${slug} AND status = 'approved' LIMIT 1`;
+  return rows[0] ? mapPhotoVideoService(rows[0]) : null;
+}
+
+export async function getPhotoVideoServiceSlugs(): Promise<string[]> {
+  const rows = await sql`SELECT slug FROM photo_video_services WHERE status = 'approved'`;
+  return rows.map((r) => r.slug as string);
+}
+
+function mapPhotoVideoService(r: Record<string, unknown>): PhotoVideoService {
   return {
     id: r.id as string, slug: r.slug as string, name: r.name as string,
     providerName: r.provider_name as string, category: r.category as string,
@@ -1515,6 +1632,14 @@ export async function getListingData(type: string, id: string, userId: string): 
       rows = await sql`SELECT * FROM services WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
       return mapServiceToForm(rows[0]);
+    case "soccerbook":
+      rows = await sql`SELECT * FROM books WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapSoccerBookToForm(rows[0]);
+    case "photovideo":
+      rows = await sql`SELECT * FROM photo_video_services WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapPhotoVideoServiceToForm(rows[0]);
     case "tryout":
       rows = await sql`SELECT * FROM tryouts WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
@@ -1566,6 +1691,8 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "instagrampage": rows = await sql`SELECT * FROM instagram_pages WHERE id = ${id} LIMIT 1`; break;
     case "tiktokpage": rows = await sql`SELECT * FROM tiktok_pages WHERE id = ${id} LIMIT 1`; break;
     case "service": rows = await sql`SELECT * FROM services WHERE id = ${id} LIMIT 1`; break;
+    case "soccerbook": rows = await sql`SELECT * FROM books WHERE id = ${id} LIMIT 1`; break;
+    case "photovideo": rows = await sql`SELECT * FROM photo_video_services WHERE id = ${id} LIMIT 1`; break;
     case "tryout": rows = await sql`SELECT * FROM tryouts WHERE id = ${id} LIMIT 1`; break;
     case "specialevent": rows = await sql`SELECT * FROM special_events WHERE id = ${id} LIMIT 1`; break;
     case "trainingapp": rows = await sql`SELECT * FROM training_apps WHERE id = ${id} LIMIT 1`; break;
@@ -1593,6 +1720,8 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "instagrampage": return mapInstagramPageToForm(rows[0]);
     case "tiktokpage": return mapTikTokPageToForm(rows[0]);
     case "service": return mapServiceToForm(rows[0]);
+    case "soccerbook": return mapSoccerBookToForm(rows[0]);
+    case "photovideo": return mapPhotoVideoServiceToForm(rows[0]);
     case "tryout": return mapTryoutToForm(rows[0]);
     case "specialevent": return mapSpecialEventToForm(rows[0]);
     case "trainingapp": return mapTrainingAppToForm(rows[0]);
@@ -1734,6 +1863,12 @@ function mapServiceToForm(r: Record<string, unknown>): Record<string, string> {
 function mapTrainingAppToForm(r: Record<string, unknown>): Record<string, string> {
   return { name: s(r.name), providerName: s(r.provider_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), videoUrl: s(r.video_url), photos: s(r.photos), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3), aboutAuthor: s(r.about_author), tagline: s(r.tagline) };
 }
+function mapSoccerBookToForm(r: Record<string, unknown>): Record<string, string> {
+  return { name: s(r.name), author: s(r.author), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), videoUrl: s(r.video_url), photos: s(r.photos), tagline: s(r.tagline), aboutAuthor: s(r.about_author), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3) };
+}
+function mapPhotoVideoServiceToForm(r: Record<string, unknown>): Record<string, string> {
+  return { name: s(r.name), providerName: s(r.provider_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), videoUrl: s(r.video_url), photos: s(r.photos), tagline: s(r.tagline), aboutAuthor: s(r.about_author), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3) };
+}
 
 function mapBlogToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
@@ -1806,6 +1941,12 @@ export async function updateListing(type: string, id: string, data: Record<strin
       break;
     case "service":
       rows = await sql`UPDATE services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, about_author=${data.aboutAuthor || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "soccerbook":
+      rows = await sql`UPDATE books SET name=${data.name}, author=${data.author || null}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, tagline=${pf.tagline}, sponsors=${pf.sponsors}, about_author=${data.aboutAuthor || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
+    case "photovideo":
+      rows = await sql`UPDATE photo_video_services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, tagline=${pf.tagline}, sponsors=${pf.sponsors}, about_author=${data.aboutAuthor || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "tryout":
       rows = await sql`UPDATE tryouts SET name=${data.name}, organizer_name=${data.organizerName}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, tryout_type=${data.tryoutType}, age_group=${data.ageGroup}, gender=${data.gender}, dates=${data.dates}, time=${data.time || null}, location=${data.location || null}, cost=${data.cost || null}, description=${data.description}, registration_url=${data.registrationUrl || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, sponsors=${pf.sponsors}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
@@ -1898,6 +2039,12 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
     case "service":
       rows = await sql`UPDATE services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, about_author=${data.aboutAuthor || null}, tagline=${pf.tagline}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
+    case "soccerbook":
+      rows = await sql`UPDATE books SET name=${data.name}, author=${data.author || null}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, tagline=${pf.tagline}, sponsors=${pf.sponsors}, about_author=${data.aboutAuthor || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
+    case "photovideo":
+      rows = await sql`UPDATE photo_video_services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, tagline=${pf.tagline}, sponsors=${pf.sponsors}, about_author=${data.aboutAuthor || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
     case "tryout":
       rows = await sql`UPDATE tryouts SET name=${data.name}, organizer_name=${data.organizerName}, club_name=${data.clubName || null}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, tryout_type=${data.tryoutType}, age_group=${data.ageGroup}, gender=${data.gender}, dates=${data.dates}, time=${data.time || null}, location=${data.location || null}, cost=${data.cost || null}, description=${data.description}, registration_url=${data.registrationUrl || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, tagline=${pf.tagline}, sponsors=${pf.sponsors}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
@@ -1954,6 +2101,8 @@ export async function archiveListing(type: string, id: string, userId: string, i
       case "instagrampage": rows = await sql`UPDATE instagram_pages SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "tiktokpage": rows = await sql`UPDATE tiktok_pages SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "service": rows = await sql`UPDATE services SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "soccerbook": rows = await sql`UPDATE books SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "photovideo": rows = await sql`UPDATE photo_video_services SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "tryout": rows = await sql`UPDATE tryouts SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "specialevent": rows = await sql`UPDATE special_events SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "trainingapp": rows = await sql`UPDATE training_apps SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
@@ -1981,6 +2130,8 @@ export async function archiveListing(type: string, id: string, userId: string, i
       case "instagrampage": rows = await sql`UPDATE instagram_pages SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "tiktokpage": rows = await sql`UPDATE tiktok_pages SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "service": rows = await sql`UPDATE services SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "soccerbook": rows = await sql`UPDATE books SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "photovideo": rows = await sql`UPDATE photo_video_services SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "tryout": rows = await sql`UPDATE tryouts SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "specialevent": rows = await sql`UPDATE special_events SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "trainingapp": rows = await sql`UPDATE training_apps SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
