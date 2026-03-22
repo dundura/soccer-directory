@@ -35,8 +35,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!service) return {};
   const { ogMeta } = await import("@/lib/og");
   return ogMeta(
-    `${service.name} | Products & Books & Authors | Soccer Near Me`,
-    service.description || `${service.category} by ${service.author || service.providerName}`,
+    `${service.name} | Books & Authors | Soccer Near Me`,
+    service.description || `${service.category} by ${service.author}`,
     service.imageUrl,
     `/books-and-authors/${slug}`,
   );
@@ -104,7 +104,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                   <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="tagline" value={service.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
                 )}
                 <p className="text-sm text-muted mt-1">
-                  by {service.author || service.providerName} &middot; {service.city}, {service.state}
+                  by {service.author} &middot; {service.city}, {service.state}
                 </p>
               </div>
               {service.price && (
@@ -163,7 +163,7 @@ export default async function ServiceDetailPage({ params }: Props) {
               </div>
               <div>
                 <span className="text-muted font-medium">Provider</span>
-                <p className="font-bold text-primary">{service.author || service.providerName}</p>
+                <p className="font-bold text-primary">{service.author}</p>
               </div>
               <div>
                 <span className="text-muted font-medium">Location</span>
