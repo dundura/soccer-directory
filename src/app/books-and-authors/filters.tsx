@@ -35,7 +35,7 @@ export function SoccerBookFilters({ soccerbooks }: { soccerbooks: SoccerBook[] }
       const q = search.toLowerCase();
       if (
         !s.name.toLowerCase().includes(q) &&
-        !s.authorName.toLowerCase().includes(q) &&
+        !s.author.toLowerCase().includes(q) &&
         !(s.description || "").toLowerCase().includes(q) &&
         !s.city.toLowerCase().includes(q)
       )
@@ -118,7 +118,7 @@ export function SoccerBookFilters({ soccerbooks }: { soccerbooks: SoccerBook[] }
                   key={soccerbook.id}
                   href={`/soccerbooks/${soccerbook.slug}`}
                   title={soccerbook.name}
-                  subtitle={`by ${soccerbook.authorName} · ${soccerbook.city}, ${soccerbook.state}`}
+                  subtitle={`by ${soccerbook.author} · ${soccerbook.city}, ${soccerbook.state}`}
                   image={soccerbook.imageUrl || undefined}
                   badges={[
                     { label: soccerbook.category, variant: "green" },
