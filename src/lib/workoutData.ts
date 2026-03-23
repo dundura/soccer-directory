@@ -114,16 +114,16 @@ const DB_BACK = buildWorkout([
 
 // ── DUMBBELL: ARMS ────────────────────────────────────────
 const DB_ARMS = buildWorkout([
-  { name: 'Bicep Curl', tip: 'Elbows pinned. Full range.', voice: 'Bicep Curls! No swinging!', img: `${G}/vy2XSxH.gif` },
+  { name: 'Bicep Curl', tip: 'Elbows pinned. Full range.', voice: 'Bicep Curls! No swinging!', img: `${G}/3eGE2JC.gif` },
   { name: 'Tricep Kickback', tip: 'Hinge forward, extend and squeeze.', voice: 'Tricep Kickbacks! Lock it out!', img: `${G}/W6PxUkg.gif` },
-  { name: 'Hammer Curl', tip: 'Palms face each other. Curl up.', voice: 'Hammer Curls! Build those arms!', img: `${G}/J5T2MKE.gif` },
+  { name: 'Hammer Curl', tip: 'Palms face each other. Curl up.', voice: 'Hammer Curls! Build those arms!', img: `${G}/3eGE2JC.gif` },
   { name: 'Overhead Tricep Extension', tip: 'Lower behind head, press up.', voice: 'Overhead Extensions! Feel those triceps!', img: `${G}/PdmaD0N.gif` },
-  { name: 'Concentration Curl (L)', tip: 'Elbow on thigh. Full squeeze.', voice: 'Concentration Curls, left arm!', img: `${G}/gLfXoME.gif` },
-  { name: 'Concentration Curl (R)', tip: 'Switch arms. Same focus.', voice: 'Switch arms! Right side!', img: `${G}/gLfXoME.gif` },
+  { name: 'Concentration Curl (L)', tip: 'Elbow on thigh. Full squeeze.', voice: 'Concentration Curls, left arm!', img: `${G}/3eGE2JC.gif` },
+  { name: 'Concentration Curl (R)', tip: 'Switch arms. Same focus.', voice: 'Switch arms! Right side!', img: `${G}/3eGE2JC.gif` },
   { name: 'Close-Grip Press', tip: 'Dumbbells together, press up. Tricep focus.', voice: 'Close Grip Press! Triceps on fire!', img: `${G}/RxayqAZ.gif` },
-  { name: 'Zottman Curl', tip: 'Curl up, rotate at top, lower slowly.', voice: 'Zottman Curls! Full forearm burn!', img: `${G}/aFIdzly.gif` },
+  { name: 'Zottman Curl', tip: 'Curl up, rotate at top, lower slowly.', voice: 'Zottman Curls! Full forearm burn!', img: `${G}/3eGE2JC.gif` },
   { name: 'Diamond Push-Up', tip: 'Hands together. Targets triceps.', voice: 'Diamond Push-Ups! Almost done!', img: `${G}/soIB2rj.gif` },
-  { name: '21s Curl', tip: '7 bottom half, 7 top half, 7 full range.', voice: 'Twenty-Ones! Last exercise! Empty the tank!', img: `${G}/vy2XSxH.gif` },
+  { name: '21s Curl', tip: '7 bottom half, 7 top half, 7 full range.', voice: 'Twenty-Ones! Last exercise! Empty the tank!', img: `${G}/3eGE2JC.gif` },
 ])
 
 // ── SOCCER FITNESS ────────────────────────────────────────
