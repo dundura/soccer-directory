@@ -17,6 +17,7 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
   const [state, setState] = useState(searchParams.get("state") || "");
   const [gender, setGender] = useState(searchParams.get("gender") || "");
   const [birthYear, setBirthYear] = useState(searchParams.get("birthYear") || "");
+  const [availability, setAvailability] = useState(searchParams.get("availability") || "");
   const [page, setPage] = useState(1);
   const [viewAll, setViewAll] = useState(false);
 
@@ -37,6 +38,8 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
     if (position && p.position !== position && p.secondaryPosition !== position) return false;
     if (gender && p.gender !== gender) return false;
     if (birthYear && p.birthYear !== birthYear) return false;
+    if (availability === "guest" && !p.availableForGuestPlay) return false;
+    if (availability === "team" && !p.lookingForTeam) return false;
     return true;
   });
 
@@ -97,6 +100,15 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
                 <option value="">Position</option>
                 {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
               </select>
+              <select
+                value={availability}
+                onChange={(e) => { setAvailability(e.target.value); setPage(1); }}
+                className="px-4 py-3.5 text-sm font-medium text-primary focus:outline-none cursor-pointer bg-transparent md:w-44"
+              >
+                <option value="">Availability</option>
+                <option value="guest">Guest Play</option>
+                <option value="team">Looking for Team</option>
+              </select>
               <div className="p-1">
                 <button
                   type="button"
@@ -135,7 +147,7 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
             {visible.map((player) => (
               <div
                 key={player.id}
-                className="relative group pt-14"
+                className="relative group pt-18"
               >
                 {/* Circular photo overlapping top */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10">
@@ -143,7 +155,7 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
                     src={player.teamPhoto}
                     name={player.playerName}
                     imagePosition={player.imagePosition}
-                    className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
+                    className="w-36 h-36 rounded-full object-cover border-4 border-white shadow-md"
                   />
                 </div>
 
@@ -171,6 +183,16 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
                       {player.gender}
                     </span>
                   </div>
+                  {(player.availableForGuestPlay || player.lookingForTeam) && (
+                    <div className="flex items-center justify-center gap-2 mt-3">
+                      {player.availableForGuestPlay && (
+                        <span className="px-2.5 py-1 rounded-full bg-green-500/20 text-green-300 text-xs font-semibold">Guest Play</span>
+                      )}
+                      {player.lookingForTeam && (
+                        <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold">Looking for Team</span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* White bottom section */}
