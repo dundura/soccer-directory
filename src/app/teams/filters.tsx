@@ -159,6 +159,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                       details={[
                         { label: "Birth Year", value: team.ageGroup },
                         { label: "Coach", value: team.coach },
+                        { label: "Guest Players", value: "Welcomed" },
                       ]}
                       featured={team.featured}
                       imagePosition={team.imagePosition}
