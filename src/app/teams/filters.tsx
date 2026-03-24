@@ -159,8 +159,6 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                       details={[
                         { label: "Birth Year", value: team.ageGroup },
                         { label: "Coach", value: team.coach },
-                        ...(team.positionsNeeded ? [{ label: "Positions", value: team.positionsNeeded }] : []),
-                        { label: "Season", value: team.season },
                       ]}
                       featured={team.featured}
                       imagePosition={team.imagePosition}
