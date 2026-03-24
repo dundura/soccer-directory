@@ -586,6 +586,10 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl2", label: "Highlight Video 2 (YouTube/Vimeo)" },
     { name: "videoUrl3", label: "Highlight Video 3 (YouTube/Vimeo)" },
     { name: "gameHighlights", label: "Game Highlights (up to 10)", type: "game-highlights", max: 10 },
+    { name: "_highlightVideosSection", label: "Highlight Videos for Public Feed", type: "heading" },
+    { name: "highlightVideos", label: "Highlight Videos (up to 5)", type: "highlight-videos", max: 5 },
+    { name: "_resume", label: "Player Resume / CV", type: "heading" },
+    { name: "cvUrl", label: "Resume / CV Link (Google Drive, Dropbox, etc.)", type: "url" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
@@ -1841,6 +1845,65 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                   );
                 })}
                 <p className="text-xs text-muted">Add individual game highlights. Each shows as an embedded video with its title.</p>
+              </div>
+
+            /* Highlight Videos for public feed (up to 5 — title + URL + showOnHighlights toggle) */
+            ) : field.type === "highlight-videos" ? (
+              <div className="space-y-3">
+                {Array.from({ length: Math.min(field.max || 5, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                  let arr: { title: string; url: string; showOnHighlights: boolean }[] = [];
+                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  const hv = arr[i] || { title: "", url: "", showOnHighlights: false };
+                  const updateHv = (key: string, val: string | boolean) => {
+                    const updated = [...arr];
+                    if (!updated[i]) updated[i] = { title: "", url: "", showOnHighlights: false };
+                    (updated[i] as Record<string, string | boolean>)[key] = val;
+                    const filtered = updated.filter((g) => g.title || g.url);
+                    handleChange(field.name, JSON.stringify(filtered));
+                  };
+                  return (
+                    <div key={i} className="flex gap-2 items-start">
+                      <div className="flex-1 space-y-1.5">
+                        <input
+                          type="text"
+                          value={hv.title || ""}
+                          onChange={(e) => updateHv("title", e.target.value)}
+                          placeholder="Video title (e.g. Season Highlights 2025)"
+                          className={inputClass}
+                        />
+                        <input
+                          type="url"
+                          value={hv.url || ""}
+                          onChange={(e) => updateHv("url", e.target.value)}
+                          placeholder="YouTube / Vimeo URL"
+                          className={inputClass}
+                        />
+                        <label className="flex items-center gap-2 text-sm text-muted cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={!!hv.showOnHighlights}
+                            onChange={(e) => updateHv("showOnHighlights", e.target.checked)}
+                            className="rounded"
+                          />
+                          Show on Player Highlights page
+                        </label>
+                      </div>
+                      {hv.title && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = arr.filter((_, j) => j !== i);
+                            handleChange(field.name, JSON.stringify(updated));
+                          }}
+                          className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0 mt-2"
+                        >
+                          x
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-muted">Add highlight videos. Check &quot;Show on Player Highlights page&quot; to feature on the public highlights feed.</p>
               </div>
 
             /* Top Episodes (up to 10 — title + description + URL) */
