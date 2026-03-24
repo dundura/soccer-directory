@@ -189,37 +189,63 @@ export default async function PlayerDetailPage({ params }: Props) {
 
           {/* Highlight Videos */}
           {(player.videoUrl || player.videoUrl2 || player.videoUrl3 || (player.highlightVideos && player.highlightVideos.length > 0)) && (
-            <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-[15px] font-bold text-primary">Highlight Videos</h2>
+            <section className="bg-white rounded-2xl shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between p-5 sm:p-6 pb-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  </div>
+                  <h2 className="text-[15px] font-bold text-primary">Highlight Videos</h2>
+                </div>
                 <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
               </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {player.videoUrl && <VideoEmbed url={player.videoUrl} />}
-                {player.videoUrl2 && <VideoEmbed url={player.videoUrl2} />}
-                {player.videoUrl3 && <VideoEmbed url={player.videoUrl3} />}
-                {player.highlightVideos && player.highlightVideos.map((v, i) => (
-                  <div key={i}>
-                    {v.title && <p className="text-sm font-bold text-primary mb-2">{v.title}</p>}
-                    <VideoEmbed url={v.url} />
-                  </div>
-                ))}
+              <div className="p-5 sm:p-6 pt-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {player.videoUrl && (
+                    <div className="rounded-xl overflow-hidden border border-border">
+                      <VideoEmbed url={player.videoUrl} />
+                    </div>
+                  )}
+                  {player.videoUrl2 && (
+                    <div className="rounded-xl overflow-hidden border border-border">
+                      <VideoEmbed url={player.videoUrl2} />
+                    </div>
+                  )}
+                  {player.videoUrl3 && (
+                    <div className="rounded-xl overflow-hidden border border-border">
+                      <VideoEmbed url={player.videoUrl3} />
+                    </div>
+                  )}
+                  {player.highlightVideos && player.highlightVideos.map((v, i) => (
+                    <div key={i} className="rounded-xl overflow-hidden border border-border">
+                      {v.title && <p className="text-xs font-bold text-primary px-3 pt-2.5">{v.title}</p>}
+                      <VideoEmbed url={v.url} />
+                    </div>
+                  ))}
+                </div>
               </div>
             </section>
           )}
 
           {/* Game Highlights */}
           {player.gameHighlights && player.gameHighlights.length > 0 && (
-            <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-[15px] font-bold text-primary">Game Highlights</h2>
+            <section className="bg-white rounded-2xl shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between p-5 sm:p-6 pb-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                  </div>
+                  <h2 className="text-[15px] font-bold text-primary">Game Highlights</h2>
+                </div>
                 <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
               </div>
-              <div className="space-y-6">
+              <div className="p-5 sm:p-6 pt-4 space-y-5">
                 {player.gameHighlights.map((gh, i) => (
                   <div key={i}>
                     <p className="text-sm font-bold text-primary mb-2">{gh.title}</p>
-                    <VideoEmbed url={gh.url} />
+                    <div className="rounded-xl overflow-hidden border border-border">
+                      <VideoEmbed url={gh.url} />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -229,14 +255,16 @@ export default async function PlayerDetailPage({ params }: Props) {
           {/* Player Resume */}
           {player.cvUrl && (
             <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-              <h2 className="text-[15px] font-bold text-primary mb-4">Player Resume</h2>
-              <div className="flex items-center gap-4 p-4 bg-surface rounded-xl border border-border">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
-                  <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 </div>
+                <h2 className="text-[15px] font-bold text-primary">Player Resume</h2>
+              </div>
+              <div className="flex items-center gap-4 p-4 bg-surface rounded-xl border border-border">
                 <div className="flex-1">
                   <p className="text-sm font-bold text-primary">{player.playerName}</p>
-                  <p className="text-xs text-muted">Player Resume</p>
+                  <p className="text-xs text-muted">Player Resume / CV</p>
                 </div>
                 <a
                   href={player.cvUrl}
@@ -252,12 +280,19 @@ export default async function PlayerDetailPage({ params }: Props) {
 
           {/* Photos */}
           {player.photos && player.photos.length > 0 && (
-            <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-[15px] font-bold text-primary">Photos</h2>
+            <section className="bg-white rounded-2xl shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between p-5 sm:p-6 pb-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  </div>
+                  <h2 className="text-[15px] font-bold text-primary">Action Photos</h2>
+                </div>
                 <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
               </div>
-              <PhotoGallery photos={player.photos} />
+              <div className="p-5 sm:p-6 pt-4">
+                <PhotoGallery photos={player.photos} />
+              </div>
             </section>
           )}
 
