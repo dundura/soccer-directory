@@ -121,43 +121,25 @@ export default async function PlayerDetailPage({ params }: Props) {
                 <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="tagline" value={player.tagline} tag="p" className="text-sm text-accent font-medium mt-1.5" />
               )}
 
-              {/* Info with icons */}
-              <div className="flex flex-col gap-2.5 mt-5 text-[15px]">
-                {/* Location */}
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
-                    <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                  </div>
-                  <span className="font-semibold text-primary">{player.city}, {player.state}</span>
+              {/* Location with icon */}
+              <div className="flex items-center gap-3 mt-4 text-[15px]">
+                <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
+                  <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 </div>
-
-                {/* Position */}
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
-                    <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth={2} /><circle cx="12" cy="12" r="3" /></svg>
-                  </div>
-                  {hasMultiplePositions ? (
-                    <span className="font-semibold text-primary group relative cursor-help">
-                      Multiple
-                      <span className="absolute bottom-full left-0 mb-1 hidden group-hover:block bg-primary text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg z-20">
-                        {allPositions}
-                      </span>
-                    </span>
-                  ) : (
-                    <span className="font-semibold text-primary">{player.position}</span>
-                  )}
-                </div>
-
-                {/* Gender */}
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
-                    <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                  </div>
-                  <span className="font-semibold text-primary">{player.gender}</span>
-                </div>
+                <span className="font-semibold text-primary">{player.city}, {player.state}</span>
               </div>
 
-              {/* Age Group & Level grid */}
+              {/* Badges - under city */}
+              <div className="flex flex-wrap gap-2 mt-3">
+                <Badge variant="blue">{player.position}</Badge>
+                {player.secondaryPosition && <Badge variant="default">{player.secondaryPosition}</Badge>}
+                <Badge variant={player.gender === "Boys" ? "blue" : "purple"}>{player.gender}</Badge>
+                <Badge variant="default">{player.birthYear}</Badge>
+                {player.level && <Badge variant="default">{player.level}</Badge>}
+                {player.availableForGuestPlay && <Badge variant="green">Available for Guest Play</Badge>}
+              </div>
+
+              {/* Attribute grid */}
               <div className="grid grid-cols-2 gap-4 mt-6 pt-5 border-t border-border">
                 <div>
                   <p className="text-xs text-muted font-medium uppercase tracking-wider">Birth Year</p>
@@ -179,15 +161,6 @@ export default async function PlayerDetailPage({ params }: Props) {
                     <p className="text-sm font-bold text-primary mt-0.5">{player.preferredFoot}</p>
                   </div>
                 )}
-              </div>
-
-              {/* Badges */}
-              <div className="flex flex-wrap gap-2 mt-5">
-                <Badge variant="blue">{player.position}</Badge>
-                {player.secondaryPosition && <Badge variant="default">{player.secondaryPosition}</Badge>}
-                <Badge variant={player.gender === "Boys" ? "blue" : "purple"}>{player.gender}</Badge>
-                <Badge variant="default">{player.birthYear}</Badge>
-                {player.availableForGuestPlay && <Badge variant="green">Available for Guest Play</Badge>}
               </div>
             </div>
           </div>
