@@ -195,6 +195,9 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
                       {player.availableForGuestPlay && (
                         <span className="px-2.5 py-1 rounded-full bg-[#DC373E]/20 text-[#FF8A8E] text-xs font-semibold animate-pulse">Seeking Guest Play</span>
                       )}
+                      {player.availableForGuestPlay && !player.lookingForTeam && (
+                        <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/70 text-xs font-semibold">Guest Player Only</span>
+                      )}
                       {player.lookingForTeam && (
                         <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold animate-pulse">Looking for Team</span>
                       )}
