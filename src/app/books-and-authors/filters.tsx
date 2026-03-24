@@ -116,7 +116,7 @@ export function SoccerBookFilters({ soccerbooks }: { soccerbooks: SoccerBook[] }
               {visible.map((soccerbook) => (
                 <ListingCard
                   key={soccerbook.id}
-                  href={`/soccerbooks/${soccerbook.slug}`}
+                  href={`/books-and-authors/${soccerbook.slug}`}
                   title={soccerbook.name}
                   subtitle={`by ${soccerbook.author} · ${soccerbook.city}, ${soccerbook.state}`}
                   image={soccerbook.imageUrl || undefined}
