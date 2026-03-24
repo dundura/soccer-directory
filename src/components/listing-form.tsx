@@ -566,7 +566,6 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "gender", label: "Gender", required: true, options: ["Boys", "Girls"] },
     { name: "gpa", label: "GPA (optional)" },
     { name: "description", label: "About the Player", type: "textarea" },
-    { name: "lookingFor", label: "What opportunities are you looking for?", required: true, type: "textarea" },
     { name: "contactEmail", label: "Contact Email", required: true, type: "email" },
     { name: "phone", label: "Phone" },
     { name: "_guestplay", label: "Guest Player Directory", type: "heading" },
