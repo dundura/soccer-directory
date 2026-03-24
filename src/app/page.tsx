@@ -1,62 +1,220 @@
-import { getClubs, getTeams, getTrainers, getCamps, getTournaments, getFutsalTeams, getBlogPosts } from "@/lib/db";
+import {
+  getClubs, getTeams, getTrainers, getCamps, getTournaments, getFutsalTeams, getBlogPosts,
+  getPlayerProfiles, getTryouts, getSpecialEvents, getPodcasts, getYoutubeChannels,
+  getFacebookGroups, getInstagramPages, getTikTokPages, getServices, getTrainingApps,
+  getBlogs, getSoccerBooks, getPhotoVideoServices, getScrimmages,
+} from "@/lib/db";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
 import { RotatingText } from "@/components/rotating-text";
 import SitePopup from "@/components/site-popup";
-import { ListingCarousel } from "@/components/listing-carousel";
 import { SectionCarousel } from "@/components/section-carousel";
+import { ExpandableCategories } from "@/components/expandable-categories";
 
 export const dynamic = "force-dynamic";
 
+/* ── Helpers ──────────────────────────────────────────────── */
+
+/** Truncate text to a word limit */
+function truncateWords(text: string | undefined | null, limit: number): string {
+  if (!text) return "";
+  const words = text.split(/\s+/);
+  if (words.length <= limit) return text;
+  return words.slice(0, limit).join(" ") + "...";
+}
+
+/** Normalize a listing into a common shape for the row component */
+interface RowListing {
+  id: string;
+  name: string;
+  slug: string;
+  href: string;
+  image?: string | null;
+  city: string;
+  state: string;
+  pills: string[];
+  description: string;
+  featured: boolean;
+  typeBadge?: string;
+}
+
+function toRowListing(
+  item: Record<string, any>,
+  pathPrefix: string,
+  nameField: string,
+  pillFields: string[],
+  typeBadge?: string,
+): RowListing {
+  const img = item.logo || item.teamPhoto || item.imageUrl;
+  return {
+    id: item.id,
+    name: item[nameField] || item.name || "",
+    slug: item.slug,
+    href: `/${pathPrefix}/${item.slug}`,
+    image: img && !String(img).includes("idf.webp") ? img : null,
+    city: item.city || "",
+    state: item.state || "",
+    pills: pillFields.map((f) => item[f]).filter(Boolean).map(String),
+    description: truncateWords(item.description, 30),
+    featured: !!item.featured,
+    typeBadge,
+  };
+}
+
+/** Sort by featured DESC */
+function sortFeaturedFirst<T extends { featured: boolean }>(items: T[]): T[] {
+  return [...items].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+}
+
+/* ── Row Component (GPS-style) ────────────────────────────── */
+
+function ListingRow({ listing }: { listing: RowListing }) {
+  return (
+    <a
+      href={listing.href}
+      className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden"
+    >
+      {/* Red accent trim */}
+      <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+
+      {/* Image thumbnail */}
+      <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-4">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg overflow-hidden bg-surface flex items-center justify-center">
+          {listing.image ? (
+            <img src={listing.image} alt={listing.name} className="w-full h-full object-cover" />
+          ) : (
+            <svg className="w-10 h-10 text-muted/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+            </svg>
+          )}
+        </div>
+      </div>
+
+      {/* Row content */}
+      <div className="flex items-start gap-5 sm:gap-6 flex-1 min-w-0 p-5 sm:p-6">
+        <div className="flex-1 min-w-0">
+          {listing.typeBadge && (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-accent">{listing.typeBadge}</span>
+          )}
+          <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl md:text-[1.75rem] font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors">
+            {listing.name}
+          </h3>
+          <p className="text-sm text-muted flex items-center gap-1.5 mt-1">
+            <svg className="w-3.5 h-3.5 flex-shrink-0 text-accent" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            {listing.city}{listing.city && listing.state ? ", " : ""}{listing.state}
+          </p>
+          {listing.pills.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5 mt-2">
+              {listing.pills.map((pill, i) => (
+                <span key={i} className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">{pill}</span>
+              ))}
+            </div>
+          )}
+          {listing.description && (
+            <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{listing.description}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Arrow panel */}
+      <div className="hidden sm:flex items-center justify-center w-14 md:w-16 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
+        <span className="text-white text-2xl font-light">&#8250;</span>
+      </div>
+    </a>
+  );
+}
+
+/* ── Category Section (3 rows + View All) ─────────────────── */
+
+function CategorySection({ title, viewAllHref, listings }: { title: string; viewAllHref: string; listings: RowListing[] }) {
+  if (listings.length === 0) return null;
+  const shown = listings.slice(0, 3);
+  return (
+    <section className="py-10 border-t border-border">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">{title}</h2>
+        <a href={viewAllHref} className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">
+          View All &rarr;
+        </a>
+      </div>
+      <div className="space-y-3">
+        {shown.map((listing) => (
+          <ListingRow key={listing.id} listing={listing} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ── Page ──────────────────────────────────────────────────── */
+
 export default async function HomePage() {
-  const [clubs, teams, trainers, camps, tournaments, futsalTeams, blogPosts] = await Promise.all([
+  const [
+    clubs, teams, trainers, camps, tournaments, futsalTeams, blogPosts,
+    players, tryouts, specialEvents, podcasts, youtubeChannels,
+    facebookGroups, instagramPages, tiktokPages, services, trainingApps,
+    blogs, soccerBooks, photoVideoServices, scrimmages,
+  ] = await Promise.all([
     getClubs(), getTeams(), getTrainers(), getCamps(), getTournaments(), getFutsalTeams(), getBlogPosts(),
+    getPlayerProfiles(), getTryouts(), getSpecialEvents(), getPodcasts(), getYoutubeChannels(),
+    getFacebookGroups(), getInstagramPages(), getTikTokPages(), getServices(), getTrainingApps(),
+    getBlogs(), getSoccerBooks(), getPhotoVideoServices(), getScrimmages(),
   ]);
 
-  const featuredClubs = clubs.filter((c) => c.featured).sort(() => Math.random() - 0.5).slice(0, 10);
-  const featuredTeams = teams.filter((t) => t.featured).sort(() => Math.random() - 0.5).slice(0, 10);
-  const featuredTrainers = trainers.filter((t) => t.featured).sort(() => Math.random() - 0.5).slice(0, 10);
-  const featuredCamps = camps.filter((c) => c.featured).sort(() => Math.random() - 0.5).slice(0, 10);
-  const featuredTournaments = tournaments.filter((t) => t.featured).sort(() => Math.random() - 0.5).slice(0, 10);
-  const featuredFutsal = futsalTeams.filter((t) => t.featured).sort(() => Math.random() - 0.5).slice(0, 10);
-  const featuredPosts = blogPosts.slice(0, 3);
+  /* ── Featured carousel: pool all featured from every category ── */
+  const featuredPool: RowListing[] = [
+    ...clubs.filter((c) => c.featured).map((c) => toRowListing(c, "clubs", "name", [c.level, c.gender], "Club")),
+    ...teams.filter((t) => t.featured).map((t) => toRowListing(t, "teams", "name", [t.level, t.gender, t.ageGroup], "Team")),
+    ...trainers.filter((t) => t.featured).map((t) => toRowListing(t, "trainers", "name", [t.specialty], "Trainer")),
+    ...camps.filter((c) => c.featured).map((c) => toRowListing(c, "camps", "name", [c.campType, c.gender], "Camp")),
+    ...tournaments.filter((t) => t.featured).map((t) => toRowListing(t, "tournaments", "name", [t.level, t.format], "Tournament")),
+    ...tryouts.filter((t) => t.featured).map((t) => toRowListing(t, "tryouts", "name", [t.tryoutType, t.gender], "Tryout")),
+    ...specialEvents.filter((e) => e.featured).map((e) => toRowListing(e, "special-events", "name", [e.eventType, e.gender], "Event")),
+    ...players.filter((p) => p.featured).map((p) => toRowListing({ ...p, name: p.playerName }, "players", "name", [p.position, p.level], "Player")),
+    ...futsalTeams.filter((t) => t.featured).map((t) => toRowListing(t, "futsal", "name", [t.level, t.format], "Futsal")),
+    ...scrimmages.filter((s) => s.featured).map((s) => toRowListing({ ...s, name: s.teamName }, "scrimmages", "name", [s.level, s.ageGroup], "Scrimmage")),
+    ...podcasts.filter((p) => p.featured).map((p) => toRowListing(p, "podcasts", "name", [p.category], "Podcast")),
+    ...youtubeChannels.filter((y) => y.featured).map((y) => toRowListing(y, "youtube", "name", [y.category], "YouTube")),
+    ...blogs.filter((b) => b.featured).map((b) => toRowListing(b, "blogs", "name", [b.category], "Blog")),
+    ...facebookGroups.filter((f) => f.featured).map((f) => toRowListing(f, "facebook-groups", "name", [f.category], "Facebook")),
+    ...instagramPages.filter((i) => i.featured).map((i) => toRowListing(i, "instagram", "name", [i.category], "Instagram")),
+    ...tiktokPages.filter((t) => t.featured).map((t) => toRowListing(t, "tiktok", "name", [t.category], "TikTok")),
+    ...services.filter((s) => s.featured).map((s) => toRowListing(s, "services", "name", [s.category], "Service")),
+    ...trainingApps.filter((a) => a.featured).map((a) => toRowListing(a, "training-apps", "name", [a.category], "App")),
+    ...soccerBooks.filter((b) => b.featured).map((b) => toRowListing(b, "books", "name", [b.category], "Book")),
+    ...photoVideoServices.filter((p) => p.featured).map((p) => toRowListing(p, "photo-video", "name", [p.category], "Photo/Video")),
+  ].sort(() => Math.random() - 0.5);
 
-  // New listings: random, one per creator
-  let newListings: { id: string; name: string; slug: string; _type: string; _path: string; _subtitle: string; teamPhoto?: string | null; logo?: string | null; imageUrl?: string | null; imagePosition?: number }[] = [];
-  try {
-    const allListingsPool = [
-      ...clubs.map(c => ({ id: c.id, name: c.name, slug: c.slug, teamPhoto: c.teamPhoto, logo: c.logo, imageUrl: c.imageUrl, imagePosition: c.imagePosition, userId: (c as any).userId, _type: 'club', _path: 'clubs', _subtitle: `${c.city || ''}, ${c.state || ''}` })),
-      ...teams.map(t => ({ id: t.id, name: t.name, slug: t.slug, teamPhoto: t.teamPhoto, logo: t.logo, imageUrl: t.imageUrl, imagePosition: t.imagePosition, userId: (t as any).userId, _type: 'team', _path: 'teams', _subtitle: `${t.city || ''}, ${t.state || ''}` })),
-      ...trainers.map(t => ({ id: t.id, name: t.name, slug: t.slug, teamPhoto: t.teamPhoto, logo: t.logo, imageUrl: t.imageUrl, imagePosition: t.imagePosition, userId: (t as any).userId, _type: 'trainer', _path: 'trainers', _subtitle: `${t.city || ''}, ${t.state || ''}` })),
-      ...camps.map(c => ({ id: c.id, name: c.name, slug: c.slug, teamPhoto: c.teamPhoto, logo: c.logo, imageUrl: c.imageUrl, imagePosition: c.imagePosition, userId: (c as any).userId, _type: 'camp', _path: 'camps', _subtitle: `${c.city || ''}, ${c.state || ''}` })),
-      ...tournaments.map(t => ({ id: t.id, name: t.name, slug: t.slug, teamPhoto: t.teamPhoto, logo: t.logo, imageUrl: t.imageUrl, imagePosition: t.imagePosition, userId: (t as any).userId, _type: 'tournament', _path: 'tournaments', _subtitle: `${t.city || ''}, ${t.state || ''}` })),
-      ...futsalTeams.map(t => ({ id: t.id, name: t.name, slug: t.slug, teamPhoto: t.teamPhoto, logo: t.logo, imageUrl: t.imageUrl, imagePosition: t.imagePosition, userId: (t as any).userId, _type: 'futsal', _path: 'futsal', _subtitle: `${t.city || ''}, ${t.state || ''}` })),
-    ].sort(() => Math.random() - 0.5);
-    const seenUsers = new Set<string>();
-    for (const l of allListingsPool) {
-      const uid = l.userId || l.id;
-      if (seenUsers.has(uid)) continue;
-      seenUsers.add(uid);
-      newListings.push(l);
-      if (newListings.length >= 18) break;
-    }
-  } catch (e) {
-    console.error('Error building new listings:', e);
-  }
+  /* ── Main category row data (sorted featured first, take 3) ── */
+  const clubRows = sortFeaturedFirst(clubs).map((c) => toRowListing(c, "clubs", "name", [c.level, c.gender]));
+  const teamRows = sortFeaturedFirst(teams).map((t) => toRowListing(t, "teams", "name", [t.level, t.gender, t.ageGroup]));
+  const playerRows = sortFeaturedFirst(players).map((p) => toRowListing({ ...p, name: p.playerName }, "players", "name", [p.position, p.level, p.gender]));
+  const trainerRows = sortFeaturedFirst(trainers).map((t) => toRowListing(t, "trainers", "name", [t.specialty, t.priceRange]));
+  const campRows = sortFeaturedFirst(camps).map((c) => toRowListing(c, "camps", "name", [c.campType, c.gender, c.ageRange]));
+  const tryoutRows = sortFeaturedFirst(tryouts).map((t) => toRowListing(t, "tryouts", "name", [t.tryoutType, t.gender, t.ageGroup]));
+  const tournamentRows = sortFeaturedFirst(tournaments).map((t) => toRowListing(t, "tournaments", "name", [t.level, t.format, t.ageGroups]));
+  const specialEventRows = sortFeaturedFirst(specialEvents).map((e) => toRowListing(e, "special-events", "name", [e.eventType, e.gender, e.ageGroup]));
 
-  const TYPE_BADGE_MAP: Record<string, string> = { club: 'Club', team: 'Team', trainer: 'Trainer', camp: 'Camp', tournament: 'Tournament', futsal: 'Futsal' };
-
-  const BLOG_COVER_IMAGES = [
-    "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp",
-    "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg",
-    "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg",
-    "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp",
-    "https://media.anytime-soccer.com/wp-content/uploads/2026/02/futsal-scaled.jpg",
-  ];
+  /* ── More categories row data ── */
+  const futsalRows = sortFeaturedFirst(futsalTeams).map((t) => toRowListing(t, "futsal", "name", [t.level, t.format, t.gender]));
+  const scrimmageRows = sortFeaturedFirst(scrimmages).map((s) => toRowListing({ ...s, name: s.teamName }, "scrimmages", "name", [s.level, s.ageGroup, s.gender]));
+  const podcastRows = sortFeaturedFirst(podcasts).map((p) => toRowListing(p, "podcasts", "name", [p.category]));
+  const youtubeRows = sortFeaturedFirst(youtubeChannels).map((y) => toRowListing(y, "youtube", "name", [y.category]));
+  const blogRows = sortFeaturedFirst(blogs).map((b) => toRowListing(b, "blogs", "name", [b.category]));
+  const fbGroupRows = sortFeaturedFirst(facebookGroups).map((f) => toRowListing(f, "facebook-groups", "name", [f.category, f.privacy]));
+  const instaRows = sortFeaturedFirst(instagramPages).map((i) => toRowListing(i, "instagram", "name", [i.category]));
+  const tiktokRows = sortFeaturedFirst(tiktokPages).map((t) => toRowListing(t, "tiktok", "name", [t.category]));
+  const serviceRows = sortFeaturedFirst(services).map((s) => toRowListing(s, "services", "name", [s.category]));
+  const appRows = sortFeaturedFirst(trainingApps).map((a) => toRowListing(a, "training-apps", "name", [a.category]));
+  const bookRows = sortFeaturedFirst(soccerBooks).map((b) => toRowListing(b, "books", "name", [b.category]));
+  const photoVideoRows = sortFeaturedFirst(photoVideoServices).map((p) => toRowListing(p, "photo-video", "name", [p.category]));
 
   return (
     <>
       <SitePopup />
+
       {/* ── Hero ──────────────────────────────────── */}
       <section className="bg-surface px-4 sm:px-6 lg:px-8 pt-6 pb-0">
         <div className="relative bg-primary rounded-[20px] overflow-hidden max-w-7xl mx-auto">
@@ -64,7 +222,7 @@ export default async function HomePage() {
           <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "40px 40px" }} />
           <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
             <div className="flex items-center gap-12">
-              {/* Left Column — Text Content */}
+              {/* Left Column -- Text Content */}
               <div className="flex-1 min-w-0">
                 <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-4">
                   Welcome to Soccer Near Me
@@ -109,7 +267,7 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              {/* Right Column — Hero Image + Floating Cards */}
+              {/* Right Column -- Hero Image + Floating Cards */}
               <div className="hidden lg:block relative w-[420px] shrink-0">
                 <div className="relative">
                   <img
@@ -118,7 +276,7 @@ export default async function HomePage() {
                     className="w-full h-[480px] object-cover rounded-2xl"
                   />
 
-                  {/* Floating Card 1 — top-left */}
+                  {/* Floating Card 1 -- top-left */}
                   <div className="absolute -top-4 -left-8 bg-white rounded-xl shadow-xl p-4 w-52 animate-float">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-bold text-primary">Charlotte FC 2012</span>
@@ -129,7 +287,7 @@ export default async function HomePage() {
                     <p className="text-xs text-muted mt-2">Charlotte, NC</p>
                   </div>
 
-                  {/* Floating Card 2 — bottom-right */}
+                  {/* Floating Card 2 -- bottom-right */}
                   <div className="absolute -bottom-4 -right-6 bg-white rounded-xl shadow-xl p-4 w-52 animate-float-alt">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-bold text-primary">NC Fusion ECNL</span>
@@ -150,107 +308,83 @@ export default async function HomePage() {
       <div className="bg-white rounded-[20px] max-w-7xl mx-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* ── Featured Clubs ─────────────────────── */}
-        <SectionCarousel title="Featured Clubs" subtitle="Top youth soccer organizations" viewAllHref="/clubs">
-          {featuredClubs.map((club) => (
-            <div key={club.id} className="flex-shrink-0 w-[320px]">
-              <ListingCard
-                href={`/clubs/${club.slug}`}
-                title={club.name}
-                subtitle={`${club.city}, ${club.state}`}
-                image={club.teamPhoto && !club.teamPhoto.includes("idf.webp") ? club.teamPhoto : club.logo || club.imageUrl || undefined}
-                badges={[
-                  { label: club.level, variant: club.level.includes("MLS") ? "purple" : "blue" },
-                  { label: club.gender },
-                ]}
-                details={[
-                  { label: "Teams", value: String(club.teamCount) },
-                  { label: "Ages", value: club.ageGroups },
-                ]}
-                featured
-                imagePosition={club.imagePosition}
-                cta="View Club"
-              />
-            </div>
-          ))}
-        </SectionCarousel>
-
-        {/* ── New Listings Carousel ─────────────── */}
-        <ListingCarousel listings={newListings.map(l => ({ ...l, slug: l.slug }))} />
-
-        {/* ── Featured Teams ─────────────────────── */}
-        <SectionCarousel title="Teams Looking for Players" subtitle="Open roster spots across the region" viewAllHref="/teams">
-          {featuredTeams.map((team) => (
-            <div key={team.id} className="flex-shrink-0 w-[320px]">
-              <ListingCard href={`/teams/${team.slug}`} title={team.name} subtitle={`${team.clubName} · ${team.city}, ${team.state}`} image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || team.imageUrl || undefined} badges={[{ label: team.level, variant: "blue" }, { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" }, ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : [])]} details={[{ label: "Birth Year", value: team.ageGroup }, { label: "Coach", value: team.coach }, { label: "Season", value: team.season }]} featured imagePosition={team.imagePosition} cta="View Team" />
-            </div>
-          ))}
-        </SectionCarousel>
-
-        {/* ── Featured Futsal Teams ─────────────── */}
-        {featuredFutsal.length > 0 && (
-          <SectionCarousel title="Futsal Teams" subtitle="Find futsal teams near you" viewAllHref="/futsal">
-            {featuredFutsal.map((team) => (
-              <div key={team.id} className="flex-shrink-0 w-[320px]">
-                <ListingCard href={`/futsal/${team.slug}`} title={team.name} subtitle={`${team.clubName || ""} · ${team.city}, ${team.state}`} image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || team.imageUrl || undefined} badges={[{ label: team.level, variant: "blue" }, { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" }, { label: team.format, variant: "orange" }]} details={[{ label: "Age Group", value: team.ageGroup }, { label: "Coach", value: team.coach }, { label: "Season", value: team.season }]} featured imagePosition={team.imagePosition} cta="View Team" />
-              </div>
-            ))}
+        {/* ── Featured Listings Carousel ───────────── */}
+        {featuredPool.length > 0 && (
+          <SectionCarousel title="Featured Listings" subtitle="Handpicked from across all categories" viewAllHref="/clubs">
+            {featuredPool.slice(0, 20).map((listing) => {
+              return (
+                <a
+                  key={`${listing.typeBadge}-${listing.id}`}
+                  href={listing.href}
+                  className="flex-shrink-0 w-[300px] group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                >
+                  <div className="relative h-44 bg-surface flex items-center justify-center overflow-hidden">
+                    {listing.image ? (
+                      <img src={listing.image} alt={listing.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <svg className="w-16 h-16 text-muted/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                      </svg>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute top-3 left-3">
+                      <span className="px-2.5 py-1 rounded-full bg-accent text-white text-[10px] font-bold uppercase tracking-wider">{listing.typeBadge}</span>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <h3 className="font-[family-name:var(--font-display)] text-base font-bold text-white leading-snug line-clamp-2 drop-shadow-sm">{listing.name}</h3>
+                    </div>
+                  </div>
+                  <div className="p-4 pt-3">
+                    <p className="text-sm text-muted flex items-center gap-1.5">
+                      <svg className="w-3.5 h-3.5 flex-shrink-0 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                      </svg>
+                      {listing.city}{listing.city && listing.state ? ", " : ""}{listing.state}
+                    </p>
+                    {listing.pills.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {listing.pills.slice(0, 3).map((pill, i) => (
+                          <span key={i} className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-semibold">{pill}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </a>
+              );
+            })}
           </SectionCarousel>
         )}
+
+        {/* ── Main Category Sections (3 rows each) ── */}
+        <CategorySection title="Clubs" viewAllHref="/clubs" listings={clubRows} />
+        <CategorySection title="Teams" viewAllHref="/teams" listings={teamRows} />
+        <CategorySection title="Players" viewAllHref="/players" listings={playerRows} />
+        <CategorySection title="Trainers" viewAllHref="/trainers" listings={trainerRows} />
+        <CategorySection title="Camps" viewAllHref="/camps" listings={campRows} />
+        <CategorySection title="Tryouts" viewAllHref="/tryouts" listings={tryoutRows} />
+        <CategorySection title="Tournaments" viewAllHref="/tournaments" listings={tournamentRows} />
+        <CategorySection title="Special Events" viewAllHref="/special-events" listings={specialEventRows} />
 
         {/* ── Anytime CTA Mid-page ──────────────── */}
         <section className="py-8">
           <AnytimeInlineCTA />
         </section>
 
-        {/* ── Featured Trainers ──────────────────── */}
-        <SectionCarousel title="Private Trainers" subtitle="Verified coaches offering 1-on-1 and small group training" viewAllHref="/trainers">
-          {featuredTrainers.map((trainer) => (
-            <div key={trainer.id} className="flex-shrink-0 w-[320px]">
-              <ListingCard href={`/trainers/${trainer.slug}`} title={trainer.name} subtitle={`${trainer.city}, ${trainer.state}`} image={trainer.teamPhoto && !trainer.teamPhoto.includes("idf.webp") ? trainer.teamPhoto : trainer.logo || trainer.imageUrl || undefined} badges={[{ label: trainer.specialty, variant: "green" }]} details={[{ label: "Price", value: trainer.priceRange }, { label: "Rating", value: `⭐ ${trainer.rating} (${trainer.reviewCount})` }, { label: "Experience", value: trainer.experience }]} featured={trainer.featured} imagePosition={trainer.imagePosition} cta="View Trainer" />
-            </div>
-          ))}
-        </SectionCarousel>
-
-        {/* ── Featured Camps ─────────────────────── */}
-        <SectionCarousel title="Upcoming Camps & Clinics" subtitle="Registration open for summer 2026" viewAllHref="/camps">
-          {featuredCamps.map((camp) => (
-            <div key={camp.id} className="flex-shrink-0 w-[320px]">
-              <ListingCard href={`/camps/${camp.slug}`} title={camp.name} subtitle={`${camp.organizerName} · ${camp.city}, ${camp.state}`} image={camp.teamPhoto && !camp.teamPhoto.includes("idf.webp") ? camp.teamPhoto : camp.logo || camp.imageUrl || undefined} badges={[{ label: camp.campType, variant: "orange" }, { label: camp.gender }]} details={[{ label: "Ages", value: camp.ageRange }, { label: "Dates", value: camp.dates }, { label: "Price", value: camp.price }]} featured={camp.featured} imagePosition={camp.imagePosition} cta="View Camp" />
-            </div>
-          ))}
-        </SectionCarousel>
-
-        {/* ── Featured Tournaments ──────────────── */}
-        <SectionCarousel title="Upcoming Tournaments" subtitle="Register your team for top events" viewAllHref="/tournaments">
-          {featuredTournaments.map((tournament) => (
-            <div key={tournament.id} className="flex-shrink-0 w-[320px]">
-              <ListingCard href={`/tournaments/${tournament.slug}`} title={tournament.name} subtitle={`${tournament.organizer} · ${tournament.city}, ${tournament.state}`} image={tournament.teamPhoto && !tournament.teamPhoto.includes("idf.webp") ? tournament.teamPhoto : tournament.logo || tournament.imageUrl || undefined} badges={[{ label: tournament.level, variant: "blue" }, { label: tournament.format, variant: "orange" }]} details={[{ label: "Dates", value: tournament.dates }, { label: "Ages", value: tournament.ageGroups }, { label: "Entry Fee", value: tournament.entryFee }]} featured={tournament.featured} imagePosition={tournament.imagePosition} cta="View Tournament" />
-            </div>
-          ))}
-        </SectionCarousel>
-
-        {/* ── Blog Preview ───────────────────────── */}
-        <SectionCarousel title="From the Blog" subtitle="Guides and tips for soccer parents" viewAllHref="/blog">
-          {featuredPosts.map((post, i) => (
-            <a key={post.id} href={`/blog/${post.slug}`} className="flex-shrink-0 w-[320px] group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all">
-              <div className="relative">
-                <img src={post.coverImage && post.coverImage.startsWith("http") ? post.coverImage : BLOG_COVER_IMAGES[i % BLOG_COVER_IMAGES.length]} alt={post.title} className="w-full h-44 object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <Badge variant="orange">{post.category}</Badge>
-                  <h3 className="font-[family-name:var(--font-display)] text-base font-bold mt-1.5 text-white leading-snug line-clamp-2 drop-shadow-sm">{post.title}</h3>
-                </div>
-              </div>
-              <div className="p-4 pt-3">
-                <p className="text-muted text-sm line-clamp-2">{post.excerpt}</p>
-                <div className="flex items-center gap-3 text-xs text-muted mt-2">
-                  <span>{post.date}</span><span>&middot;</span><span>{post.readTime} read</span>
-                </div>
-              </div>
-            </a>
-          ))}
-        </SectionCarousel>
+        {/* ── More Categories (expandable) ────────── */}
+        <ExpandableCategories>
+          <CategorySection title="Futsal" viewAllHref="/futsal" listings={futsalRows} />
+          <CategorySection title="Scrimmages" viewAllHref="/scrimmages" listings={scrimmageRows} />
+          <CategorySection title="Podcasts" viewAllHref="/podcasts" listings={podcastRows} />
+          <CategorySection title="YouTube Channels" viewAllHref="/youtube" listings={youtubeRows} />
+          <CategorySection title="Blogs" viewAllHref="/blogs" listings={blogRows} />
+          <CategorySection title="Facebook Groups" viewAllHref="/facebook-groups" listings={fbGroupRows} />
+          <CategorySection title="Instagram Pages" viewAllHref="/instagram" listings={instaRows} />
+          <CategorySection title="TikTok Pages" viewAllHref="/tiktok" listings={tiktokRows} />
+          <CategorySection title="Services" viewAllHref="/services" listings={serviceRows} />
+          <CategorySection title="Training Apps" viewAllHref="/training-apps" listings={appRows} />
+          <CategorySection title="Books" viewAllHref="/books" listings={bookRows} />
+          <CategorySection title="Photo/Video Services" viewAllHref="/photo-video" listings={photoVideoRows} />
+        </ExpandableCategories>
 
         {/* ── List Your Club CTA ─────────────────── */}
         <section className="py-16 border-t border-border">
