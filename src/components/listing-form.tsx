@@ -573,8 +573,6 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "photos", label: "Action Photos (up to 5 URLs)", type: "photos" },
     { name: "_highlights", label: "Highlight Videos", type: "heading" },
     { name: "highlightVideos", label: "Highlight Videos (up to 5 — shown on profile and highlight reels page)", type: "highlight-videos", max: 5 },
-    { name: "_resume", label: "Player Resume / CV", type: "heading" },
-    { name: "cvUrl", label: "Resume / CV Link (Google Drive, Dropbox, etc.)", type: "url" },
   ],
   podcast: [
     { name: "name", label: "Podcast Name", required: true },
