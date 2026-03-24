@@ -182,7 +182,7 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
                           <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{club.gender}</span>
                         </div>
                         {club.description && (
-                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{club.description}</p>
+                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{club.description.split(" ").slice(0, 30).join(" ")}{club.description.split(" ").length > 30 ? "..." : ""}</p>
                         )}
                       </div>
                     </div>
