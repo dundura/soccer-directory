@@ -108,9 +108,7 @@ export default async function PlayerDetailPage({ params }: Props) {
               {/* Player Name */}
               <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="playerName" value={player.playerName} tag="h1" className="text-2xl sm:text-[32px] font-extrabold text-primary leading-tight tracking-tight pr-24" />
 
-              {player.currentClub && (
-                <p className="text-sm font-semibold text-muted mt-0.5">{player.currentClub}</p>
-              )}
+              <p className="text-sm font-semibold text-muted mt-0.5">{player.position}{player.secondaryPosition ? ` / ${player.secondaryPosition}` : ""}</p>
 
               {/* Location with icon */}
               <div className="flex items-center gap-3 mt-1 text-[15px]">
