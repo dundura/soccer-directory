@@ -5,6 +5,7 @@ import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { PlayerAvatar } from "@/components/player-avatar";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ListingPostsSidebar } from "@/components/listing-posts";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -267,6 +268,9 @@ export default async function PlayerDetailPage({ params }: Props) {
               </div>
             </section>
           )}
+
+          {/* Player Posts */}
+          <ListingPostsSidebar listingType="player" listingId={player.id} slug={slug} ownerId={ownerId} />
 
           {/* Photos */}
           {player.photos && player.photos.length > 0 && (
