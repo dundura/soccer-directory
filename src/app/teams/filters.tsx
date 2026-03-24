@@ -229,6 +229,9 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                           {team.lookingForPlayers && (
                             <span className="px-3 py-1 rounded-full bg-red-50 text-accent text-xs font-bold">Recruiting</span>
                           )}
+                          {team.guestPlayersWelcome && (
+                            <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold animate-pulse">Guest Players</span>
+                          )}
                         </div>
                         {team.description && (
                           <p className="text-sm text-muted/60 mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{team.description}</p>
