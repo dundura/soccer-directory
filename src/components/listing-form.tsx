@@ -1860,15 +1860,6 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                           placeholder="YouTube / Vimeo URL"
                           className={inputClass}
                         />
-                        <label className="flex items-center gap-2 text-sm text-muted cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={!!hv.showOnHighlights}
-                            onChange={(e) => updateHv("showOnHighlights", e.target.checked)}
-                            className="rounded"
-                          />
-                          Show on Player Highlights page
-                        </label>
                       </div>
                       {hv.title && (
                         <button
@@ -1885,7 +1876,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                     </div>
                   );
                 })}
-                <p className="text-xs text-muted">Add highlight videos. Check &quot;Show on Player Highlights page&quot; to feature on the public highlights feed.</p>
+                <p className="text-xs text-muted">Add up to 5 highlight videos (YouTube / Vimeo).</p>
               </div>
 
             /* Top Episodes (up to 10 — title + description + URL) */
