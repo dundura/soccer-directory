@@ -128,7 +128,7 @@ export default async function PlayerDetailPage({ params }: Props) {
                 {player.level && <Badge variant="default">{player.level}</Badge>}
                 {player.availableForGuestPlay && <Badge variant="green">Available for Guest Play</Badge>}
                 {player.lookingForTeam ? (
-                  <Badge variant="blue">Looking for a New Team</Badge>
+                  <Badge variant="blue">Available for Tryouts</Badge>
                 ) : (
                   player.availableForGuestPlay && <Badge variant="default">Guest Player Only</Badge>
                 )}

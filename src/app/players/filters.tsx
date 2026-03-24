@@ -107,7 +107,7 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
               >
                 <option value="">Availability</option>
                 <option value="guest">Seeking Guest Play</option>
-                <option value="team">Looking for Team</option>
+                <option value="team">Available for Tryouts</option>
               </select>
               <div className="p-1">
                 <button
@@ -199,7 +199,7 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
                         <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/70 text-xs font-semibold">Guest Player Only</span>
                       )}
                       {player.lookingForTeam && (
-                        <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold animate-pulse">Looking for Team</span>
+                        <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold animate-pulse">Available for Tryouts</span>
                       )}
                     </div>
                   )}
