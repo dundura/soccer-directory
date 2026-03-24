@@ -155,7 +155,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                         { label: team.level, variant: "blue" },
                         { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
                         ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : []),
-                        ...(team.guestPlayersWelcome ? [{ label: "Guest Players Welcomed", variant: "orange" as const }] : []),
+                        ...(team.guestPlayersWelcome ? [{ label: "Open for Guest Players", variant: "orange" as const }] : []),
                       ]}
                       details={[
                         { label: "Birth Year", value: team.ageGroup },
