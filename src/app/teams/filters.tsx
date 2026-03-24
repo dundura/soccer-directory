@@ -155,12 +155,11 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                         { label: team.level, variant: "blue" },
                         { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
                         ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : []),
+                        ...(team.guestPlayersWelcome ? [{ label: "Guest Players Welcomed", variant: "orange" as const }] : []),
                       ]}
                       details={[
                         { label: "Birth Year", value: team.ageGroup },
                         { label: "Coach", value: team.coach },
-                        { label: "Guest Players", value: "Welcomed" },
-                        { label: "Recruiting", value: team.lookingForPlayers ? "Yes" : "No" },
                       ]}
                       featured={team.featured}
                       imagePosition={team.imagePosition}

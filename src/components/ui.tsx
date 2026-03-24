@@ -3,7 +3,7 @@ export function Badge({ children, variant = "default" }: { children: React.React
   const styles: Record<string, string> = {
     default: "bg-slate-100 text-slate-700",
     green: "bg-red-50 text-[#DC373E]",
-    orange: "bg-amber-50 text-amber-700",
+    orange: "bg-amber-50 text-amber-700 animate-pulse",
     red: "bg-red-50 text-red-700",
     purple: "bg-purple-50 text-purple-700",
     blue: "bg-blue-50 text-blue-700",

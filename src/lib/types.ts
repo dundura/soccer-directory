@@ -92,6 +92,7 @@ export interface Team extends ProfileFields {
   gender: string;
   coach: string;
   lookingForPlayers: boolean;
+  guestPlayersWelcome: boolean;
   positionsNeeded?: string;
   season: string;
   description?: string;

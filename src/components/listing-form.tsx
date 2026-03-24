@@ -189,6 +189,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "gender", label: "Gender", required: true, options: ["Boys", "Girls", "Coed"] },
     { name: "coach", label: "Head Coach", required: true },
     { name: "lookingForPlayers", label: "Looking for Players?", options: ["true", "false"] },
+    { name: "guestPlayersWelcome", label: "Guest Players Welcomed?", options: ["true", "false"] },
     { name: "positionsNeeded", label: "Positions Needed", type: "positions" },
     { name: "season", label: "Season", required: true, options: ["2025-2026", "2026-2027", "Year-Round"] },
     { name: "description", label: "Description", type: "textarea" },
