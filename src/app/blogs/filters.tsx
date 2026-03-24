@@ -187,7 +187,7 @@ export function BlogFilters({ blogs, articles = [] }: { blogs: Blog[]; articles?
               </h2>
               <span className="text-sm text-muted font-medium">({articles.length})</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="space-y-3">
               {articles.map((article) => {
                 const plainBody = stripHtml(article.body);
                 const date = new Date(article.createdAt);
@@ -195,32 +195,21 @@ export function BlogFilters({ blogs, articles = [] }: { blogs: Blog[]; articles?
                   <a
                     key={article.id}
                     href={`/posts/${article.slug || article.id}`}
-                    className="group bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                    className="group flex items-center gap-4 bg-white rounded-xl border border-border p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
                   >
-                    {article.imageUrl && (
-                      <div className="aspect-[16/9] overflow-hidden">
-                        <img
-                          src={article.imageUrl}
-                          alt={article.title || ""}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    )}
-                    <div className="p-5">
-                      <h3 className="font-[family-name:var(--font-display)] text-base font-bold text-primary group-hover:text-accent transition-colors mb-2 line-clamp-2">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs shrink-0">
+                      {article.userName.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-bold text-primary group-hover:text-accent transition-colors line-clamp-1">
                         {article.title}
                       </h3>
-                      <p className="text-sm text-muted line-clamp-3 mb-3">
-                        {plainBody}
-                      </p>
-                      <div className="flex items-center gap-2 text-xs text-muted">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-[10px]">
-                          {article.userName.charAt(0).toUpperCase()}
-                        </div>
-                        <span className="font-medium text-primary">{article.userName}</span>
-                        <span>&middot;</span>
-                        <span>{date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-                      </div>
+                      <p className="text-xs text-muted line-clamp-1 mt-0.5">{plainBody}</p>
+                    </div>
+                    <div className="text-xs text-muted whitespace-nowrap shrink-0">
+                      <span className="font-medium text-primary">{article.userName}</span>
+                      <span className="mx-1">&middot;</span>
+                      <span>{date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
                     </div>
                   </a>
                 );
