@@ -258,7 +258,7 @@ export default async function TeamDetailPage({ params }: Props) {
                 className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1 sm:p-1.5 bg-surface -mt-8 sm:-mt-10 relative z-10"
               />
               <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0">
-                <InlineEditField ownerId={ownerId} listingType="team" listingId={team.id} field="name" value={team.name} tag="h1" className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+                <InlineEditField ownerId={ownerId} listingType="team" listingId={team.id} field="name" value={team.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
                 {team.tagline && (
                   <InlineEditField ownerId={ownerId} listingType="team" listingId={team.id} field="tagline" value={team.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
                 )}
