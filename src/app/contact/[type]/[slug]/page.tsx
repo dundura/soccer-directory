@@ -7,6 +7,7 @@ import { Turnstile } from "@/components/turnstile";
 const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
   guest: "Guest Play Opportunity", tournament: "Tournament", futsal: "Futsal Team",
+  player: "Player",
   service: "Product / Service",
   tryout: "Tryout",
   trainingapp: "Training App",
