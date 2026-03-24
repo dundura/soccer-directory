@@ -153,20 +153,23 @@ export default async function PlayerDetailPage({ params }: Props) {
                   </div>
                 )}
               </div>
+
+              {/* About - inside hero card */}
+              {player.description && (
+                <div className="mt-5 pt-5 border-t border-border">
+                  <div className="flex items-center justify-between mb-2">
+                    <h2 className="text-[15px] font-bold text-primary">About</h2>
+                    <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
+                  </div>
+                  <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="description" value={player.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* ====== Content Sections ====== */}
         <div className="space-y-6">
-          {/* About */}
-          {player.description && (
-            <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-              <h2 className="text-[15px] font-bold text-primary mb-3">About</h2>
-              <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="description" value={player.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
-            </section>
-          )}
-
           {/* Looking For */}
           {player.lookingFor && (
             <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
