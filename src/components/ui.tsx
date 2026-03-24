@@ -40,7 +40,7 @@ export function ListingCard({
   return (
     <a
       href={href}
-      className="group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 relative"
+      className={`group block bg-white rounded-2xl border overflow-hidden hover:-translate-y-0.5 transition-all duration-200 relative ${featured ? "border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.15)] hover:shadow-[0_0_30px_rgba(245,158,11,0.25)] ring-1 ring-amber-200/50" : "border-border hover:shadow-lg"}`}
     >
       {image && (
         <div className="w-full h-[200px] overflow-hidden bg-surface flex items-center justify-center">
