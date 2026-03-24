@@ -397,6 +397,12 @@ export interface GameHighlight {
   url: string;
 }
 
+export interface HighlightVideo {
+  url: string;
+  title: string;
+  showOnHighlights: boolean;
+}
+
 export interface PlayerProfile extends ProfileFields {
   id: string;
   slug: string;
@@ -412,6 +418,8 @@ export interface PlayerProfile extends ProfileFields {
   favoriteTeam?: string;
   favoritePlayer?: string;
   gameHighlights?: GameHighlight[];
+  highlightVideos?: HighlightVideo[];
+  cvUrl?: string;
   availableForGuestPlay?: boolean;
   city: string;
   state: string;

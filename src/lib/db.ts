@@ -430,10 +430,19 @@ export async function getPlayerProfileSlugs(): Promise<string[]> {
   return rows.map((r) => r.slug as string);
 }
 
+export async function getPlayersWithHighlightVideos(): Promise<PlayerProfile[]> {
+  const rows = await sql`SELECT * FROM player_profiles WHERE status = 'approved' AND highlight_videos IS NOT NULL AND highlight_videos != '[]'::jsonb ORDER BY player_name ASC`;
+  return rows.map(mapPlayerProfile);
+}
+
 function mapPlayerProfile(r: Record<string, unknown>): PlayerProfile {
   let gameHighlights: PlayerProfile["gameHighlights"];
   if (r.game_highlights) {
     try { gameHighlights = JSON.parse(r.game_highlights as string); } catch { gameHighlights = undefined; }
+  }
+  let highlightVideos: PlayerProfile["highlightVideos"];
+  if (r.highlight_videos) {
+    try { highlightVideos = typeof r.highlight_videos === 'string' ? JSON.parse(r.highlight_videos) : r.highlight_videos as PlayerProfile["highlightVideos"]; } catch { highlightVideos = undefined; }
   }
   return {
     id: r.id as string, slug: r.slug as string, playerName: r.player_name as string,
@@ -446,6 +455,8 @@ function mapPlayerProfile(r: Record<string, unknown>): PlayerProfile {
     favoriteTeam: r.favorite_team as string | undefined,
     favoritePlayer: r.favorite_player as string | undefined,
     gameHighlights,
+    highlightVideos,
+    cvUrl: r.cv_url as string | undefined,
     availableForGuestPlay: r.available_for_guest_play as boolean | undefined,
     city: r.city as string, state: r.state as string, country: r.country as string | undefined,
     level: r.level as string, gender: r.gender as string,

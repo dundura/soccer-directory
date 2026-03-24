@@ -45,10 +45,12 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
 
   return (
     <>
-      <div className="bg-primary text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative bg-primary text-white py-14 md:py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-light to-primary opacity-90" />
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-surface" style={{ clipPath: "polygon(0 100%, 100% 100%, 100% 0)" }} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-3">
-            Player Profiles
+            Find a Player to Join Your Team
           </h1>
           <p className="text-white/70 max-w-2xl text-lg mb-8">
             Browse youth soccer players looking for guest play opportunities, tryouts, and team placements.
