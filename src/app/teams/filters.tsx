@@ -234,7 +234,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                           )}
                         </div>
                         {team.description && (
-                          <p className="text-sm text-primary/70 mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{team.description}</p>
+                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{team.description}</p>
                         )}
                       </div>
                     </div>
