@@ -36,8 +36,17 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
   });
 
   const sorted = [...filtered].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-  const featuredTeams = sorted.filter((t) => t.featured);
-  const nonFeaturedTeams = sorted.filter((t) => !t.featured);
+  const allFeatured = sorted.filter((t) => t.featured);
+  const [featuredTeams] = useState(() => {
+    const shuffled = [...allFeatured];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, 3);
+  });
+  const featuredIds = new Set(featuredTeams.map((t) => t.id));
+  const nonFeaturedTeams = sorted.filter((t) => !featuredIds.has(t.id));
   const totalPages = Math.ceil(nonFeaturedTeams.length / PER_PAGE);
   const visibleNonFeatured = viewAll ? nonFeaturedTeams : nonFeaturedTeams.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -114,7 +123,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                   <span className="text-amber-500">&#9733;</span> Featured Teams
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {featuredTeams.slice(0, 3).map((team) => (
+                  {featuredTeams.map((team) => (
                     <ListingCard
                       key={team.id}
                       href={`/teams/${team.slug}`}
@@ -158,48 +167,48 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
             </div>
 
             {/* ====== NON-FEATURED ROWS ====== */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               {visibleNonFeatured.map((team) => {
                 const img = team.logo || team.teamPhoto || team.imageUrl;
                 return (
                   <a
                     key={team.id}
                     href={`/teams/${team.slug}`}
-                    className="group flex items-center gap-4 sm:gap-5 bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-md transition-all p-4 border-l-4 border-l-accent/20 hover:border-l-accent"
+                    className="group flex items-start gap-5 sm:gap-6 bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all p-5 sm:p-6 border-l-4 border-l-accent/20 hover:border-l-accent"
                   >
                     {/* Logo thumbnail */}
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-surface flex-shrink-0 flex items-center justify-center">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-xl overflow-hidden bg-surface flex-shrink-0 flex items-center justify-center">
                       {img ? (
                         <img src={img} alt={team.name} className="w-full h-full object-cover" />
                       ) : (
-                        <svg className="w-7 h-7 text-muted/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+                        <svg className="w-8 h-8 text-muted/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
                       )}
                     </div>
 
                     {/* Main info */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-[family-name:var(--font-display)] text-sm sm:text-base font-bold text-primary uppercase group-hover:text-accent transition-colors truncate">
+                      <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl md:text-[1.75rem] font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors">
                         {team.name}
                       </h3>
-                      <p className="text-xs text-muted flex items-center gap-1 mt-0.5">
-                        <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                      <p className="text-sm text-muted flex items-center gap-1.5 mt-1">
+                        <svg className="w-3.5 h-3.5 flex-shrink-0 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                         {team.city}, {team.state}
                       </p>
-                      <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                        <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-medium">{team.level}</span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-surface text-muted text-[11px] font-medium">{team.ageGroup}</span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-surface text-muted text-[11px] font-medium">{team.gender}</span>
+                      <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                        <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">{team.level}</span>
+                        <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{team.ageGroup}</span>
+                        <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{team.gender}</span>
                         {team.lookingForPlayers && (
-                          <span className="px-2.5 py-0.5 rounded-full bg-red-50 text-accent text-[11px] font-semibold">Recruiting</span>
+                          <span className="px-3 py-1 rounded-full bg-red-50 text-accent text-xs font-bold">Recruiting</span>
                         )}
                       </div>
                       {team.description && (
-                        <p className="text-xs text-muted/70 mt-1.5 line-clamp-1 hidden sm:block">{team.description}</p>
+                        <p className="text-sm text-muted/60 mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{team.description}</p>
                       )}
                     </div>
 
                     {/* Arrow */}
-                    <span className="text-muted/40 group-hover:text-accent transition-colors text-xl flex-shrink-0 hidden sm:block">
+                    <span className="text-muted/30 group-hover:text-accent transition-colors text-3xl font-light flex-shrink-0 mt-2 hidden sm:block">
                       &#8250;
                     </span>
                   </a>
