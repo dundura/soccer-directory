@@ -100,6 +100,12 @@ export default function ContactPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-12">
+        {type === "player" && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-center">
+            <p className="text-sm font-semibold text-red-700">No unsolicited solicitation. This form is for legitimate player inquiries only.</p>
+            <p className="text-xs text-red-500 mt-1">Violators will be permanently banned from Soccer Near Me.</p>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-border p-6 md:p-8 space-y-5">
           <div>
             <label className="block text-sm font-medium mb-1">Your Name <span className="text-accent">*</span></label>
@@ -150,6 +156,12 @@ export default function ContactPage() {
           <Turnstile onSuccess={setCaptchaToken} onError={() => setCaptchaToken("bypass")} />
 
           {error && <p className="text-accent text-sm">{error}</p>}
+
+          {type === "player" && (
+            <p className="text-xs text-red-500 text-center font-medium">
+              No unsolicited solicitation. Violators will be permanently banned.
+            </p>
+          )}
 
           <button
             type="submit"
