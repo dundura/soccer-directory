@@ -214,7 +214,7 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
                     </div>
                     <div className="text-center">
                       <p className="text-sm font-bold text-primary">{player.level || "—"}</p>
-                      <p className="text-xs text-muted">Level of Play</p>
+                      <p className="text-xs text-muted">Level/League</p>
                     </div>
                   </div>
                   {player.socialMedia && (player.socialMedia.instagram || player.socialMedia.youtube) && (
