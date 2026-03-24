@@ -5,7 +5,6 @@ import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
 import { PlayerAvatar } from "@/components/player-avatar";
 import { SponsorsSection } from "@/components/sponsors-section";
-import { ContactPlayerForm } from "./contact-form";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -54,6 +53,8 @@ export default async function PlayerDetailPage({ params }: Props) {
   }
 
   const playerPhoto = player.teamPhoto || player.imageUrl;
+  const hasMultiplePositions = !!player.secondaryPosition;
+  const allPositions = player.position + (player.secondaryPosition ? `, ${player.secondaryPosition}` : "");
 
   return (
     <>
@@ -70,16 +71,21 @@ export default async function PlayerDetailPage({ params }: Props) {
       </div>
 
       <div className="max-w-[1100px] mx-auto px-6 pb-16">
-        {/* ====== HERO: Two-Column Layout ====== */}
+        {/* ====== HERO: GPS-Style Two-Column Layout ====== */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-0">
-            {/* Left: Player Photo */}
-            <div className="relative bg-primary/5 flex items-center justify-center min-h-[300px] md:min-h-[400px]">
+          <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-0">
+            {/* Left: Player Photo with blur background */}
+            <div className="relative bg-primary/5 flex items-center justify-center min-h-[320px] md:min-h-[460px] overflow-hidden">
               {playerPhoto ? (
                 <>
                   <div
-                    className="absolute inset-0 bg-cover bg-center blur-xl opacity-30"
-                    style={{ backgroundImage: `url(${playerPhoto})` }}
+                    className="absolute inset-0 scale-110"
+                    style={{
+                      backgroundImage: `url(${playerPhoto})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      filter: "blur(20px) brightness(0.7)",
+                    }}
                   />
                   <img
                     src={playerPhoto}
@@ -88,78 +94,102 @@ export default async function PlayerDetailPage({ params }: Props) {
                   />
                 </>
               ) : (
-                <PlayerAvatar
-                  src={undefined}
-                  name={player.playerName}
-                  className="w-[180px] h-[180px] rounded-full text-5xl"
-                />
+                <div className="relative z-10 flex items-center justify-center w-full h-full bg-gradient-to-br from-primary/10 to-primary/5">
+                  <PlayerAvatar
+                    src={undefined}
+                    name={player.playerName}
+                    className="w-[160px] h-[160px] rounded-full text-5xl"
+                  />
+                </div>
               )}
             </div>
 
             {/* Right: Player Info */}
-            <div className="p-6 md:p-8 flex flex-col justify-center">
-              {player.logo && (
-                <img src={player.logo} alt="Club logo" className="w-[48px] h-[48px] rounded-xl border-2 border-border object-contain p-1 bg-surface mb-3" />
-              )}
-              <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="playerName" value={player.playerName} tag="h1" className="text-2xl sm:text-3xl font-extrabold text-primary leading-tight tracking-tight" />
+            <div className="p-6 md:p-8 flex flex-col relative">
+              {/* Contact button - top right */}
+              <a
+                href={`/contact/player/${slug}`}
+                className="absolute top-6 right-6 md:top-8 md:right-8 inline-flex items-center gap-2 bg-accent text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-accent-hover transition-colors"
+              >
+                Contact
+              </a>
+
+              {/* Player Name */}
+              <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="playerName" value={player.playerName} tag="h1" className="text-2xl sm:text-[32px] font-extrabold text-primary leading-tight tracking-tight pr-24" />
+
               {player.tagline && (
-                <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="tagline" value={player.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="tagline" value={player.tagline} tag="p" className="text-sm text-accent font-medium mt-1.5" />
               )}
 
-              {/* Location, Position, Gender with icons */}
-              <div className="flex flex-col gap-1.5 mt-3 text-sm text-muted">
-                <div className="flex items-center gap-2">
-                  <svg className="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                  <span className="font-medium">{player.city}, {player.state}</span>
+              {/* Info with icons */}
+              <div className="flex flex-col gap-2.5 mt-5 text-[15px]">
+                {/* Location */}
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
+                    <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  </div>
+                  <span className="font-semibold text-primary">{player.city}, {player.state}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <svg className="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth={2} /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" /></svg>
-                  <span className="font-medium">{player.position}{player.secondaryPosition ? ` / ${player.secondaryPosition}` : ""}</span>
+
+                {/* Position */}
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
+                    <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth={2} /><circle cx="12" cy="12" r="3" /></svg>
+                  </div>
+                  {hasMultiplePositions ? (
+                    <span className="font-semibold text-primary group relative cursor-help">
+                      Multiple
+                      <span className="absolute bottom-full left-0 mb-1 hidden group-hover:block bg-primary text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg z-20">
+                        {allPositions}
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="font-semibold text-primary">{player.position}</span>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <svg className="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                  <span className="font-medium">{player.gender}</span>
+
+                {/* Gender */}
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
+                    <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                  </div>
+                  <span className="font-semibold text-primary">{player.gender}</span>
                 </div>
               </div>
 
+              {/* Age Group & Level grid */}
+              <div className="grid grid-cols-2 gap-4 mt-6 pt-5 border-t border-border">
+                <div>
+                  <p className="text-xs text-muted font-medium uppercase tracking-wider">Birth Year</p>
+                  <p className="text-sm font-bold text-primary mt-0.5">{player.birthYear}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted font-medium uppercase tracking-wider">Level of Play</p>
+                  <p className="text-sm font-bold text-primary mt-0.5">{player.level || "—"}</p>
+                </div>
+                {player.currentClub && (
+                  <div>
+                    <p className="text-xs text-muted font-medium uppercase tracking-wider">Club</p>
+                    <p className="text-sm font-bold text-primary mt-0.5">{player.currentClub}</p>
+                  </div>
+                )}
+                {player.preferredFoot && (
+                  <div>
+                    <p className="text-xs text-muted font-medium uppercase tracking-wider">Preferred Foot</p>
+                    <p className="text-sm font-bold text-primary mt-0.5">{player.preferredFoot}</p>
+                  </div>
+                )}
+              </div>
+
               {/* Badges */}
-              <div className="flex flex-wrap gap-2 mt-4">
+              <div className="flex flex-wrap gap-2 mt-5">
                 <Badge variant="blue">{player.position}</Badge>
                 {player.secondaryPosition && <Badge variant="default">{player.secondaryPosition}</Badge>}
                 <Badge variant={player.gender === "Boys" ? "blue" : "purple"}>{player.gender}</Badge>
                 <Badge variant="default">{player.birthYear}</Badge>
-                {player.level && <Badge variant="default">{player.level}</Badge>}
                 {player.availableForGuestPlay && <Badge variant="green">Available for Guest Play</Badge>}
               </div>
-
-              {/* Contact Button */}
-              <a
-                href="#contact-player"
-                className="mt-5 inline-flex items-center justify-center gap-2 bg-accent text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-accent-hover transition-colors w-fit"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                Contact This Player
-              </a>
             </div>
-          </div>
-        </div>
-
-        {/* ====== Player Details Grid ====== */}
-        <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6 mb-6">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-            {[
-              { label: "Position", value: `${player.position}${player.secondaryPosition ? ` / ${player.secondaryPosition}` : ""}` },
-              { label: "Birth Year", value: player.birthYear },
-              { label: "Gender", value: player.gender },
-              { label: "Level", value: player.level || "—" },
-              { label: "Preferred Foot", value: player.preferredFoot || "—" },
-              { label: "Club", value: player.currentClub || "—" },
-            ].map((item, i) => (
-              <div key={i} className="text-center">
-                <p className="text-sm font-bold text-primary">{item.value}</p>
-                <p className="text-xs text-muted mt-0.5">{item.label}</p>
-              </div>
-            ))}
           </div>
         </div>
 
@@ -270,13 +300,6 @@ export default async function PlayerDetailPage({ params }: Props) {
               <SocialLinks website={player.socialMedia.youtube} facebook={player.socialMedia.facebook} instagram={player.socialMedia.instagram} />
             </section>
           )}
-
-          {/* Contact Form - always visible */}
-          <section id="contact-player" className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-            <h2 className="text-[15px] font-bold text-primary mb-2">Contact This Player</h2>
-            <p className="text-muted text-sm mb-6">Interested in this player? Send a message and they will be notified via email.</p>
-            <ContactPlayerForm playerName={player.playerName} slug={slug} />
-          </section>
         </div>
       </div>
 
