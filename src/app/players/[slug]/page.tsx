@@ -87,11 +87,13 @@ export default async function PlayerDetailPage({ params }: Props) {
                       filter: "blur(20px) brightness(0.7)",
                     }}
                   />
-                  <img
-                    src={playerPhoto}
-                    alt={player.playerName}
-                    className="relative z-10 w-full h-full object-cover"
-                  />
+                  <div className="relative z-10 p-4 flex items-center justify-center h-full">
+                    <img
+                      src={playerPhoto}
+                      alt={player.playerName}
+                      className="w-full h-full object-cover rounded-xl shadow-lg bg-white"
+                    />
+                  </div>
                 </>
               ) : (
                 <div className="relative z-10 flex items-center justify-center w-full h-full bg-gradient-to-br from-primary/10 to-primary/5">
