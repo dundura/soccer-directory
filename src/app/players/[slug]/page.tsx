@@ -75,13 +75,13 @@ export default async function PlayerDetailPage({ params }: Props) {
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
           <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-0">
             {/* Left: Player Photo */}
-            <div className="relative bg-white flex items-center justify-center min-h-[320px] md:min-h-[520px] p-6 border-r border-border">
+            <div className="relative bg-white flex items-center justify-center p-6 border-r border-border">
               {playerPhoto ? (
-                <div className="w-full h-full rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+                <div className="w-full rounded-xl overflow-hidden border border-gray-200 shadow-sm">
                   <img
                     src={playerPhoto}
                     alt={player.playerName}
-                    className="w-full h-full object-cover"
+                    className="w-full max-h-[500px] object-contain"
                   />
                 </div>
               ) : (
