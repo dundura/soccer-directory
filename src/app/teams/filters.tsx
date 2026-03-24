@@ -160,6 +160,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                         { label: "Birth Year", value: team.ageGroup },
                         { label: "Coach", value: team.coach },
                         { label: "Guest Players", value: "Welcomed" },
+                        { label: "Recruiting", value: team.lookingForPlayers ? "Yes" : "No" },
                       ]}
                       featured={team.featured}
                       imagePosition={team.imagePosition}
