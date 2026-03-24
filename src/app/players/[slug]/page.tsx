@@ -108,7 +108,9 @@ export default async function PlayerDetailPage({ params }: Props) {
               {/* Player Name */}
               <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="playerName" value={player.playerName} tag="h1" className="text-2xl sm:text-[32px] font-extrabold text-primary leading-tight tracking-tight pr-24" />
 
-              <p className="text-sm font-semibold text-muted mt-0.5">{player.position}{player.secondaryPosition ? ` / ${player.secondaryPosition}` : ""}</p>
+              {(player.currentClub || player.teamName) && (
+                <p className="text-sm font-semibold text-muted -mt-0.5">{player.teamName || player.currentClub}</p>
+              )}
 
               {/* Location with icon */}
               <div className="flex items-center gap-3 mt-1 text-[15px]">
@@ -138,12 +140,10 @@ export default async function PlayerDetailPage({ params }: Props) {
                   <p className="text-xs text-muted font-medium uppercase tracking-wider">League</p>
                   <p className="text-sm font-bold text-primary mt-0.5">{player.level || "—"}</p>
                 </div>
-                {player.currentClub && (
-                  <div>
-                    <p className="text-xs text-muted font-medium uppercase tracking-wider">Club</p>
-                    <p className="text-sm font-bold text-primary mt-0.5">{player.currentClub}</p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-xs text-muted font-medium uppercase tracking-wider">Position</p>
+                  <p className="text-sm font-bold text-primary mt-0.5">{player.position}{player.secondaryPosition ? ` / ${player.secondaryPosition}` : ""}</p>
+                </div>
                 {player.preferredFoot && (
                   <div>
                     <p className="text-xs text-muted font-medium uppercase tracking-wider">Preferred Foot</p>
