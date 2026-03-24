@@ -784,7 +784,7 @@ function mapFutsalTeam(r: Record<string, unknown>): FutsalTeam {
     clubName: r.club_name as string | undefined,
     city: r.city as string, state: r.state as string, country: r.country as string | undefined,
     level: r.level as string, ageGroup: r.age_group as string, gender: r.gender as string,
-    coach: r.coach as string, lookingForPlayers: r.looking_for_players as boolean, guestPlayersWelcome: r.guest_players_welcomed !== false,
+    coach: r.coach as string, lookingForPlayers: r.looking_for_players as boolean,
     positionsNeeded: r.positions_needed as string | undefined,
     season: r.season as string, description: r.description as string | undefined,
     format: r.format as string,
