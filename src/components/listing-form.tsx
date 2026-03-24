@@ -549,7 +549,6 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "position", label: "Primary Position", required: true, options: ["GK", "CB", "FB/WB", "CDM", "CM", "CAM", "Winger", "ST"] },
     { name: "secondaryPosition", label: "Secondary Position", options: ["GK", "CB", "FB/WB", "CDM", "CM", "CAM", "Winger", "ST"] },
     { name: "birthYear", label: "Birth Year", required: true, options: ["2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016"] },
-    { name: "height", label: "Height (e.g. 5'8\")" },
     { name: "preferredFoot", label: "Preferred Foot", options: ["Right", "Left", "Both"] },
     { name: "_team", label: "Team & League", type: "heading" },
     { name: "currentClub", label: "Club or Team Name" },
