@@ -74,29 +74,18 @@ export default async function PlayerDetailPage({ params }: Props) {
         {/* ====== HERO: GPS-Style Two-Column Layout ====== */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
           <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-0">
-            {/* Left: Player Photo with blur background */}
-            <div className="relative bg-primary/5 flex items-center justify-center min-h-[320px] md:min-h-[460px] overflow-hidden">
+            {/* Left: Player Photo */}
+            <div className="relative bg-white flex items-center justify-center min-h-[320px] md:min-h-[460px] p-6 border-r border-border">
               {playerPhoto ? (
-                <>
-                  <div
-                    className="absolute inset-0 scale-110"
-                    style={{
-                      backgroundImage: `url(${playerPhoto})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      filter: "blur(20px) brightness(0.7)",
-                    }}
+                <div className="w-full h-full rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+                  <img
+                    src={playerPhoto}
+                    alt={player.playerName}
+                    className="w-full h-full object-cover"
                   />
-                  <div className="relative z-10 p-4 flex items-center justify-center h-full">
-                    <img
-                      src={playerPhoto}
-                      alt={player.playerName}
-                      className="w-full h-full object-cover rounded-xl shadow-lg bg-white"
-                    />
-                  </div>
-                </>
+                </div>
               ) : (
-                <div className="relative z-10 flex items-center justify-center w-full h-full bg-gradient-to-br from-primary/10 to-primary/5">
+                <div className="flex items-center justify-center w-full h-full">
                   <PlayerAvatar
                     src={undefined}
                     name={player.playerName}
