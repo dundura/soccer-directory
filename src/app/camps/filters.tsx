@@ -156,7 +156,7 @@ export function CampFilters({ camps }: { camps: Camp[] }) {
                     <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
 
                     {/* Image thumbnail */}
-                    <div className="hidden sm:flex items-center justify-center flex-shrink-0 p-3 sm:p-4">
+                    <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-4">
                       <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg overflow-hidden bg-surface flex items-center justify-center">
                         {img ? (
                           <img src={img} alt={camp.name} className="w-full h-full object-cover" />
