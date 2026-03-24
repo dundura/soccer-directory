@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Tryout, Club, Team } from "@/lib/types";
-import { FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui";
+import { ListingCard, EmptyState, AnytimeInlineCTA } from "@/components/ui";
 
 const PER_PAGE = 10;
 
@@ -12,109 +12,99 @@ export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tr
   const isAdmin = (session?.user as { role?: string } | undefined)?.role === "admin";
 
   const [tab, setTab] = useState<"current" | "past">("current");
-  const [search, setSearch] = useState("");
   const [state, setState] = useState("");
   const [gender, setGender] = useState("");
   const [page, setPage] = useState(1);
   const [viewAll, setViewAll] = useState(false);
 
   const allStates = [...new Set([...tryouts.map((t) => t.state), ...clubs.map((c) => c.state), ...teams.map((t) => t.state)])].sort();
-  const allGenders = [...new Set([...tryouts.map((t) => t.gender), ...clubs.map((c) => c.gender), ...teams.map((t) => t.gender)])].sort();
   const states = allStates;
-  const genders = allGenders;
 
   const filtered = tryouts.filter((t) => {
     if (tab === "current" && t.isPast) return false;
     if (tab === "past" && !t.isPast) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      if (
-        !t.name.toLowerCase().includes(q) &&
-        !t.city.toLowerCase().includes(q) &&
-        !t.state.toLowerCase().includes(q) &&
-        !(t.clubName || "").toLowerCase().includes(q) &&
-        !t.organizerName.toLowerCase().includes(q)
-      ) return false;
-    }
     if (state && t.state !== state) return false;
     if (gender && t.gender !== gender) return false;
     return true;
   });
 
-  // Filter clubs and teams (only show on "current" tab)
-  const filteredClubs = tab === "current" ? clubs.filter((c) => {
-    if (search) {
-      const q = search.toLowerCase();
-      if (!c.name.toLowerCase().includes(q) && !c.city.toLowerCase().includes(q) && !c.state.toLowerCase().includes(q)) return false;
-    }
-    if (state && c.state !== state) return false;
-    if (gender && c.gender !== gender) return false;
-    return true;
-  }) : [];
-
-  const filteredTeams = tab === "current" ? teams.filter((t) => {
-    if (search) {
-      const q = search.toLowerCase();
-      if (!t.name.toLowerCase().includes(q) && !t.city.toLowerCase().includes(q) && !t.state.toLowerCase().includes(q) && !(t.clubName || "").toLowerCase().includes(q)) return false;
-    }
-    if (state && t.state !== state) return false;
-    if (gender && t.gender !== gender) return false;
-    return true;
-  }) : [];
-
   const sorted = [...filtered].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-  const totalItems = sorted.length + filteredClubs.length + filteredTeams.length;
-  const totalPages = Math.ceil(sorted.length / PER_PAGE);
-  const visible = viewAll ? sorted : sorted.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const allFeatured = sorted.filter((t) => t.featured);
+  const [topCards] = useState(() => {
+    if (allFeatured.length > 0) {
+      const shuffled = [...allFeatured];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled.slice(0, 3);
+    }
+    return sorted.slice(0, 3);
+  });
+  const topCardIds = new Set(topCards.map((t) => t.id));
+  const nonFeaturedTryouts = sorted.filter((t) => !topCardIds.has(t.id));
+  const totalPages = Math.ceil(nonFeaturedTryouts.length / PER_PAGE);
+  const visibleNonFeatured = viewAll ? nonFeaturedTryouts : nonFeaturedTryouts.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  const fallbackImage = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 
   async function togglePast(slug: string) {
     await fetch(`/api/tryouts/${slug}`, { method: "PATCH" });
     window.location.reload();
   }
 
-  const fallbackImage = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
-
   return (
     <>
-      {/* Hero */}
-      <div className="bg-primary text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-3">
-            Soccer Tryouts
+      {/* ====== HERO SECTION ====== */}
+      <div className="relative bg-primary overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[#1a4a7a] opacity-90" />
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 120" preserveAspectRatio="none" style={{ height: "60px" }}>
+          <path fill="var(--background, #f8fafc)" d="M0,60 C360,120 1080,0 1440,60 L1440,120 L0,120 Z" />
+        </svg>
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+          <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-[56px] font-extrabold text-white uppercase tracking-tight leading-tight mb-4">
+            Find Open Tryouts
           </h1>
-          <p className="text-white/70 max-w-2xl text-lg mb-8">
-            Find upcoming tryouts for clubs and teams near you. Open tryouts, ID sessions, and combines for all ages.
+          <p className="text-white/60 text-base md:text-lg max-w-2xl mx-auto mb-10">
+            Browse upcoming tryouts and open evaluations.
           </p>
-          <div className="bg-white rounded-2xl shadow-lg p-2 flex flex-col sm:flex-row gap-2">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search by name, club, city..."
-              className="flex-1 px-5 py-4 rounded-xl text-primary text-base placeholder:text-muted focus:outline-none"
-            />
-            <select
-              value={state}
-              onChange={(e) => { setState(e.target.value); setPage(1); }}
-              className="px-4 py-4 rounded-xl border border-border text-sm font-medium text-primary bg-surface focus:outline-none cursor-pointer sm:w-48"
-            >
-              <option value="">All States</option>
-              {states.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <button
-              type="button"
-              className="px-8 py-4 rounded-xl bg-accent text-white font-semibold text-base hover:bg-accent-hover transition-colors whitespace-nowrap"
-            >
-              Search
-            </button>
+
+          {/* Single unified filter pill bar */}
+          <div className="bg-white rounded-2xl lg:rounded-full shadow-2xl p-2 max-w-6xl mx-auto">
+            <div className="flex flex-col lg:flex-row items-stretch">
+              <select
+                value={state}
+                onChange={(e) => { setState(e.target.value); setPage(1); }}
+                className="px-4 py-3 lg:rounded-l-full text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer lg:border-r border-border min-w-0"
+              >
+                <option value="">All States</option>
+                {states.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <select
+                value={gender}
+                onChange={(e) => { setGender(e.target.value); setPage(1); }}
+                className="px-4 py-3 text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer border-t lg:border-t-0 lg:border-r border-border min-w-0"
+              >
+                <option value="">All Genders</option>
+                <option value="Boys">Boys</option>
+                <option value="Girls">Girls</option>
+              </select>
+              <button
+                type="button"
+                className="px-8 py-3 rounded-xl lg:rounded-r-full lg:rounded-l-none bg-accent text-white font-bold text-sm uppercase tracking-wide hover:bg-accent-hover transition-colors whitespace-nowrap mt-1 lg:mt-0"
+              >
+                Search
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Tabs + Cards */}
+      {/* ====== CONTENT ====== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        {/* Tabs */}
-        <div className="flex gap-1 mt-6 mb-2 bg-surface rounded-xl p-1 w-fit">
+
+        {/* ====== TAB TOGGLE ====== */}
+        <div className="flex gap-1 mt-6 mb-6 bg-surface rounded-xl p-1 w-fit">
           <button
             onClick={() => { setTab("current"); setPage(1); }}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${tab === "current" ? "bg-white text-primary shadow-sm" : "text-muted hover:text-primary"}`}
@@ -129,243 +119,130 @@ export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tr
           </button>
         </div>
 
-        <FilterBar
-          filters={[
-            { label: "All Genders", options: genders, value: gender, onChange: (v: string) => { setGender(v); setPage(1); } },
-          ]}
-        />
-
-        {/* View All / result count */}
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-muted">
-            {totalItems} result{totalItems !== 1 ? "s" : ""} found
-            {sorted.length > 0 && <> &middot; {sorted.length} tryout{sorted.length !== 1 ? "s" : ""}</>}
-            {filteredClubs.length > 0 && <> &middot; {filteredClubs.length} club{filteredClubs.length !== 1 ? "s" : ""}</>}
-            {filteredTeams.length > 0 && <> &middot; {filteredTeams.length} team{filteredTeams.length !== 1 ? "s" : ""}</>}
-            {!viewAll && sorted.length > PER_PAGE && <> &middot; Page {page} of {totalPages}</>}
-          </p>
-          {sorted.length > PER_PAGE && (
-            <button
-              onClick={() => { setViewAll(!viewAll); setPage(1); }}
-              className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors"
-            >
-              {viewAll ? "Show Pages" : "View All"}
-            </button>
-          )}
-        </div>
-
-        {sorted.length === 0 && filteredClubs.length === 0 && filteredTeams.length === 0 ? (
-          <EmptyState message={tab === "current" ? "No current tryouts found." : "No past tryouts found."} />
+        {sorted.length === 0 ? (
+          <EmptyState message="No tryouts match your filters." />
         ) : (
           <>
-            <div className="space-y-4">
-              {visible.map((tryout) => (
-                <div
-                  key={tryout.id}
-                  className="group bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg transition-all flex flex-col sm:flex-row"
-                >
-                  {/* Image */}
-                  <a
-                    href={`/tryouts/${tryout.slug}`}
-                    className="sm:w-48 shrink-0"
-                  >
-                    <img
-                      src={tryout.teamPhoto && !tryout.teamPhoto.includes("idf.webp") ? tryout.teamPhoto : tryout.logo || tryout.imageUrl || fallbackImage}
-                      alt={tryout.name}
-                      className="w-full h-40 sm:h-full object-cover"
-                      style={{ objectPosition: `center ${tryout.imagePosition ?? 50}%` }}
+            {/* ====== FEATURED CARDS ====== */}
+            {topCards.length > 0 && (
+              <div className="mb-10">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary mb-5 uppercase tracking-wide flex items-center gap-2">
+                  <span className="text-amber-500">&#9733;</span> {allFeatured.length > 0 ? "Featured Tryouts" : "Top Tryouts"}
+                </h2>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {topCards.map((tryout) => (
+                    <ListingCard
+                      key={tryout.id}
+                      href={`/tryouts/${tryout.slug}`}
+                      title={tryout.name}
+                      subtitle={`${tryout.organizerName || tryout.clubName || ""} · ${tryout.city}, ${tryout.state}`}
+                      image={tryout.teamPhoto && !tryout.teamPhoto.includes("idf.webp") ? tryout.teamPhoto : tryout.logo || tryout.imageUrl || fallbackImage}
+                      badges={[
+                        { label: tryout.tryoutType, variant: "blue" },
+                        { label: tryout.gender, variant: tryout.gender === "Boys" ? "blue" : "purple" },
+                      ]}
+                      details={[
+                        { label: "Dates", value: tryout.dates },
+                        { label: "Age Group", value: tryout.ageGroup },
+                        ...(tryout.cost ? [{ label: "Cost", value: tryout.cost }] : []),
+                      ]}
+                      featured={tryout.featured}
+                      imagePosition={tryout.imagePosition}
+                      cta="View Tryout"
                     />
-                  </a>
-
-                  {/* Info */}
-                  <div className="flex-1 p-4 sm:p-5 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <a href={`/tryouts/${tryout.slug}`} className="min-w-0">
-                        <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary group-hover:text-accent-hover transition-colors truncate">
-                          {tryout.name}
-                        </h3>
-                        {tryout.clubName && (
-                          <p className="text-muted text-sm">{tryout.clubName}</p>
-                        )}
-                      </a>
-                      {tryout.featured && (
-                        <span className="shrink-0 px-2 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-bold">Featured</span>
-                      )}
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-accent/10 text-accent text-xs font-semibold">{tryout.tryoutType}</span>
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-surface text-primary text-xs font-semibold">{tryout.gender}</span>
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-surface text-primary text-xs font-semibold">{tryout.ageGroup}</span>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-3 text-sm">
-                      <div><span className="text-muted">Dates:</span> <span className="font-medium text-primary">{tryout.dates}</span></div>
-                      {tryout.time && <div><span className="text-muted">Time:</span> <span className="font-medium text-primary">{tryout.time}</span></div>}
-                      <div><span className="text-muted">Location:</span> <span className="font-medium text-primary">{tryout.location || `${tryout.city}, ${tryout.state}`}</span></div>
-                      {tryout.cost && <div><span className="text-muted">Cost:</span> <span className="font-medium text-primary">{tryout.cost}</span></div>}
-                    </div>
-
-                    <div className="flex items-center gap-3 mt-3">
-                      <a
-                        href={`/tryouts/${tryout.slug}`}
-                        className="inline-flex items-center px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors"
-                      >
-                        View Details
-                      </a>
-                      {tryout.registrationUrl && (
-                        <a
-                          href={tryout.registrationUrl.startsWith("http") ? tryout.registrationUrl : `https://${tryout.registrationUrl}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center px-4 py-2 rounded-lg border border-accent text-accent text-sm font-semibold hover:bg-accent hover:text-white transition-colors"
-                        >
-                          Register
-                        </a>
-                      )}
-                      {tryout.website && (
-                        <a
-                          href={tryout.website.startsWith("http") ? tryout.website : `https://${tryout.website}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center px-4 py-2 rounded-lg border border-border text-primary text-sm font-semibold hover:bg-surface transition-colors"
-                        >
-                          Website
-                        </a>
-                      )}
-                      {isAdmin && (
-                        <button
-                          onClick={() => togglePast(tryout.slug)}
-                          className="ml-auto inline-flex items-center px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-muted hover:bg-surface transition-colors"
-                        >
-                          {tryout.isPast ? "Move to Current" : "Move to Past"}
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            )}
+
+            {/* ====== RESULTS COUNT ====== */}
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-muted font-medium">
+                {nonFeaturedTryouts.length} tryout{nonFeaturedTryouts.length !== 1 ? "s" : ""} found
+                {!viewAll && totalPages > 1 && <> &middot; Page {page} of {totalPages}</>}
+              </p>
+              {nonFeaturedTryouts.length > PER_PAGE && (
+                <button
+                  onClick={() => { setViewAll(!viewAll); setPage(1); }}
+                  className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors"
+                >
+                  {viewAll ? "Show Pages" : "View All"}
+                </button>
+              )}
             </div>
 
-            {/* Clubs */}
-            {filteredClubs.length > 0 && (
-              <>
-                <div className="mt-10 mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary">Soccer Clubs</h2>
-                  <p className="text-sm text-muted">Clubs that may be holding tryouts — visit their page for details.</p>
-                </div>
-                <div className="space-y-4">
-                  {filteredClubs.map((club) => (
-                    <div
-                      key={club.id}
-                      className="group bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg transition-all flex flex-col sm:flex-row"
-                    >
-                      <a href={`/clubs/${club.slug}`} className="sm:w-48 shrink-0">
-                        <img
-                          src={club.teamPhoto && !club.teamPhoto.includes("idf.webp") ? club.teamPhoto : club.logo || club.imageUrl || fallbackImage}
-                          alt={club.name}
-                          className="w-full h-40 sm:h-full object-cover"
-                          style={{ objectPosition: `center ${club.imagePosition ?? 50}%` }}
-                        />
+            {/* ====== NON-FEATURED ROWS ====== */}
+            <div className="space-y-3">
+              {visibleNonFeatured.map((tryout) => {
+                const img = tryout.logo || tryout.teamPhoto || tryout.imageUrl;
+                return (
+                  <div
+                    key={tryout.id}
+                    className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden"
+                  >
+                    {/* Red accent trim */}
+                    <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+
+                    {/* Image thumbnail */}
+                    <div className="hidden sm:flex items-center justify-center flex-shrink-0 p-3 sm:p-4">
+                      <a href={`/tryouts/${tryout.slug}`} className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg overflow-hidden bg-surface flex items-center justify-center">
+                        {img ? (
+                          <img src={img} alt={tryout.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <svg className="w-10 h-10 text-muted/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+                        )}
                       </a>
-                      <div className="flex-1 p-4 sm:p-5 min-w-0">
-                        <a href={`/clubs/${club.slug}`} className="min-w-0">
-                          <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary group-hover:text-accent-hover transition-colors truncate">
-                            {club.name}
+                    </div>
+
+                    {/* Row content */}
+                    <div className="flex items-start gap-5 sm:gap-6 flex-1 min-w-0 p-5 sm:p-6">
+
+                      {/* Main info */}
+                      <div className="flex-1 min-w-0">
+                        <a href={`/tryouts/${tryout.slug}`}>
+                          <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl md:text-[1.75rem] font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors">
+                            {tryout.name}
                           </h3>
-                          <p className="text-muted text-sm">{club.city}, {club.state}</p>
                         </a>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {club.level && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-accent/10 text-accent text-xs font-semibold">{club.level}</span>}
-                          {club.gender && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-surface text-primary text-xs font-semibold">{club.gender}</span>}
-                          {club.ageGroups && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-surface text-primary text-xs font-semibold">{club.ageGroups}</span>}
+                        <p className="text-sm text-muted flex items-center gap-1.5 mt-1">
+                          <svg className="w-3.5 h-3.5 flex-shrink-0 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                          {tryout.location || `${tryout.city}, ${tryout.state}`}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                          <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">{tryout.tryoutType}</span>
+                          <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{tryout.gender}</span>
+                          <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{tryout.ageGroup}</span>
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-3 text-sm">
-                          {club.teamCount > 0 && <div><span className="text-muted">Teams:</span> <span className="font-medium text-primary">{club.teamCount}</span></div>}
-                          <div><span className="text-muted">Location:</span> <span className="font-medium text-primary">{club.city}, {club.state}</span></div>
-                        </div>
-                        <div className="flex items-center gap-3 mt-3">
-                          <a
-                            href={`/clubs/${club.slug}`}
-                            className="inline-flex items-center px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors"
+                        <p className="text-sm text-primary mt-2 font-medium">
+                          {tryout.dates}{tryout.time && ` · ${tryout.time}`}
+                        </p>
+                        {tryout.description && (
+                          <p className="text-sm text-primary mt-1.5 line-clamp-2 hidden sm:block leading-relaxed">{tryout.description}</p>
+                        )}
+                        {isAdmin && (
+                          <button
+                            onClick={(e) => { e.preventDefault(); togglePast(tryout.slug); }}
+                            className="mt-2 inline-flex items-center px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-muted hover:bg-surface transition-colors"
                           >
-                            View Details
-                          </a>
-                          <a
-                            href={`/clubs/${club.slug}`}
-                            className="inline-flex items-center px-4 py-2 rounded-lg border border-accent text-accent text-sm font-semibold hover:bg-accent hover:text-white transition-colors"
-                          >
-                            Register
-                          </a>
-                        </div>
+                            {tryout.isPast ? "Move to Current" : "Move to Past"}
+                          </button>
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </>
-            )}
 
-            {/* Teams */}
-            {filteredTeams.length > 0 && (
-              <>
-                <div className="mt-10 mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary">Soccer Teams</h2>
-                  <p className="text-sm text-muted">Teams that may be holding tryouts — visit their page for details.</p>
-                </div>
-                <div className="space-y-4">
-                  {filteredTeams.map((team) => (
-                    <div
-                      key={team.id}
-                      className="group bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg transition-all flex flex-col sm:flex-row"
+                    {/* Arrow panel */}
+                    <a
+                      href={`/tryouts/${tryout.slug}`}
+                      className="hidden sm:flex items-center justify-center w-14 md:w-16 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl"
                     >
-                      <a href={`/teams/${team.slug}`} className="sm:w-48 shrink-0">
-                        <img
-                          src={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || team.imageUrl || fallbackImage}
-                          alt={team.name}
-                          className="w-full h-40 sm:h-full object-cover"
-                          style={{ objectPosition: `center ${team.imagePosition ?? 50}%` }}
-                        />
-                      </a>
-                      <div className="flex-1 p-4 sm:p-5 min-w-0">
-                        <a href={`/teams/${team.slug}`} className="min-w-0">
-                          <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary group-hover:text-accent-hover transition-colors truncate">
-                            {team.name}
-                          </h3>
-                          {team.clubName && <p className="text-muted text-sm">{team.clubName}</p>}
-                          <p className="text-muted text-sm">{team.city}, {team.state}</p>
-                        </a>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {team.level && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-accent/10 text-accent text-xs font-semibold">{team.level}</span>}
-                          {team.gender && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-surface text-primary text-xs font-semibold">{team.gender}</span>}
-                          {team.ageGroup && <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-surface text-primary text-xs font-semibold">{team.ageGroup}</span>}
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 mt-3 text-sm">
-                          {team.coach && <div><span className="text-muted">Coach:</span> <span className="font-medium text-primary">{team.coach}</span></div>}
-                          {team.season && <div><span className="text-muted">Season:</span> <span className="font-medium text-primary">{team.season}</span></div>}
-                          <div><span className="text-muted">Location:</span> <span className="font-medium text-primary">{team.city}, {team.state}</span></div>
-                        </div>
-                        <div className="flex items-center gap-3 mt-3">
-                          <a
-                            href={`/teams/${team.slug}`}
-                            className="inline-flex items-center px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors"
-                          >
-                            View Details
-                          </a>
-                          <a
-                            href={`/teams/${team.slug}`}
-                            className="inline-flex items-center px-4 py-2 rounded-lg border border-accent text-accent text-sm font-semibold hover:bg-accent hover:text-white transition-colors"
-                          >
-                            Register
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
+                      <span className="text-white text-2xl font-light">&#8250;</span>
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
 
-            {/* Pagination */}
+            {/* ====== PAGINATION ====== */}
             {!viewAll && totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-8">
                 <button

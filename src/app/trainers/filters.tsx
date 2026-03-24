@@ -3,13 +3,12 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Trainer } from "@/lib/types";
-import { ListingCard, FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui";
+import { ListingCard, EmptyState, AnytimeInlineCTA } from "@/components/ui";
 
 const PER_PAGE = 10;
 
 export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
   const searchParams = useSearchParams();
-  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [specialty, setSpecialty] = useState(searchParams.get("specialty") || "");
   const [state, setState] = useState(searchParams.get("state") || "");
   const [page, setPage] = useState(1);
@@ -19,107 +18,186 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
   const states = [...new Set(trainers.map((t) => t.state))].sort();
 
   const filtered = trainers.filter((t) => {
-    if (search) {
-      const q = search.toLowerCase();
-      if (!t.name.toLowerCase().includes(q) && !t.city.toLowerCase().includes(q) && !t.state.toLowerCase().includes(q)) return false;
-    }
     if (specialty && t.specialty !== specialty) return false;
     if (state && t.state !== state) return false;
     return true;
   });
 
   const sorted = [...filtered].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-  const totalPages = Math.ceil(sorted.length / PER_PAGE);
-  const visible = viewAll ? sorted : sorted.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const allFeatured = sorted.filter((t) => t.featured);
+  const [topCards] = useState(() => {
+    if (allFeatured.length > 0) {
+      const shuffled = [...allFeatured];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled.slice(0, 3);
+    }
+    return sorted.slice(0, 3);
+  });
+  const topCardIds = new Set(topCards.map((t) => t.id));
+  const nonFeaturedTrainers = sorted.filter((t) => !topCardIds.has(t.id));
+  const totalPages = Math.ceil(nonFeaturedTrainers.length / PER_PAGE);
+  const visibleNonFeatured = viewAll ? nonFeaturedTrainers : nonFeaturedTrainers.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   return (
     <>
-      {/* Hero Section with Search Bar */}
-      <div className="bg-primary text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-3">
-            Private Trainers & Coaches
+      {/* ====== HERO SECTION ====== */}
+      <div className="relative bg-primary overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[#1a4a7a] opacity-90" />
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 120" preserveAspectRatio="none" style={{ height: "60px" }}>
+          <path fill="var(--background, #f8fafc)" d="M0,60 C360,120 1080,0 1440,60 L1440,120 L0,120 Z" />
+        </svg>
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+          <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-[56px] font-extrabold text-white uppercase tracking-tight leading-tight mb-4">
+            Find a Trainer to Level Up
           </h1>
-          <p className="text-white/70 max-w-2xl text-lg mb-8">
-            Find verified private trainers offering 1-on-1 and small group sessions near you.
+          <p className="text-white/60 text-base md:text-lg max-w-2xl mx-auto mb-10">
+            Browse private soccer trainers and coaches.
           </p>
-          <div className="bg-white rounded-2xl shadow-lg p-2 flex flex-col sm:flex-row gap-2">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search by trainer name, city, or state..."
-              className="flex-1 px-5 py-4 rounded-xl text-primary text-base placeholder:text-muted focus:outline-none"
-            />
-            <select
-              value={state}
-              onChange={(e) => { setState(e.target.value); setPage(1); }}
-              className="px-4 py-4 rounded-xl border border-border text-sm font-medium text-primary bg-surface focus:outline-none cursor-pointer sm:w-48"
-            >
-              <option value="">All States</option>
-              {states.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <button
-              type="button"
-              className="px-8 py-4 rounded-xl bg-accent text-white font-semibold text-base hover:bg-accent-hover transition-colors whitespace-nowrap"
-            >
-              Search
-            </button>
+
+          {/* Single unified search bar */}
+          <div className="bg-white rounded-2xl lg:rounded-full shadow-2xl p-2 max-w-6xl mx-auto">
+            <div className="flex flex-col lg:flex-row items-stretch">
+              <select
+                value={state}
+                onChange={(e) => { setState(e.target.value); setPage(1); }}
+                className="px-4 py-3 lg:rounded-l-full text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer lg:border-r border-border min-w-0"
+              >
+                <option value="">All States</option>
+                {states.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <select
+                value={specialty}
+                onChange={(e) => { setSpecialty(e.target.value); setPage(1); }}
+                className="px-4 py-3 text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer border-t lg:border-t-0 lg:border-r border-border min-w-0"
+              >
+                <option value="">All Specialties</option>
+                {specialties.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <button
+                type="button"
+                className="px-8 py-3 rounded-xl lg:rounded-r-full lg:rounded-l-none bg-accent text-white font-bold text-sm uppercase tracking-wide hover:bg-accent-hover transition-colors whitespace-nowrap mt-1 lg:mt-0"
+              >
+                Search
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Filter + Cards */}
+      {/* ====== CONTENT ====== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <FilterBar
-          filters={[
-            { label: "All Specialties", options: specialties, value: specialty, onChange: (v: string) => { setSpecialty(v); setPage(1); } },
-          ]}
-        />
-
-        {/* View All / result count */}
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-muted">
-            {sorted.length} trainer{sorted.length !== 1 ? "s" : ""} found
-            {!viewAll && sorted.length > PER_PAGE && <> &middot; Page {page} of {totalPages}</>}
-          </p>
-          {sorted.length > PER_PAGE && (
-            <button
-              onClick={() => { setViewAll(!viewAll); setPage(1); }}
-              className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors"
-            >
-              {viewAll ? "Show Pages" : "View All"}
-            </button>
-          )}
-        </div>
 
         {sorted.length === 0 ? (
           <EmptyState message="No trainers match your filters." />
         ) : (
           <>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {visible.map((trainer) => (
-                <ListingCard
-                  key={trainer.id}
-                  href={`/trainers/${trainer.slug}`}
-                  title={trainer.name}
-                  subtitle={`${trainer.city}, ${trainer.state}`}
-                  image={trainer.teamPhoto && !trainer.teamPhoto.includes("idf.webp") ? trainer.teamPhoto : trainer.logo || trainer.imageUrl || undefined}
-                  badges={[{ label: trainer.specialty, variant: "green" }]}
-                  details={[
-                    { label: "Price", value: trainer.priceRange },
-                    { label: "Rating", value: `⭐ ${trainer.rating} (${trainer.reviewCount})` },
-                    { label: "Experience", value: trainer.experience.length > 50 ? trainer.experience.slice(0, 50) + "…" : trainer.experience },
-                    { label: "Area", value: trainer.serviceArea.length > 50 ? trainer.serviceArea.slice(0, 50) + "…" : trainer.serviceArea },
-                  ]}
-                  featured={trainer.featured}
-                  imagePosition={trainer.imagePosition}
-                  cta="View Trainer"
-                />
-              ))}
+            {/* ====== FEATURED CARDS ====== */}
+            {topCards.length > 0 && (
+              <div className="mb-10">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary mb-5 uppercase tracking-wide flex items-center gap-2">
+                  <span className="text-amber-500">&#9733;</span> {allFeatured.length > 0 ? "Featured Trainers" : "Top Trainers"}
+                </h2>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {topCards.map((trainer) => (
+                    <ListingCard
+                      key={trainer.id}
+                      href={`/trainers/${trainer.slug}`}
+                      title={trainer.name}
+                      subtitle={`${trainer.city}, ${trainer.state}`}
+                      image={trainer.teamPhoto && !trainer.teamPhoto.includes("idf.webp") ? trainer.teamPhoto : trainer.logo || trainer.imageUrl || undefined}
+                      badges={[
+                        { label: trainer.specialty, variant: "green" },
+                      ]}
+                      details={[
+                        { label: "Experience", value: trainer.experience },
+                        { label: "Price Range", value: trainer.priceRange },
+                      ]}
+                      featured={trainer.featured}
+                      imagePosition={trainer.imagePosition}
+                      cta="View Trainer"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ====== RESULTS COUNT ====== */}
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-muted font-medium">
+                {nonFeaturedTrainers.length} trainer{nonFeaturedTrainers.length !== 1 ? "s" : ""} found
+                {!viewAll && totalPages > 1 && <> &middot; Page {page} of {totalPages}</>}
+              </p>
+              {nonFeaturedTrainers.length > PER_PAGE && (
+                <button
+                  onClick={() => { setViewAll(!viewAll); setPage(1); }}
+                  className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors"
+                >
+                  {viewAll ? "Show Pages" : "View All"}
+                </button>
+              )}
             </div>
 
-            {/* Pagination */}
+            {/* ====== NON-FEATURED ROWS ====== */}
+            <div className="space-y-3">
+              {visibleNonFeatured.map((trainer) => {
+                const img = trainer.logo || trainer.teamPhoto || trainer.imageUrl;
+                return (
+                  <a
+                    key={trainer.id}
+                    href={`/trainers/${trainer.slug}`}
+                    className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden"
+                  >
+                    {/* Red accent trim */}
+                    <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+
+                    {/* Image thumbnail */}
+                    <div className="hidden sm:flex items-center justify-center flex-shrink-0 p-3 sm:p-4">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg overflow-hidden bg-surface flex items-center justify-center">
+                        {img ? (
+                          <img src={img} alt={trainer.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <svg className="w-10 h-10 text-muted/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Row content */}
+                    <div className="flex items-start gap-5 sm:gap-6 flex-1 min-w-0 p-5 sm:p-6">
+
+                      {/* Main info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl md:text-[1.75rem] font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors">
+                          {trainer.name}
+                        </h3>
+                        <p className="text-sm text-muted flex items-center gap-1.5 mt-1">
+                          <svg className="w-3.5 h-3.5 flex-shrink-0 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                          {trainer.city}, {trainer.state}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                          <span className="px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold">{trainer.specialty}</span>
+                          {trainer.priceRange && (
+                            <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{trainer.priceRange}</span>
+                          )}
+                        </div>
+                        {trainer.description && (
+                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{trainer.description}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Arrow panel */}
+                    <div className="hidden sm:flex items-center justify-center w-14 md:w-16 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
+                      <span className="text-white text-2xl font-light">&#8250;</span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+
+            {/* ====== PAGINATION ====== */}
             {!viewAll && totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-8">
                 <button
