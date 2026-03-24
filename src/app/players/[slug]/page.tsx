@@ -138,7 +138,7 @@ export default async function PlayerDetailPage({ params }: Props) {
                   <p className="text-sm font-bold text-primary mt-0.5">{player.birthYear}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted font-medium uppercase tracking-wider">Level of Play</p>
+                  <p className="text-xs text-muted font-medium uppercase tracking-wider">League</p>
                   <p className="text-sm font-bold text-primary mt-0.5">{player.level || "—"}</p>
                 </div>
                 {player.currentClub && (
