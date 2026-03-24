@@ -562,7 +562,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "city", label: "City", required: true },
     { name: "country", label: "Country", required: true, type: "country" },
     { name: "state", label: "State", required: true, type: "state-select" },
-    { name: "level", label: "Level", required: true, options: ["MLS Next Pro Pathway", "MLS NEXT", "MLS NEXT 2", "Girls Academy", "ECNL", "ECNL Regional League (ECRL)", "Elite 64", "USL Academy", "Aspire", "NPL", "USYS National League", "DPL", "EDP", "SCCL", "State League", "Regional League", "Club Travel", "Rec Select", "Recreational / Grassroots", "Other"] },
+    { name: "level", label: "League (e.g. ECNL, MLS NEXT, GA)" },
     { name: "gender", label: "Gender", required: true, options: ["Boys", "Girls"] },
     { name: "gpa", label: "GPA (optional)" },
     { name: "description", label: "About the Player", type: "textarea" },
