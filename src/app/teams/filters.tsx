@@ -77,15 +77,6 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                 <option value="">All States</option>
                 {states.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
-              <div className="border-t lg:border-t-0 lg:border-r border-border flex-1 min-w-0">
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                  placeholder="Team name, city, club..."
-                  className="w-full px-4 py-3 text-primary placeholder:text-muted focus:outline-none text-sm"
-                />
-              </div>
               <select
                 value={level}
                 onChange={(e) => { setLevel(e.target.value); setPage(1); }}
