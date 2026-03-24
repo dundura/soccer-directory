@@ -197,7 +197,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                     className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden"
                   >
                     {/* Red accent trim */}
-                    <div className="w-1.5 bg-accent/30 group-hover:bg-accent transition-colors self-stretch flex-shrink-0 rounded-l-xl" />
+                    <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
 
                     {/* Image thumbnail */}
                     <div className="hidden sm:flex items-center justify-center flex-shrink-0 p-3 sm:p-4">
