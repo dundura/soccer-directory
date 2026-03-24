@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Team } from "@/lib/types";
-import { ListingCard, FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui";
+import { ListingCard, EmptyState, AnytimeInlineCTA } from "@/components/ui";
 
 const PER_PAGE = 10;
 
@@ -66,51 +66,72 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
             Browse youth soccer teams looking for players. Filter by age group, level, and location.
           </p>
 
-          {/* Unified search pill */}
-          <div className="bg-white rounded-2xl sm:rounded-full shadow-2xl p-2 flex flex-col sm:flex-row items-stretch gap-0 max-w-4xl mx-auto">
-            <select
-              value={state}
-              onChange={(e) => { setState(e.target.value); setPage(1); }}
-              className="px-5 py-3.5 rounded-xl sm:rounded-l-full sm:rounded-r-none text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer sm:w-44 sm:border-r border-border"
-            >
-              <option value="">All States</option>
-              {states.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Team name, city, club..."
-              className="flex-1 px-5 py-3.5 text-primary placeholder:text-muted focus:outline-none text-sm min-w-0"
-            />
-            <select
-              value={level}
-              onChange={(e) => { setLevel(e.target.value); setPage(1); }}
-              className="px-5 py-3.5 rounded-xl sm:rounded-none text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer sm:w-48 sm:border-l border-border"
-            >
-              <option value="">All Levels</option>
-              {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-            </select>
-            <button
-              type="button"
-              className="px-8 py-3.5 rounded-xl sm:rounded-r-full sm:rounded-l-none bg-accent text-white font-bold text-sm uppercase tracking-wide hover:bg-accent-hover transition-colors whitespace-nowrap"
-            >
-              Search
-            </button>
+          {/* Single unified search bar */}
+          <div className="bg-white rounded-2xl lg:rounded-full shadow-2xl p-2 max-w-6xl mx-auto">
+            <div className="flex flex-col lg:flex-row items-stretch">
+              <select
+                value={state}
+                onChange={(e) => { setState(e.target.value); setPage(1); }}
+                className="px-4 py-3 lg:rounded-l-full text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer lg:border-r border-border min-w-0"
+              >
+                <option value="">All States</option>
+                {states.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <div className="border-t lg:border-t-0 lg:border-r border-border flex-1 min-w-0">
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                  placeholder="Team name, city, club..."
+                  className="w-full px-4 py-3 text-primary placeholder:text-muted focus:outline-none text-sm"
+                />
+              </div>
+              <select
+                value={level}
+                onChange={(e) => { setLevel(e.target.value); setPage(1); }}
+                className="px-4 py-3 text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer border-t lg:border-t-0 lg:border-r border-border min-w-0"
+              >
+                <option value="">All Levels</option>
+                {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
+              </select>
+              <select
+                value={ageGroup}
+                onChange={(e) => { setAgeGroup(e.target.value); setPage(1); }}
+                className="px-4 py-3 text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer border-t lg:border-t-0 lg:border-r border-border min-w-0"
+              >
+                <option value="">All Birth Years</option>
+                {ageGroups.map((a) => <option key={a} value={a}>{a}</option>)}
+              </select>
+              <select
+                value={gender}
+                onChange={(e) => { setGender(e.target.value); setPage(1); }}
+                className="px-4 py-3 text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer border-t lg:border-t-0 lg:border-r border-border min-w-0"
+              >
+                <option value="">All Genders</option>
+                <option value="Boys">Boys</option>
+                <option value="Girls">Girls</option>
+              </select>
+              <select
+                value={recruiting}
+                onChange={(e) => { setRecruiting(e.target.value); setPage(1); }}
+                className="px-4 py-3 text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer border-t lg:border-t-0 lg:border-r border-border min-w-0"
+              >
+                <option value="">Recruiting?</option>
+                <option value="yes">Yes</option>
+              </select>
+              <button
+                type="button"
+                className="px-8 py-3 rounded-xl lg:rounded-r-full lg:rounded-l-none bg-accent text-white font-bold text-sm uppercase tracking-wide hover:bg-accent-hover transition-colors whitespace-nowrap mt-1 lg:mt-0"
+              >
+                Search
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* ====== CONTENT ====== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        {/* Secondary filter bar */}
-        <FilterBar
-          filters={[
-            { label: "All Birth Years", options: ageGroups, value: ageGroup, onChange: (v: string) => { setAgeGroup(v); setPage(1); } },
-            { label: "All Genders", options: ["Boys", "Girls"], value: gender, onChange: (v: string) => { setGender(v); setPage(1); } },
-            { label: "Recruiting?", options: ["yes"], value: recruiting, onChange: (v: string) => { setRecruiting(v); setPage(1); } },
-          ]}
-        />
 
         {sorted.length === 0 ? (
           <EmptyState message="No teams match your filters." />
