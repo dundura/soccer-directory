@@ -58,12 +58,11 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
           </p>
 
           {/* Single unified search bar */}
-          <div className="bg-white rounded-2xl lg:rounded-full shadow-2xl p-2 max-w-6xl mx-auto">
-            <div className="flex flex-col lg:flex-row items-stretch">
+          <div className="bg-white rounded-2xl sm:rounded-full shadow-2xl p-2 max-w-xl mx-auto inline-flex flex-col sm:flex-row items-stretch">
               <select
                 value={state}
                 onChange={(e) => { setState(e.target.value); setPage(1); }}
-                className="px-4 py-3 lg:rounded-l-full text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer lg:border-r border-border min-w-0"
+                className="px-5 py-3 sm:rounded-l-full text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer sm:border-r border-border"
               >
                 <option value="">All States</option>
                 {states.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -71,18 +70,17 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
               <select
                 value={level}
                 onChange={(e) => { setLevel(e.target.value); setPage(1); }}
-                className="px-4 py-3 text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer border-t lg:border-t-0 lg:border-r border-border min-w-0"
+                className="px-5 py-3 text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer border-t sm:border-t-0 sm:border-r border-border"
               >
                 <option value="">All Levels</option>
                 {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
               </select>
               <button
                 type="button"
-                className="px-8 py-3 rounded-xl lg:rounded-r-full lg:rounded-l-none bg-accent text-white font-bold text-sm uppercase tracking-wide hover:bg-accent-hover transition-colors whitespace-nowrap mt-1 lg:mt-0"
+                className="px-8 py-3 rounded-xl sm:rounded-r-full sm:rounded-l-none bg-accent text-white font-bold text-sm uppercase tracking-wide hover:bg-accent-hover transition-colors whitespace-nowrap mt-1 sm:mt-0"
               >
                 Search
               </button>
-            </div>
           </div>
         </div>
       </div>
