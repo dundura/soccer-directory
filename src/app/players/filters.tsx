@@ -209,7 +209,7 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
                 <div className="bg-white rounded-b-2xl border border-t-0 border-border px-5 py-4">
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="text-center">
-                      <p className="text-sm font-bold text-primary">{player.birthYear}</p>
+                      <p className="text-sm font-bold text-primary">{player.birthMonth ? `${player.birthMonth}, ${player.birthYear}` : player.birthYear}</p>
                       <p className="text-xs text-muted">Birth Year</p>
                     </div>
                     <div className="text-center">

@@ -410,6 +410,7 @@ export interface PlayerProfile extends ProfileFields {
   position: string;
   secondaryPosition?: string;
   birthYear: string;
+  birthMonth?: string;
   height?: string;
   preferredFoot?: string;
   currentClub?: string;

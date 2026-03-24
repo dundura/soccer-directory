@@ -124,7 +124,7 @@ export default async function PlayerDetailPage({ params }: Props) {
               {/* Badges - under city */}
               <div className="flex flex-wrap gap-2 mt-3">
                 <Badge variant={player.gender === "Boys" ? "blue" : "purple"}>{player.gender}</Badge>
-                <Badge variant="default">{player.birthYear}</Badge>
+                <Badge variant="default">{player.birthMonth ? `${player.birthMonth}, ${player.birthYear}` : player.birthYear}</Badge>
                 {player.level && <Badge variant="default">{player.level}</Badge>}
                 {player.availableForGuestPlay && <Badge variant="green">Available for Guest Play</Badge>}
                 {player.lookingForTeam ? (
@@ -138,7 +138,7 @@ export default async function PlayerDetailPage({ params }: Props) {
               <div className="grid grid-cols-2 gap-4 mt-6 pt-5 border-t border-border">
                 <div>
                   <p className="text-xs text-muted font-medium uppercase tracking-wider">Birth Year</p>
-                  <p className="text-sm font-bold text-primary mt-0.5">{player.birthYear}</p>
+                  <p className="text-sm font-bold text-primary mt-0.5">{player.birthMonth ? `${player.birthMonth}, ${player.birthYear}` : player.birthYear}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted font-medium uppercase tracking-wider">League</p>

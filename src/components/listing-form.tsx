@@ -548,6 +548,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "playerName", label: "Player Name", required: true },
     { name: "position", label: "Primary Position", required: true, options: ["GK", "CB", "FB/WB", "CDM", "CM", "CAM", "Winger", "ST"] },
     { name: "secondaryPosition", label: "Secondary Position", options: ["GK", "CB", "FB/WB", "CDM", "CM", "CAM", "Winger", "ST"] },
+    { name: "birthMonth", label: "Birth Month", options: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] },
     { name: "birthYear", label: "Birth Year", required: true, options: ["2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016"] },
     { name: "gender", label: "Gender", required: true, options: ["Boys", "Girls"] },
     { name: "preferredFoot", label: "Preferred Foot", options: ["Right", "Left", "Both"] },
