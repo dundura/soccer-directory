@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return ogMeta(
     `${player.playerName} — ${player.position} | Player Profile`,
     player.description || `${player.position} from ${player.city}, ${player.state}. Birth year: ${player.birthYear}. ${player.lookingFor || ""}`,
-    player.teamPhoto || player.imageUrl,
+    player.teamPhoto || player.imageUrl || player.logo,
     `/players/${slug}`,
   );
 }
@@ -100,7 +100,7 @@ export default async function PlayerDetailPage({ params }: Props) {
               {/* Contact button - top right */}
               <a
                 href={`/contact/player/${slug}`}
-                className="absolute top-6 right-6 md:top-8 md:right-8 inline-flex items-center gap-2 bg-accent text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-accent-hover transition-colors"
+                className="absolute top-6 right-6 md:top-8 md:right-8 z-10 inline-flex items-center gap-2 bg-accent text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-accent-hover transition-colors"
               >
                 Contact
               </a>
