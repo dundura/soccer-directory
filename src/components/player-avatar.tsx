@@ -9,9 +9,9 @@ function getInitials(name?: string): string | null {
 // Soccer ball SVG for fallback when no name is available
 const soccerBallSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="45" stroke="white" stroke-width="2"/><path d="M50 10 L62 30 L50 38 L38 30Z M85 40 L72 30 L76 45 L68 55Z M78 75 L68 55 L76 45 L85 60Z M50 90 L62 70 L50 62 L38 70Z M15 60 L24 45 L32 55 L22 75Z M15 40 L28 30 L24 45 L32 55Z" fill="white" opacity="0.3"/><polygon points="50,28 60,40 55,52 45,52 40,40" fill="white" opacity="0.4"/></svg>`;
 
-export function PlayerAvatar({ src, name, className }: { src?: string | null; name?: string; className?: string }) {
+export function PlayerAvatar({ src, name, className, imagePosition }: { src?: string | null; name?: string; className?: string; imagePosition?: number }) {
   if (src) {
-    return <img src={src} alt={name || "Player"} className={className} />;
+    return <img src={src} alt={name || "Player"} className={className} style={imagePosition != null ? { objectPosition: `center ${imagePosition}%` } : undefined} />;
   }
 
   const initials = getInitials(name);

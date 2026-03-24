@@ -128,6 +128,7 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
                     <PlayerAvatar
                       src={player.teamPhoto}
                       name={player.playerName}
+                      imagePosition={player.imagePosition}
                       className="w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover border border-border"
                     />
                   </div>
