@@ -75,7 +75,7 @@ export default async function PlayerDetailPage({ params }: Props) {
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
           <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-0">
             {/* Left: Player Photo */}
-            <div className="relative bg-white flex items-center justify-center min-h-[320px] md:min-h-[460px] p-6 border-r border-border">
+            <div className="relative bg-white flex items-center justify-center min-h-[320px] md:min-h-[520px] p-6 border-r border-border">
               {playerPhoto ? (
                 <div className="w-full h-full rounded-xl overflow-hidden border border-gray-200 shadow-sm">
                   <img
@@ -164,22 +164,23 @@ export default async function PlayerDetailPage({ params }: Props) {
                   <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="description" value={player.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
                 </div>
               )}
+
+              {/* Looking For - inside hero card */}
+              {player.lookingFor && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <div className="flex items-center justify-between mb-2">
+                    <h2 className="text-[15px] font-bold text-primary">Looking For</h2>
+                    <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
+                  </div>
+                  <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-line">{player.lookingFor}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* ====== Content Sections ====== */}
         <div className="space-y-6">
-          {/* Looking For */}
-          {player.lookingFor && (
-            <section className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-[15px] font-bold text-primary">Looking For</h2>
-                <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
-              </div>
-              <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-line">{player.lookingFor}</p>
-            </section>
-          )}
 
           {/* Highlight Videos */}
           {(player.videoUrl || player.videoUrl2 || player.videoUrl3 || (player.highlightVideos && player.highlightVideos.length > 0)) && (
