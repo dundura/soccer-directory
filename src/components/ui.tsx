@@ -60,7 +60,7 @@ export function ListingCard({
             <Badge key={i} variant={b.variant}>{b.label}</Badge>
           ))}
         </div>
-        <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary group-hover:text-accent-hover transition-colors mb-1">
+        <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight group-hover:text-accent-hover transition-colors mb-1">
           {title}
         </h3>
         <p className="text-muted text-sm mb-4">{subtitle}</p>
