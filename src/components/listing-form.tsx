@@ -570,8 +570,6 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Media", type: "heading" },
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
     { name: "teamPhoto", label: "Player Photo", type: "image" },
-    { name: "logo", label: "Club Logo URL" },
-    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Action Photos (up to 5 URLs)", type: "photos" },
     { name: "_highlights", label: "Highlight Videos", type: "heading" },
     { name: "highlightVideos", label: "Highlight Videos (up to 5 — shown on profile and highlight reels page)", type: "highlight-videos", max: 5 },
