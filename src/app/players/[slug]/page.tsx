@@ -109,11 +109,11 @@ export default async function PlayerDetailPage({ params }: Props) {
               <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="playerName" value={player.playerName} tag="h1" className="text-2xl sm:text-[32px] font-extrabold text-primary leading-tight tracking-tight pr-24" />
 
               {(player.currentClub || player.teamName) && (
-                <p className="text-sm font-semibold text-muted -mt-0.5">{player.teamName || player.currentClub}</p>
+                <p className="text-sm font-semibold text-muted -mt-1">{player.teamName || player.currentClub}</p>
               )}
 
               {/* Location with icon */}
-              <div className="flex items-center gap-3 mt-1 text-[15px]">
+              <div className="flex items-center gap-3 mt-3 text-[15px]">
                 <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
                   <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 </div>
