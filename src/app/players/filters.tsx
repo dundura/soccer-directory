@@ -193,10 +193,10 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
                   {(player.availableForGuestPlay || player.lookingForTeam) && (
                     <div className="flex items-center justify-center gap-2 mt-3">
                       {player.availableForGuestPlay && (
-                        <span className="px-2.5 py-1 rounded-full bg-[#DC373E]/20 text-[#FF8A8E] text-xs font-semibold">Seeking Guest Play</span>
+                        <span className="px-2.5 py-1 rounded-full bg-[#DC373E]/20 text-[#FF8A8E] text-xs font-semibold animate-pulse">Seeking Guest Play</span>
                       )}
                       {player.lookingForTeam && (
-                        <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold">Looking for Team</span>
+                        <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold animate-pulse">Looking for Team</span>
                       )}
                     </div>
                   )}
