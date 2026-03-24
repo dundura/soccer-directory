@@ -63,7 +63,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
             Find a Team to Play For
           </h1>
           <p className="text-white/60 text-base md:text-lg max-w-2xl mx-auto mb-10">
-            Browse youth soccer teams looking for players. Filter by age group, level, and location.
+            Browse youth soccer teams looking for players.
           </p>
 
           {/* Single unified search bar */}
