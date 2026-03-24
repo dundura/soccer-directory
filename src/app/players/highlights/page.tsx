@@ -15,14 +15,12 @@ export const metadata: Metadata = {
 export default async function PlayerHighlightsPage() {
   const players = await getPlayersWithHighlightVideos();
 
-  // Collect all videos that have showOnHighlights = true, with player info
+  // Collect all videos from all players
   const highlights: { video: HighlightVideo; player: typeof players[0] }[] = [];
   for (const player of players) {
     if (!player.highlightVideos) continue;
     for (const video of player.highlightVideos) {
-      if (video.showOnHighlights) {
-        highlights.push({ video, player });
-      }
+      highlights.push({ video, player });
     }
   }
 
