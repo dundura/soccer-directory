@@ -111,7 +111,7 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
             {visible.map((player) => (
               <a
                 key={player.id}
-                href={`/guest-play/players/${player.slug}`}
+                href={`/players/${player.slug}`}
                 className="group block bg-white rounded-2xl border border-border p-4 md:p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 relative"
               >
                 {player.featured && (

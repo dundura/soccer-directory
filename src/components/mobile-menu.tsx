@@ -36,7 +36,7 @@ const navGroups: NavGroup[] = [
         label: "Guest Play",
         links: [
           { label: "Guest Play", href: "/guest-play" },
-          { label: "Player Profiles", href: "/guest-play/players" },
+          { label: "Player Profiles", href: "/players" },
           { label: "Guest Player Posts", href: "/guest-play/posts" },
         ],
       },

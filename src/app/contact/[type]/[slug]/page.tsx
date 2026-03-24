@@ -18,7 +18,7 @@ const TYPE_LABELS: Record<string, string> = {
 const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers", camp: "camps",
   guest: "guest-play", tournament: "tournaments", futsal: "futsal",
-  player: "guest-play/players", service: "services",
+  player: "players", service: "services",
   tryout: "tryouts",
   trainingapp: "training-apps", ebook: "ebooks", giveaway: "giveaways",
   blog: "blogs",

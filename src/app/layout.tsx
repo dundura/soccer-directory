@@ -92,7 +92,7 @@ function Header() {
                   items: [
                     { label: "Tryouts", href: "/tryouts", desc: "Find club & team tryouts", icon: "🎽" },
                     { label: "Guest Play", href: "/guest-play", desc: "Guest player opportunities", icon: "🤝" },
-                    { label: "Player Profiles", href: "/guest-play/players", desc: "Browse available players", icon: "👤" },
+                    { label: "Player Profiles", href: "/players", desc: "Browse available players", icon: "👤" },
                     { label: "Guest Player Posts", href: "/guest-play/posts", desc: "Latest guest play posts", icon: "📋" },
                     { label: "Fundraisers", href: "/fundraiser", desc: "Support local teams", icon: "💚" },
                   ],
@@ -193,7 +193,7 @@ function Footer() {
               <a href="/college-recruiting" className="hover:text-white transition-colors">College Recruiting</a>
               <a href="/club-reviews" className="hover:text-white transition-colors">Club Reviews</a>
               <a href="/guest-play" className="hover:text-white transition-colors">Guest Player Ops</a>
-              <a href="/guest-play/players" className="hover:text-white transition-colors">Player Profiles</a>
+              <a href="/players" className="hover:text-white transition-colors">Player Profiles</a>
               <a href="/international-trips" className="hover:text-white transition-colors">International Trips</a>
               <a href="/tournaments" className="hover:text-white transition-colors">Find Tournaments</a>
               <a href="/shop" className="hover:text-white transition-colors">Recommendations</a>

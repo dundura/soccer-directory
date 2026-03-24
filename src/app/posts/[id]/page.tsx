@@ -23,7 +23,7 @@ const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers",
   recruiter: "college-recruiting", futsal: "futsal",
   camp: "camps", specialevent: "special-events", tryout: "tryouts",
-  tournament: "tournaments", player: "guest-play/players", blog: "blogs",
+  tournament: "tournaments", player: "players", blog: "blogs",
   fbgroup: "facebook-groups", instagrampage: "instagram-pages", tiktokpage: "tiktok-pages", podcast: "podcasts", youtube: "youtube-channels",
   service: "services", trainingapp: "training-apps", ebook: "ebooks",
   giveaway: "giveaways", guest: "guest-play", trip: "international-trips",

@@ -17,7 +17,7 @@ export function ContactPlayerForm({ playerName, slug }: { playerName: string; sl
     setSubmitting(true);
     setError("");
     try {
-      const res = await fetch(`/api/guest-play/players/${slug}/contact`, {
+      const res = await fetch(`/api/players/${slug}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, captchaToken }),

@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `${player.playerName} — ${player.position} | Player Profile`,
     player.description || `${player.position} from ${player.city}, ${player.state}. Birth year: ${player.birthYear}. ${player.lookingFor || ""}`,
     player.teamPhoto || player.imageUrl,
-    `/guest-play/players/${slug}`,
+    `/players/${slug}`,
   );
 }
 
@@ -65,7 +65,7 @@ export default async function PlayerDetailPage({ params }: Props) {
       {/* Breadcrumb */}
       <div className="max-w-[1100px] mx-auto px-6 py-3.5 text-sm text-muted flex items-center justify-between">
         <div>
-          <a href="/guest-play/players" className="text-primary hover:underline">Players</a>
+          <a href="/players" className="text-primary hover:underline">Players</a>
           {" › "}
           <span>{player.state}</span>
           {" › "}

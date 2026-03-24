@@ -25,7 +25,7 @@ export default function Error({
         </button>
         <div className="mt-4">
           <a
-            href="/guest-play/players"
+            href="/players"
             className="text-sm text-muted hover:underline"
           >
             &larr; Back to all players

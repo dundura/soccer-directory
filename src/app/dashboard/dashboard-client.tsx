@@ -18,7 +18,7 @@ const TYPE_PATHS: Record<string, string> = {
   equipment: "shop",
   soccerbook: "books-and-authors",
   showcase: "camps",
-  player: "guest-play/players",
+  player: "players",
   podcast: "podcasts",
   fbgroup: "facebook-groups",
   instagrampage: "instagram-pages",

@@ -48,7 +48,7 @@ export async function POST(req: Request, { params }: Props) {
             <div style="background: #f7f7f7; padding: 16px; border-radius: 8px; margin: 16px 0;">
               <p style="color: #333; line-height: 1.6; margin: 0; white-space: pre-wrap;">${message}</p>
             </div>
-            <a href="https://www.soccer-near-me.com/guest-play/players/${slug}" style="display: inline-block; padding: 12px 24px; background: #DC373E; color: white; text-decoration: none; border-radius: 8px; margin-top: 16px;">View Profile</a>
+            <a href="https://www.soccer-near-me.com/players/${slug}" style="display: inline-block; padding: 12px 24px; background: #DC373E; color: white; text-decoration: none; border-radius: 8px; margin-top: 16px;">View Profile</a>
           </div>
         `,
       });

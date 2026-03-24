@@ -143,7 +143,7 @@ function typeToPath(type: string): string {
     equipment: "shop",
     books: "shop",
     showcase: "camps",
-    player: "guest-play/players",
+    player: "players",
     service: "services",
     podcast: "podcasts",
     fbgroup: "facebook-groups",
