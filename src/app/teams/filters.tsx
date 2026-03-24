@@ -25,7 +25,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
   const filtered = teams.filter((t) => {
     if (search) {
       const q = search.toLowerCase();
-      if (!t.name.toLowerCase().includes(q) && !t.city.toLowerCase().includes(q) && !t.state.toLowerCase().includes(q)) return false;
+      if (!t.name.toLowerCase().includes(q) && !t.city.toLowerCase().includes(q) && !t.state.toLowerCase().includes(q) && !(t.clubName || "").toLowerCase().includes(q)) return false;
     }
     if (level && t.level !== level) return false;
     if (ageGroup && t.ageGroup !== ageGroup) return false;
@@ -36,39 +36,55 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
   });
 
   const sorted = [...filtered].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-  const totalPages = Math.ceil(sorted.length / PER_PAGE);
-  const visible = viewAll ? sorted : sorted.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const featuredTeams = sorted.filter((t) => t.featured);
+  const nonFeaturedTeams = sorted.filter((t) => !t.featured);
+  const totalPages = Math.ceil(nonFeaturedTeams.length / PER_PAGE);
+  const visibleNonFeatured = viewAll ? nonFeaturedTeams : nonFeaturedTeams.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   return (
     <>
-      {/* Hero Section with Search Bar */}
-      <div className="bg-primary text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-3">
-            Youth Soccer Teams
+      {/* ====== HERO SECTION ====== */}
+      <div className="relative bg-primary overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[#1a4a7a] opacity-90" />
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 120" preserveAspectRatio="none" style={{ height: "60px" }}>
+          <path fill="var(--background, #f8fafc)" d="M0,60 C360,120 1080,0 1440,60 L1440,120 L0,120 Z" />
+        </svg>
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+          <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-[56px] font-extrabold text-white uppercase tracking-tight leading-tight mb-4">
+            Find a Team to Play For
           </h1>
-          <p className="text-white/70 max-w-2xl text-lg mb-8">
-            Find teams looking for players. Filter by age group, competitive level, and location.
+          <p className="text-white/60 text-base md:text-lg max-w-2xl mx-auto mb-10">
+            Browse youth soccer teams looking for players. Filter by age group, level, and location.
           </p>
-          <div className="bg-white rounded-2xl shadow-lg p-2 flex flex-col sm:flex-row gap-2">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search by team name, city, or state..."
-              className="flex-1 px-5 py-4 rounded-xl text-primary text-base placeholder:text-muted focus:outline-none"
-            />
+
+          {/* Unified search pill */}
+          <div className="bg-white rounded-2xl sm:rounded-full shadow-2xl p-2 flex flex-col sm:flex-row items-stretch gap-0 max-w-4xl mx-auto">
             <select
               value={state}
               onChange={(e) => { setState(e.target.value); setPage(1); }}
-              className="px-4 py-4 rounded-xl border border-border text-sm font-medium text-primary bg-surface focus:outline-none cursor-pointer sm:w-48"
+              className="px-5 py-3.5 rounded-xl sm:rounded-l-full sm:rounded-r-none text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer sm:w-44 sm:border-r border-border"
             >
               <option value="">All States</option>
               {states.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              placeholder="Team name, city, club..."
+              className="flex-1 px-5 py-3.5 text-primary placeholder:text-muted focus:outline-none text-sm min-w-0"
+            />
+            <select
+              value={level}
+              onChange={(e) => { setLevel(e.target.value); setPage(1); }}
+              className="px-5 py-3.5 rounded-xl sm:rounded-none text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer sm:w-48 sm:border-l border-border"
+            >
+              <option value="">All Levels</option>
+              {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
+            </select>
             <button
               type="button"
-              className="px-8 py-4 rounded-xl bg-accent text-white font-semibold text-base hover:bg-accent-hover transition-colors whitespace-nowrap"
+              className="px-8 py-3.5 rounded-xl sm:rounded-r-full sm:rounded-l-none bg-accent text-white font-bold text-sm uppercase tracking-wide hover:bg-accent-hover transition-colors whitespace-nowrap"
             >
               Search
             </button>
@@ -76,64 +92,132 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
         </div>
       </div>
 
-      {/* Filter + Cards */}
+      {/* ====== CONTENT ====== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        {/* Secondary filter bar */}
         <FilterBar
           filters={[
-            { label: "All Levels", options: LEVELS, value: level, onChange: (v: string) => { setLevel(v); setPage(1); } },
             { label: "All Birth Years", options: ageGroups, value: ageGroup, onChange: (v: string) => { setAgeGroup(v); setPage(1); } },
             { label: "All Genders", options: ["Boys", "Girls"], value: gender, onChange: (v: string) => { setGender(v); setPage(1); } },
             { label: "Recruiting?", options: ["yes"], value: recruiting, onChange: (v: string) => { setRecruiting(v); setPage(1); } },
           ]}
         />
 
-        {/* View All / result count */}
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-muted">
-            {sorted.length} team{sorted.length !== 1 ? "s" : ""} found
-            {!viewAll && sorted.length > PER_PAGE && <> &middot; Page {page} of {totalPages}</>}
-          </p>
-          {sorted.length > PER_PAGE && (
-            <button
-              onClick={() => { setViewAll(!viewAll); setPage(1); }}
-              className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors"
-            >
-              {viewAll ? "Show Pages" : "View All"}
-            </button>
-          )}
-        </div>
-
         {sorted.length === 0 ? (
           <EmptyState message="No teams match your filters." />
         ) : (
           <>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {visible.map((team) => (
-                  <ListingCard
-                    key={team.id}
-                    href={`/teams/${team.slug}`}
-                    title={team.name}
-                    subtitle={`${team.clubName || ""} · ${team.city}, ${team.state}`}
-                    image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || team.imageUrl || undefined}
-                    badges={[
-                      { label: team.level, variant: "blue" },
-                      { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
-                      ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : []),
-                    ]}
-                    details={[
-                      { label: "Birth Year", value: team.ageGroup },
-                      { label: "Coach", value: team.coach },
-                      ...(team.positionsNeeded ? [{ label: "Positions", value: team.positionsNeeded }] : []),
-                      { label: "Season", value: team.season },
-                    ]}
-                    featured={team.featured}
-                    imagePosition={team.imagePosition}
-                    cta="View Team"
-                  />
-              ))}
+            {/* ====== FEATURED CARDS ====== */}
+            {featuredTeams.length > 0 && (
+              <div className="mb-10">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary mb-5 uppercase tracking-wide flex items-center gap-2">
+                  <span className="text-amber-500">&#9733;</span> Featured Teams
+                </h2>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {featuredTeams.slice(0, 3).map((team) => (
+                    <ListingCard
+                      key={team.id}
+                      href={`/teams/${team.slug}`}
+                      title={team.name}
+                      subtitle={`${team.clubName || ""} · ${team.city}, ${team.state}`}
+                      image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || team.imageUrl || undefined}
+                      badges={[
+                        { label: team.level, variant: "blue" },
+                        { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },
+                        ...(team.lookingForPlayers ? [{ label: "Recruiting", variant: "green" as const }] : []),
+                      ]}
+                      details={[
+                        { label: "Birth Year", value: team.ageGroup },
+                        { label: "Coach", value: team.coach },
+                        ...(team.positionsNeeded ? [{ label: "Positions", value: team.positionsNeeded }] : []),
+                        { label: "Season", value: team.season },
+                      ]}
+                      featured={team.featured}
+                      imagePosition={team.imagePosition}
+                      cta="View Team"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ====== RESULTS COUNT ====== */}
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-muted font-medium">
+                {nonFeaturedTeams.length} team{nonFeaturedTeams.length !== 1 ? "s" : ""} found
+                {!viewAll && totalPages > 1 && <> &middot; Page {page} of {totalPages}</>}
+              </p>
+              {nonFeaturedTeams.length > PER_PAGE && (
+                <button
+                  onClick={() => { setViewAll(!viewAll); setPage(1); }}
+                  className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors"
+                >
+                  {viewAll ? "Show Pages" : "View All"}
+                </button>
+              )}
             </div>
 
-            {/* Pagination */}
+            {/* ====== NON-FEATURED ROWS ====== */}
+            <div className="space-y-2">
+              {visibleNonFeatured.map((team) => {
+                const img = team.logo || team.teamPhoto || team.imageUrl;
+                return (
+                  <a
+                    key={team.id}
+                    href={`/teams/${team.slug}`}
+                    className="group flex items-center gap-4 sm:gap-5 bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-md transition-all p-4 border-l-4 border-l-accent/20 hover:border-l-accent"
+                  >
+                    {/* Logo thumbnail */}
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-surface flex-shrink-0 flex items-center justify-center">
+                      {img ? (
+                        <img src={img} alt={team.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <svg className="w-7 h-7 text-muted/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+                      )}
+                    </div>
+
+                    {/* Main info */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-[family-name:var(--font-display)] text-sm sm:text-base font-bold text-primary uppercase group-hover:text-accent transition-colors truncate">
+                        {team.name}
+                      </h3>
+                      <p className="text-xs text-muted flex items-center gap-1 mt-0.5">
+                        <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        {team.city}, {team.state}
+                      </p>
+                      {team.description && (
+                        <p className="text-xs text-muted/70 mt-1 line-clamp-1 hidden sm:block">{team.description}</p>
+                      )}
+                    </div>
+
+                    {/* Right-side info */}
+                    <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+                      <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium">{team.level}</span>
+                      <span className="text-xs text-muted">{team.ageGroup}</span>
+                      <span className="text-xs text-muted">{team.gender}</span>
+                      {team.lookingForPlayers && (
+                        <span className="px-2.5 py-1 rounded-full bg-red-50 text-accent text-xs font-semibold">Recruiting</span>
+                      )}
+                    </div>
+
+                    {/* Mobile badges */}
+                    <div className="flex md:hidden flex-col items-end gap-1 flex-shrink-0">
+                      <span className="text-xs text-muted">{team.ageGroup}</span>
+                      {team.lookingForPlayers && (
+                        <span className="px-2 py-0.5 rounded-full bg-red-50 text-accent text-[10px] font-semibold">Recruiting</span>
+                      )}
+                    </div>
+
+                    {/* Arrow */}
+                    <span className="text-muted/40 group-hover:text-accent transition-colors text-xl flex-shrink-0 hidden sm:block">
+                      &#8250;
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
+
+            {/* ====== PAGINATION ====== */}
             {!viewAll && totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-8">
                 <button
