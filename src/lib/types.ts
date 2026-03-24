@@ -421,6 +421,7 @@ export interface PlayerProfile extends ProfileFields {
   highlightVideos?: HighlightVideo[];
   cvUrl?: string;
   availableForGuestPlay?: boolean;
+  lookingForTeam?: boolean;
   city: string;
   state: string;
   country?: string;

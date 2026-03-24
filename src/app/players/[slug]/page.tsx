@@ -122,12 +122,15 @@ export default async function PlayerDetailPage({ params }: Props) {
 
               {/* Badges - under city */}
               <div className="flex flex-wrap gap-2 mt-3">
-                <Badge variant="blue">{player.position}</Badge>
-                {player.secondaryPosition && <Badge variant="default">{player.secondaryPosition}</Badge>}
                 <Badge variant={player.gender === "Boys" ? "blue" : "purple"}>{player.gender}</Badge>
                 <Badge variant="default">{player.birthYear}</Badge>
                 {player.level && <Badge variant="default">{player.level}</Badge>}
                 {player.availableForGuestPlay && <Badge variant="green">Available for Guest Play</Badge>}
+                {player.lookingForTeam ? (
+                  <Badge variant="blue">Looking for a New Team</Badge>
+                ) : (
+                  player.availableForGuestPlay && <Badge variant="default">Guest Player Only</Badge>
+                )}
               </div>
 
               {/* Attribute grid */}

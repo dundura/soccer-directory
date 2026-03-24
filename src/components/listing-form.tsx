@@ -561,6 +561,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "description", label: "About the Player", type: "textarea" },
     { name: "contactEmail", label: "Contact Email", required: true, type: "email" },
     { name: "availableForGuestPlay", label: "Open to Guest Play?", options: ["false", "true"] },
+    { name: "lookingForTeam", label: "Looking for a New Team?", options: ["false", "true"] },
     { name: "_socials", label: "Social Media", type: "heading" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube / Highlight Reel URL" },
