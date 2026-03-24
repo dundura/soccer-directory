@@ -109,7 +109,7 @@ export default async function PlayerDetailPage({ params }: Props) {
               <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="playerName" value={player.playerName} tag="h1" className="text-2xl sm:text-[32px] font-extrabold text-primary leading-tight tracking-tight pr-24" />
 
               {(player.currentClub || player.teamName) && (
-                <p className="text-sm font-semibold text-muted -mt-1">{player.teamName || player.currentClub}</p>
+                <p className="text-sm font-semibold text-muted -mt-2">{player.teamName || player.currentClub}</p>
               )}
 
               {/* Location with icon */}
