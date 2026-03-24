@@ -567,7 +567,6 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "gpa", label: "GPA (optional)" },
     { name: "description", label: "About the Player", type: "textarea" },
     { name: "contactEmail", label: "Contact Email", required: true, type: "email" },
-    { name: "phone", label: "Phone" },
     { name: "_guestplay", label: "Guest Player Directory", type: "heading" },
     { name: "availableForGuestPlay", label: "Show my profile on the Guest Player directory?", options: ["false", "true"] },
     { name: "_socials", label: "Social Media", type: "heading" },
