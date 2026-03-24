@@ -34,7 +34,7 @@ function mapProfileFields(r: Record<string, unknown>): ProfileFields {
   }
   let sm: ProfileFields["socialMedia"];
   if (r.social_media) {
-    try { sm = JSON.parse(r.social_media as string); } catch { sm = undefined; }
+    try { sm = typeof r.social_media === 'string' ? JSON.parse(r.social_media) : r.social_media as ProfileFields["socialMedia"]; } catch { sm = undefined; }
   }
   let mediaLinks: MediaLink[] | undefined;
   if (r.media_links) {
