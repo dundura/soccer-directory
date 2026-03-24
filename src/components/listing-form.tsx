@@ -575,8 +575,6 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "highlightVideos", label: "Highlight Videos (up to 5 — shown on profile and highlight reels page)", type: "highlight-videos", max: 5 },
     { name: "_resume", label: "Player Resume / CV", type: "heading" },
     { name: "cvUrl", label: "Resume / CV Link (Google Drive, Dropbox, etc.)", type: "url" },
-    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
-    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
   podcast: [
     { name: "name", label: "Podcast Name", required: true },
