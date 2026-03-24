@@ -158,25 +158,19 @@ export default async function PlayerDetailPage({ params }: Props) {
                 )}
               </div>
 
-              {/* About - inside hero card */}
-              {player.description && (
+              {/* About & Looking For - inside hero card */}
+              {(player.description || player.lookingFor) && (
                 <div className="mt-5 pt-5 border-t border-border">
                   <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-[15px] font-bold text-primary">About</h2>
+                    <h2 className="text-[15px] font-bold text-primary">About &amp; Looking For</h2>
                     <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
                   </div>
-                  <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="description" value={player.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
-                </div>
-              )}
-
-              {/* Looking For - inside hero card */}
-              {player.lookingFor && (
-                <div className="mt-4 pt-4 border-t border-border">
-                  <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-[15px] font-bold text-primary">Looking For</h2>
-                    <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
-                  </div>
-                  <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-line">{player.lookingFor}</p>
+                  {player.description && (
+                    <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="description" value={player.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                  )}
+                  {player.lookingFor && (
+                    <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-line mt-3">{player.lookingFor}</p>
+                  )}
                 </div>
               )}
             </div>
