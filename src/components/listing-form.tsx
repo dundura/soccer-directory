@@ -567,7 +567,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_socials", label: "Social Media", type: "heading" },
     { name: "instagram", label: "Instagram URL" },
     { name: "youtube", label: "YouTube / Highlight Reel URL" },
-    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "_profile", label: "Images", type: "heading" },
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they expire. If you don't have a hosted URL, feel free to email megan@anytime-soccer.com and we will host and load your images for you.", type: "warning" },
     { name: "teamPhoto", label: "Player Photo", type: "image" },
     { name: "photos", label: "Action Photos (up to 5 URLs)", type: "photos" },
