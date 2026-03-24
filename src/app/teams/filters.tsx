@@ -37,16 +37,19 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
 
   const sorted = [...filtered].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
   const allFeatured = sorted.filter((t) => t.featured);
-  const [featuredTeams] = useState(() => {
-    const shuffled = [...allFeatured];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  const [topCards] = useState(() => {
+    if (allFeatured.length > 0) {
+      const shuffled = [...allFeatured];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled.slice(0, 3);
     }
-    return shuffled.slice(0, 3);
+    return sorted.slice(0, 3);
   });
-  const featuredIds = new Set(featuredTeams.map((t) => t.id));
-  const nonFeaturedTeams = sorted.filter((t) => !featuredIds.has(t.id));
+  const topCardIds = new Set(topCards.map((t) => t.id));
+  const nonFeaturedTeams = sorted.filter((t) => !topCardIds.has(t.id));
   const totalPages = Math.ceil(nonFeaturedTeams.length / PER_PAGE);
   const visibleNonFeatured = viewAll ? nonFeaturedTeams : nonFeaturedTeams.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -129,13 +132,13 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
         ) : (
           <>
             {/* ====== FEATURED CARDS ====== */}
-            {featuredTeams.length > 0 && (
+            {topCards.length > 0 && (
               <div className="mb-10">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary mb-5 uppercase tracking-wide flex items-center gap-2">
-                  <span className="text-amber-500">&#9733;</span> Featured Teams
+                  <span className="text-amber-500">&#9733;</span> {allFeatured.length > 0 ? "Featured Teams" : "Top Teams"}
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {featuredTeams.map((team) => (
+                  {topCards.map((team) => (
                     <ListingCard
                       key={team.id}
                       href={`/teams/${team.slug}`}
