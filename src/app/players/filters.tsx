@@ -176,7 +176,14 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
                     </span>
                     <span className="flex items-center gap-1">
                       <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth={2} /><circle cx="12" cy="12" r="2.5" /></svg>
-                      {player.secondaryPosition ? "Multiple" : player.position}
+                      {player.secondaryPosition ? (
+                        <span className="relative group/pos cursor-pointer underline decoration-dotted">
+                          Multiple
+                          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover/pos:block bg-white text-primary text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg border border-border z-20">
+                            {player.position}, {player.secondaryPosition}
+                          </span>
+                        </span>
+                      ) : player.position}
                     </span>
                     <span className="flex items-center gap-1">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
