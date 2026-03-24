@@ -16,11 +16,9 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
   const [position, setPosition] = useState(searchParams.get("position") || "");
   const [state, setState] = useState(searchParams.get("state") || "");
   const [gender, setGender] = useState(searchParams.get("gender") || "");
-  const [level, setLevel] = useState(searchParams.get("level") || "");
+  const [birthYear, setBirthYear] = useState(searchParams.get("birthYear") || "");
   const [page, setPage] = useState(1);
   const [viewAll, setViewAll] = useState(false);
-
-  const states = [...new Set(players.map((p) => p.state))].sort();
 
   const filtered = players.filter((p) => {
     if (search) {
@@ -32,10 +30,13 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
         !(p.currentClub || "").toLowerCase().includes(q)
       ) return false;
     }
+    if (state) {
+      const loc = state.toLowerCase();
+      if (!p.city.toLowerCase().includes(loc) && !p.state.toLowerCase().includes(loc)) return false;
+    }
     if (position && p.position !== position && p.secondaryPosition !== position) return false;
-    if (state && p.state !== state) return false;
     if (gender && p.gender !== gender) return false;
-    if (level && p.level !== level) return false;
+    if (birthYear && p.birthYear !== birthYear) return false;
     return true;
   });
 
@@ -55,40 +56,61 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
           <p className="text-white/70 max-w-2xl text-lg mb-8">
             Browse youth soccer players looking for guest play opportunities, tryouts, and team placements.
           </p>
-          <div className="bg-white rounded-2xl shadow-lg p-2 flex flex-col sm:flex-row gap-2">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search by player name, city, state, or club..."
-              className="flex-1 px-5 py-4 rounded-xl text-primary text-base placeholder:text-muted focus:outline-none"
-            />
-            <select
-              value={state}
-              onChange={(e) => { setState(e.target.value); setPage(1); }}
-              className="px-4 py-4 rounded-xl border border-border text-sm font-medium text-primary bg-surface focus:outline-none cursor-pointer sm:w-48"
-            >
-              <option value="">All States</option>
-              {states.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <button
-              type="button"
-              className="px-8 py-4 rounded-xl bg-accent text-white font-semibold text-base hover:bg-accent-hover transition-colors whitespace-nowrap"
-            >
-              Search
-            </button>
+          <div className="bg-white rounded-2xl shadow-lg p-2">
+            <div className="flex flex-col md:flex-row md:items-center md:divide-x md:divide-border">
+              <input
+                type="text"
+                value={state}
+                onChange={(e) => { setState(e.target.value); setPage(1); }}
+                placeholder="Location"
+                className="px-4 py-3.5 text-sm text-primary placeholder:text-muted focus:outline-none md:w-36 bg-transparent"
+              />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                placeholder="Keywords"
+                className="flex-1 px-4 py-3.5 text-sm text-primary placeholder:text-muted focus:outline-none bg-transparent"
+              />
+              <select
+                value={gender}
+                onChange={(e) => { setGender(e.target.value); setPage(1); }}
+                className="px-4 py-3.5 text-sm font-medium text-primary focus:outline-none cursor-pointer bg-transparent md:w-32"
+              >
+                <option value="">Gender</option>
+                <option value="Boys">Boys</option>
+                <option value="Girls">Girls</option>
+              </select>
+              <select
+                value={birthYear}
+                onChange={(e) => { setBirthYear(e.target.value); setPage(1); }}
+                className="px-4 py-3.5 text-sm font-medium text-primary focus:outline-none cursor-pointer bg-transparent md:w-40"
+              >
+                <option value="">Birth Year</option>
+                {["2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016"].map((y) => <option key={y} value={y}>{y}</option>)}
+              </select>
+              <select
+                value={position}
+                onChange={(e) => { setPosition(e.target.value); setPage(1); }}
+                className="px-4 py-3.5 text-sm font-medium text-primary focus:outline-none cursor-pointer bg-transparent md:w-36"
+              >
+                <option value="">Position</option>
+                {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <div className="p-1">
+                <button
+                  type="button"
+                  className="w-full md:w-auto px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors whitespace-nowrap"
+                >
+                  Search
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <FilterBar
-          filters={[
-            { label: "All Positions", options: POSITIONS, value: position, onChange: (v: string) => { setPosition(v); setPage(1); } },
-            { label: "All Genders", options: ["Boys", "Girls"], value: gender, onChange: (v: string) => { setGender(v); setPage(1); } },
-            { label: "All Levels", options: LEVELS, value: level, onChange: (v: string) => { setLevel(v); setPage(1); } },
-          ]}
-        />
 
         {/* View All / result count */}
         <div className="flex items-center justify-between mb-4">
@@ -109,54 +131,68 @@ export function PlayerFilters({ players }: { players: PlayerProfile[] }) {
         {sorted.length === 0 ? (
           <EmptyState message="No player profiles match your filters. Try broadening your search." />
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {visible.map((player) => (
-              <a
+              <div
                 key={player.id}
-                href={`/players/${player.slug}`}
-                className="group block bg-white rounded-2xl border border-border p-4 md:p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 relative"
+                className="relative group pt-14"
               >
-                {player.featured && (
-                  <div className="absolute top-4 right-4">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
+                {/* Circular photo overlapping top */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 z-10">
+                  <PlayerAvatar
+                    src={player.teamPhoto}
+                    name={player.playerName}
+                    imagePosition={player.imagePosition}
+                    className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
+                  />
+                </div>
+
+                {/* Dark card body */}
+                <div className="bg-primary rounded-t-2xl pt-18 pb-5 px-5 text-center">
+                  {player.featured && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-xs font-semibold mb-2">
                       Featured
                     </span>
-                  </div>
-                )}
-                <div className="flex gap-4 md:gap-6">
-                  <div className="shrink-0">
-                    <PlayerAvatar
-                      src={player.teamPhoto}
-                      name={player.playerName}
-                      imagePosition={player.imagePosition}
-                      className="w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover border border-border"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap gap-1.5 mb-2">
-                      <Badge variant="blue">{player.position}</Badge>
-                      {player.secondaryPosition && <Badge variant="default">{player.secondaryPosition}</Badge>}
-                      <Badge variant={player.gender === "Boys" ? "blue" : "purple"}>{player.gender}</Badge>
-                      <Badge variant="default">{player.birthYear}</Badge>
-                    </div>
-                    <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary group-hover:text-accent-hover transition-colors mb-1">
-                      {player.playerName}
-                    </h3>
-                    <p className="text-muted text-sm mb-2">
-                      {player.currentClub && <>{player.currentClub} &middot; </>}
+                  )}
+                  <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-white uppercase tracking-wide mt-2">
+                    {player.playerName}
+                  </h3>
+                  <div className="flex items-center justify-center gap-4 mt-3 text-white/70 text-xs">
+                    <span className="flex items-center gap-1">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                       {player.city}, {player.state}
-                      {player.height && <> &middot; {player.height}</>}
-                      {player.preferredFoot && <> &middot; {player.preferredFoot} foot</>}
-                    </p>
-                    <p className="text-sm text-muted/80 mb-2">{player.level}</p>
-                    {player.lookingFor && (
-                      <p className="text-sm text-muted line-clamp-2">
-                        <span className="font-medium text-primary">Looking for:</span> {player.lookingFor}
-                      </p>
-                    )}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth={2} /><circle cx="12" cy="12" r="2.5" /></svg>
+                      {player.secondaryPosition ? "Multiple" : player.position}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                      {player.gender}
+                    </span>
                   </div>
                 </div>
-              </a>
+
+                {/* White bottom section */}
+                <div className="bg-white rounded-b-2xl border border-t-0 border-border px-5 py-4">
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-primary">{player.birthYear}</p>
+                      <p className="text-xs text-muted">Birth Year</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-primary">{player.level || "—"}</p>
+                      <p className="text-xs text-muted">Level of Play</p>
+                    </div>
+                  </div>
+                  <a
+                    href={`/players/${player.slug}`}
+                    className="block w-full text-center py-2.5 rounded-xl bg-accent text-white text-sm font-bold hover:bg-accent-hover transition-colors"
+                  >
+                    View Player
+                  </a>
+                </div>
+              </div>
             ))}
           </div>
         )}
