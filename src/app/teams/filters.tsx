@@ -185,26 +185,16 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                         <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         {team.city}, {team.state}
                       </p>
+                      <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                        <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-medium">{team.level}</span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-surface text-muted text-[11px] font-medium">{team.ageGroup}</span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-surface text-muted text-[11px] font-medium">{team.gender}</span>
+                        {team.lookingForPlayers && (
+                          <span className="px-2.5 py-0.5 rounded-full bg-red-50 text-accent text-[11px] font-semibold">Recruiting</span>
+                        )}
+                      </div>
                       {team.description && (
-                        <p className="text-xs text-muted/70 mt-1 line-clamp-1 hidden sm:block">{team.description}</p>
-                      )}
-                    </div>
-
-                    {/* Right-side info */}
-                    <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-                      <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium">{team.level}</span>
-                      <span className="text-xs text-muted">{team.ageGroup}</span>
-                      <span className="text-xs text-muted">{team.gender}</span>
-                      {team.lookingForPlayers && (
-                        <span className="px-2.5 py-1 rounded-full bg-red-50 text-accent text-xs font-semibold">Recruiting</span>
-                      )}
-                    </div>
-
-                    {/* Mobile badges */}
-                    <div className="flex md:hidden flex-col items-end gap-1 flex-shrink-0">
-                      <span className="text-xs text-muted">{team.ageGroup}</span>
-                      {team.lookingForPlayers && (
-                        <span className="px-2 py-0.5 rounded-full bg-red-50 text-accent text-[10px] font-semibold">Recruiting</span>
+                        <p className="text-xs text-muted/70 mt-1.5 line-clamp-1 hidden sm:block">{team.description}</p>
                       )}
                     </div>
 
