@@ -171,12 +171,12 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
           href={createPostHref}
           className="block w-full text-center px-4 py-2 rounded-xl border-2 border-primary/20 bg-primary/5 text-primary text-sm font-bold hover:bg-primary/10 transition-colors"
         >
-          Create Post
+          {listingType === "player" ? "Create Guest Player Post" : "Create Post"}
         </a>
       )}
 
-      {/* Write Blog Post */}
-      {createPostHref && (
+      {/* Write Blog Post (not for players) */}
+      {createPostHref && listingType !== "player" && (
         <a
           href={createPostHref.replace("/posts/new?", "/posts/new-blog?")}
           className="block w-full text-center px-4 py-2 rounded-xl border-2 border-accent/20 bg-accent/5 text-accent text-sm font-bold hover:bg-accent/10 transition-colors"
@@ -185,15 +185,15 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
         </a>
       )}
 
-      {/* Invite Review (not for Instagram/TikTok pages) */}
-      {listingType && listingId && listingType !== "instagrampage" && listingType !== "tiktokpage" && (
+      {/* Invite Feedback (not for Instagram/TikTok/Player) */}
+      {listingType && listingId && listingType !== "instagrampage" && listingType !== "tiktokpage" && listingType !== "player" && (
         <>
           {!showInviteForm ? (
             <button
               onClick={() => setShowInviteForm(true)}
               className="block w-full text-center px-4 py-2 rounded-xl border-2 border-green-200 bg-green-50 text-green-700 text-sm font-bold hover:bg-green-100 transition-colors"
             >
-              {inviteMsg || "Invite Review"}
+              {inviteMsg || "Invite Feedback"}
             </button>
           ) : (
             <form onSubmit={handleInviteReview} className="rounded-xl border-2 border-green-200 bg-white p-3 space-y-2">
