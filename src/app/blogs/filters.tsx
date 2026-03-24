@@ -21,6 +21,8 @@ export function BlogFilters({ blogs, articles = [] }: { blogs: Blog[]; articles?
   const [category, setCategory] = useState(searchParams.get("category") || "");
   const [page, setPage] = useState(1);
   const [viewAll, setViewAll] = useState(false);
+  const [articlesPage, setArticlesPage] = useState(1);
+  const ARTICLES_PER_PAGE = 10;
 
   const states = [...new Set(blogs.map((b) => b.state))].sort();
 
@@ -188,7 +190,7 @@ export function BlogFilters({ blogs, articles = [] }: { blogs: Blog[]; articles?
               <span className="text-sm text-muted font-medium">({articles.length})</span>
             </div>
             <div className="space-y-3">
-              {articles.map((article) => {
+              {articles.slice((articlesPage - 1) * ARTICLES_PER_PAGE, articlesPage * ARTICLES_PER_PAGE).map((article) => {
                 const plainBody = stripHtml(article.body);
                 const date = new Date(article.createdAt);
                 return (
@@ -215,6 +217,35 @@ export function BlogFilters({ blogs, articles = [] }: { blogs: Blog[]; articles?
                 );
               })}
             </div>
+            {articles.length > ARTICLES_PER_PAGE && (
+              <div className="flex items-center justify-center gap-2 mt-6">
+                <button
+                  onClick={() => setArticlesPage(Math.max(1, articlesPage - 1))}
+                  disabled={articlesPage === 1}
+                  className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-surface transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  &larr; Prev
+                </button>
+                {Array.from({ length: Math.ceil(articles.length / ARTICLES_PER_PAGE) }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setArticlesPage(p)}
+                    className={`w-10 h-10 rounded-xl text-sm font-medium transition-colors ${
+                      p === articlesPage ? "bg-primary text-white" : "border border-border hover:bg-surface"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setArticlesPage(Math.min(Math.ceil(articles.length / ARTICLES_PER_PAGE), articlesPage + 1))}
+                  disabled={articlesPage === Math.ceil(articles.length / ARTICLES_PER_PAGE)}
+                  className="px-4 py-2 rounded-xl border border-border text-sm font-medium hover:bg-surface transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Next &rarr;
+                </button>
+              </div>
+            )}
           </div>
         )}
 
