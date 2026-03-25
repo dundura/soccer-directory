@@ -527,57 +527,67 @@ export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubRe
 
   return (
     <>
-      {/* Hero */}
-      <div className="bg-primary text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-3">
+      {/* ====== HERO SECTION ====== */}
+      <div className="relative bg-primary overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[#1a4a7a] opacity-90" />
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 120" preserveAspectRatio="none" style={{ height: "60px" }}>
+          <path fill="var(--background, #f8fafc)" d="M0,60 C360,120 1080,0 1440,60 L1440,120 L0,120 Z" />
+        </svg>
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+          <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-[56px] font-extrabold text-white uppercase tracking-tight leading-tight mb-4">
             Club Reviews
           </h1>
-          <p className="text-white/70 max-w-2xl text-lg mb-8">
-            Read honest reviews from parents, players, and coaches. Rate clubs on price, quality, and coaching.
+          <p className="text-white/60 text-base md:text-lg max-w-2xl mx-auto mb-10">
+            Read and share soccer club reviews.
           </p>
-          <div className="bg-white rounded-2xl shadow-lg p-2 flex flex-col sm:flex-row gap-2">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search by club name, city, reviewer..."
-              className="flex-1 px-5 py-4 rounded-xl text-primary text-base placeholder:text-muted focus:outline-none"
-            />
-            <select
-              value={stateFilter}
-              onChange={(e) => { setStateFilter(e.target.value); setCityFilter(""); setPage(1); }}
-              className="px-4 py-4 rounded-xl border border-border text-sm font-medium text-primary bg-surface focus:outline-none cursor-pointer sm:w-48"
-            >
-              <option value="">All States</option>
-              {states.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-            {cities.length > 0 && (
+
+          {/* Single unified search bar */}
+          <div className="bg-white rounded-2xl lg:rounded-full shadow-2xl p-2 max-w-4xl mx-auto">
+            <div className="flex flex-col lg:flex-row items-stretch">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                placeholder="Search by club, city, reviewer..."
+                className="px-5 py-3 sm:rounded-l-full text-sm text-primary placeholder:text-muted focus:outline-none min-w-0 flex-1 sm:border-r border-border"
+              />
               <select
-                value={cityFilter}
-                onChange={(e) => { setCityFilter(e.target.value); setPage(1); }}
-                className="px-4 py-4 rounded-xl border border-border text-sm font-medium text-primary bg-surface focus:outline-none cursor-pointer sm:w-48"
+                value={stateFilter}
+                onChange={(e) => { setStateFilter(e.target.value); setCityFilter(""); setPage(1); }}
+                className="px-4 py-3 lg:rounded-l-full text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer lg:border-r border-border min-w-0"
               >
-                <option value="">All Cities</option>
-                {cities.map((c) => <option key={c} value={c}>{c}</option>)}
+                <option value="">All States</option>
+                {states.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                if (!isLoggedIn) { window.location.href = "/dashboard"; return; }
-                setEditingReview(null);
-                setShowForm(!showForm);
-              }}
-              className="px-8 py-4 rounded-xl bg-accent text-white font-semibold text-base hover:bg-accent-hover transition-colors whitespace-nowrap"
-            >
-              Write a Review
-            </button>
+              {cities.length > 0 && (
+                <select
+                  value={cityFilter}
+                  onChange={(e) => { setCityFilter(e.target.value); setPage(1); }}
+                  className="px-4 py-3 text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer border-t lg:border-t-0 lg:border-r border-border min-w-0"
+                >
+                  <option value="">All Cities</option>
+                  {cities.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  if (!isLoggedIn) { window.location.href = "/dashboard"; return; }
+                  setEditingReview(null);
+                  setShowForm(!showForm);
+                }}
+                className="px-8 py-3 rounded-xl lg:rounded-r-full lg:rounded-l-none bg-accent text-white font-bold text-sm uppercase tracking-wide hover:bg-accent-hover transition-colors whitespace-nowrap mt-1 lg:mt-0"
+              >
+                Write a Review
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* ====== CONTENT ====== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+
         {/* Review Form (create) */}
         {showForm && !editingReview && (
           <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mt-6">
@@ -599,9 +609,9 @@ export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubRe
           </div>
         )}
 
-        {/* Result count */}
+        {/* ====== RESULTS COUNT ====== */}
         <div className="flex items-center justify-between mt-6 mb-4">
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted font-medium">
             {sorted.length} review{sorted.length !== 1 ? "s" : ""} found
             {!viewAll && sorted.length > PER_PAGE && <> &middot; Page {page} of {totalPages}</>}
           </p>
@@ -619,102 +629,114 @@ export function ClubReviewFilters({ reviews: initialReviews }: { reviews: ClubRe
           <EmptyState message="No reviews yet. Be the first to review a club!" />
         ) : (
           <>
-            <div className="space-y-4">
+            {/* ====== REVIEW ROWS ====== */}
+            <div className="space-y-3">
               {visible.map((review) => {
                 const isOwner = currentUserId && review.userId === currentUserId;
                 return (
-                  <div key={review.id} className="bg-white rounded-2xl border border-border p-5 md:p-6">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
-                      <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">
-                            {review.clubName}
-                          </h3>
-                          {review.clubSlug && (
-                            <a href={`/clubs/${review.clubSlug}`} className="text-xs text-accent hover:text-accent-hover font-medium transition-colors">View Profile</a>
-                          )}
-                          {review.likes >= HELPFUL_THRESHOLD && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">
-                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                              Helpful
-                            </span>
+                  <div
+                    key={review.id}
+                    className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden"
+                  >
+                    {/* Red accent trim */}
+                    <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+
+                    {/* Rating circle */}
+                    <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-4">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg overflow-hidden bg-surface flex flex-col items-center justify-center">
+                        <span className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary leading-none">{review.overallRating.toFixed(1)}</span>
+                        <Stars count={Math.round(review.overallRating)} size="text-xs sm:text-sm" />
+                        <span className="text-[10px] text-muted mt-0.5">overall</span>
+                      </div>
+                    </div>
+
+                    {/* Row content */}
+                    <div className="flex-1 min-w-0 p-4 sm:p-5">
+                      {/* Header */}
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl md:text-[1.75rem] font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors">
+                              {review.clubName}
+                            </h3>
+                            {review.clubSlug && (
+                              <a href={`/clubs/${review.clubSlug}`} className="text-xs text-accent hover:text-accent-hover font-medium transition-colors">View Profile</a>
+                            )}
+                            {review.likes >= HELPFUL_THRESHOLD && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                Helpful
+                              </span>
+                            )}
+                          </div>
+                          {(review.city || review.state) && (
+                            <p className="text-sm text-muted flex items-center gap-1.5 mt-1">
+                              <svg className="w-3.5 h-3.5 flex-shrink-0 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                              {[review.city, review.state].filter(Boolean).join(", ")}
+                            </p>
                           )}
                         </div>
-                        {(review.city || review.state) && (
-                          <p className="text-muted text-sm">{[review.city, review.state].filter(Boolean).join(", ")}</p>
-                        )}
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <Stars count={Math.round(review.overallRating)} />
-                        <span className="text-sm font-semibold text-primary">{review.overallRating.toFixed(1)}</span>
-                      </div>
-                    </div>
 
-                    {/* Rating breakdown */}
-                    <div className="flex flex-wrap gap-4 mb-3">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-semibold text-muted uppercase tracking-wide">Price</span>
-                        <Stars count={review.ratingPrice} size="text-sm" />
+                      {/* Rating breakdown pills */}
+                      <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                        <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">Price {review.ratingPrice}/5</span>
+                        <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">Quality {review.ratingQuality}/5</span>
+                        <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">Coaching {review.ratingCoaching}/5</span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-semibold text-muted uppercase tracking-wide">Quality</span>
-                        <Stars count={review.ratingQuality} size="text-sm" />
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-semibold text-muted uppercase tracking-wide">Coaching</span>
-                        <Stars count={review.ratingCoaching} size="text-sm" />
-                      </div>
-                    </div>
 
-                    {review.reviewText && (
-                      <ReviewText text={review.reviewText} />
-                    )}
-
-                    <div className="flex items-center gap-2 text-xs text-muted flex-wrap">
-                      <span className="font-bold text-primary">{review.reviewerName}</span>
-                      {review.reviewerRole && (
-                        <span className="bg-surface px-2 py-0.5 rounded-full">{review.reviewerRole}</span>
+                      {/* Review text */}
+                      {review.reviewText && (
+                        <ReviewText text={review.reviewText} />
                       )}
-                      <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">Verified Review</span>
-                      <span>{new Date(review.createdAt).toLocaleDateString()}</span>
 
-                      <div className="ml-auto flex items-center gap-2">
-                        <VoteButtons
-                          reviewId={review.id}
-                          initialLikes={review.likes}
-                          initialDislikes={review.dislikes}
-                          userVote={userVotes[review.id]}
-                          isLoggedIn={isLoggedIn}
-                        />
-
-                        {isOwner && (
-                          <>
-                            <button
-                              onClick={() => { setEditingReview(review); setShowForm(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                              className="px-3 py-1 rounded-lg bg-accent/10 text-accent-hover text-xs font-medium hover:bg-accent/20 transition-colors"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(review.id)}
-                              disabled={deleting === review.id}
-                              className="px-3 py-1 rounded-lg border border-red-200 text-red-600 text-xs font-medium hover:bg-red-50 transition-colors disabled:opacity-50"
-                            >
-                              {deleting === review.id ? "..." : "Delete"}
-                            </button>
-                          </>
+                      {/* Footer: reviewer info + actions */}
+                      <div className="flex items-center gap-2 text-xs text-muted flex-wrap">
+                        <span className="font-bold text-primary">{review.reviewerName}</span>
+                        {review.reviewerRole && (
+                          <span className="bg-surface px-2 py-0.5 rounded-full">{review.reviewerRole}</span>
                         )}
-                      </div>
-                    </div>
+                        <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">Verified Review</span>
+                        <span>{new Date(review.createdAt).toLocaleDateString()}</span>
 
-                    {/* Comments */}
-                    <CommentsSection reviewId={review.id} isLoggedIn={isLoggedIn} userId={currentUserId} />
+                        <div className="ml-auto flex items-center gap-2">
+                          <VoteButtons
+                            reviewId={review.id}
+                            initialLikes={review.likes}
+                            initialDislikes={review.dislikes}
+                            userVote={userVotes[review.id]}
+                            isLoggedIn={isLoggedIn}
+                          />
+
+                          {isOwner && (
+                            <>
+                              <button
+                                onClick={() => { setEditingReview(review); setShowForm(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                                className="px-3 py-1 rounded-lg bg-accent/10 text-accent-hover text-xs font-medium hover:bg-accent/20 transition-colors"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(review.id)}
+                                disabled={deleting === review.id}
+                                className="px-3 py-1 rounded-lg border border-red-200 text-red-600 text-xs font-medium hover:bg-red-50 transition-colors disabled:opacity-50"
+                              >
+                                {deleting === review.id ? "..." : "Delete"}
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Comments */}
+                      <CommentsSection reviewId={review.id} isLoggedIn={isLoggedIn} userId={currentUserId} />
+                    </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Pagination */}
+            {/* ====== PAGINATION ====== */}
             {!viewAll && totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-8">
                 <button
