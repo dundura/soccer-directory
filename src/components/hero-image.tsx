@@ -43,11 +43,11 @@ export function HeroImage({ src, alt, id, imagePosition }: { src: string; alt: s
   const pos = imagePosition ?? 50;
   return (
     <>
-      <div className={`relative min-h-[180px] max-h-[320px] bg-surface ${!isColor ? "cursor-zoom-in" : ""}`} onClick={() => !isColor && setOpen(true)}>
+      <div className={`relative h-[260px] overflow-hidden bg-surface ${!isColor ? "cursor-zoom-in" : ""}`} onClick={() => !isColor && setOpen(true)}>
         {isColor ? (
-          <div className="w-full h-[220px]" style={{ backgroundColor: getHeroColor(src) }} />
+          <div className="w-full h-full" style={{ backgroundColor: getHeroColor(src) }} />
         ) : (
-          <img src={src} alt={alt} className="w-full h-full object-contain block max-h-[320px]" />
+          <img src={src} alt={alt} className="w-full h-full object-cover block" style={{ objectPosition: `center ${pos}%` }} />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
         <span className="absolute bottom-10 left-5 right-5 text-white text-sm font-semibold tracking-wide drop-shadow-lg">
