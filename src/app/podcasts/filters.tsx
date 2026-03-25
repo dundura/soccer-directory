@@ -124,7 +124,7 @@ export function PodcastFilters({ podcasts }: { podcasts: Podcast[] }) {
                       href={`/podcasts/${podcast.slug}`}
                       title={podcast.name}
                       subtitle={`${podcast.city}, ${podcast.state}`}
-                      image={podcast.logo || podcast.teamPhoto || podcast.imageUrl || undefined}
+                      image={podcast.teamPhoto || podcast.imageUrl || podcast.logo || undefined}
                       badges={[
                         { label: podcast.category, variant: "blue" },
                       ]}
@@ -159,7 +159,7 @@ export function PodcastFilters({ podcasts }: { podcasts: Podcast[] }) {
             {/* ====== NON-FEATURED ROWS ====== */}
             <div className="space-y-3">
               {visibleNonFeatured.map((podcast) => {
-                const img = podcast.logo || podcast.teamPhoto || podcast.imageUrl;
+                const img = podcast.teamPhoto || podcast.imageUrl || podcast.logo;
                 const isLogo = !!podcast.logo;
                 return (
                   <a
