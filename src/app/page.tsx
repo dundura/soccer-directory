@@ -45,7 +45,7 @@ function toRowListing(
   pillFields: string[],
   typeBadge?: string,
 ): RowListing {
-  const img = item.logo || item.teamPhoto || item.imageUrl;
+  const img = item.logo || item.teamPhoto || item.imageUrl || item.image_url;
   return {
     id: item.id,
     name: item[nameField] || item.name || "",
@@ -311,47 +311,23 @@ export default async function HomePage() {
         {/* ── Featured Listings Carousel ───────────── */}
         {featuredPool.length > 0 && (
           <SectionCarousel title="Featured Listings" subtitle="Handpicked from across all categories" viewAllHref="/clubs">
-            {featuredPool.slice(0, 20).map((listing) => {
-              return (
-                <a
-                  key={`${listing.typeBadge}-${listing.id}`}
+            {featuredPool.slice(0, 20).map((listing) => (
+              <div key={`${listing.typeBadge}-${listing.id}`} className="flex-shrink-0 w-[320px]">
+                <ListingCard
                   href={listing.href}
-                  className="flex-shrink-0 w-[300px] group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all"
-                >
-                  <div className="relative h-44 bg-surface flex items-center justify-center overflow-hidden">
-                    {listing.image ? (
-                      <img src={listing.image} alt={listing.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <svg className="w-16 h-16 text-muted/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-                      </svg>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    <div className="absolute top-3 left-3">
-                      <span className="px-2.5 py-1 rounded-full bg-accent text-white text-[10px] font-bold uppercase tracking-wider">{listing.typeBadge}</span>
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="font-[family-name:var(--font-display)] text-base font-bold text-white leading-snug line-clamp-2 drop-shadow-sm">{listing.name}</h3>
-                    </div>
-                  </div>
-                  <div className="p-4 pt-3">
-                    <p className="text-sm text-muted flex items-center gap-1.5">
-                      <svg className="w-3.5 h-3.5 flex-shrink-0 text-accent" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                      </svg>
-                      {listing.city}{listing.city && listing.state ? ", " : ""}{listing.state}
-                    </p>
-                    {listing.pills.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {listing.pills.slice(0, 3).map((pill, i) => (
-                          <span key={i} className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-semibold">{pill}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </a>
-              );
-            })}
+                  title={listing.name}
+                  subtitle={`${listing.city}${listing.city && listing.state ? ", " : ""}${listing.state}`}
+                  image={listing.image || undefined}
+                  badges={[
+                    ...(listing.typeBadge ? [{ label: listing.typeBadge, variant: "red" as const }] : []),
+                    ...listing.pills.slice(0, 2).map((p) => ({ label: p, variant: "blue" as const })),
+                  ]}
+                  details={[]}
+                  featured
+                  cta={`View ${listing.typeBadge || "Listing"}`}
+                />
+              </div>
+            ))}
           </SectionCarousel>
         )}
 
