@@ -61,9 +61,11 @@ function toRowListing(
   };
 }
 
-/** Sort by featured DESC */
+/** Sort by featured DESC, then randomize within each group */
 function sortFeaturedFirst<T extends { featured: boolean }>(items: T[]): T[] {
-  return [...items].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+  const featured = [...items].filter((i) => i.featured).sort(() => Math.random() - 0.5);
+  const rest = [...items].filter((i) => !i.featured).sort(() => Math.random() - 0.5);
+  return [...featured, ...rest];
 }
 
 /* ── Row Component (GPS-style) ────────────────────────────── */
