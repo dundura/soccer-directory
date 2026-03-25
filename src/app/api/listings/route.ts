@@ -246,7 +246,10 @@ export async function PUT(req: Request) {
     if (!updated) {
       return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
     }
-    return NextResponse.json({ success: true, slug: data.slug || id, type });
+    // Get the slug for redirect
+    const { getListingSlugById } = await import("@/lib/db");
+    const slug = await getListingSlugById(type, id) || id;
+    return NextResponse.json({ success: true, slug, type });
   } catch (err) {
     if (err instanceof Error && err.message === "SLUG_TAKEN") {
       return NextResponse.json({ error: "That URL slug is already taken. Please choose a different one." }, { status: 409 });

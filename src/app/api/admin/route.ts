@@ -78,7 +78,9 @@ export async function PUT(req: Request) {
         return NextResponse.json({ error: "Unknown action" }, { status: 400 });
     }
 
-    return NextResponse.json({ success: true, slug: data.data?.slug || data.id, type: data.type });
+    const { getListingSlugById } = await import("@/lib/db");
+    const slug = data.type && data.id ? await getListingSlugById(data.type, data.id) || data.id : data.id;
+    return NextResponse.json({ success: true, slug, type: data.type });
   } catch (err) {
     if (err instanceof Error && err.message === "SLUG_TAKEN") {
       return NextResponse.json({ error: "That URL slug is already taken. Please choose a different one." }, { status: 409 });
