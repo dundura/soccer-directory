@@ -125,7 +125,7 @@ export default async function BlogPage({ params }: Props) {
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
-              <InlineEditField ownerId={ownerId} listingType="blog" listingId={blog.id} field="name" value={blog.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
+              <InlineEditField ownerId={ownerId} listingType="blog" listingId={blog.id} field="name" value={blog.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white uppercase leading-tight tracking-tight drop-shadow-lg" />
               {blog.tagline && (
                 <InlineEditField ownerId={ownerId} listingType="blog" listingId={blog.id} field="tagline" value={blog.tagline} tag="p" className="text-white/80 text-sm font-medium" />
               )}
