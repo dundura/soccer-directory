@@ -240,6 +240,73 @@ export function EbookFilters({ items }: { items: MarketplaceItem[] }) {
           </>
         )}
       </div>
+
+      {/* ====== FREE EBOOKS SECTION ====== */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-primary uppercase tracking-wide mb-2 mt-4">
+          Free Ebooks for Parents & Coaches
+        </h2>
+        <p className="text-muted text-sm mb-6">Practical guides packed with tips from a passionate soccer parent and coach.</p>
+
+        {/* Featured 3 */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {FREE_EBOOKS.slice(0, 3).map((book) => (
+            <div key={book.title} className="flex flex-col bg-white rounded-2xl border border-blue-300 shadow-[0_0_20px_rgba(59,130,246,0.15)] ring-1 ring-blue-200/50 overflow-hidden h-full">
+              <div className="h-[200px] overflow-hidden bg-surface flex items-center justify-center">
+                <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+              </div>
+              <div className="p-6 flex flex-col flex-1">
+                <span className="px-2.5 py-0.5 rounded-full bg-green-50 text-green-700 text-xs font-bold w-fit mb-2">FREE</span>
+                <h3 className="font-[family-name:var(--font-display)] text-lg font-extrabold text-primary uppercase tracking-tight mb-2 min-h-[3rem]">{book.title}</h3>
+                <p className="text-sm text-primary/70 line-clamp-2 mb-4 leading-relaxed flex-1">{book.description}</p>
+                <a href={book.href} target="_blank" rel="noopener noreferrer" className="block w-full py-3 rounded-xl bg-accent text-white text-center font-bold text-sm uppercase tracking-wide hover:bg-accent-hover transition-colors">
+                  Download Free →
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Remaining as rows */}
+        <div className="space-y-3">
+          {FREE_EBOOKS.slice(3).map((book) => (
+            <div key={book.title} className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden">
+              <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+              <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-4">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg overflow-hidden bg-surface flex items-center justify-center">
+                  <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+                </div>
+              </div>
+              <div className="flex items-center gap-4 flex-1 min-w-0 p-5 sm:p-6">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                    <span className="px-2.5 py-0.5 rounded-full bg-green-50 text-green-700 text-xs font-bold">FREE</span>
+                  </div>
+                  <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight leading-tight">{book.title}</h3>
+                  <p className="text-sm text-primary mt-2 line-clamp-2 hidden sm:block leading-relaxed">{book.description}</p>
+                </div>
+                <a href={book.href} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 px-5 py-2.5 rounded-xl bg-accent text-white font-bold text-sm uppercase tracking-wide hover:bg-accent-hover transition-colors whitespace-nowrap hidden sm:block">
+                  Download →
+                </a>
+              </div>
+              <a href={book.href} target="_blank" rel="noopener noreferrer" className="sm:hidden flex items-center justify-center w-14 flex-shrink-0 bg-primary self-stretch rounded-r-xl">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
     </>
   );
 }
+
+const FREE_EBOOKS = [
+  { title: "The Most Important Skill Never Taught", description: "This powerful (yet simple) tip will change your child\u2019s game forever.", href: "https://anytime-soccer.com/the-most-important-skill-in-youth-soccer/", image: "https://media.anytime-soccer.com/wp-content/uploads/2021/01/ast_facebook_image_3.jpg" },
+  { title: "Must-Have Guide to In-Home Training", description: "Everything you need to know to start training at home effectively.", href: "https://anytime-soccer.com/must-have-guide-for-serious-soccer-parents/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/home/bg-1.png" },
+  { title: "20 Questions for Every Club", description: "Essential questions to ask before joining any youth soccer club.", href: "https://anytime-soccer.com/20-questions-every-parent-should-ask/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/ebook/ebook-1.png" },
+  { title: "Become a Rec Coach SuperHero", description: "Transform your rec coaching with practical tips and strategies.", href: "https://anytime-soccer.com/become-a-rec-coach-superhero/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/ebook/ebook-2.png" },
+  { title: "Everything About Guest Playing", description: "Navigate guest playing opportunities like a pro.", href: "https://anytime-soccer.com/everything-you-need-to-know-about-guest-playing/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/ebook/ebook-3.png" },
+  { title: "Monopoly: Issues Facing US Youth Soccer", description: "A candid look at what\u2019s holding back American soccer from one parent\u2019s perspective.", href: "https://anytime-soccer.com/monopoly-addressing-issues-facing-youth-soccer-ebook/", image: "https://media.anytime-soccer.com/wp-content/uploads/2024/07/us_soccer-768x596.png" },
+  { title: "The Parent Trainer\u2019s Playbook", description: "20 unconventional tips for raising a competitive soccer player from one soccer dad\u2019s journey.", href: "https://anytime-soccer.com/the-parent-trainers-playbook/", image: "https://media.anytime-soccer.com/wp-content/uploads/2024/08/the-playbook-20-unconventional-tips-for-raising-a-compeitive-soccer-player-thus-far-1024x789.png" },
+  { title: "Player Cards Guide", description: "Stay informed about eligibility requirements and avoid missed tournament opportunities.", href: "https://anytime-soccer.com/everything-you-need-to-know-about-player-cards/", image: "https://media.anytime-soccer.com/wp-content/uploads/2024/11/pro-tips-for-college-showcases-1.png" },
+];
