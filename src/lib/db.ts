@@ -2449,33 +2449,6 @@ export async function updateReviewStatus(token: string, status: string): Promise
   return rows.length > 0;
 }
 
-export async function getListingSlugById(type: string, id: string): Promise<string | null> {
-  const t = normalizeType(type);
-  let rows: Record<string, unknown>[];
-  switch (t) {
-    case "club": rows = await sql`SELECT slug FROM clubs WHERE id = ${id} LIMIT 1`; break;
-    case "team": rows = await sql`SELECT slug FROM teams WHERE id = ${id} LIMIT 1`; break;
-    case "trainer": rows = await sql`SELECT slug FROM trainers WHERE id = ${id} LIMIT 1`; break;
-    case "recruiter": rows = await sql`SELECT slug FROM recruiters WHERE id = ${id} LIMIT 1`; break;
-    case "camp": rows = await sql`SELECT slug FROM camps WHERE id = ${id} LIMIT 1`; break;
-    case "tryout": rows = await sql`SELECT slug FROM tryouts WHERE id = ${id} LIMIT 1`; break;
-    case "specialevent": rows = await sql`SELECT slug FROM special_events WHERE id = ${id} LIMIT 1`; break;
-    case "tournament": rows = await sql`SELECT slug FROM tournaments WHERE id = ${id} LIMIT 1`; break;
-    case "futsal": rows = await sql`SELECT slug FROM futsal_teams WHERE id = ${id} LIMIT 1`; break;
-    case "scrimmage": rows = await sql`SELECT slug FROM scrimmages WHERE id = ${id} LIMIT 1`; break;
-    case "trip": rows = await sql`SELECT slug FROM international_trips WHERE id = ${id} LIMIT 1`; break;
-    case "guest": rows = await sql`SELECT slug FROM guest_opportunities WHERE id = ${id} LIMIT 1`; break;
-    case "podcast": rows = await sql`SELECT slug FROM podcasts WHERE id = ${id} LIMIT 1`; break;
-    case "service": rows = await sql`SELECT slug FROM services WHERE id = ${id} LIMIT 1`; break;
-    case "blog": rows = await sql`SELECT slug FROM blogs WHERE id = ${id} LIMIT 1`; break;
-    case "youtube": rows = await sql`SELECT slug FROM youtube_channels WHERE id = ${id} LIMIT 1`; break;
-    case "instagrampage": rows = await sql`SELECT slug FROM instagram_pages WHERE id = ${id} LIMIT 1`; break;
-    case "tiktokpage": rows = await sql`SELECT slug FROM tiktok_pages WHERE id = ${id} LIMIT 1`; break;
-    default: return null;
-  }
-  return (rows[0]?.slug as string) || null;
-}
-
 export async function getListingNameById(type: string, id: string): Promise<string | null> {
   type = normalizeType(type);
   let rows: Record<string, unknown>[];
