@@ -96,8 +96,10 @@ export function EbookFilters({ items }: { items: MarketplaceItem[] }) {
       {/* ====== CONTENT ====== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
 
-        {sorted.length === 0 ? (
+        {sorted.length === 0 && (search || state) ? (
           <EmptyState message="No ebooks match your filters." />
+        ) : sorted.length === 0 ? (
+          null
         ) : (
           <>
             {/* ====== FEATURED CARDS ====== */}
