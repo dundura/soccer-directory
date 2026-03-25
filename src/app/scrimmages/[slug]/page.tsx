@@ -73,7 +73,7 @@ export default async function ScrimmageDetailPage({ params }: Props) {
 
             {/* Photo + Contact */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <img src={s.teamPhoto || heroPhoto} alt={s.teamName} className="w-full h-[200px] object-cover block" />
+              <img src={s.teamPhoto || heroPhoto} alt={s.teamName} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" />
               <div className="text-center py-3.5 px-4">
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{s.teamName}</h3>
                 <p className="text-sm text-muted mt-1">{s.city}, {s.state}</p>

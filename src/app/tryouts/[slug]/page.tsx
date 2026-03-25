@@ -109,7 +109,7 @@ export default async function TryoutDetailPage({ params }: Props) {
 
             {/* Photo + Name + CTA */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <ClickableImage src={tryout.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={tryout.name} className="w-full h-[200px] object-cover block" style={{ objectPosition: `center ${imgPos}%` }} />
+              <ClickableImage src={tryout.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={tryout.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
               <div className="text-center py-3.5 px-4">
                 <h3 className="text-[15px] font-bold text-primary leading-snug">{tryout.name}</h3>
                 {tryout.clubName && <p className="text-sm text-muted">{tryout.clubName}</p>}
