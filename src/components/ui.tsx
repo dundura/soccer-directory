@@ -40,14 +40,14 @@ export function ListingCard({
   return (
     <a
       href={href}
-      className={`group block bg-white rounded-2xl border overflow-hidden hover:-translate-y-0.5 transition-all duration-200 relative ${featured ? "border-blue-300 shadow-[0_0_20px_rgba(59,130,246,0.15)] hover:shadow-[0_0_30px_rgba(59,130,246,0.25)] ring-1 ring-blue-200/50" : "border-border hover:shadow-lg"}`}
+      className={`group flex flex-col bg-white rounded-2xl border overflow-hidden hover:-translate-y-0.5 transition-all duration-200 relative h-full ${featured ? "border-blue-300 shadow-[0_0_20px_rgba(59,130,246,0.15)] hover:shadow-[0_0_30px_rgba(59,130,246,0.25)] ring-1 ring-blue-200/50" : "border-border hover:shadow-lg"}`}
     >
       {image && (
-        <div className="w-full h-[200px] overflow-hidden bg-surface flex items-center justify-center">
+        <div className="w-full h-[200px] overflow-hidden bg-surface flex items-center justify-center flex-shrink-0">
           <img src={image} alt={title} className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300" />
         </div>
       )}
-      <div className="p-6">
+      <div className="p-6 flex flex-col flex-1">
         {featured && (
           <div className="absolute top-4 right-4">
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
@@ -60,11 +60,11 @@ export function ListingCard({
             <Badge key={i} variant={b.variant}>{b.label}</Badge>
           ))}
         </div>
-        <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight group-hover:text-accent-hover transition-colors mb-1">
+        <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight group-hover:text-accent-hover transition-colors mb-1 min-h-[3.5rem]">
           {title}
         </h3>
         <p className="text-muted text-sm mb-4">{subtitle}</p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 flex-1">
           {details.map((d, i) => (
             <div key={i}>
               <p className="text-xs text-muted">{d.label}</p>
