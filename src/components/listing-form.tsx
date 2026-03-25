@@ -1354,7 +1354,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
         let json: Record<string, unknown> = {};
         try { json = text ? JSON.parse(text) : {}; } catch { /* response wasn't JSON */ }
         if (!res.ok) throw new Error((json.error as string) || `Server error (${res.status}). Please try again.`);
-        onSuccess();
+        onSuccess((json.slug as string) || undefined, type);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save listing");

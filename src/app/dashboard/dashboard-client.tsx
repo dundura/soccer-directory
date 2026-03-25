@@ -483,7 +483,15 @@ function DashboardContent() {
           </h2>
           <ListingForm
             defaultType={formDefaultType}
-            onSuccess={() => { setShowForm(false); setFormDefaultType(undefined); fetchListings(); }}
+            onSuccess={(newSlug?: string, newType?: string) => {
+              if (newSlug && newType) {
+                const path = `/${TYPE_PATHS[newType] || newType}/${newSlug}`;
+                setShowForm(false); setFormDefaultType(undefined);
+                router.push(path);
+              } else {
+                setShowForm(false); setFormDefaultType(undefined); fetchListings();
+              }
+            }}
             onCancel={() => { setShowForm(false); setFormDefaultType(undefined); }}
           />
         </div>

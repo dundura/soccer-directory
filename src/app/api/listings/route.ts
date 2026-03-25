@@ -246,7 +246,7 @@ export async function PUT(req: Request) {
     if (!updated) {
       return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
     }
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, slug: data.slug || id, type });
   } catch (err) {
     if (err instanceof Error && err.message === "SLUG_TAKEN") {
       return NextResponse.json({ error: "That URL slug is already taken. Please choose a different one." }, { status: 409 });
