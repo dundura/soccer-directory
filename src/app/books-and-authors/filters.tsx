@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { SoccerBook } from "@/lib/types";
-import { ListingCard, FilterBar, EmptyState, AnytimeInlineCTA } from "@/components/ui";
+import { ListingCard, EmptyState, AnytimeInlineCTA } from "@/components/ui";
 
 const CATEGORIES = [
   "Training Equipment",
@@ -47,94 +47,192 @@ export function SoccerBookFilters({ soccerbooks }: { soccerbooks: SoccerBook[] }
   });
 
   const sorted = [...filtered].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-  const totalPages = Math.ceil(sorted.length / PER_PAGE);
-  const visible = viewAll ? sorted : sorted.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const allFeatured = sorted.filter((s) => s.featured);
+  const [topCards] = useState(() => {
+    if (allFeatured.length > 0) {
+      const shuffled = [...allFeatured];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled.slice(0, 3);
+    }
+    return sorted.slice(0, 3);
+  });
+  const topCardIds = new Set(topCards.map((s) => s.id));
+  const nonFeatured = sorted.filter((s) => !topCardIds.has(s.id));
+  const totalPages = Math.ceil(nonFeatured.length / PER_PAGE);
+  const visibleNonFeatured = viewAll ? nonFeatured : nonFeatured.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   return (
     <>
-      {/* Hero */}
-      <div className="bg-primary text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-3">
-            Products &amp; SoccerBooks
+      {/* ====== HERO SECTION ====== */}
+      <div className="relative bg-primary overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[#1a4a7a] opacity-90" />
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 120" preserveAspectRatio="none" style={{ height: "60px" }}>
+          <path fill="var(--background, #f8fafc)" d="M0,60 C360,120 1080,0 1440,60 L1440,120 L0,120 Z" />
+        </svg>
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+          <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-[56px] font-extrabold text-white uppercase tracking-tight leading-tight mb-4">
+            Soccer Books &amp; Authors
           </h1>
-          <p className="text-white/70 max-w-2xl text-lg">
-            Discover soccer products, soccerbooks, and tools from trusted authors.
+          <p className="text-white/60 text-base md:text-lg max-w-2xl mx-auto mb-10">
+            Discover soccer books and authors.
           </p>
+
+          {/* Single unified search bar */}
+          <div className="bg-white rounded-2xl lg:rounded-full shadow-2xl p-2 max-w-3xl mx-auto">
+            <div className="flex flex-col lg:flex-row items-stretch">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                placeholder="Search by name or author..."
+                className="px-5 py-3 sm:rounded-l-full text-sm text-primary placeholder:text-muted focus:outline-none min-w-0 flex-1 sm:border-r border-border"
+              />
+              <select
+                value={state}
+                onChange={(e) => { setState(e.target.value); setPage(1); }}
+                className="px-4 py-3 lg:rounded-l-full text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer lg:border-r border-border min-w-0"
+              >
+                <option value="">All States</option>
+                {states.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <select
+                value={category}
+                onChange={(e) => { setCategory(e.target.value); setPage(1); }}
+                className="px-4 py-3 text-sm font-medium text-primary bg-transparent focus:outline-none cursor-pointer border-t lg:border-t-0 lg:border-r border-border min-w-0"
+              >
+                <option value="">All Categories</option>
+                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <button
+                type="button"
+                className="px-8 py-3 rounded-xl lg:rounded-r-full lg:rounded-l-none bg-accent text-white font-bold text-sm uppercase tracking-wide hover:bg-accent-hover transition-colors whitespace-nowrap mt-1 lg:mt-0"
+              >
+                Search
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Search + Filters */}
-        <div className="bg-white rounded-2xl shadow-lg p-2 flex flex-col sm:flex-row gap-2 mb-6">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            placeholder="Search products & soccerbooks..."
-            className="flex-1 px-5 py-4 rounded-xl text-primary text-base placeholder:text-muted focus:outline-none"
-          />
-          <select
-            value={state}
-            onChange={(e) => { setState(e.target.value); setPage(1); }}
-            className="px-4 py-4 rounded-xl border border-border text-sm font-medium text-primary bg-surface focus:outline-none cursor-pointer sm:w-48"
-          >
-            <option value="">All States</option>
-            {states.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-        </div>
-
-        <FilterBar
-          filters={[
-            { label: "All Categories", options: CATEGORIES, value: category, onChange: (v: string) => { setCategory(v); setPage(1); } },
-          ]}
-        />
-
-        {/* View All / result count */}
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-muted">
-            {sorted.length} listing{sorted.length !== 1 ? "s" : ""} found
-            {!viewAll && sorted.length > PER_PAGE && <> &middot; Page {page} of {totalPages}</>}
-          </p>
-          {sorted.length > PER_PAGE && (
-            <button
-              onClick={() => { setViewAll(!viewAll); setPage(1); }}
-              className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors"
-            >
-              {viewAll ? "Show Pages" : "View All"}
-            </button>
-          )}
-        </div>
+      {/* ====== CONTENT ====== */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
 
         {sorted.length === 0 ? (
-          <EmptyState message="No products or soccerbooks match your filters." />
+          <EmptyState message="No books or authors match your filters." />
         ) : (
           <>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {visible.map((soccerbook) => (
-                <ListingCard
-                  key={soccerbook.id}
-                  href={`/books-and-authors/${soccerbook.slug}`}
-                  title={soccerbook.name}
-                  subtitle={`by ${soccerbook.author} · ${soccerbook.city}, ${soccerbook.state}`}
-                  image={soccerbook.imageUrl || undefined}
-                  badges={[
-                    { label: soccerbook.category, variant: "green" },
-                    ...(soccerbook.price ? [{ label: soccerbook.price }] : []),
-                  ]}
-                  details={[
-                    { label: "Location", value: `${soccerbook.city}, ${soccerbook.state}` },
-                  ]}
-                  featured={soccerbook.featured}
-                  imagePosition={soccerbook.imagePosition}
-                  cta="View Details"
-                />
-              ))}
+            {/* ====== FEATURED CARDS ====== */}
+            {page === 1 && topCards.length > 0 && (
+              <div className="mb-6">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary mb-3 uppercase tracking-wide flex items-center gap-2">
+                  <span className="text-amber-500">&#9733;</span> {allFeatured.length > 0 ? "Featured Books & Authors" : "Top Books & Authors"}
+                </h2>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {topCards.map((book) => (
+                    <ListingCard
+                      key={book.id}
+                      href={`/books-and-authors/${book.slug}`}
+                      title={book.name}
+                      subtitle={`by ${book.author} · ${book.city}, ${book.state}`}
+                      image={book.logo || book.imageUrl || undefined}
+                      badges={[
+                        { label: book.category, variant: "green" },
+                        ...(book.price ? [{ label: book.price }] : []),
+                      ]}
+                      details={[
+                        { label: "Author", value: book.author },
+                        { label: "Location", value: `${book.city}, ${book.state}` },
+                      ]}
+                      featured
+                      imagePosition={book.imagePosition}
+                      description={book.description ? book.description.split(" ").slice(0, 25).join(" ") + (book.description.split(" ").length > 25 ? "..." : "") : undefined}
+                      cta="View Details"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ====== RESULTS COUNT ====== */}
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-muted font-medium">
+                {nonFeatured.length} book{nonFeatured.length !== 1 ? "s" : ""} found
+                {!viewAll && totalPages > 1 && <> &middot; Page {page} of {totalPages}</>}
+              </p>
+              {nonFeatured.length > PER_PAGE && (
+                <button
+                  onClick={() => { setViewAll(!viewAll); setPage(1); }}
+                  className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors"
+                >
+                  {viewAll ? "Show Pages" : "View All"}
+                </button>
+              )}
             </div>
 
-            {/* Pagination */}
+            {/* ====== NON-FEATURED ROWS ====== */}
+            <div className="space-y-3">
+              {visibleNonFeatured.map((book) => {
+                const img = book.logo || book.imageUrl;
+                return (
+                  <a
+                    key={book.id}
+                    href={`/books-and-authors/${book.slug}`}
+                    className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden"
+                  >
+                    {/* Red accent trim */}
+                    <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+
+                    {/* Image thumbnail */}
+                    <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-4">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg overflow-hidden bg-surface flex items-center justify-center">
+                        {img ? (
+                          <img src={img} alt={book.name} className="w-full h-full object-contain" />
+                        ) : (
+                          <svg className="w-10 h-10 text-muted/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Row content */}
+                    <div className="flex items-start gap-5 sm:gap-6 flex-1 min-w-0 p-5 sm:p-6">
+
+                      {/* Main info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl md:text-[1.75rem] font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors">
+                          {book.name}
+                        </h3>
+                        <p className="text-sm text-muted flex items-center gap-1.5 mt-1">
+                          <svg className="w-3.5 h-3.5 flex-shrink-0 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                          {book.city}, {book.state}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                          <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">{book.category}</span>
+                          <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">by {book.author}</span>
+                          {book.price && (
+                            <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">{book.price}</span>
+                          )}
+                        </div>
+                        {book.description && (
+                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">
+                            {book.description.split(" ").slice(0, 30).join(" ")}{book.description.split(" ").length > 30 ? "..." : ""}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Arrow panel */}
+                    <div className="hidden sm:flex items-center justify-center w-14 md:w-16 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
+                      <span className="text-white text-2xl font-light">&#8250;</span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+
+            {/* ====== PAGINATION ====== */}
             {!viewAll && totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-8">
                 <button
