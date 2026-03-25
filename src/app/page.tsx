@@ -344,11 +344,6 @@ export default async function HomePage() {
         <CategorySection title="Special Events" viewAllHref="/special-events" listings={specialEventRows} />
         <CategorySection title="Players" viewAllHref="/players" listings={playerRows} />
 
-        {/* ── Anytime CTA Mid-page ──────────────── */}
-        <section className="py-8">
-          <AnytimeInlineCTA />
-        </section>
-
         {/* ── More Categories (expandable) ────────── */}
         <ExpandableCategories>
           <CategorySection title="Futsal" viewAllHref="/futsal" listings={futsalRows} />
@@ -364,6 +359,11 @@ export default async function HomePage() {
           <CategorySection title="Books" viewAllHref="/books" listings={bookRows} />
           <CategorySection title="Photo/Video Services" viewAllHref="/photo-video" listings={photoVideoRows} />
         </ExpandableCategories>
+
+        {/* ── Anytime CTA ──────────────── */}
+        <section className="py-8">
+          <AnytimeInlineCTA />
+        </section>
 
         {/* ── List Your Club CTA ─────────────────── */}
         <section className="py-16 border-t border-border">
