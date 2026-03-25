@@ -9,6 +9,7 @@ const PER_PAGE = 10;
 
 export function ClubFilters({ clubs }: { clubs: Club[] }) {
   const searchParams = useSearchParams();
+  const [search, setSearch] = useState("");
   const [level, setLevel] = useState("");
   const [state, setState] = useState(searchParams.get("state") || "");
   const [page, setPage] = useState(1);
@@ -18,6 +19,10 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
   const states = [...new Set(clubs.map((c) => c.state))].sort();
 
   const filtered = clubs.filter((c) => {
+    if (search) {
+      const q = search.toLowerCase();
+      if (!c.name.toLowerCase().includes(q) && !c.city.toLowerCase().includes(q) && !c.state.toLowerCase().includes(q)) return false;
+    }
     if (level && c.level !== level) return false;
     if (state && c.state !== state) return false;
     return true;
@@ -58,7 +63,14 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
           </p>
 
           {/* Single unified search bar */}
-          <div className="bg-white rounded-2xl sm:rounded-full shadow-2xl p-2 max-w-xl mx-auto inline-flex flex-col sm:flex-row items-stretch">
+          <div className="bg-white rounded-2xl sm:rounded-full shadow-2xl p-2 max-w-2xl mx-auto inline-flex flex-col sm:flex-row items-stretch">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                placeholder="Search by name..."
+                className="px-5 py-3 sm:rounded-l-full text-sm text-primary placeholder:text-muted focus:outline-none min-w-0 flex-1 sm:border-r border-border"
+              />
               <select
                 value={state}
                 onChange={(e) => { setState(e.target.value); setPage(1); }}
