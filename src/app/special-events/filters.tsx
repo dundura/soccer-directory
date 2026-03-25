@@ -132,7 +132,7 @@ export function SpecialEventFilters({ events }: { events: SpecialEvent[] }) {
                       href={`/special-events/${event.slug}`}
                       title={event.name}
                       subtitle={`${event.organizerName || event.clubName || ""} · ${event.city}, ${event.state}`}
-                      image={event.teamPhoto && !event.teamPhoto.includes("idf.webp") ? event.teamPhoto : event.logo || event.imageUrl || undefined}
+                      image={event.logo || event.teamPhoto || event.imageUrl || undefined}
                       badges={[
                         { label: event.eventType, variant: "blue" },
                         { label: event.gender, variant: event.gender === "Boys" ? "blue" : "purple" },

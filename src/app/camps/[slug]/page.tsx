@@ -211,7 +211,7 @@ export default async function CampDetailPage({ params }: Props) {
                   className="w-[72px] h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-16 relative z-10 bg-white mb-4"
                 />
                 <div className="relative z-20">
-                  <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="name" value={camp.name} tag="h1" className="text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+                  <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="name" value={camp.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
                   {camp.tagline && (
                     <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="tagline" value={camp.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
                   )}

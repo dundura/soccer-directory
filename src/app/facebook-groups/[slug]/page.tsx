@@ -123,7 +123,7 @@ export default async function FacebookGroupPage({ params }: Props) {
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
             <div className="absolute bottom-0 left-0 p-6">
-              <InlineEditField ownerId={ownerId} listingType="fbgroup" listingId={group.id} field="name" value={group.name} tag="h1" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-1" />
+              <InlineEditField ownerId={ownerId} listingType="fbgroup" listingId={group.id} field="name" value={group.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
               {group.tagline && (
                 <InlineEditField ownerId={ownerId} listingType="fbgroup" listingId={group.id} field="tagline" value={group.tagline} tag="p" className="text-white/80 text-sm font-medium" />
               )}

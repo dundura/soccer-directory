@@ -81,7 +81,7 @@ export function FutsalFilters({ teams }: { teams: FutsalTeam[] }) {
                 href={`/futsal/${team.slug}`}
                 title={team.name}
                 subtitle={`${team.clubName || ""} · ${team.city}, ${team.state}`}
-                image={team.teamPhoto && !team.teamPhoto.includes("idf.webp") ? team.teamPhoto : team.logo || team.imageUrl || undefined}
+                image={team.logo || team.teamPhoto || team.imageUrl || undefined}
                 badges={[
                   { label: team.level, variant: "blue" },
                   { label: team.gender, variant: team.gender === "Boys" ? "blue" : "purple" },

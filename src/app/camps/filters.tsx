@@ -106,7 +106,7 @@ export function CampFilters({ camps }: { camps: Camp[] }) {
                       href={`/camps/${camp.slug}`}
                       title={camp.name}
                       subtitle={`${camp.organizerName} · ${camp.city}, ${camp.state}`}
-                      image={camp.teamPhoto && !camp.teamPhoto.includes("idf.webp") ? camp.teamPhoto : camp.logo || camp.imageUrl || undefined}
+                      image={camp.logo || camp.teamPhoto || camp.imageUrl || undefined}
                       badges={[
                         { label: camp.campType, variant: "orange" },
                         { label: camp.gender },

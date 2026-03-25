@@ -49,7 +49,7 @@ export default async function ShopDetailPage({ params }: Props) {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="name" value={item.name} tag="h1" className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mb-2" />
+              <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="name" value={item.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
               {item.tagline && (
                 <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="tagline" value={item.tagline} tag="p" className="text-white/80 text-sm font-medium" />
               )}

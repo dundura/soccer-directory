@@ -99,7 +99,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                 <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold mb-2">
                   {service.category}
                 </span>
-                <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="name" value={service.name} tag="h1" className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight" />
+                <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="name" value={service.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
                 {service.tagline && (
                   <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="tagline" value={service.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
                 )}

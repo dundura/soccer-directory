@@ -106,7 +106,7 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
                       href={`/trainers/${trainer.slug}`}
                       title={trainer.name}
                       subtitle={`${trainer.city}, ${trainer.state}`}
-                      image={trainer.teamPhoto && !trainer.teamPhoto.includes("idf.webp") ? trainer.teamPhoto : trainer.logo || trainer.imageUrl || undefined}
+                      image={trainer.logo || trainer.teamPhoto || trainer.imageUrl || undefined}
                       badges={[
                         { label: trainer.specialty, variant: "green" },
                       ]}

@@ -118,7 +118,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
                       href={`/tournaments/${tournament.slug}`}
                       title={tournament.name}
                       subtitle={`${tournament.organizer} · ${tournament.city}, ${tournament.state}`}
-                      image={tournament.teamPhoto && !tournament.teamPhoto.includes("idf.webp") ? tournament.teamPhoto : tournament.logo || tournament.imageUrl || undefined}
+                      image={tournament.logo || tournament.teamPhoto || tournament.imageUrl || undefined}
                       badges={[
                         { label: tournament.level, variant: "blue" },
                         { label: tournament.gender, variant: tournament.gender === "Boys" ? "blue" : "purple" },

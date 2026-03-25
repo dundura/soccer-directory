@@ -220,7 +220,7 @@ export default async function TryoutDetailPage({ params }: Props) {
                   className="w-[56px] h-[56px] sm:w-[72px] sm:h-[72px] rounded-xl border-2 border-border object-contain shrink-0 p-1.5 bg-surface -mt-8 sm:-mt-10 relative z-10 bg-white"
                 />
                 <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0 relative z-20">
-                  <InlineEditField ownerId={ownerId} listingType="tryout" listingId={tryout.id} field="name" value={tryout.name} tag="h1" className="text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+                  <InlineEditField ownerId={ownerId} listingType="tryout" listingId={tryout.id} field="name" value={tryout.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
                   {tryout.tagline && (
                     <InlineEditField ownerId={ownerId} listingType="tryout" listingId={tryout.id} field="tagline" value={tryout.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
                   )}

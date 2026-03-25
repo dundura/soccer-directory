@@ -104,7 +104,7 @@ export function RecruiterFilters({ recruiters }: { recruiters: Recruiter[] }) {
                   href={`/college-recruiting/${recruiter.slug}`}
                   title={recruiter.name}
                   subtitle={[recruiter.city, recruiter.state].filter(Boolean).join(", ")}
-                  image={recruiter.teamPhoto && !recruiter.teamPhoto.includes("idf.webp") ? recruiter.teamPhoto : recruiter.logo || recruiter.imageUrl || undefined}
+                  image={recruiter.logo || recruiter.teamPhoto || recruiter.imageUrl || undefined}
                   badges={recruiter.specialty ? [{ label: recruiter.specialty, variant: "green" }] : []}
                   details={[
                     ...(recruiter.priceRange ? [{ label: "Price", value: recruiter.priceRange }] : []),

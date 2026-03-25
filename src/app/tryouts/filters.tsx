@@ -135,7 +135,7 @@ export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tr
                       href={`/tryouts/${tryout.slug}`}
                       title={tryout.name}
                       subtitle={`${tryout.organizerName || tryout.clubName || ""} · ${tryout.city}, ${tryout.state}`}
-                      image={tryout.teamPhoto && !tryout.teamPhoto.includes("idf.webp") ? tryout.teamPhoto : tryout.logo || tryout.imageUrl || fallbackImage}
+                      image={tryout.logo || tryout.teamPhoto || tryout.imageUrl || fallbackImage}
                       badges={[
                         { label: tryout.tryoutType, variant: "blue" },
                         { label: tryout.gender, variant: tryout.gender === "Boys" ? "blue" : "purple" },

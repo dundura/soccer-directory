@@ -128,7 +128,7 @@ export default async function YoutubeChannelPage({ params }: Props) {
                 />
               )}
               <div className="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0">
-                <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="name" value={channel.name} tag="h1" className="font-[family-name:var(--font-display)] text-xl sm:text-[26px] font-extrabold text-primary leading-tight tracking-tight" />
+                <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="name" value={channel.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
                 {channel.tagline && (
                   <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="tagline" value={channel.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
                 )}
