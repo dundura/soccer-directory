@@ -322,6 +322,7 @@ export default async function HomePage() {
                     ...(listing.typeBadge ? [{ label: listing.typeBadge, variant: "red" as const }] : []),
                     ...listing.pills.slice(0, 2).map((p) => ({ label: p, variant: "blue" as const })),
                   ]}
+                  description={listing.description}
                   details={[]}
                   featured
                   cta={`View ${listing.typeBadge || "Listing"}`}

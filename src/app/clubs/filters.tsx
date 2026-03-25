@@ -128,6 +128,7 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
                       ]}
                       featured
                       imagePosition={club.imagePosition}
+                                            description={club.description ? club.description.split(" ").slice(0, 25).join(" ") + (club.description.split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Club"
                     />
                   ))}

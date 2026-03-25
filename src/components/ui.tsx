@@ -26,6 +26,7 @@ export function ListingCard({
   cta,
   image,
   imagePosition,
+  description,
 }: {
   href: string;
   title: string;
@@ -36,6 +37,7 @@ export function ListingCard({
   cta?: string;
   image?: string;
   imagePosition?: number;
+  description?: string;
 }) {
   return (
     <a
@@ -63,7 +65,10 @@ export function ListingCard({
         <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight group-hover:text-accent-hover transition-colors mb-1 min-h-[3.5rem]">
           {title}
         </h3>
-        <p className="text-muted text-sm mb-4">{subtitle}</p>
+        <p className="text-muted text-sm mb-2">{subtitle}</p>
+        {description && (
+          <p className="text-sm text-primary/70 line-clamp-2 mb-3 leading-relaxed">{description}</p>
+        )}
         <div className="grid grid-cols-2 gap-2 flex-1">
           {details.map((d, i) => (
             <div key={i}>

@@ -124,6 +124,7 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
                       ]}
                       featured
                       imagePosition={trainer.imagePosition}
+                                            description={trainer.description ? trainer.description.split(" ").slice(0, 25).join(" ") + (trainer.description.split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Trainer"
                     />
                   ))}

@@ -139,6 +139,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
                       ]}
                       featured
                       imagePosition={tournament.imagePosition}
+                                            description={tournament.description ? tournament.description.split(" ").slice(0, 25).join(" ") + (tournament.description.split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Tournament"
                     />
                   ))}

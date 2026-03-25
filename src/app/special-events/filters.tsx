@@ -152,6 +152,7 @@ export function SpecialEventFilters({ events }: { events: SpecialEvent[] }) {
                       ]}
                       featured
                       imagePosition={event.imagePosition}
+                                            description={event.description ? event.description.split(" ").slice(0, 25).join(" ") + (event.description.split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Event"
                     />
                   ))}

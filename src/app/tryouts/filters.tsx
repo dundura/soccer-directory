@@ -155,6 +155,7 @@ export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tr
                       ]}
                       featured
                       imagePosition={tryout.imagePosition}
+                                            description={tryout.description ? tryout.description.split(" ").slice(0, 25).join(" ") + (tryout.description.split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Tryout"
                     />
                   ))}

@@ -164,6 +164,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
                       ]}
                       featured
                       imagePosition={team.imagePosition}
+                                            description={team.description ? team.description.split(" ").slice(0, 25).join(" ") + (team.description.split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Team"
                     />
                   ))}

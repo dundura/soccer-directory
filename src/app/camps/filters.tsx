@@ -126,6 +126,7 @@ export function CampFilters({ camps }: { camps: Camp[] }) {
                       ]}
                       featured
                       imagePosition={camp.imagePosition}
+                                            description={camp.description ? camp.description.split(" ").slice(0, 25).join(" ") + (camp.description.split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Camp"
                     />
                   ))}
