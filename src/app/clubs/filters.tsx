@@ -114,7 +114,7 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
                         { label: "Teams", value: String(club.teamCount) },
                         { label: "Age Groups", value: club.ageGroups },
                       ]}
-                      featured={club.featured}
+                      featured
                       imagePosition={club.imagePosition}
                       cta="View Club"
                     />

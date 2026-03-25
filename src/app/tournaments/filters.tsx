@@ -130,7 +130,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
                         { label: "Age Groups", value: tournament.ageGroups },
                         { label: "Entry Fee", value: tournament.entryFee },
                       ]}
-                      featured={tournament.featured}
+                      featured
                       imagePosition={tournament.imagePosition}
                       cta="View Tournament"
                     />
@@ -200,7 +200,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
                           <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-medium">{tournament.format}</span>
                         </div>
                         {tournament.description && (
-                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{tournament.description}</p>
+                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{tournament.description.split(" ").slice(0, 30).join(" ")}{tournament.description.split(" ").length > 30 ? "..." : ""}</p>
                         )}
                       </div>
                     </div>

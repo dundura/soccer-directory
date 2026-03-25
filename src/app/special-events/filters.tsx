@@ -143,7 +143,7 @@ export function SpecialEventFilters({ events }: { events: SpecialEvent[] }) {
                         { label: "Age Group", value: event.ageGroup },
                         ...(event.cost ? [{ label: "Cost", value: event.cost }] : [{ label: "Location", value: event.location || `${event.city}, ${event.state}` }]),
                       ]}
-                      featured={event.featured}
+                      featured
                       imagePosition={event.imagePosition}
                       cta="View Event"
                     />
@@ -205,7 +205,7 @@ export function SpecialEventFilters({ events }: { events: SpecialEvent[] }) {
                           <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{event.ageGroup}</span>
                         </div>
                         {event.description && (
-                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{event.description}</p>
+                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{event.description.split(" ").slice(0, 30).join(" ")}{event.description.split(" ").length > 30 ? "..." : ""}</p>
                         )}
                       </div>
                     </a>
