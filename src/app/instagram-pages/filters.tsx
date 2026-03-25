@@ -146,7 +146,7 @@ export function InstagramPageFilters({ pages }: { pages: InstagramPage[] }) {
                       ]}
                       details={[
                         { label: "Owner", value: igPage.ownerName },
-                        { label: "Followers", value: igPage.followerCount },
+                        { label: "Followers", value: igPage.followerCount || "—" },
                       ]}
                       featured
                       description={igPage.description ? igPage.description.split(" ").slice(0, 25).join(" ") + (igPage.description.split(" ").length > 25 ? "..." : "") : undefined}

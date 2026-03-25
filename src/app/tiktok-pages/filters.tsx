@@ -146,7 +146,7 @@ export function TikTokPageFilters({ pages }: { pages: TikTokPage[] }) {
                       ]}
                       details={[
                         { label: "Owner", value: tkPage.ownerName },
-                        { label: "Followers", value: tkPage.followerCount },
+                        { label: "Followers", value: tkPage.followerCount || "—" },
                       ]}
                       featured
                       description={tkPage.description ? tkPage.description.split(" ").slice(0, 25).join(" ") + (tkPage.description.split(" ").length > 25 ? "..." : "") : undefined}
