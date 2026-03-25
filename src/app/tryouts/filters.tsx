@@ -281,7 +281,6 @@ export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tr
               </div>
             )}
 
-            <div className="mt-8"><AnytimeInlineCTA /></div>
           </>
         )}
       </div>
@@ -379,6 +378,10 @@ export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tr
           </div>
         </div>
       )}
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <AnytimeInlineCTA />
+      </div>
     </>
   );
 }
