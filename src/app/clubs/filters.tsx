@@ -63,7 +63,7 @@ export function ClubFilters({ clubs }: { clubs: Club[] }) {
           </p>
 
           {/* Single unified search bar */}
-          <div className="bg-white rounded-2xl sm:rounded-full shadow-2xl p-2 max-w-2xl mx-auto inline-flex flex-col sm:flex-row items-stretch">
+          <div className="bg-white rounded-2xl sm:rounded-full shadow-2xl p-2 max-w-3xl mx-auto inline-flex flex-col sm:flex-row items-stretch">
               <input
                 type="text"
                 value={search}
