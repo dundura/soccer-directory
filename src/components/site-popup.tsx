@@ -3,13 +3,36 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
+const FREE_EBOOKS = [
+  { title: "The Most Important Skill Never Taught", subtitle: "This powerful (yet simple) tip will change your child's game forever.", href: "https://anytime-soccer.com/the-most-important-skill-in-youth-soccer/", image: "https://media.anytime-soccer.com/wp-content/uploads/2021/01/ast_facebook_image_3.jpg", cta: "Download Free Ebook" },
+  { title: "Must-Have Guide to In-Home Training", subtitle: "Everything you need to know to start training at home effectively.", href: "https://anytime-soccer.com/must-have-guide-for-serious-soccer-parents/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/home/bg-1.png", cta: "Get the Guide" },
+  { title: "20 Questions for Every Club", subtitle: "Essential questions to ask before joining any youth soccer club.", href: "https://anytime-soccer.com/20-questions-every-parent-should-ask/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/ebook/ebook-1.png", cta: "Download Free" },
+  { title: "Become a Rec Coach SuperHero", subtitle: "Transform your rec coaching with practical tips and strategies.", href: "https://anytime-soccer.com/become-a-rec-coach-superhero/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/ebook/ebook-2.png", cta: "Get the Playbook" },
+  { title: "Everything About Guest Playing", subtitle: "Navigate guest playing opportunities like a pro.", href: "https://anytime-soccer.com/everything-you-need-to-know-about-guest-playing/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/ebook/ebook-3.png", cta: "Download Free" },
+  { title: "Monopoly: Issues Facing US Youth Soccer", subtitle: "A candid look at what's holding back American soccer.", href: "https://anytime-soccer.com/monopoly-addressing-issues-facing-youth-soccer-ebook/", image: "https://media.anytime-soccer.com/wp-content/uploads/2024/07/us_soccer-768x596.png", cta: "Read Free Ebook" },
+  { title: "The Parent Trainer's Playbook", subtitle: "20 unconventional tips for raising a competitive soccer player.", href: "https://anytime-soccer.com/the-parent-trainers-playbook/", image: "https://media.anytime-soccer.com/wp-content/uploads/2024/08/the-playbook-20-unconventional-tips-for-raising-a-compeitive-soccer-player-thus-far-1024x789.png", cta: "Get the Playbook" },
+  { title: "Player Cards Guide", subtitle: "Stay informed about eligibility requirements and avoid missed tournaments.", href: "https://anytime-soccer.com/everything-you-need-to-know-about-player-cards/", image: "https://media.anytime-soccer.com/wp-content/uploads/2024/11/pro-tips-for-college-showcases-1.png", cta: "Download Free" },
+];
+
+type Variant = "listing" | "training" | "ebook";
+
 export default function SitePopup() {
   const [show, setShow] = useState(false);
-  const [variant, setVariant] = useState<"listing" | "training">("listing");
+  const [variant, setVariant] = useState<Variant>("listing");
+  const [ebookIndex, setEbookIndex] = useState(0);
 
   useEffect(() => {
     if (sessionStorage.getItem("snm-popup-dismissed")) return;
-    setVariant(Math.random() < 0.5 ? "listing" : "training");
+    // 10 total options: listing, training, 8 ebooks — equal chance
+    const roll = Math.random();
+    if (roll < 0.1) {
+      setVariant("listing");
+    } else if (roll < 0.2) {
+      setVariant("training");
+    } else {
+      setVariant("ebook");
+      setEbookIndex(Math.floor(Math.random() * FREE_EBOOKS.length));
+    }
     const timer = setTimeout(() => setShow(true), 3000);
     return () => clearTimeout(timer);
   }, []);
@@ -20,6 +43,8 @@ export default function SitePopup() {
   };
 
   if (!show) return null;
+
+  const ebook = FREE_EBOOKS[ebookIndex];
 
   return (
     <div
@@ -42,16 +67,43 @@ export default function SitePopup() {
 
         <div className="hidden md:flex md:w-[45%] items-center justify-center overflow-hidden">
           <img
-            src={variant === "training"
+            src={variant === "ebook"
+              ? ebook.image
+              : variant === "training"
               ? "https://d2vm0l3c6tu9qp.cloudfront.net/Anytime-soccer-camp.webp"
               : "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp"}
-            alt={variant === "training" ? "Anytime Soccer Training" : "Soccer Near Me"}
+            alt={variant === "ebook" ? ebook.title : variant === "training" ? "Anytime Soccer Training" : "Soccer Near Me"}
             className="w-full h-full object-cover"
           />
         </div>
 
         <div className="w-full md:w-[55%] p-8 md:p-10 flex flex-col justify-center">
-          {variant === "training" ? (
+          {variant === "ebook" ? (
+            <>
+              <p className="text-accent text-xs font-bold uppercase tracking-[2px] mb-2">
+                Free Ebook
+              </p>
+              <p className="text-accent text-sm font-semibold mb-4">
+                Download Now — No Cost, No Catch!
+              </p>
+              <div className="w-12 h-[3px] bg-accent rounded-full mb-5" />
+              <h2 className="text-2xl md:text-[28px] font-extrabold text-primary leading-tight mb-2">
+                {ebook.title}
+              </h2>
+              <p className="text-muted text-[15px] mb-6">
+                {ebook.subtitle}
+              </p>
+              <a
+                href={ebook.href}
+                onClick={dismiss}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-accent hover:bg-accent-hover text-white text-center px-6 py-4 rounded-full font-bold text-base transition-all hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(220,55,62,0.35)] hover:shadow-[0_6px_25px_rgba(220,55,62,0.45)]"
+              >
+                {ebook.cta} &rarr;
+              </a>
+            </>
+          ) : variant === "training" ? (
             <>
               <p className="text-accent text-xs font-bold uppercase tracking-[2px] mb-2">
                 7-Day Training Plan
