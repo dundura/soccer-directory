@@ -70,7 +70,7 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
           </p>
 
           {/* Single unified search bar */}
-          <div className="bg-white rounded-2xl lg:rounded-full shadow-2xl p-2 max-w-6xl mx-auto">
+          <div className="bg-white rounded-2xl lg:rounded-full shadow-2xl p-2 max-w-4xl mx-auto">
             <div className="flex flex-col lg:flex-row items-stretch">
               <select
                 value={state}

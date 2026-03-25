@@ -60,8 +60,8 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
           </p>
 
           {/* Single unified search bar */}
-          <div className="bg-white rounded-2xl lg:rounded-full shadow-2xl p-2 max-w-6xl mx-auto">
-            <div className="flex flex-col lg:flex-row items-stretch">
+          <div className="bg-white rounded-2xl sm:rounded-full shadow-2xl p-2 max-w-2xl mx-auto inline-flex flex-col sm:flex-row items-stretch">
+            
               <select
                 value={state}
                 onChange={(e) => { setState(e.target.value); setPage(1); }}
@@ -94,7 +94,6 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
               >
                 Search
               </button>
-            </div>
           </div>
         </div>
       </div>
