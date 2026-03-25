@@ -14,6 +14,7 @@ export function SpecialEventFilters({ events }: { events: SpecialEvent[] }) {
   const [tab, setTab] = useState<"current" | "past">("current");
   const [state, setState] = useState("");
   const [gender, setGender] = useState("");
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [viewAll, setViewAll] = useState(false);
 
@@ -68,8 +69,15 @@ export function SpecialEventFilters({ events }: { events: SpecialEvent[] }) {
           </p>
 
           {/* Single unified filter pill bar */}
-          <div className="bg-white rounded-2xl sm:rounded-full shadow-2xl p-2 max-w-xl mx-auto inline-flex flex-col sm:flex-row items-stretch">
+          <div className="bg-white rounded-2xl sm:rounded-full shadow-2xl p-2 max-w-2xl mx-auto inline-flex flex-col sm:flex-row items-stretch">
             
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                placeholder="Search by name..."
+                className="px-5 py-3 sm:rounded-l-full text-sm text-primary placeholder:text-muted focus:outline-none min-w-0 flex-1 sm:border-r border-border"
+              />
               <select
                 value={state}
                 onChange={(e) => { setState(e.target.value); setPage(1); }}

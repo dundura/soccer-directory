@@ -72,6 +72,13 @@ export function TeamFilters({ teams }: { teams: Team[] }) {
           {/* Single unified search bar */}
           <div className="bg-white rounded-2xl lg:rounded-full shadow-2xl p-2 max-w-4xl mx-auto">
             <div className="flex flex-col lg:flex-row items-stretch">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                placeholder="Search by name..."
+                className="px-5 py-3 sm:rounded-l-full text-sm text-primary placeholder:text-muted focus:outline-none min-w-0 flex-1 sm:border-r border-border"
+              />
               <select
                 value={state}
                 onChange={(e) => { setState(e.target.value); setPage(1); }}
