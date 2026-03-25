@@ -185,10 +185,11 @@ export function FacebookGroupFilters({ groups }: { groups: FacebookGroup[] }) {
                         <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl md:text-[1.75rem] font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors">
                           {group.name}
                         </h3>
-                        <p className="text-sm text-muted flex items-center gap-1.5 mt-1">
-                          <svg className="w-3.5 h-3.5 flex-shrink-0 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                          {group.city}, {group.state}
-                        </p>
+                        {(group.city || group.state) && (
+                          <p className="text-sm text-muted mt-1">
+                            {group.city}{group.city && group.state ? ", " : ""}{group.state}
+                          </p>
+                        )}
                         <div className="flex flex-wrap items-center gap-1.5 mt-2">
                           <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">{group.category}</span>
                           <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{group.privacy}</span>
