@@ -44,7 +44,7 @@ export function ListingCard({
     >
       {image && (
         <div className="w-full h-[200px] overflow-hidden bg-surface flex items-center justify-center">
-          <img src={image} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={{ objectPosition: `center ${imagePosition ?? 50}%` }} />
+          <img src={image} alt={title} className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300" />
         </div>
       )}
       <div className="p-6">
