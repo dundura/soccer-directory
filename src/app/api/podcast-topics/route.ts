@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     if (action === "updateEpisode") {
       const { episodeId } = body;
       if (!episodeId) return NextResponse.json({ error: "Missing episodeId" }, { status: 400 });
-      await updatePodcastEpisode(episodeId, { title, description, embedUrl, embedHtml });
+      await updatePodcastEpisode(episodeId, { title, description, embedUrl, embedHtml, slug });
       return NextResponse.json({ success: true });
     }
 

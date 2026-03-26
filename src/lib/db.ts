@@ -3562,8 +3562,8 @@ export async function getPodcastEpisodeBySlug(episodeSlug: string): Promise<(Pod
   };
 }
 
-export async function updatePodcastEpisode(id: string, data: { title?: string; description?: string; embedUrl?: string; embedHtml?: string }): Promise<boolean> {
-  const rows = await sql`UPDATE podcast_episodes SET title = ${data.title ?? null}, description = ${data.description ?? null}, embed_url = COALESCE(${data.embedUrl || null}, embed_url), embed_html = COALESCE(${data.embedHtml || null}, embed_html) WHERE id = ${id} RETURNING id`;
+export async function updatePodcastEpisode(id: string, data: { title?: string; description?: string; embedUrl?: string; embedHtml?: string; slug?: string }): Promise<boolean> {
+  const rows = await sql`UPDATE podcast_episodes SET title = ${data.title ?? null}, description = ${data.description ?? null}, slug = COALESCE(${data.slug || null}, slug), embed_url = COALESCE(${data.embedUrl || null}, embed_url), embed_html = COALESCE(${data.embedHtml || null}, embed_html) WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
 

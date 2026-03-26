@@ -61,11 +61,13 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
+  const [editSlug, setEditSlug] = useState("");
 
-  const handleEdit = (ep: { id: string; title?: string; description?: string }) => {
+  const handleEdit = (ep: { id: string; title?: string; description?: string; slug?: string }) => {
     setEditingId(ep.id);
     setEditTitle(ep.title || "");
     setEditDesc(ep.description || "");
+    setEditSlug(ep.slug || "");
   };
 
   const handleSaveEdit = async () => {
@@ -74,7 +76,7 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
     await fetch("/api/podcast-topics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "updateEpisode", podcastId, episodeId: editingId, title: editTitle, description: editDesc }),
+      body: JSON.stringify({ action: "updateEpisode", podcastId, episodeId: editingId, title: editTitle, description: editDesc, slug: editSlug }),
     });
     setSaving(false);
     setEditingId(null);
@@ -179,6 +181,11 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
             <div className="space-y-3">
               <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Episode title" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
               <textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} placeholder="Description" rows={3} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent resize-none" />
+              <div>
+                <label className="block text-xs font-medium text-muted mb-1">URL Slug</label>
+                <input type="text" value={editSlug} onChange={(e) => setEditSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-"))} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm font-mono focus:outline-none focus:border-accent" />
+                <p className="text-xs text-muted mt-1">Episode URL: /podcasts/{podcastSlug}/episodes/{editSlug || "..."}</p>
+              </div>
               <div className="flex gap-2">
                 <button onClick={handleSaveEdit} disabled={saving} className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">{saving ? "Saving..." : "Save"}</button>
                 <button onClick={() => setEditingId(null)} className="px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-surface transition-colors">Cancel</button>
@@ -191,6 +198,10 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
                 <div className="flex-1 min-w-0">
                   {ep.title && <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="hover:text-accent transition-colors"><h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight hover:text-accent">{ep.title}</h3></a>}
                   {ep.description && <p className="text-sm text-primary/70 mt-1 leading-relaxed">{ep.description}</p>}
+                  <div className="flex items-center gap-3 mt-2">
+                    <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="text-xs font-semibold text-accent hover:underline">Share Episode →</a>
+                    {ep.slug && <span className="text-[10px] text-muted font-mono">/{ep.slug}</span>}
+                  </div>
                 </div>
                 {isOwner && (
                   <div className="flex gap-3 flex-shrink-0">
