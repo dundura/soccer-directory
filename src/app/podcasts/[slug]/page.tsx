@@ -215,6 +215,11 @@ export default async function PodcastPage({ params }: Props) {
             </div>
           )}
 
+          {/* Podcast Topics */}
+          <div id="topics">
+            <PodcastTopicsSection podcastId={podcast.id} ownerId={ownerId} />
+          </div>
+
           {/* Top Episodes (manual) */}
           {podcast.topEpisodes && podcast.topEpisodes.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-6">
@@ -300,11 +305,6 @@ export default async function PodcastPage({ params }: Props) {
               <PhotoGallery photos={podcast.photos} imagePosition={podcast.imagePosition} />
             </div>
           )}
-
-          {/* Podcast Topics */}
-          <div id="topics">
-            <PodcastTopicsSection podcastId={podcast.id} ownerId={ownerId} />
-          </div>
 
           {/* Posts - mobile only (shown in sidebar on desktop) */}
           <div className="md:hidden">
