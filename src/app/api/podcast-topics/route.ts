@@ -6,6 +6,7 @@ import {
   updatePodcastTopic,
   deletePodcastTopic,
   createPodcastEpisode,
+  updatePodcastEpisode,
   deletePodcastEpisode,
   getListingOwnerIdById,
   getUserByEmail,
@@ -65,6 +66,13 @@ export async function POST(req: Request) {
       if (!embedUrl && !embedHtml) return NextResponse.json({ error: "Embed URL or HTML required" }, { status: 400 });
       const id = await createPodcastEpisode(topicId, { title, description, embedUrl, embedHtml });
       return NextResponse.json({ id });
+    }
+
+    if (action === "updateEpisode") {
+      const { episodeId } = body;
+      if (!episodeId) return NextResponse.json({ error: "Missing episodeId" }, { status: 400 });
+      await updatePodcastEpisode(episodeId, { title, description, embedUrl, embedHtml });
+      return NextResponse.json({ success: true });
     }
 
     if (action === "deleteEpisode") {

@@ -37,6 +37,28 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
   const [epEmbedHtml, setEpEmbedHtml] = useState("");
   const [embedMode, setEmbedMode] = useState<"url" | "html">("url");
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDesc, setEditDesc] = useState("");
+
+  const handleEdit = (ep: { id: string; title?: string; description?: string }) => {
+    setEditingId(ep.id);
+    setEditTitle(ep.title || "");
+    setEditDesc(ep.description || "");
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingId) return;
+    setSaving(true);
+    await fetch("/api/podcast-topics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "updateEpisode", podcastId, episodeId: editingId, title: editTitle, description: editDesc }),
+    });
+    setSaving(false);
+    setEditingId(null);
+    window.location.reload();
+  };
 
   const handleAdd = async () => {
     if (!epEmbedUrl && !epEmbedHtml) return;
@@ -102,16 +124,33 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
 
       {topic.episodes.map((ep) => (
         <div key={ep.id} className="bg-white rounded-xl border border-border p-5 sm:p-6">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              {ep.title && <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">{ep.title}</h3>}
-              {ep.description && <p className="text-sm text-primary/70 mt-1 leading-relaxed">{ep.description}</p>}
+          {editingId === ep.id ? (
+            <div className="space-y-3">
+              <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Episode title" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
+              <textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} placeholder="Description" rows={3} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent resize-none" />
+              <div className="flex gap-2">
+                <button onClick={handleSaveEdit} disabled={saving} className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">{saving ? "Saving..." : "Save"}</button>
+                <button onClick={() => setEditingId(null)} className="px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-surface transition-colors">Cancel</button>
+              </div>
+              <EmbedPlayer embedUrl={ep.embedUrl} embedHtml={ep.embedHtml} />
             </div>
-            {isOwner && (
-              <button onClick={() => handleDelete(ep.id)} className="text-xs text-muted hover:text-red-500 transition-colors flex-shrink-0">Delete</button>
-            )}
-          </div>
-          <EmbedPlayer embedUrl={ep.embedUrl} embedHtml={ep.embedHtml} />
+          ) : (
+            <>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  {ep.title && <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">{ep.title}</h3>}
+                  {ep.description && <p className="text-sm text-primary/70 mt-1 leading-relaxed">{ep.description}</p>}
+                </div>
+                {isOwner && (
+                  <div className="flex gap-3 flex-shrink-0">
+                    <button onClick={() => handleEdit(ep)} className="text-xs text-accent hover:text-accent-hover transition-colors">Edit</button>
+                    <button onClick={() => handleDelete(ep.id)} className="text-xs text-muted hover:text-red-500 transition-colors">Delete</button>
+                  </div>
+                )}
+              </div>
+              <EmbedPlayer embedUrl={ep.embedUrl} embedHtml={ep.embedHtml} />
+            </>
+          )}
         </div>
       ))}
     </div>

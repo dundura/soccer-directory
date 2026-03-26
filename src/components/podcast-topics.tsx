@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import type { PodcastTopic } from "@/lib/db";
+import { ImageUpload } from "@/components/image-upload";
 
 function EmbedPlayer({ embedUrl, embedHtml }: { embedUrl?: string; embedHtml?: string }) {
   if (embedHtml) {
@@ -51,6 +52,7 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
   const [showTopicForm, setShowTopicForm] = useState(false);
   const [topicTitle, setTopicTitle] = useState("");
   const [topicDesc, setTopicDesc] = useState("");
+  const [topicImage, setTopicImage] = useState("");
 
   // Episode form
   const [showEpisodeForm, setShowEpisodeForm] = useState(false);
@@ -78,9 +80,9 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
     await fetch("/api/podcast-topics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "createTopic", podcastId, title: topicTitle, description: topicDesc || undefined }),
+      body: JSON.stringify({ action: "createTopic", podcastId, title: topicTitle, description: topicDesc || undefined, previewImage: topicImage || undefined }),
     });
-    setTopicTitle(""); setTopicDesc(""); setShowTopicForm(false);
+    setTopicTitle(""); setTopicDesc(""); setTopicImage(""); setShowTopicForm(false);
     setSaving(false);
     fetchTopics();
   };
@@ -163,6 +165,17 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
               value={topicDesc} onChange={(e) => setTopicDesc(e.target.value)}
               placeholder="Description (optional)" rows={2} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent resize-none"
             />
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1">Preview Image (optional)</label>
+              {topicImage ? (
+                <div className="relative inline-block">
+                  <img src={topicImage} alt="Preview" className="max-h-[100px] rounded-lg object-cover" />
+                  <button type="button" onClick={() => setTopicImage("")} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white text-xs flex items-center justify-center hover:bg-black/80">&#x2715;</button>
+                </div>
+              ) : (
+                <ImageUpload onUploaded={(url) => setTopicImage(url)} />
+              )}
+            </div>
             <div className="flex gap-2">
               <button onClick={handleCreateTopic} disabled={saving || !topicTitle.trim()} className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
                 {saving ? "Saving..." : "Create Topic"}

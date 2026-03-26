@@ -3547,6 +3547,11 @@ export async function createPodcastEpisode(topicId: string, data: { title?: stri
   return id;
 }
 
+export async function updatePodcastEpisode(id: string, data: { title?: string; description?: string; embedUrl?: string; embedHtml?: string }): Promise<boolean> {
+  const rows = await sql`UPDATE podcast_episodes SET title = ${data.title ?? null}, description = ${data.description ?? null}, embed_url = COALESCE(${data.embedUrl || null}, embed_url), embed_html = COALESCE(${data.embedHtml || null}, embed_html) WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
 export async function deletePodcastEpisode(id: string): Promise<boolean> {
   const rows = await sql`DELETE FROM podcast_episodes WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
