@@ -141,6 +141,13 @@ export default async function PodcastPage({ params }: Props) {
           <div className="hidden md:block space-y-5">
             <ListingPostsSidebar listingType="podcast" listingId={podcast.id} slug={slug} ownerId={ownerId} />
           </div>
+
+          {/* Special Event link - desktop sidebar */}
+          <div className="hidden md:block">
+            <a href="#special-events" className="block w-full py-2.5 text-center rounded-xl border-2 border-accent text-accent font-semibold text-sm hover:bg-accent hover:text-white transition-colors">
+              + Add Special Event
+            </a>
+          </div>
         </aside>
 
         {/* ── Main Content ── */}
@@ -217,7 +224,9 @@ export default async function PodcastPage({ params }: Props) {
           )}
 
           {/* Special Events */}
-          <ListingEventsSection listingType="podcast" listingId={podcast.id} listingSlug={slug} ownerId={ownerId} />
+          <div id="special-events">
+            <ListingEventsSection listingType="podcast" listingId={podcast.id} listingSlug={slug} ownerId={ownerId} />
+          </div>
 
           {/* Podcast Topics */}
           <div id="topics">
