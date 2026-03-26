@@ -64,6 +64,7 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
   const [embedMode, setEmbedMode] = useState<"url" | "html">("url");
 
   const [saving, setSaving] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const fetchTopics = useCallback(async () => {
     const res = await fetch(`/api/podcast-topics?podcastId=${podcastId}`);
@@ -240,7 +241,7 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
           <p className="text-sm text-muted text-center py-4">No topics yet. Create your first topic to start organizing episodes.</p>
         )}
 
-        {topics.map((topic) => (
+        {(expanded ? topics : topics.slice(0, 3)).map((topic) => (
           <a
             key={topic.id}
             href={`/podcasts/${podcastSlug}/topics/${topic.slug || topic.id}`}
@@ -277,6 +278,27 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
             </div>
           </a>
         ))}
+
+        {/* Expand / View All */}
+        {topics.length > 3 && (
+          <div className="flex items-center justify-center gap-4 pt-2">
+            {!expanded && (
+              <button onClick={() => setExpanded(true)} className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors">
+                Show All {topics.length} Topics
+              </button>
+            )}
+            <a href={`/podcasts/${podcastSlug}/topics`} className="text-sm font-semibold text-primary hover:text-accent transition-colors">
+              View All Topics →
+            </a>
+          </div>
+        )}
+        {topics.length > 0 && topics.length <= 3 && (
+          <div className="flex items-center justify-center pt-2">
+            <a href={`/podcasts/${podcastSlug}/topics`} className="text-sm font-semibold text-primary hover:text-accent transition-colors">
+              View All Topics →
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );
