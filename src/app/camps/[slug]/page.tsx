@@ -14,7 +14,7 @@ import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { ListingPostsSidebar } from "@/components/listing-posts";
-import { ListingEventsSection } from "@/components/listing-events-section";
+import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -197,6 +197,9 @@ export default async function CampDetailPage({ params }: Props) {
           {/* ====== LEFT SIDEBAR (desktop only) ====== */}
           <aside className="hidden lg:flex flex-col gap-4">
             {sidebarContent}
+          
+            {/* Special Events */}
+            <ListingEventsSidebar listingType="camp" listingId={camp.id} listingSlug={slug} ownerId={ownerId} />
           </aside>
 
           {/* ====== RIGHT MAIN COLUMN ====== */}

@@ -11,7 +11,7 @@ import { ReviewSection } from "@/components/review-section";
 import { ContactGroupForm } from "./contact-form";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
-import { ListingEventsSection } from "@/components/listing-events-section";
+import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -111,7 +111,10 @@ export default async function FacebookGroupPage({ params }: Props) {
           )}
 
           {ownerId && <ManageListingButton listingType="fbgroup" listingId={group.id} ownerId={ownerId} />}
-        </aside>
+        
+            {/* Special Events */}
+            <ListingEventsSidebar listingType="fbgroup" listingId={group.id} listingSlug={slug} ownerId={ownerId} />
+          </aside>
 
         {/* ── Main Content ── */}
         <div className="flex-1 min-w-0 space-y-6">

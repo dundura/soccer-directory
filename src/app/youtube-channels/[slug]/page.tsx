@@ -10,7 +10,7 @@ import { ContactYoutubeForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
-import { ListingEventsSection } from "@/components/listing-events-section";
+import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -106,7 +106,10 @@ export default async function YoutubeChannelPage({ params }: Props) {
           </a>
 
           {ownerId && <ManageListingButton listingType="youtube" listingId={channel.id} ownerId={ownerId} />}
-        </aside>
+        
+            {/* Special Events */}
+            <ListingEventsSidebar listingType="youtube" listingId={channel.id} listingSlug={slug} ownerId={ownerId} />
+          </aside>
 
         {/* Main Content */}
         <div className="flex-1 min-w-0 space-y-6">

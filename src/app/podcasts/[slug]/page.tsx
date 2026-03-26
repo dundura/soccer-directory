@@ -13,7 +13,7 @@ import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ClickableImage } from "@/components/clickable-image";
 import { PodcastTopicsSection } from "@/components/podcast-topics";
-import { ListingEventsSection } from "@/components/listing-events-section";
+import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -142,13 +142,9 @@ export default async function PodcastPage({ params }: Props) {
             <ListingPostsSidebar listingType="podcast" listingId={podcast.id} slug={slug} ownerId={ownerId} />
           </div>
 
-          {/* Special Event link - desktop sidebar */}
-          <div className="hidden md:block">
-            <a href="#special-events" className="block w-full py-2.5 text-center rounded-xl border-2 border-accent text-accent font-semibold text-sm hover:bg-accent hover:text-white transition-colors">
-              + Add Special Event
-            </a>
-          </div>
-        </aside>
+            {/* Special Events */}
+            <ListingEventsSidebar listingType="podcast" listingId={podcast.id} listingSlug={slug} ownerId={ownerId} />
+          </aside>
 
         {/* ── Main Content ── */}
         <div className="flex-1 min-w-0 space-y-6">

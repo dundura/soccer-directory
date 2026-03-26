@@ -13,7 +13,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingPostsSidebar } from "@/components/listing-posts";
-import { ListingEventsSection } from "@/components/listing-events-section";
+import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -185,6 +185,9 @@ export default async function TrainerDetailPage({ params }: Props) {
           {/* ====== LEFT SIDEBAR (desktop only) ====== */}
           <aside className="hidden lg:flex flex-col gap-4">
             {sidebarContent}
+          
+            {/* Special Events */}
+            <ListingEventsSidebar listingType="trainer" listingId={trainer.id} listingSlug={slug} ownerId={ownerId} />
           </aside>
 
           {/* ====== RIGHT MAIN COLUMN ====== */}

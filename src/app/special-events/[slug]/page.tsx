@@ -14,7 +14,7 @@ import type { Metadata } from "next";
 import { ContactSpecialEventForm } from "./contact-form";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingPostsSidebar } from "@/components/listing-posts";
-import { ListingEventsSection } from "@/components/listing-events-section";
+import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -196,6 +196,9 @@ export default async function SpecialEventDetailPage({ params }: Props) {
 
             {/* Our Posts */}
             <ListingPostsSidebar listingType="specialevent" listingId={String(event.id)} slug={slug} ownerId={ownerId} />
+
+            {/* Special Events */}
+            <ListingEventsSidebar listingType="specialevent" listingId={String(event.id)} listingSlug={slug} ownerId={ownerId} />
           </aside>
 
           {/* ====== RIGHT MAIN COLUMN ====== */}
