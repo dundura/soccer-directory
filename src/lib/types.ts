@@ -499,6 +499,7 @@ export interface Podcast extends ProfileFields {
   hostHeading?: string;
   hostImage?: string;
   hostBio?: string;
+  previewImage?: string;
   featured: boolean;
   createdAt: string;
   updatedAt?: string;
