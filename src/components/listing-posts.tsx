@@ -183,6 +183,9 @@ export function ListingPostsSidebar({
           <div key={post.id} className={`px-4 py-3 ${post.hidden ? "opacity-50" : ""}`}>
             <div className="flex items-start gap-2">
               <a href={`/posts/${post.slug || post.id}`} className="flex-1 min-w-0 group">
+                {(post.imageUrl || post.ogImageUrl) && (
+                  <img src={post.ogImageUrl || post.imageUrl!} alt="" className="w-full rounded-lg max-h-[100px] object-cover mb-2" />
+                )}
                 {post.title && (
                   <p className="text-[13px] font-bold text-primary leading-snug group-hover:text-accent transition-colors">
                     {post.title}
