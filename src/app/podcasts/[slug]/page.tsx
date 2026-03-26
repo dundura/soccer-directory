@@ -217,7 +217,7 @@ export default async function PodcastPage({ params }: Props) {
 
           {/* Podcast Topics */}
           <div id="topics">
-            <PodcastTopicsSection podcastId={podcast.id} ownerId={ownerId} />
+            <PodcastTopicsSection podcastId={podcast.id} podcastSlug={slug} ownerId={ownerId} />
           </div>
 
           {/* Top Episodes (manual) */}

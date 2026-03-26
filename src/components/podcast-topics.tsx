@@ -41,7 +41,7 @@ function EmbedPlayer({ embedUrl, embedHtml }: { embedUrl?: string; embedHtml?: s
   );
 }
 
-export function PodcastTopicsSection({ podcastId, ownerId }: { podcastId: string; ownerId: string | null }) {
+export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podcastId: string; podcastSlug: string; ownerId: string | null }) {
   const { data: session } = useSession();
   const isOwner = !!(ownerId && session?.user?.id === ownerId) || (session?.user as any)?.role === "admin";
   const [topics, setTopics] = useState<PodcastTopic[]>([]);
@@ -231,7 +231,9 @@ export function PodcastTopicsSection({ podcastId, ownerId }: { podcastId: string
           <div key={topic.id} className="border border-border rounded-xl overflow-hidden">
             <div className="bg-white px-4 py-3 flex items-center justify-between">
               <div>
-                <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">{topic.title}</h3>
+                <a href={`/podcasts/${podcastSlug}/topics/${topic.slug || topic.id}`} className="hover:text-accent transition-colors">
+                  <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight hover:text-accent">{topic.title}</h3>
+                </a>
                 {topic.description && <p className="text-xs text-muted mt-0.5">{topic.description}</p>}
               </div>
               {isOwner && (

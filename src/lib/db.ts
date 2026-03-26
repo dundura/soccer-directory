@@ -3470,7 +3470,9 @@ export interface PodcastTopic {
   id: string;
   podcastId: string;
   title: string;
+  slug?: string;
   description?: string;
+  previewImage?: string;
   sortOrder: number;
   episodes: PodcastEpisode[];
 }
@@ -3492,7 +3494,8 @@ export async function getPodcastTopics(podcastId: string): Promise<PodcastTopic[
     const episodeRows = await sql`SELECT * FROM podcast_episodes WHERE topic_id = ${t.id} ORDER BY sort_order ASC, created_at ASC`;
     topics.push({
       id: t.id as string, podcastId: t.podcast_id as string, title: t.title as string,
-      description: t.description as string | undefined, sortOrder: t.sort_order as number,
+      slug: t.slug as string | undefined, description: t.description as string | undefined,
+      previewImage: t.preview_image as string | undefined, sortOrder: t.sort_order as number,
       episodes: episodeRows.map((e) => ({
         id: e.id as string, topicId: e.topic_id as string, title: e.title as string | undefined,
         description: e.description as string | undefined, embedUrl: e.embed_url as string | undefined,
@@ -3503,15 +3506,33 @@ export async function getPodcastTopics(podcastId: string): Promise<PodcastTopic[
   return topics;
 }
 
-export async function createPodcastTopic(podcastId: string, title: string, description?: string): Promise<string> {
+export async function createPodcastTopic(podcastId: string, title: string, description?: string, previewImage?: string): Promise<string> {
   const id = genId();
-  await sql`INSERT INTO podcast_topics (id, podcast_id, title, description) VALUES (${id}, ${podcastId}, ${title}, ${description || null})`;
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  await sql`INSERT INTO podcast_topics (id, podcast_id, title, slug, description, preview_image) VALUES (${id}, ${podcastId}, ${title}, ${slug}, ${description || null}, ${previewImage || null})`;
   return id;
 }
 
-export async function updatePodcastTopic(id: string, title: string, description?: string): Promise<boolean> {
-  const rows = await sql`UPDATE podcast_topics SET title = ${title}, description = ${description || null}, updated_at = NOW() WHERE id = ${id} RETURNING id`;
+export async function updatePodcastTopic(id: string, data: { title?: string; slug?: string; description?: string; previewImage?: string }): Promise<boolean> {
+  const rows = await sql`UPDATE podcast_topics SET title = COALESCE(${data.title || null}, title), slug = COALESCE(${data.slug || null}, slug), description = ${data.description ?? null}, preview_image = ${data.previewImage ?? null}, updated_at = NOW() WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
+}
+
+export async function getPodcastTopicBySlug(podcastId: string, topicSlug: string): Promise<PodcastTopic | null> {
+  const topicRows = await sql`SELECT * FROM podcast_topics WHERE podcast_id = ${podcastId} AND slug = ${topicSlug} LIMIT 1`;
+  if (!topicRows[0]) return null;
+  const t = topicRows[0];
+  const episodeRows = await sql`SELECT * FROM podcast_episodes WHERE topic_id = ${t.id} ORDER BY sort_order ASC, created_at ASC`;
+  return {
+    id: t.id as string, podcastId: t.podcast_id as string, title: t.title as string,
+    slug: t.slug as string | undefined, description: t.description as string | undefined,
+    previewImage: t.preview_image as string | undefined, sortOrder: t.sort_order as number,
+    episodes: episodeRows.map((e) => ({
+      id: e.id as string, topicId: e.topic_id as string, title: e.title as string | undefined,
+      description: e.description as string | undefined, embedUrl: e.embed_url as string | undefined,
+      embedHtml: e.embed_html as string | undefined, sortOrder: e.sort_order as number,
+    })),
+  };
 }
 
 export async function deletePodcastTopic(id: string): Promise<boolean> {

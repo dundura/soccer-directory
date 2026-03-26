@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   if (!session?.user?.id) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   const body = await req.json();
-  const { action, podcastId, topicId, title, description, embedUrl, embedHtml } = body;
+  const { action, podcastId, topicId, title, description, embedUrl, embedHtml, slug, previewImage } = body;
 
   if (!podcastId) return NextResponse.json({ error: "Missing podcastId" }, { status: 400 });
 
@@ -44,13 +44,13 @@ export async function POST(req: Request) {
   try {
     if (action === "createTopic") {
       if (!title) return NextResponse.json({ error: "Title required" }, { status: 400 });
-      const id = await createPodcastTopic(podcastId, title, description);
+      const id = await createPodcastTopic(podcastId, title, description, previewImage);
       return NextResponse.json({ id });
     }
 
     if (action === "updateTopic") {
-      if (!topicId || !title) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-      await updatePodcastTopic(topicId, title, description);
+      if (!topicId) return NextResponse.json({ error: "Missing topicId" }, { status: 400 });
+      await updatePodcastTopic(topicId, { title, slug, description, previewImage });
       return NextResponse.json({ success: true });
     }
 
