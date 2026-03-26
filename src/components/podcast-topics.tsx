@@ -229,7 +229,7 @@ export function PodcastTopicsSection({ podcastId, ownerId }: { podcastId: string
 
         {topics.map((topic) => (
           <div key={topic.id} className="border border-border rounded-xl overflow-hidden">
-            <div className="bg-surface/50 px-4 py-3 flex items-center justify-between">
+            <div className="bg-white px-4 py-3 flex items-center justify-between">
               <div>
                 <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">{topic.title}</h3>
                 {topic.description && <p className="text-xs text-muted mt-0.5">{topic.description}</p>}
