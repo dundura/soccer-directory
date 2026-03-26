@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getListingPostById, getListingPostBySlug, getListingNameById, getListingSlugById, getListingImages } from "@/lib/db";
-import { ShareButtons } from "@/components/profile-ui";
+import { ShareButtons, VideoEmbed } from "@/components/profile-ui";
 import { PostEditableContent } from "@/components/post-editable";
+import { ClickableImage } from "@/components/clickable-image";
 import { AnytimeInlineCTA } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
@@ -234,11 +235,11 @@ export default async function PostPage({ params }: Props) {
     );
   }
 
-  // ── Regular post layout (social-media-post card style) ──
+  // ── Regular post layout (episode-style) ──
   return (
     <>
       {/* Breadcrumb */}
-      <div className="max-w-[700px] mx-auto px-6 py-3.5 text-sm text-muted">
+      <div className="max-w-[900px] mx-auto px-6 py-3.5 text-sm text-muted">
         <a href={`/${typePath}`} className="text-primary hover:underline">{typeLabel}</a>
         {" \u203A "}
         {listingName && listingSlug && (
@@ -250,58 +251,93 @@ export default async function PostPage({ params }: Props) {
         <span>Post</span>
       </div>
 
-      <div className="max-w-[700px] mx-auto px-6 pb-16">
-        <article className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          {/* Author header */}
-          <div className="flex items-center gap-3 px-6 pt-6 pb-3">
-            <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-base">
-              {post.userName.charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <p className="text-[15px] font-bold text-primary leading-tight">{post.userName}</p>
-              <p className="text-xs text-muted">
-                {listingName && <><a href={profileUrl} className="hover:underline">{listingName}</a> &middot; </>}
-                {date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
-              </p>
-            </div>
-          </div>
-
-          {/* Editable body + slug */}
-          <PostEditableContent
-            postId={post.id}
-            title={post.title}
-            body={enrichedBody}
-            slug={post.slug || post.id}
-            imageUrl={post.imageUrl}
-            videoUrl={post.videoUrl}
-            ctaUrl={post.ctaUrl}
-            ctaLabel={post.ctaLabel}
-            ogImageUrl={post.ogImageUrl}
-            userId={post.userId}
-          />
-
-          {/* Share */}
-          <div className="px-6 py-4 border-t border-border">
-            <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2.5">Share this post</p>
-            <ShareButtons url={postUrl} title={stripHtml(post.body).slice(0, 100)} />
-          </div>
-
-          {/* Profile link */}
-          {listingName && listingSlug && (
-            <a
-              href={profileUrl}
-              className="flex items-center gap-4 mx-6 mb-6 px-5 py-4 rounded-xl bg-surface border border-border hover:border-primary/30 hover:shadow-sm transition-all group"
-            >
-              <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg shrink-0">
-                {listingName.charAt(0).toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-primary group-hover:text-accent transition-colors">{listingName}</p>
-                <p className="text-xs text-muted">View full profile &rarr;</p>
-              </div>
-            </a>
+      <div className="max-w-[900px] mx-auto px-6 pb-16">
+        <div className="bg-white rounded-2xl border border-border overflow-hidden">
+          {/* Preview image */}
+          {(post.imageUrl || post.ogImageUrl) && (
+            <ClickableImage
+              src={post.ogImageUrl || post.imageUrl!}
+              alt={post.title || "Post"}
+              className="w-full h-[220px] sm:h-[300px] object-cover cursor-zoom-in"
+            />
           )}
-        </article>
+
+          <div className="p-6 sm:p-8">
+            {/* Title */}
+            {post.title && (
+              <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase tracking-tight leading-tight mb-3">
+                {post.title}
+              </h1>
+            )}
+
+            {/* Meta */}
+            <div className="flex items-center gap-3 text-sm text-muted mb-5">
+              {listingName && (
+                <a href={profileUrl} className="text-accent hover:underline font-semibold">{listingName}</a>
+              )}
+              <span>&middot;</span>
+              <span>{date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+              <span>&middot;</span>
+              <span>{estimateReadTime(post.body)} read</span>
+            </div>
+
+            {/* Body */}
+            <PostEditableContent
+              postId={post.id}
+              title={post.title}
+              body={enrichedBody}
+              slug={post.slug || post.id}
+              imageUrl={post.imageUrl}
+              videoUrl={post.videoUrl}
+              ctaUrl={post.ctaUrl}
+              ctaLabel={post.ctaLabel}
+              ogImageUrl={post.ogImageUrl}
+              userId={post.userId}
+              profileName={listingName || undefined}
+              profileUrl={listingSlug ? profileUrl : undefined}
+            />
+
+            {/* Video embed */}
+            {post.videoUrl && (
+              <div className="mt-6 rounded-lg overflow-hidden">
+                <VideoEmbed url={post.videoUrl} />
+              </div>
+            )}
+
+            {/* CTA buttons */}
+            {post.ctaUrl && post.ctaLabel && (
+              <div className="mt-6">
+                <a
+                  href={post.ctaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors"
+                >
+                  {post.ctaLabel} &rarr;
+                </a>
+              </div>
+            )}
+
+            {/* Share */}
+            <div className="mt-8 pt-6 border-t border-border">
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Share this post</p>
+              <ShareButtons url={postUrl} title={post.title || stripHtml(post.body).slice(0, 100)} />
+            </div>
+
+            {/* Back to listing */}
+            {listingName && listingSlug && (
+              <div className="mt-6 pt-4 border-t border-border">
+                <a href={profileUrl} className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors">
+                  &larr; Back to {listingName}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <AnytimeInlineCTA />
+        </div>
       </div>
     </>
   );
