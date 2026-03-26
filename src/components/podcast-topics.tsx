@@ -259,7 +259,7 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
                 </button>
               )}
             </div>
-            <div className="hidden sm:flex items-center justify-center w-14 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
+            <div className="flex items-center justify-center w-12 sm:w-14 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
               <span className="text-white text-2xl font-light">&#8250;</span>
             </div>
           </a>
