@@ -68,7 +68,7 @@ export function ListingEventsSection({ listingType, listingId, listingSlug, owne
   };
 
   const handleDelete = async (eventId: string) => {
-    if (!confirm("Delete this event?")) return;
+    if (!confirm("Delete this special event?")) return;
     await fetch("/api/listing-events", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -87,11 +87,11 @@ export function ListingEventsSection({ listingType, listingId, listingSlug, owne
           <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
             <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
           </div>
-          <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Events</h2>
+          <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Special Events</h2>
         </div>
         {isOwner && (
           <button onClick={() => setShowForm(!showForm)} className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors">
-            + Add Event
+            + Add Special Event
           </button>
         )}
       </div>
@@ -100,7 +100,7 @@ export function ListingEventsSection({ listingType, listingId, listingSlug, owne
         {/* Create Form */}
         {isOwner && showForm && (
           <div className="bg-white rounded-xl p-5 border border-border space-y-3">
-            <p className="text-sm font-bold text-primary">New Event</p>
+            <p className="text-sm font-bold text-primary">New Special Event</p>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Event title *" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" rows={3} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent resize-none" />
             <div className="grid grid-cols-2 gap-3">
@@ -130,7 +130,7 @@ export function ListingEventsSection({ listingType, listingId, listingSlug, owne
             </div>
             <div className="flex gap-2 pt-1">
               <button onClick={handleCreate} disabled={saving || !title.trim()} className="px-5 py-2.5 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
-                {saving ? "Saving..." : "Create Event"}
+                {saving ? "Saving..." : "Create Special Event"}
               </button>
               <button onClick={resetForm} className="px-5 py-2.5 rounded-lg border border-border text-sm font-medium hover:bg-surface transition-colors">Cancel</button>
             </div>
@@ -138,7 +138,7 @@ export function ListingEventsSection({ listingType, listingId, listingSlug, owne
         )}
 
         {events.length === 0 && isOwner && (
-          <p className="text-sm text-muted text-center py-4">No events yet. Add your first event.</p>
+          <p className="text-sm text-muted text-center py-4">No special events yet. Add your first special event.</p>
         )}
 
         {/* Events List */}
