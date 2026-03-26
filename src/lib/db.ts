@@ -3519,7 +3519,8 @@ export async function updatePodcastTopic(id: string, data: { title?: string; slu
 }
 
 export async function getPodcastTopicBySlug(podcastId: string, topicSlug: string): Promise<PodcastTopic | null> {
-  const topicRows = await sql`SELECT * FROM podcast_topics WHERE podcast_id = ${podcastId} AND slug = ${topicSlug} LIMIT 1`;
+  let topicRows = await sql`SELECT * FROM podcast_topics WHERE podcast_id = ${podcastId} AND slug = ${topicSlug} LIMIT 1`;
+  if (!topicRows[0]) topicRows = await sql`SELECT * FROM podcast_topics WHERE id = ${topicSlug} LIMIT 1`;
   if (!topicRows[0]) return null;
   const t = topicRows[0];
   const episodeRows = await sql`SELECT * FROM podcast_episodes WHERE topic_id = ${t.id} ORDER BY sort_order ASC, created_at ASC`;

@@ -228,42 +228,41 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
         )}
 
         {topics.map((topic) => (
-          <div key={topic.id} className="border border-border rounded-xl overflow-hidden">
-            <div className="bg-white px-4 py-3 flex items-center justify-between">
-              <div>
-                <a href={`/podcasts/${podcastSlug}/topics/${topic.slug || topic.id}`} className="hover:text-accent transition-colors">
-                  <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight hover:text-accent">{topic.title}</h3>
-                </a>
-                {topic.description && <p className="text-xs text-muted mt-0.5">{topic.description}</p>}
+          <a
+            key={topic.id}
+            href={`/podcasts/${podcastSlug}/topics/${topic.slug || topic.id}`}
+            className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden"
+          >
+            <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+            {topic.previewImage && (
+              <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-4">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-surface">
+                  <img src={topic.previewImage} alt={topic.title} className="w-full h-full object-cover" />
+                </div>
+              </div>
+            )}
+            <div className="flex-1 min-w-0 p-4 sm:p-5 flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight group-hover:text-accent transition-colors">{topic.title}</h3>
+                {topic.description && <p className="text-sm text-primary/70 mt-1 line-clamp-2">{topic.description}</p>}
+                <div className="flex items-center gap-3 mt-2">
+                  <span className="text-xs text-muted">{topic.episodes.length} episode{topic.episodes.length !== 1 ? "s" : ""}</span>
+                  <span className="text-sm font-semibold text-accent group-hover:text-accent-hover transition-colors">View Episodes →</span>
+                </div>
               </div>
               {isOwner && (
-                <button onClick={() => handleDeleteTopic(topic.id)} className="text-xs text-muted hover:text-red-500 transition-colors">
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteTopic(topic.id); }}
+                  className="text-xs text-muted hover:text-red-500 transition-colors flex-shrink-0"
+                >
                   Delete
                 </button>
               )}
             </div>
-            <div className="divide-y divide-border">
-              {topic.episodes.length === 0 && (
-                <p className="text-xs text-muted text-center py-3">No episodes in this topic yet.</p>
-              )}
-              {topic.episodes.map((ep) => (
-                <div key={ep.id} className="px-4 py-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      {ep.title && <p className="text-sm font-semibold text-primary">{ep.title}</p>}
-                      {ep.description && <p className="text-xs text-muted mt-0.5">{ep.description}</p>}
-                    </div>
-                    {isOwner && (
-                      <button onClick={() => handleDeleteEpisode(ep.id)} className="text-xs text-muted hover:text-red-500 transition-colors flex-shrink-0">
-                        Delete
-                      </button>
-                    )}
-                  </div>
-                  <EmbedPlayer embedUrl={ep.embedUrl} embedHtml={ep.embedHtml} />
-                </div>
-              ))}
+            <div className="hidden sm:flex items-center justify-center w-14 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
+              <span className="text-white text-2xl font-light">&#8250;</span>
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </section>
