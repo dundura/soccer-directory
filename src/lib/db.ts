@@ -3463,3 +3463,69 @@ export async function completeDonation(stripeSessionId: string, paymentIntentId:
     onBehalfOf: rows[0].on_behalf_of as string | undefined,
   };
 }
+
+// ── Podcast Topics & Episodes ──────────────────────────────────
+
+export interface PodcastTopic {
+  id: string;
+  podcastId: string;
+  title: string;
+  description?: string;
+  sortOrder: number;
+  episodes: PodcastEpisode[];
+}
+
+export interface PodcastEpisode {
+  id: string;
+  topicId: string;
+  title?: string;
+  description?: string;
+  embedUrl?: string;
+  embedHtml?: string;
+  sortOrder: number;
+}
+
+export async function getPodcastTopics(podcastId: string): Promise<PodcastTopic[]> {
+  const topicRows = await sql`SELECT * FROM podcast_topics WHERE podcast_id = ${podcastId} ORDER BY sort_order ASC, created_at ASC`;
+  const topics: PodcastTopic[] = [];
+  for (const t of topicRows) {
+    const episodeRows = await sql`SELECT * FROM podcast_episodes WHERE topic_id = ${t.id} ORDER BY sort_order ASC, created_at ASC`;
+    topics.push({
+      id: t.id as string, podcastId: t.podcast_id as string, title: t.title as string,
+      description: t.description as string | undefined, sortOrder: t.sort_order as number,
+      episodes: episodeRows.map((e) => ({
+        id: e.id as string, topicId: e.topic_id as string, title: e.title as string | undefined,
+        description: e.description as string | undefined, embedUrl: e.embed_url as string | undefined,
+        embedHtml: e.embed_html as string | undefined, sortOrder: e.sort_order as number,
+      })),
+    });
+  }
+  return topics;
+}
+
+export async function createPodcastTopic(podcastId: string, title: string, description?: string): Promise<string> {
+  const id = genId();
+  await sql`INSERT INTO podcast_topics (id, podcast_id, title, description) VALUES (${id}, ${podcastId}, ${title}, ${description || null})`;
+  return id;
+}
+
+export async function updatePodcastTopic(id: string, title: string, description?: string): Promise<boolean> {
+  const rows = await sql`UPDATE podcast_topics SET title = ${title}, description = ${description || null}, updated_at = NOW() WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function deletePodcastTopic(id: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM podcast_topics WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function createPodcastEpisode(topicId: string, data: { title?: string; description?: string; embedUrl?: string; embedHtml?: string }): Promise<string> {
+  const id = genId();
+  await sql`INSERT INTO podcast_episodes (id, topic_id, title, description, embed_url, embed_html) VALUES (${id}, ${topicId}, ${data.title || null}, ${data.description || null}, ${data.embedUrl || null}, ${data.embedHtml || null})`;
+  return id;
+}
+
+export async function deletePodcastEpisode(id: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM podcast_episodes WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}

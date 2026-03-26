@@ -12,6 +12,7 @@ import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ClickableImage } from "@/components/clickable-image";
+import { PodcastTopicsSection } from "@/components/podcast-topics";
 
 export const dynamic = "force-dynamic";
 
@@ -292,6 +293,9 @@ export default async function PodcastPage({ params }: Props) {
               <PhotoGallery photos={podcast.photos} imagePosition={podcast.imagePosition} />
             </div>
           )}
+
+          {/* Podcast Topics */}
+          <PodcastTopicsSection podcastId={podcast.id} isOwner={!!ownerId} />
 
           {/* Posts - mobile only (shown in sidebar on desktop) */}
           <div className="md:hidden">
