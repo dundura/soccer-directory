@@ -10,6 +10,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingPostsSidebar } from "@/components/listing-posts";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -213,6 +214,9 @@ export default async function ScrimmageDetailPage({ params }: Props) {
                 <VideoEmbed url={videoUrl} />
               </div>
             )}
+
+            {/* Events */}
+            <ListingEventsSection listingType="scrimmage" listingId={s.id} listingSlug={slug} ownerId={ownerId} />
 
             <FeaturedArticles />
 

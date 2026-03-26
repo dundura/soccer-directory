@@ -10,6 +10,7 @@ import { ContactYoutubeForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -253,6 +254,9 @@ export default async function YoutubeChannelPage({ params }: Props) {
               <PhotoGallery photos={channel.photos} imagePosition={channel.imagePosition} />
             </div>
           )}
+
+          {/* Events */}
+          <ListingEventsSection listingType="youtube" listingId={channel.id} listingSlug={slug} ownerId={ownerId} />
 
           <FeaturedArticles />
 

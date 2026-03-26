@@ -10,6 +10,7 @@ import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ContactPageForm } from "./contact-form";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -161,6 +162,9 @@ export default async function TikTokPagePage({ params }: Props) {
               <PhotoGallery photos={page.photos} imagePosition={page.imagePosition} />
             </div>
           )}
+
+          {/* Events */}
+          <ListingEventsSection listingType="tiktokpage" listingId={page.id} listingSlug={slug} ownerId={ownerId} />
 
           <FeaturedArticles />
 

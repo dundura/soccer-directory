@@ -12,6 +12,7 @@ import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -233,6 +234,9 @@ export default async function ServiceDetailPage({ params }: Props) {
             <SponsorsSection sponsors={service.sponsors} />
           </div>
         )}
+
+        {/* Events */}
+        <ListingEventsSection listingType="photovideo" listingId={service.id} listingSlug={slug} ownerId={ownerId} />
 
         <div className="mt-8"><FeaturedArticles /></div>
         <ListingPostsSidebar listingType="photovideo" listingId={service.id} slug={slug} ownerId={ownerId} />

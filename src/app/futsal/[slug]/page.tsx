@@ -12,6 +12,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingPostsSidebar } from "@/components/listing-posts";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -290,6 +291,9 @@ export default async function FutsalDetailPage({ params }: Props) {
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
             </div>
+
+            {/* Events */}
+            <ListingEventsSection listingType="futsal" listingId={team.id} listingSlug={slug} ownerId={ownerId} />
 
             <FeaturedArticles />
 

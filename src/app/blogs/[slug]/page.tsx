@@ -11,6 +11,7 @@ import { ContactBlogForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -272,6 +273,9 @@ export default async function BlogPage({ params }: Props) {
               <PhotoGallery photos={blog.photos} imagePosition={blog.imagePosition} />
             </div>
           )}
+
+          {/* Events */}
+          <ListingEventsSection listingType="blog" listingId={blog.id} listingSlug={slug} ownerId={ownerId} />
 
           <FeaturedArticles />
 

@@ -15,6 +15,7 @@ import type { Metadata } from "next";
 import { ContactTryoutForm } from "./contact-form";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingPostsSidebar } from "@/components/listing-posts";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -343,6 +344,9 @@ export default async function TryoutDetailPage({ params }: Props) {
             </div>
 
             <div className="order-6 lg:order-none lg:col-start-2">
+              {/* Events */}
+              <ListingEventsSection listingType="tryout" listingId={tryout.id} listingSlug={slug} ownerId={ownerId} />
+
               <FeaturedArticles />
             </div>
 

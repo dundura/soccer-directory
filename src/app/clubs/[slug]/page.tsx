@@ -14,6 +14,7 @@ import { ClickableImage } from "@/components/clickable-image";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -392,6 +393,9 @@ export default async function ClubDetailPage({ params }: Props) {
 
           {/* ====== Featured Articles ====== */}
           <div className="order-5 lg:order-none lg:col-start-2">
+            {/* Events */}
+            <ListingEventsSection listingType="club" listingId={club.id} listingSlug={slug} ownerId={ownerId} />
+
             <FeaturedArticles />
           </div>
 

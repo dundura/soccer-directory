@@ -3551,3 +3551,63 @@ export async function deletePodcastEpisode(id: string): Promise<boolean> {
   const rows = await sql`DELETE FROM podcast_episodes WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
+
+// ── Listing Events (for all listing types) ──────────────────────
+
+export interface ListingEvent {
+  id: string;
+  listingType: string;
+  listingId: string;
+  title: string;
+  slug?: string;
+  description?: string;
+  previewImage?: string;
+  eventDate?: string;
+  eventTime?: string;
+  address?: string;
+  location?: string;
+  website?: string;
+  contactEmail?: string;
+  sortOrder: number;
+  createdAt: string;
+}
+
+function mapListingEvent(r: Record<string, unknown>): ListingEvent {
+  return {
+    id: r.id as string, listingType: r.listing_type as string, listingId: r.listing_id as string,
+    title: r.title as string, slug: r.slug as string | undefined,
+    description: r.description as string | undefined, previewImage: r.preview_image as string | undefined,
+    eventDate: r.event_date as string | undefined, eventTime: r.event_time as string | undefined,
+    address: r.address as string | undefined, location: r.location as string | undefined,
+    website: r.website as string | undefined, contactEmail: r.contact_email as string | undefined,
+    sortOrder: r.sort_order as number, createdAt: r.created_at as string,
+  };
+}
+
+export async function getListingEvents(listingType: string, listingId: string): Promise<ListingEvent[]> {
+  const rows = await sql`SELECT * FROM listing_events WHERE listing_type = ${listingType} AND listing_id = ${listingId} ORDER BY sort_order ASC, created_at DESC`;
+  return rows.map(mapListingEvent);
+}
+
+export async function getListingEventBySlug(listingType: string, listingId: string, eventSlug: string): Promise<ListingEvent | null> {
+  let rows = await sql`SELECT * FROM listing_events WHERE listing_type = ${listingType} AND listing_id = ${listingId} AND slug = ${eventSlug} LIMIT 1`;
+  if (!rows[0]) rows = await sql`SELECT * FROM listing_events WHERE id = ${eventSlug} LIMIT 1`;
+  return rows[0] ? mapListingEvent(rows[0]) : null;
+}
+
+export async function createListingEvent(listingType: string, listingId: string, data: { title: string; description?: string; previewImage?: string; eventDate?: string; eventTime?: string; address?: string; location?: string; website?: string; contactEmail?: string }): Promise<string> {
+  const id = genId();
+  const slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  await sql`INSERT INTO listing_events (id, listing_type, listing_id, title, slug, description, preview_image, event_date, event_time, address, location, website, contact_email) VALUES (${id}, ${listingType}, ${listingId}, ${data.title}, ${slug}, ${data.description || null}, ${data.previewImage || null}, ${data.eventDate || null}, ${data.eventTime || null}, ${data.address || null}, ${data.location || null}, ${data.website || null}, ${data.contactEmail || null})`;
+  return id;
+}
+
+export async function updateListingEvent(id: string, data: { title?: string; slug?: string; description?: string; previewImage?: string; eventDate?: string; eventTime?: string; address?: string; location?: string; website?: string; contactEmail?: string }): Promise<boolean> {
+  const rows = await sql`UPDATE listing_events SET title = COALESCE(${data.title || null}, title), slug = COALESCE(${data.slug || null}, slug), description = ${data.description ?? null}, preview_image = ${data.previewImage ?? null}, event_date = ${data.eventDate ?? null}, event_time = ${data.eventTime ?? null}, address = ${data.address ?? null}, location = ${data.location ?? null}, website = ${data.website ?? null}, contact_email = ${data.contactEmail ?? null}, updated_at = NOW() WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function deleteListingEvent(id: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM listing_events WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}

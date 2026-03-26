@@ -14,6 +14,7 @@ import { ListingPostsSidebar } from "@/components/listing-posts";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -401,6 +402,9 @@ export default async function TeamDetailPage({ params }: Props) {
 
           {/* ====== Featured Articles ====== */}
           <div className="order-5 lg:order-none lg:col-start-2">
+            {/* Events */}
+            <ListingEventsSection listingType="team" listingId={team.id} listingSlug={slug} ownerId={ownerId} />
+
             <FeaturedArticles />
           </div>
 

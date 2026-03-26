@@ -10,6 +10,7 @@ import { PhotoGallery } from "./photo-gallery";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -227,6 +228,9 @@ export default async function FundraiserPage({ params }: Props) {
               </div>
             )}
           </div>
+
+          {/* Events */}
+          <ListingEventsSection listingType="fundraiser" listingId={fundraiser.id} listingSlug={slug} ownerId={fundraiser.userId} />
 
           <ListingPostsSidebar listingType="fundraiser" listingId={fundraiser.id} slug={slug} ownerId={fundraiser.userId} />
         </div>

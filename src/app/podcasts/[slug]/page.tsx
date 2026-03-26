@@ -13,6 +13,7 @@ import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ClickableImage } from "@/components/clickable-image";
 import { PodcastTopicsSection } from "@/components/podcast-topics";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -312,6 +313,9 @@ export default async function PodcastPage({ params }: Props) {
           </div>
 
           {/* Featured Articles */}
+          {/* Events */}
+          <ListingEventsSection listingType="podcast" listingId={podcast.id} listingSlug={slug} ownerId={ownerId} />
+
           <FeaturedArticles />
 
           {/* Be a Guest Form */}

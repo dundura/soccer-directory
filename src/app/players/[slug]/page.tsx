@@ -8,6 +8,7 @@ import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -288,6 +289,9 @@ export default async function PlayerDetailPage({ params }: Props) {
           )}
 
           {/* Player Posts */}
+          {/* Events */}
+          <ListingEventsSection listingType="player" listingId={player.id} listingSlug={slug} ownerId={ownerId} />
+
           <ListingPostsSidebar listingType="player" listingId={player.id} slug={slug} ownerId={ownerId} />
 
           {/* Photos */}

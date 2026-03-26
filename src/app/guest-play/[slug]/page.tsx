@@ -11,6 +11,7 @@ import { RequestSpotForm } from "./request-spot-form";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -164,6 +165,9 @@ export default async function GuestDetailPage({ params }: Props) {
             <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
               <ReviewSection listingType="guest" listingId={opp.id} />
             </Suspense>
+
+            {/* Events */}
+            <ListingEventsSection listingType="guest" listingId={opp.id} listingSlug={slug} ownerId={ownerId} />
 
             <FeaturedArticles />
 

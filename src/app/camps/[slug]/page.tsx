@@ -14,6 +14,7 @@ import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { ListingPostsSidebar } from "@/components/listing-posts";
+import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -318,6 +319,9 @@ export default async function CampDetailPage({ params }: Props) {
             </div>
 
             {/* Featured Articles */}
+            {/* Events */}
+            <ListingEventsSection listingType="camp" listingId={camp.id} listingSlug={slug} ownerId={ownerId} />
+
             <FeaturedArticles />
 
             {/* Reviews */}
