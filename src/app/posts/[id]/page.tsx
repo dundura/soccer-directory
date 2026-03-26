@@ -121,19 +121,11 @@ export default async function PostPage({ params }: Props) {
   const profileUrl = listingSlug ? `/${typePath}/${listingSlug}` : `/${typePath}`;
   const postUrl = `https://www.soccer-near-me.com/posts/${post.slug || post.id}`;
   const date = new Date(post.createdAt);
-  const isBlog = !!post.title;
-
-  // Strip inline styles so the blog-article-body CSS class controls formatting
-  function stripInlineStyles(html: string): string {
-    return html.replace(/\s*style="[^"]*"/gi, "");
-  }
-
   // Auto-split long paragraphs (max 5 sentences per paragraph)
   function splitLongParagraphs(html: string): string {
     return html.replace(/<p>([\s\S]*?)<\/p>/gi, (match, inner) => {
       const text = inner.trim();
       if (!text) return match;
-      // Split on sentence endings (. ! ?) followed by a space and uppercase letter
       const sentences = text.split(/(?<=[.!?])\s+(?=[A-Z])/);
       if (sentences.length <= 5) return match;
       const chunks: string[] = [];
@@ -144,9 +136,7 @@ export default async function PostPage({ params }: Props) {
     });
   }
 
-  // Also handle non-wrapped text blocks (plain text without <p> tags)
   function ensureParagraphs(html: string): string {
-    // If no <p> tags at all, wrap text blocks in <p>
     if (!/<p[\s>]/i.test(html)) {
       const lines = html.split(/\n\n+/);
       return lines.map((line) => {
@@ -160,82 +150,9 @@ export default async function PostPage({ params }: Props) {
   }
 
   let enrichedBody = ensureParagraphs(post.body);
-  if (isBlog) enrichedBody = stripInlineStyles(enrichedBody);
   enrichedBody = splitLongParagraphs(enrichedBody);
 
-  // Images only show if the user explicitly added them to the post
-
-  // ── Blog post layout (matches /blog/[slug] style) ──
-  if (isBlog) {
-    return (
-      <>
-        {/* Navy header */}
-        <div className="bg-primary text-white py-12">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <a href={profileUrl} className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">
-              &larr; {listingName || typeLabel}
-            </a>
-            <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-4xl font-bold mt-4 mb-3">
-              {post.title}
-            </h1>
-            <div className="flex items-center gap-3 text-white/50 text-sm">
-              <span>{date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-              <span>&middot;</span>
-              <span>{estimateReadTime(post.body)} read</span>
-              {listingName && (
-                <>
-                  <span>&middot;</span>
-                  <span>By {listingName}</span>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            {/* Cover image — fall back to listing image if none */}
-            {(post.imageUrl || listingImages[0]) && (
-              <div className="mb-8">
-                <img src={post.imageUrl || listingImages[0]} alt="" className="w-full rounded-2xl object-cover max-h-[450px]" />
-              </div>
-            )}
-
-
-            {/* Article body */}
-            <div className="max-w-none mb-12">
-              <PostEditableContent
-                postId={post.id}
-                title={post.title}
-                body={enrichedBody}
-                slug={post.slug || post.id}
-                imageUrl={post.imageUrl}
-                videoUrl={post.videoUrl}
-                ctaUrl={post.ctaUrl}
-                ctaLabel={post.ctaLabel}
-                ogImageUrl={post.ogImageUrl}
-                userId={post.userId}
-                blogLayout
-                profileName={listingName || undefined}
-                profileUrl={listingSlug ? profileUrl : undefined}
-              />
-            </div>
-
-            {/* Share */}
-            <div className="py-6 border-t border-border mb-8">
-              <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Share this article</p>
-              <ShareButtons url={postUrl} title={post.title || stripHtml(post.body).slice(0, 100)} />
-            </div>
-
-            {/* CTA */}
-            <AnytimeInlineCTA />
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  // ── Regular post layout (episode-style) ──
+  // ── Episode-style post layout ──
   return (
     <>
       {/* Breadcrumb */}
