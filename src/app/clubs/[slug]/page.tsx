@@ -110,7 +110,7 @@ export default async function ClubDetailPage({ params }: Props) {
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
               <ClickableImage src={club.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={club.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
               <div className="text-center py-3.5 px-4">
-                <h3 className="text-[15px] font-bold text-primary leading-snug">{club.name}</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-snug">{club.name}</h3>
                 <p className="text-sm text-muted mt-1">{club.city}, {club.state}</p>
               </div>
               <div className="flex flex-col gap-2 px-4 py-2.5 border-t border-border">
@@ -275,7 +275,7 @@ export default async function ClubDetailPage({ params }: Props) {
           {/* ====== At a Glance ====== */}
           <div className={`${(club.announcementHeading || club.announcementText || club.announcementImage || club.announcementHeading2 || club.announcementText2 || club.announcementImage2 || club.announcementHeading3 || club.announcementText3 || club.announcementImage3) ? "order-3" : "order-2"} lg:order-none lg:col-start-2 bg-white rounded-2xl p-4 sm:p-6 shadow-sm`}>
               <div className="flex items-center justify-between mb-2.5 sm:mb-3.5">
-                <h3 className="text-[13px] sm:text-[15px] font-bold text-primary">At a Glance</h3>
+                <h3 className="text-[13px] sm:font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">At a Glance</h3>
                 <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
               </div>
               <div className="grid grid-cols-2 gap-1.5 sm:gap-2.5 mt-1">
@@ -314,7 +314,7 @@ export default async function ClubDetailPage({ params }: Props) {
           {/* ====== Practice Schedule ====== */}
           <div className="order-3 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">Practice Schedule</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Practice Schedule</h3>
                 <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
               </div>
               <div className="flex gap-2 flex-wrap">
@@ -341,7 +341,7 @@ export default async function ClubDetailPage({ params }: Props) {
           {club.openPositions && club.openPositions.length > 0 && (
             <div className="order-4 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">Open Positions</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Open Positions</h3>
                 <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
               </div>
               <div className="space-y-3">
@@ -381,7 +381,7 @@ export default async function ClubDetailPage({ params }: Props) {
           {/* ====== Photos & Video ====== */}
           <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[15px] font-bold text-primary">Photos &amp; Video</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Photos &amp; Video</h3>
                 <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
               </div>
               <div className={`grid grid-cols-2 gap-1.5 ${videoUrl ? "mb-3" : ""}`}>
@@ -399,7 +399,7 @@ export default async function ClubDetailPage({ params }: Props) {
           {club.mediaLinks && club.mediaLinks.length > 0 && (
           <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[15px] font-bold text-primary">Media</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Media</h3>
                 <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
               </div>
               <div className="space-y-2">
@@ -424,7 +424,7 @@ export default async function ClubDetailPage({ params }: Props) {
           {clubTeams.length > 0 && (
               <div className="order-7 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
                 <div className="flex items-center justify-between mb-3.5">
-                  <h3 className="text-[15px] font-bold text-primary">Teams ({clubTeams.length})</h3>
+                  <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Teams ({clubTeams.length})</h3>
                   <EditSectionLink ownerId={ownerId} listingType="club" listingId={club.id} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">

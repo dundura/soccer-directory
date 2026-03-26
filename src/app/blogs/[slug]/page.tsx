@@ -136,7 +136,7 @@ export default async function BlogPage({ params }: Props) {
           {/* About the Blog */}
           {(blog.description || blog.website || blog.subscribeUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">About the Blog</h2>
+              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-3">About the Blog</h2>
               {blog.description && (
                 <InlineEditField ownerId={ownerId} listingType="blog" listingId={blog.id} field="description" value={blog.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
               )}
@@ -177,7 +177,7 @@ export default async function BlogPage({ params }: Props) {
           {/* About the Author */}
           {blog.authorBio && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">{blog.authorHeading || "About the Author"}</h2>
+              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-4">{blog.authorHeading || "About the Author"}</h2>
               <div>
                 {blog.authorImage && (
                   <img src={blog.authorImage} alt={blog.authorHeading || "About the Author"} className="float-left mr-4 mb-3 w-32 h-32 sm:w-40 sm:h-40 rounded-xl object-cover" />
@@ -192,7 +192,7 @@ export default async function BlogPage({ params }: Props) {
           {blog.featuredPosts && blog.featuredPosts.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Featured Posts</h2>
+                <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Featured Posts</h2>
                 <EditSectionLink ownerId={ownerId} listingType="blog" listingId={blog.id} />
               </div>
               <div className="space-y-3">
@@ -220,7 +220,7 @@ export default async function BlogPage({ params }: Props) {
           {rssEpisodes.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Recent Posts</h2>
+                <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Recent Posts</h2>
                 <EditSectionLink ownerId={ownerId} listingType="blog" listingId={blog.id} />
               </div>
               <div className="space-y-3">
@@ -251,7 +251,7 @@ export default async function BlogPage({ params }: Props) {
           {(blog.videoUrl || blog.videoUrl2 || blog.videoUrl3) && (
             <div className="bg-white rounded-2xl border border-border p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Videos</h2>
+                <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Videos</h2>
                 <EditSectionLink ownerId={ownerId} listingType="blog" listingId={blog.id} />
               </div>
               <div className="space-y-4">
@@ -266,7 +266,7 @@ export default async function BlogPage({ params }: Props) {
           {blog.photos && blog.photos.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Photos</h2>
+                <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Photos</h2>
                 <EditSectionLink ownerId={ownerId} listingType="blog" listingId={blog.id} />
               </div>
               <PhotoGallery photos={blog.photos} imagePosition={blog.imagePosition} />
@@ -280,7 +280,7 @@ export default async function BlogPage({ params }: Props) {
           {/* Contact Author Form */}
           <div id="contact-author" className="bg-white rounded-2xl border-2 border-accent/20 p-6">
             <div className="flex items-center justify-between mb-1">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Contact the Author</h2>
+              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Contact the Author</h2>
               <EditSectionLink ownerId={ownerId} listingType="blog" listingId={blog.id} />
             </div>
             <p className="text-muted text-sm mb-5">Have a question or want to collaborate? Reach out to {blog.authorName}.</p>

@@ -131,7 +131,7 @@ export default async function TeamDetailPage({ params }: Props) {
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
               <ClickableImage src={team.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={team.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
               <div className="text-center py-3.5 px-4">
-                <h3 className="text-[15px] font-bold text-primary leading-snug">{team.name}</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-snug">{team.name}</h3>
                 <p className="text-sm text-muted mt-1">{team.city}, {team.state}</p>
               </div>
               <div className="flex flex-col gap-2 px-4 py-2.5 border-t border-border">
@@ -314,7 +314,7 @@ export default async function TeamDetailPage({ params }: Props) {
           {/* ====== At a Glance ====== */}
           <div className={`${(team.announcementHeading || team.announcementText || team.announcementImage || team.announcementHeading2 || team.announcementText2 || team.announcementImage2 || team.announcementHeading3 || team.announcementText3 || team.announcementImage3) ? "order-3" : "order-2"} lg:order-none lg:col-start-2 bg-white rounded-2xl p-4 sm:p-6 shadow-sm`}>
               <div className="flex items-center justify-between mb-2.5 sm:mb-3.5">
-                <h3 className="text-[13px] sm:text-[15px] font-bold text-primary">At a Glance</h3>
+                <h3 className="text-[13px] sm:font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">At a Glance</h3>
                 <EditSectionLink ownerId={ownerId} listingType="team" listingId={team.id} />
               </div>
               <div className="grid grid-cols-2 gap-1.5 sm:gap-2.5 mt-1">
@@ -364,7 +364,7 @@ export default async function TeamDetailPage({ params }: Props) {
           {/* ====== Practice Schedule ====== */}
           <div className="order-3 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">Practice Schedule</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Practice Schedule</h3>
                 <EditSectionLink ownerId={ownerId} listingType="team" listingId={team.id} />
               </div>
               <div className="flex gap-2 flex-wrap">
@@ -390,7 +390,7 @@ export default async function TeamDetailPage({ params }: Props) {
           {/* ====== Photos & Video ====== */}
           <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[15px] font-bold text-primary">Photos &amp; Video</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Photos &amp; Video</h3>
                 <EditSectionLink ownerId={ownerId} listingType="team" listingId={team.id} />
               </div>
               <div className={`grid grid-cols-2 gap-1.5 ${videoUrl ? "mb-3" : ""}`}>
@@ -408,7 +408,7 @@ export default async function TeamDetailPage({ params }: Props) {
           {team.mediaLinks && team.mediaLinks.length > 0 && (
           <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[15px] font-bold text-primary">Media</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Media</h3>
                 <EditSectionLink ownerId={ownerId} listingType="team" listingId={team.id} />
               </div>
               <div className="space-y-2">
@@ -425,7 +425,7 @@ export default async function TeamDetailPage({ params }: Props) {
           {/* ====== Upcoming Events ====== */}
           <div className="order-6 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">Upcoming Events</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Upcoming Events</h3>
                 <EditSectionLink ownerId={ownerId} listingType="team" listingId={team.id} />
               </div>
               {team.events && team.events.length > 0 ? (
@@ -466,7 +466,7 @@ export default async function TeamDetailPage({ params }: Props) {
           {/* ====== Similar Teams ====== */}
           {similarTeams.length > 0 && (
               <div className="order-8 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
-                <h3 className="text-[15px] font-bold text-primary mb-3.5">Similar Teams</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight mb-3.5">Similar Teams</h3>
                 <div className="grid grid-cols-2 gap-3">
                   {similarTeams.map((t) => (
                     <a

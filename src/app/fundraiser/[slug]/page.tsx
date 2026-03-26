@@ -152,7 +152,7 @@ export default async function FundraiserPage({ params }: Props) {
 
           {/* About Card */}
           <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
-            <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3 pb-2.5 border-b-2 border-border">
+            <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-3 pb-2.5 border-b-2 border-border">
               About This Fundraiser
             </h2>
             <InlineEdit
@@ -170,7 +170,7 @@ export default async function FundraiserPage({ params }: Props) {
           {/* Photos & Video */}
           {hasMedia && (
             <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3 pb-2.5 border-b-2 border-border">
+              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-3 pb-2.5 border-b-2 border-border">
                 Photos &amp; Video
               </h2>
               <PhotoGallery photos={fundPhotos} hasVideo={!!fundraiser.videoUrl} />
@@ -180,7 +180,7 @@ export default async function FundraiserPage({ params }: Props) {
 
           {/* Roster */}
           <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
-            <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary pb-2.5 border-b-2 border-border mb-1">
+            <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight pb-2.5 border-b-2 border-border mb-1">
               Roster{" "}
               <span className="font-normal text-muted text-base">({roster.length})</span>
             </h2>
@@ -194,7 +194,7 @@ export default async function FundraiserPage({ params }: Props) {
 
           {/* Supporters Card */}
           <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)] mt-6">
-            <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary pb-2.5 border-b-2 border-border mb-1">
+            <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight pb-2.5 border-b-2 border-border mb-1">
               Supporters{" "}
               <span className="font-normal text-muted text-base">({donations.length})</span>
             </h2>
@@ -235,7 +235,7 @@ export default async function FundraiserPage({ params }: Props) {
         <div className="space-y-5 lg:sticky lg:top-20">
           {/* Support Card */}
           <div className="bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(15,30,53,0.10)]">
-            <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary text-center mb-5">
+            <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight text-center mb-5">
               Support This Fundraiser
             </h3>
 
@@ -276,7 +276,7 @@ export default async function FundraiserPage({ params }: Props) {
                 </span>
               </div>
               {fundraiser.coachName && (
-                <h4 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-1">{fundraiser.coachName}</h4>
+                <h4 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-1">{fundraiser.coachName}</h4>
               )}
               <p className="text-[13px] text-muted mb-2">Organizer</p>
               {fundraiser.coachEmail && (

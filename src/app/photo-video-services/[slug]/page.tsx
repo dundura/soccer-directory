@@ -195,7 +195,7 @@ export default async function ServiceDetailPage({ params }: Props) {
             {photos.length > 0 && (
               <div className="border-t border-border pt-6 mt-6">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-[15px] font-bold text-primary">Photos</h3>
+                  <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Photos</h3>
                   <EditSectionLink ownerId={ownerId} listingType="photovideo" listingId={service.id} />
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -208,7 +208,7 @@ export default async function ServiceDetailPage({ params }: Props) {
             {service.videoUrl && (
               <div className="border-t border-border pt-6 mt-6">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-[15px] font-bold text-primary">Video</h3>
+                  <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Video</h3>
                   <EditSectionLink ownerId={ownerId} listingType="photovideo" listingId={service.id} />
                 </div>
                 <VideoEmbed url={service.videoUrl} />

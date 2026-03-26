@@ -134,7 +134,7 @@ export default async function FacebookGroupPage({ params }: Props) {
           {/* About */}
           {(group.description || group.groupUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">About This Group</h2>
+              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-3">About This Group</h2>
               {group.description && (
                 <InlineEditField ownerId={ownerId} listingType="fbgroup" listingId={group.id} field="description" value={group.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
               )}
@@ -156,7 +156,7 @@ export default async function FacebookGroupPage({ params }: Props) {
           {group.videoUrl && (
             <div className="bg-white rounded-2xl border border-border p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Videos</h2>
+                <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Videos</h2>
                 <EditSectionLink ownerId={ownerId} listingType="fbgroup" listingId={group.id} />
               </div>
               <VideoEmbed url={group.videoUrl} />
@@ -167,7 +167,7 @@ export default async function FacebookGroupPage({ params }: Props) {
           {group.photos && group.photos.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Photos</h2>
+                <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Photos</h2>
                 <EditSectionLink ownerId={ownerId} listingType="fbgroup" listingId={group.id} />
               </div>
               <PhotoGallery photos={group.photos} imagePosition={group.imagePosition} />
@@ -184,7 +184,7 @@ export default async function FacebookGroupPage({ params }: Props) {
 
           {/* Contact Form */}
           <div id="contact" className="bg-white rounded-2xl border-2 border-accent/20 p-6">
-            <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-1">Contact Group Admin</h2>
+            <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-1">Contact Group Admin</h2>
             <p className="text-muted text-sm mb-5">Have a question about {group.name}? Send a message to the group admin.</p>
             <ContactGroupForm groupName={group.name} slug={slug} />
           </div>

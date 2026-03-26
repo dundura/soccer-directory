@@ -67,7 +67,7 @@ export default function ManageRosterPage() {
       </div>
 
       <div className="bg-white rounded-2xl border border-border p-6 shadow-lg">
-        <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-1">Invite Players</h2>
+        <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-1">Invite Players</h2>
         <p className="text-sm text-muted mb-4">Add players by email. They'll receive an invite to create an account and join the roster. Donors can then credit donations to specific players.</p>
 
         <form onSubmit={handleInvite} className="flex gap-2 mb-4">

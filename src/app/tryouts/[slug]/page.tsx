@@ -111,7 +111,7 @@ export default async function TryoutDetailPage({ params }: Props) {
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
               <ClickableImage src={tryout.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={tryout.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
               <div className="text-center py-3.5 px-4">
-                <h3 className="text-[15px] font-bold text-primary leading-snug">{tryout.name}</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-snug">{tryout.name}</h3>
                 {tryout.clubName && <p className="text-sm text-muted">{tryout.clubName}</p>}
                 <p className="text-sm text-muted mt-1">{tryout.city}, {tryout.state}</p>
               </div>
@@ -284,7 +284,7 @@ export default async function TryoutDetailPage({ params }: Props) {
             {/* At a Glance */}
             <div className={`${hasAnnouncements ? "order-3" : "order-2"} lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm`}>
               <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">At a Glance</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">At a Glance</h3>
                 <EditSectionLink ownerId={ownerId} listingType="tryout" listingId={tryout.id} />
               </div>
               <div className="grid grid-cols-2 gap-2.5 mt-1">
@@ -333,7 +333,7 @@ export default async function TryoutDetailPage({ params }: Props) {
             {/* Photos & Video */}
             <div className="order-5 lg:order-none lg:col-start-2 bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">Photos &amp; Video</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Photos &amp; Video</h3>
                 <EditSectionLink ownerId={ownerId} listingType="tryout" listingId={tryout.id} />
               </div>
               <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
@@ -348,7 +348,7 @@ export default async function TryoutDetailPage({ params }: Props) {
 
             {/* Contact Form */}
             <div id="contact" className="order-7 lg:order-none lg:col-start-2 bg-white rounded-2xl border-2 border-accent/20 p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-1">Contact Organizer</h2>
+              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-1">Contact Organizer</h2>
               <p className="text-muted text-sm mb-5">Have questions about this tryout? Send a message to the organizer.</p>
               <ContactTryoutForm tryoutName={tryout.name} slug={slug} />
             </div>

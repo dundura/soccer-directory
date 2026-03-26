@@ -140,7 +140,7 @@ export default async function YoutubeChannelPage({ params }: Props) {
           {/* About the Channel */}
           {(channel.description || channel.channelUrl || channel.subscribeUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">About the Channel</h2>
+              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-3">About the Channel</h2>
               {channel.description && (
                 <InlineEditField ownerId={ownerId} listingType="youtube" listingId={channel.id} field="description" value={channel.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
               )}
@@ -181,7 +181,7 @@ export default async function YoutubeChannelPage({ params }: Props) {
           {/* Meet the Creator */}
           {channel.creatorBio && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-4">{channel.creatorHeading || "Meet the Creator"}</h2>
+              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-4">{channel.creatorHeading || "Meet the Creator"}</h2>
               <div className="flex flex-col sm:flex-row gap-5">
                 {channel.creatorImage && (
                   <img src={channel.creatorImage} alt={channel.creatorHeading || "Meet the Creator"} className="w-32 h-32 rounded-xl object-cover shrink-0" />
@@ -197,7 +197,7 @@ export default async function YoutubeChannelPage({ params }: Props) {
             return (
               <div className="bg-white rounded-2xl border border-border p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Featured Videos</h2>
+                  <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Featured Videos</h2>
                   <EditSectionLink ownerId={ownerId} listingType="youtube" listingId={channel.id} />
                 </div>
 
@@ -232,7 +232,7 @@ export default async function YoutubeChannelPage({ params }: Props) {
           {(channel.videoUrl || channel.videoUrl2 || channel.videoUrl3) && (
             <div className="bg-white rounded-2xl border border-border p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Channel Videos</h2>
+                <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Channel Videos</h2>
                 <EditSectionLink ownerId={ownerId} listingType="youtube" listingId={channel.id} />
               </div>
               <div className="space-y-4">
@@ -247,7 +247,7 @@ export default async function YoutubeChannelPage({ params }: Props) {
           {channel.photos && channel.photos.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Photos</h2>
+                <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Photos</h2>
                 <EditSectionLink ownerId={ownerId} listingType="youtube" listingId={channel.id} />
               </div>
               <PhotoGallery photos={channel.photos} imagePosition={channel.imagePosition} />
@@ -261,7 +261,7 @@ export default async function YoutubeChannelPage({ params }: Props) {
           {/* Collaborate Form */}
           <div id="collaborate" className="bg-white rounded-2xl border-2 border-accent/20 p-6">
             <div className="flex items-center justify-between mb-1">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Collaborate with This Channel</h2>
+              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Collaborate with This Channel</h2>
               <EditSectionLink ownerId={ownerId} listingType="youtube" listingId={channel.id} />
             </div>
             <p className="text-muted text-sm mb-5">Have a collaboration idea or video suggestion? Reach out to {channel.name}.</p>

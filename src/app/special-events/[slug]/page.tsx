@@ -100,7 +100,7 @@ export default async function SpecialEventDetailPage({ params }: Props) {
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
               <ClickableImage src={event.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={event.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
               <div className="text-center py-3.5 px-4">
-                <h3 className="text-[15px] font-bold text-primary leading-snug">{event.name}</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-snug">{event.name}</h3>
                 {event.clubName && <p className="text-sm text-muted">{event.clubName}</p>}
                 <p className="text-sm text-muted mt-1">{event.city}, {event.state}</p>
               </div>
@@ -259,7 +259,7 @@ export default async function SpecialEventDetailPage({ params }: Props) {
             {/* At a Glance */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">At a Glance</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">At a Glance</h3>
                 <EditSectionLink ownerId={ownerId} listingType="specialevent" listingId={event.id} />
               </div>
               <div className="grid grid-cols-2 gap-2.5 mt-1">
@@ -308,7 +308,7 @@ export default async function SpecialEventDetailPage({ params }: Props) {
             {/* Photos & Video */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">Photos &amp; Video</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Photos &amp; Video</h3>
                 <EditSectionLink ownerId={ownerId} listingType="specialevent" listingId={event.id} />
               </div>
               <div className={`grid grid-cols-2 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>
@@ -321,7 +321,7 @@ export default async function SpecialEventDetailPage({ params }: Props) {
 
             {/* Contact Form */}
             <div id="contact" className="bg-white rounded-2xl border-2 border-accent/20 p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-1">Contact Organizer</h2>
+              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-1">Contact Organizer</h2>
               <p className="text-muted text-sm mb-5">Have questions about this event? Send a message to the organizer.</p>
               <ContactSpecialEventForm eventName={event.name} slug={slug} />
             </div>

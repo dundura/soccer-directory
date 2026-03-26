@@ -86,7 +86,7 @@ export default async function TrainerDetailPage({ params }: Props) {
       <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
         <ClickableImage src={trainer.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={trainer.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
         <div className="text-center py-3.5 px-4">
-          <h3 className="text-[15px] font-bold text-primary leading-snug">{trainer.name}</h3>
+          <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-snug">{trainer.name}</h3>
           <p className="text-sm text-muted mt-1">{trainer.city}, {trainer.state}</p>
         </div>
         <div className="flex items-center justify-center px-4 py-2.5 border-t border-border gap-2.5">
@@ -235,7 +235,7 @@ export default async function TrainerDetailPage({ params }: Props) {
             {/* At a Glance */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[15px] font-bold text-primary">At a Glance</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">At a Glance</h3>
                 <EditSectionLink ownerId={ownerId} listingType="trainer" listingId={trainer.id} />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -278,7 +278,7 @@ export default async function TrainerDetailPage({ params }: Props) {
             {/* Background & Credentials */}
             {(trainer.experience || trainer.credentials) && (
               <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 className="text-[15px] font-bold text-primary mb-4">Background &amp; Credentials</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight mb-4">Background &amp; Credentials</h3>
                 <div className="space-y-4">
                   {trainer.experience && (
                     <div>
@@ -299,7 +299,7 @@ export default async function TrainerDetailPage({ params }: Props) {
             {/* Availability Schedule */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">Availability</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Availability</h3>
                 <EditSectionLink ownerId={ownerId} listingType="trainer" listingId={trainer.id} />
               </div>
               <div className="flex gap-2 flex-wrap">
@@ -325,7 +325,7 @@ export default async function TrainerDetailPage({ params }: Props) {
             {/* Photos & Video */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">Photos &amp; Video</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Photos &amp; Video</h3>
                 <EditSectionLink ownerId={ownerId} listingType="trainer" listingId={trainer.id} />
               </div>
               <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2.5 ${videoUrl ? "mb-4" : ""}`}>

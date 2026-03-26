@@ -75,7 +75,7 @@ export default async function ScrimmageDetailPage({ params }: Props) {
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
               <img src={s.teamPhoto || heroPhoto} alt={s.teamName} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" />
               <div className="text-center py-3.5 px-4">
-                <h3 className="text-[15px] font-bold text-primary leading-snug">{s.teamName}</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-snug">{s.teamName}</h3>
                 <p className="text-sm text-muted mt-1">{s.city}, {s.state}</p>
               </div>
               <div className="flex items-center justify-between px-4 py-2.5 border-t border-border gap-2.5">
@@ -176,7 +176,7 @@ export default async function ScrimmageDetailPage({ params }: Props) {
             {/* At a Glance */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
-                <h3 className="text-[15px] font-bold text-primary">At a Glance</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">At a Glance</h3>
                 <EditSectionLink ownerId={ownerId} listingType="scrimmage" listingId={s.id} />
               </div>
               <div className="grid grid-cols-2 gap-2.5 mt-1">
@@ -207,7 +207,7 @@ export default async function ScrimmageDetailPage({ params }: Props) {
             {videoUrl && (
               <div className="bg-white rounded-2xl p-6 shadow-sm">
                 <div className="flex items-center justify-between mb-3.5">
-                  <h3 className="text-[15px] font-bold text-primary">Video</h3>
+                  <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Video</h3>
                   <EditSectionLink ownerId={ownerId} listingType="scrimmage" listingId={s.id} />
                 </div>
                 <VideoEmbed url={videoUrl} />

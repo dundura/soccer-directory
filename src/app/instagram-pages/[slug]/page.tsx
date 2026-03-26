@@ -121,7 +121,7 @@ export default async function InstagramPagePage({ params }: Props) {
           {/* About */}
           {(page.description || page.pageUrl) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-3">{page.name}</h2>
+              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-3">{page.name}</h2>
               {page.description && (
                 <InlineEditField ownerId={ownerId} listingType="instagrampage" listingId={page.id} field="description" value={page.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
               )}
@@ -143,7 +143,7 @@ export default async function InstagramPagePage({ params }: Props) {
           {videos.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Videos</h2>
+                <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Videos</h2>
                 <EditSectionLink ownerId={ownerId} listingType="instagrampage" listingId={page.id} />
               </div>
               <div className="space-y-4">
@@ -158,7 +158,7 @@ export default async function InstagramPagePage({ params }: Props) {
           {page.photos && page.photos.length > 0 && (
             <div className="bg-white rounded-2xl border border-border p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary">Photos</h2>
+                <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Photos</h2>
                 <EditSectionLink ownerId={ownerId} listingType="instagrampage" listingId={page.id} />
               </div>
               <PhotoGallery photos={page.photos} imagePosition={page.imagePosition} />
@@ -171,7 +171,7 @@ export default async function InstagramPagePage({ params }: Props) {
 
           {/* Contact Form */}
           <div id="contact" className="bg-white rounded-2xl border-2 border-accent/20 p-6">
-            <h2 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary mb-1">Contact Page Owner</h2>
+            <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-1">Contact Page Owner</h2>
             <p className="text-muted text-sm mb-5">Have a question about {page.name}? Send a message to the page owner.</p>
             <ContactPageForm pageName={page.name} slug={slug} />
           </div>
