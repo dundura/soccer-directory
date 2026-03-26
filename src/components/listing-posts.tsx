@@ -10,6 +10,7 @@ interface Post {
   title?: string;
   body: string;
   imageUrl?: string;
+  ogImageUrl?: string;
   videoUrl?: string;
   hidden: boolean;
   createdAt: string;
@@ -183,8 +184,8 @@ export function ListingPostsSidebar({
           <div key={post.id} className={`px-4 py-3 ${post.hidden ? "opacity-50" : ""}`}>
             <div className="flex items-start gap-2">
               <a href={`/posts/${post.slug || post.id}`} className="flex-1 min-w-0 group">
-                {post.imageUrl && (
-                  <img src={post.imageUrl} alt="" className="w-full rounded-lg max-h-[100px] object-cover mb-2" />
+                {(post.imageUrl || post.ogImageUrl) && (
+                  <img src={post.imageUrl || post.ogImageUrl} alt="" className="w-full rounded-lg max-h-[100px] object-cover mb-2" />
                 )}
                 {post.title && (
                   <p className="text-[13px] font-bold text-primary leading-snug group-hover:text-accent transition-colors">
