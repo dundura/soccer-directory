@@ -216,6 +216,9 @@ export default async function PodcastPage({ params }: Props) {
             </div>
           )}
 
+          {/* Special Events */}
+          <ListingEventsSection listingType="podcast" listingId={podcast.id} listingSlug={slug} ownerId={ownerId} />
+
           {/* Podcast Topics */}
           <div id="topics">
             <PodcastTopicsSection podcastId={podcast.id} podcastSlug={slug} ownerId={ownerId} />
@@ -313,9 +316,6 @@ export default async function PodcastPage({ params }: Props) {
           </div>
 
           {/* Featured Articles */}
-          {/* Events */}
-          <ListingEventsSection listingType="podcast" listingId={podcast.id} listingSlug={slug} ownerId={ownerId} />
-
           <FeaturedArticles />
 
           {/* Be a Guest Form */}
