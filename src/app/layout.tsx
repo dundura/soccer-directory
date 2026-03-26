@@ -16,14 +16,14 @@ export const metadata: Metadata = {
     description: "The #1 directory for youth soccer. Find clubs, teams, private trainers, camps, and guest player opportunities near you.",
     url: "https://www.soccer-near-me.com",
     siteName: "Soccer Near Me",
-    images: [{ url: "https://www.soccer-near-me.com/og-image.png", width: 1200, height: 630, type: "image/png" }],
+    images: [{ url: "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/uploads/1774542673028-f1329y.png", width: 1200, height: 630, type: "image/png" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Soccer Near Me | Find Youth Soccer Teams, Clubs, Camps & Trainers Near You",
     description: "The #1 directory for youth soccer. Find clubs, teams, private trainers, camps, and guest player opportunities near you.",
-    images: ["https://www.soccer-near-me.com/og-image.png"],
+    images: ["https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/uploads/1774542673028-f1329y.png"],
   },
 };
 
