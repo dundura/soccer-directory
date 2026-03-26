@@ -134,7 +134,7 @@ export function PodcastTopicsSection({ podcastId, ownerId }: { podcastId: string
           <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
             <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
           </div>
-          <h2 className="text-xl font-extrabold text-primary uppercase tracking-tight">Topics</h2>
+          <h2 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl font-extrabold text-primary uppercase tracking-tight">Topics</h2>
         </div>
         {isOwner && (
           <div className="flex gap-2">
@@ -231,7 +231,7 @@ export function PodcastTopicsSection({ podcastId, ownerId }: { podcastId: string
           <div key={topic.id} className="border border-border rounded-xl overflow-hidden">
             <div className="bg-surface/50 px-4 py-3 flex items-center justify-between">
               <div>
-                <h3 className="font-extrabold text-primary text-lg uppercase tracking-tight">{topic.title}</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">{topic.title}</h3>
                 {topic.description && <p className="text-xs text-muted mt-0.5">{topic.description}</p>}
               </div>
               {isOwner && (
