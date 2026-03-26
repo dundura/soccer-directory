@@ -3481,6 +3481,7 @@ export interface PodcastEpisode {
   id: string;
   topicId: string;
   title?: string;
+  slug?: string;
   description?: string;
   embedUrl?: string;
   embedHtml?: string;
@@ -3499,7 +3500,7 @@ export async function getPodcastTopics(podcastId: string): Promise<PodcastTopic[
       episodes: episodeRows.map((e) => ({
         id: e.id as string, topicId: e.topic_id as string, title: e.title as string | undefined,
         description: e.description as string | undefined, embedUrl: e.embed_url as string | undefined,
-        embedHtml: e.embed_html as string | undefined, sortOrder: e.sort_order as number,
+        embedHtml: e.embed_html as string | undefined, slug: e.slug as string | undefined, sortOrder: e.sort_order as number,
       })),
     });
   }
@@ -3543,8 +3544,22 @@ export async function deletePodcastTopic(id: string): Promise<boolean> {
 
 export async function createPodcastEpisode(topicId: string, data: { title?: string; description?: string; embedUrl?: string; embedHtml?: string }): Promise<string> {
   const id = genId();
-  await sql`INSERT INTO podcast_episodes (id, topic_id, title, description, embed_url, embed_html) VALUES (${id}, ${topicId}, ${data.title || null}, ${data.description || null}, ${data.embedUrl || null}, ${data.embedHtml || null})`;
+  const slug = data.title ? data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : id;
+  await sql`INSERT INTO podcast_episodes (id, topic_id, title, slug, description, embed_url, embed_html) VALUES (${id}, ${topicId}, ${data.title || null}, ${slug}, ${data.description || null}, ${data.embedUrl || null}, ${data.embedHtml || null})`;
   return id;
+}
+
+export async function getPodcastEpisodeBySlug(episodeSlug: string): Promise<(PodcastEpisode & { podcastId: string; topicTitle: string }) | null> {
+  let rows = await sql`SELECT e.*, t.podcast_id, t.title as topic_title FROM podcast_episodes e JOIN podcast_topics t ON t.id = e.topic_id WHERE e.slug = ${episodeSlug} LIMIT 1`;
+  if (!rows[0]) rows = await sql`SELECT e.*, t.podcast_id, t.title as topic_title FROM podcast_episodes e JOIN podcast_topics t ON t.id = e.topic_id WHERE e.id = ${episodeSlug} LIMIT 1`;
+  if (!rows[0]) return null;
+  const e = rows[0];
+  return {
+    id: e.id as string, topicId: e.topic_id as string, title: e.title as string | undefined,
+    slug: e.slug as string | undefined, description: e.description as string | undefined,
+    embedUrl: e.embed_url as string | undefined, embedHtml: e.embed_html as string | undefined,
+    sortOrder: e.sort_order as number, podcastId: e.podcast_id as string, topicTitle: e.topic_title as string,
+  };
 }
 
 export async function updatePodcastEpisode(id: string, data: { title?: string; description?: string; embedUrl?: string; embedHtml?: string }): Promise<boolean> {

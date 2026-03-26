@@ -138,7 +138,7 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
             <>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  {ep.title && <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">{ep.title}</h3>}
+                  {ep.title && <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="hover:text-accent transition-colors"><h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight hover:text-accent">{ep.title}</h3></a>}
                   {ep.description && <p className="text-sm text-primary/70 mt-1 leading-relaxed">{ep.description}</p>}
                 </div>
                 {isOwner && (
