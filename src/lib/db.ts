@@ -3485,6 +3485,7 @@ export interface PodcastEpisode {
   description?: string;
   embedUrl?: string;
   embedHtml?: string;
+  previewImage?: string;
   sortOrder: number;
 }
 
@@ -3500,7 +3501,7 @@ export async function getPodcastTopics(podcastId: string): Promise<PodcastTopic[
       episodes: episodeRows.map((e) => ({
         id: e.id as string, topicId: e.topic_id as string, title: e.title as string | undefined,
         description: e.description as string | undefined, embedUrl: e.embed_url as string | undefined,
-        embedHtml: e.embed_html as string | undefined, slug: e.slug as string | undefined, sortOrder: e.sort_order as number,
+        embedHtml: e.embed_html as string | undefined, previewImage: e.preview_image as string | undefined, slug: e.slug as string | undefined, sortOrder: e.sort_order as number,
       })),
     });
   }
@@ -3558,12 +3559,13 @@ export async function getPodcastEpisodeBySlug(episodeSlug: string): Promise<(Pod
     id: e.id as string, topicId: e.topic_id as string, title: e.title as string | undefined,
     slug: e.slug as string | undefined, description: e.description as string | undefined,
     embedUrl: e.embed_url as string | undefined, embedHtml: e.embed_html as string | undefined,
+    previewImage: e.preview_image as string | undefined,
     sortOrder: e.sort_order as number, podcastId: e.podcast_id as string, topicTitle: e.topic_title as string,
   };
 }
 
-export async function updatePodcastEpisode(id: string, data: { title?: string; description?: string; embedUrl?: string; embedHtml?: string; slug?: string }): Promise<boolean> {
-  const rows = await sql`UPDATE podcast_episodes SET title = ${data.title ?? null}, description = ${data.description ?? null}, slug = COALESCE(${data.slug || null}, slug), embed_url = COALESCE(${data.embedUrl || null}, embed_url), embed_html = COALESCE(${data.embedHtml || null}, embed_html) WHERE id = ${id} RETURNING id`;
+export async function updatePodcastEpisode(id: string, data: { title?: string; description?: string; embedUrl?: string; embedHtml?: string; slug?: string; previewImage?: string }): Promise<boolean> {
+  const rows = await sql`UPDATE podcast_episodes SET title = ${data.title ?? null}, description = ${data.description ?? null}, slug = COALESCE(${data.slug || null}, slug), embed_url = COALESCE(${data.embedUrl || null}, embed_url), embed_html = COALESCE(${data.embedHtml || null}, embed_html), preview_image = ${data.previewImage ?? null} WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
 

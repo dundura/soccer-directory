@@ -35,6 +35,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${episode.title || "Episode"} | ${podcast.name} | Soccer Near Me`,
     description: episode.description || `${episode.title || "Episode"} from ${podcast.name}`,
+    openGraph: {
+      title: `${episode.title || "Episode"} | ${podcast.name}`,
+      description: episode.description || `${episode.title || "Episode"} from ${podcast.name}`,
+      images: episode.previewImage ? [episode.previewImage] : undefined,
+    },
   };
 }
 
@@ -61,6 +66,9 @@ export default async function EpisodePage({ params }: Props) {
 
       <div className="max-w-[900px] mx-auto px-6 pb-16">
         <div className="bg-white rounded-2xl border border-border overflow-hidden">
+          {episode.previewImage && (
+            <img src={episode.previewImage} alt={episode.title || "Episode"} className="w-full h-[220px] sm:h-[300px] object-cover" />
+          )}
           <div className="p-6 sm:p-8">
             <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase tracking-tight leading-tight mb-3">
               {episode.title || "Episode"}
