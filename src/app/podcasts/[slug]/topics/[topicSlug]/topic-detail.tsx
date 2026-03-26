@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import type { PodcastTopic } from "@/lib/db";
+import { ImageUpload } from "@/components/image-upload";
 
 function EmbedPlayer({ embedUrl, embedHtml }: { embedUrl?: string; embedHtml?: string }) {
   if (embedHtml) {
@@ -37,6 +38,26 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
   const [epEmbedHtml, setEpEmbedHtml] = useState("");
   const [embedMode, setEmbedMode] = useState<"url" | "html">("url");
   const [saving, setSaving] = useState(false);
+
+  // Edit topic
+  const [showEditTopic, setShowEditTopic] = useState(false);
+  const [topicTitle, setTopicTitle] = useState(topic.title);
+  const [topicDesc, setTopicDesc] = useState(topic.description || "");
+  const [topicImage, setTopicImage] = useState(topic.previewImage || "");
+  const [topicSlugEdit, setTopicSlugEdit] = useState(topic.slug || "");
+
+  const handleSaveTopic = async () => {
+    setSaving(true);
+    await fetch("/api/podcast-topics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "updateTopic", podcastId, topicId: topic.id, title: topicTitle, description: topicDesc, previewImage: topicImage, slug: topicSlugEdit }),
+    });
+    setSaving(false);
+    window.location.reload();
+  };
+
+  // Edit episode
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
@@ -90,10 +111,40 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
   return (
     <div className="space-y-4">
       {isOwner && (
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <button onClick={() => setShowEditTopic(!showEditTopic)} className="px-4 py-2 rounded-lg border border-border text-sm font-semibold text-primary hover:bg-surface transition-colors">
+            Edit Topic
+          </button>
           <button onClick={() => setShowForm(!showForm)} className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors">
             + Add Episode
           </button>
+        </div>
+      )}
+
+      {isOwner && showEditTopic && (
+        <div className="bg-white rounded-xl p-5 border border-border space-y-3">
+          <p className="text-sm font-bold text-primary">Edit Topic</p>
+          <input type="text" value={topicTitle} onChange={(e) => setTopicTitle(e.target.value)} placeholder="Topic title" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
+          <textarea value={topicDesc} onChange={(e) => setTopicDesc(e.target.value)} placeholder="Description (optional)" rows={3} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent resize-none" />
+          <div>
+            <label className="block text-xs font-medium text-muted mb-1">URL Slug</label>
+            <input type="text" value={topicSlugEdit} onChange={(e) => setTopicSlugEdit(e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-"))} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm font-mono focus:outline-none focus:border-accent" />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-muted mb-1">Preview Image</label>
+            {topicImage ? (
+              <div className="relative inline-block">
+                <img src={topicImage} alt="Preview" className="max-h-[120px] rounded-lg object-cover" />
+                <button type="button" onClick={() => setTopicImage("")} className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center hover:bg-black/80">&#x2715;</button>
+              </div>
+            ) : (
+              <ImageUpload onUploaded={(url) => setTopicImage(url)} />
+            )}
+          </div>
+          <div className="flex gap-2 pt-1">
+            <button onClick={handleSaveTopic} disabled={saving || !topicTitle.trim()} className="px-5 py-2.5 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">{saving ? "Saving..." : "Save Topic"}</button>
+            <button onClick={() => setShowEditTopic(false)} className="px-5 py-2.5 rounded-lg border border-border text-sm font-medium hover:bg-surface transition-colors">Cancel</button>
+          </div>
         </div>
       )}
 
