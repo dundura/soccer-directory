@@ -3473,6 +3473,7 @@ export interface PodcastTopic {
   slug?: string;
   description?: string;
   previewImage?: string;
+  pinned: boolean;
   sortOrder: number;
   episodes: PodcastEpisode[];
 }
@@ -3497,7 +3498,7 @@ export async function getPodcastTopics(podcastId: string): Promise<PodcastTopic[
     topics.push({
       id: t.id as string, podcastId: t.podcast_id as string, title: t.title as string,
       slug: t.slug as string | undefined, description: t.description as string | undefined,
-      previewImage: t.preview_image as string | undefined, sortOrder: t.sort_order as number,
+      previewImage: t.preview_image as string | undefined, pinned: !!t.pinned, sortOrder: t.sort_order as number,
       episodes: episodeRows.map((e) => ({
         id: e.id as string, topicId: e.topic_id as string, title: e.title as string | undefined,
         description: e.description as string | undefined, embedUrl: e.embed_url as string | undefined,
@@ -3529,7 +3530,7 @@ export async function getPodcastTopicBySlug(podcastId: string, topicSlug: string
   return {
     id: t.id as string, podcastId: t.podcast_id as string, title: t.title as string,
     slug: t.slug as string | undefined, description: t.description as string | undefined,
-    previewImage: t.preview_image as string | undefined, sortOrder: t.sort_order as number,
+    previewImage: t.preview_image as string | undefined, pinned: !!t.pinned, sortOrder: t.sort_order as number,
     episodes: episodeRows.map((e) => ({
       id: e.id as string, topicId: e.topic_id as string, title: e.title as string | undefined,
       description: e.description as string | undefined, embedUrl: e.embed_url as string | undefined,

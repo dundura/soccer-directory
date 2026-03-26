@@ -61,6 +61,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true });
     }
 
+    if (action === "togglePin") {
+      if (!topicId) return NextResponse.json({ error: "Missing topicId" }, { status: 400 });
+      const { neon } = await import("@neondatabase/serverless");
+      const sql = neon(process.env.DATABASE_URL!);
+      await sql`UPDATE podcast_topics SET pinned = NOT COALESCE(pinned, false) WHERE id = ${topicId}`;
+      return NextResponse.json({ success: true });
+    }
+
     if (action === "createEpisode") {
       if (!topicId) return NextResponse.json({ error: "Missing topicId" }, { status: 400 });
       if (!embedUrl && !embedHtml) return NextResponse.json({ error: "Embed URL or HTML required" }, { status: 400 });

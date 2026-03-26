@@ -66,6 +66,15 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
   const [saving, setSaving] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
+  const handleTogglePin = async (topicId: string) => {
+    await fetch("/api/podcast-topics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "togglePin", podcastId, topicId }),
+    });
+    fetchTopics();
+  };
+
   const fetchTopics = useCallback(async () => {
     const res = await fetch(`/api/podcast-topics?podcastId=${podcastId}`);
     const data = await res.json();
@@ -241,7 +250,12 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
           <p className="text-sm text-muted text-center py-4">No topics yet. Create your first topic to start organizing episodes.</p>
         )}
 
-        {(expanded ? topics : topics.slice(0, 3)).map((topic) => (
+        {(() => {
+          const pinnedTopics = topics.filter(t => t.pinned);
+          const displayTopics = pinnedTopics.length > 0 ? pinnedTopics : topics.slice(0, 3);
+          const shownTopics = expanded ? topics : displayTopics;
+          return shownTopics;
+        })().map((topic) => (
           <a
             key={topic.id}
             href={`/podcasts/${podcastSlug}/topics/${topic.slug || topic.id}`}
@@ -265,12 +279,20 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
                 </div>
               </div>
               {isOwner && (
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteTopic(topic.id); }}
-                  className="text-xs text-muted hover:text-red-500 transition-colors flex-shrink-0"
-                >
-                  Delete
-                </button>
+                <div className="flex flex-col gap-1.5 flex-shrink-0">
+                  <button
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleTogglePin(topic.id); }}
+                    className={`text-xs transition-colors ${topic.pinned ? "text-amber-600 font-semibold" : "text-muted hover:text-amber-600"}`}
+                  >
+                    {topic.pinned ? "★ Pinned" : "☆ Pin"}
+                  </button>
+                  <button
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteTopic(topic.id); }}
+                    className="text-xs text-muted hover:text-red-500 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
               )}
             </div>
             <div className="flex items-center justify-center w-12 sm:w-14 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
@@ -280,20 +302,13 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
         ))}
 
         {/* Expand / View All */}
-        {topics.length > 3 && (
+        {topics.length > 0 && (
           <div className="flex items-center justify-center gap-4 pt-2">
-            {!expanded && (
+            {!expanded && topics.length > (topics.filter(t => t.pinned).length > 0 ? topics.filter(t => t.pinned).length : 3) && (
               <button onClick={() => setExpanded(true)} className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors">
                 Show All {topics.length} Topics
               </button>
             )}
-            <a href={`/podcasts/${podcastSlug}/topics`} className="text-sm font-semibold text-primary hover:text-accent transition-colors">
-              View All Topics →
-            </a>
-          </div>
-        )}
-        {topics.length > 0 && topics.length <= 3 && (
-          <div className="flex items-center justify-center pt-2">
             <a href={`/podcasts/${podcastSlug}/topics`} className="text-sm font-semibold text-primary hover:text-accent transition-colors">
               View All Topics →
             </a>
