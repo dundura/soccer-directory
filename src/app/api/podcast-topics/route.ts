@@ -69,6 +69,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true });
     }
 
+    if (action === "reorder") {
+      const { order } = body;
+      if (!order || !Array.isArray(order)) return NextResponse.json({ error: "Missing order" }, { status: 400 });
+      const { neon } = await import("@neondatabase/serverless");
+      const sql = neon(process.env.DATABASE_URL!);
+      for (const item of order) {
+        await sql`UPDATE podcast_topics SET sort_order = ${item.sort} WHERE id = ${item.id}`;
+      }
+      return NextResponse.json({ success: true });
+    }
+
     if (action === "createEpisode") {
       if (!topicId) return NextResponse.json({ error: "Missing topicId" }, { status: 400 });
       if (!embedUrl && !embedHtml) return NextResponse.json({ error: "Embed URL or HTML required" }, { status: 400 });

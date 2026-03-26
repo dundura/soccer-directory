@@ -75,6 +75,25 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
     fetchTopics();
   };
 
+  const handleReorder = async (topicId: string, direction: "up" | "down") => {
+    const idx = topics.findIndex(t => t.id === topicId);
+    if (idx < 0) return;
+    if (direction === "up" && idx === 0) return;
+    if (direction === "down" && idx === topics.length - 1) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    const newOrder = topics.map((t, i) => {
+      if (i === idx) return { id: topics[swapIdx].id, sort: i };
+      if (i === swapIdx) return { id: topics[idx].id, sort: i };
+      return { id: t.id, sort: i };
+    });
+    await fetch("/api/podcast-topics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "reorder", podcastId, order: newOrder }),
+    });
+    fetchTopics();
+  };
+
   const fetchTopics = useCallback(async () => {
     const res = await fetch(`/api/podcast-topics?podcastId=${podcastId}`);
     const data = await res.json();
@@ -279,18 +298,32 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
                 </div>
               </div>
               {isOwner && (
-                <div className="flex flex-col gap-1.5 flex-shrink-0">
+                <div className="flex flex-col gap-1 flex-shrink-0 items-center">
+                  <button
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleReorder(topic.id, "up"); }}
+                    className="text-muted hover:text-primary transition-colors p-0.5"
+                    title="Move up"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+                  </button>
+                  <button
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleReorder(topic.id, "down"); }}
+                    className="text-muted hover:text-primary transition-colors p-0.5"
+                    title="Move down"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                  </button>
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleTogglePin(topic.id); }}
-                    className={`text-xs transition-colors ${topic.pinned ? "text-amber-600 font-semibold" : "text-muted hover:text-amber-600"}`}
+                    className={`text-[10px] transition-colors ${topic.pinned ? "text-amber-600 font-semibold" : "text-muted hover:text-amber-600"}`}
                   >
-                    {topic.pinned ? "★ Pinned" : "☆ Pin"}
+                    {topic.pinned ? "★" : "☆"}
                   </button>
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteTopic(topic.id); }}
-                    className="text-xs text-muted hover:text-red-500 transition-colors"
+                    className="text-[10px] text-muted hover:text-red-500 transition-colors"
                   >
-                    Delete
+                    ✕
                   </button>
                 </div>
               )}
