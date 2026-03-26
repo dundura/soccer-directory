@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import type { PodcastTopic } from "@/lib/db";
 
 function EmbedPlayer({ embedUrl, embedHtml }: { embedUrl?: string; embedHtml?: string }) {
@@ -40,7 +41,9 @@ function EmbedPlayer({ embedUrl, embedHtml }: { embedUrl?: string; embedHtml?: s
   );
 }
 
-export function PodcastTopicsSection({ podcastId, isOwner }: { podcastId: string; isOwner: boolean }) {
+export function PodcastTopicsSection({ podcastId, ownerId }: { podcastId: string; ownerId: string | null }) {
+  const { data: session } = useSession();
+  const isOwner = !!(ownerId && session?.user?.id === ownerId) || (session?.user as any)?.role === "admin";
   const [topics, setTopics] = useState<PodcastTopic[]>([]);
   const [loading, setLoading] = useState(true);
 

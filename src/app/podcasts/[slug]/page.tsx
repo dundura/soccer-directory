@@ -129,6 +129,13 @@ export default async function PodcastPage({ params }: Props) {
 
           {ownerId && <ManageListingButton listingType="podcast" listingId={podcast.id} ownerId={ownerId} />}
 
+          {/* Topics - desktop sidebar shortcut */}
+          <div className="hidden md:block">
+            <a href="#topics" className="block w-full py-2.5 text-center rounded-xl border-2 border-primary text-primary font-semibold text-sm hover:bg-primary hover:text-white transition-colors">
+              Topics & Episodes
+            </a>
+          </div>
+
           {/* Posts & Blog - desktop sidebar */}
           <div className="hidden md:block space-y-5">
             <ListingPostsSidebar listingType="podcast" listingId={podcast.id} slug={slug} ownerId={ownerId} />
@@ -295,7 +302,9 @@ export default async function PodcastPage({ params }: Props) {
           )}
 
           {/* Podcast Topics */}
-          <PodcastTopicsSection podcastId={podcast.id} isOwner={!!ownerId} />
+          <div id="topics">
+            <PodcastTopicsSection podcastId={podcast.id} ownerId={ownerId} />
+          </div>
 
           {/* Posts - mobile only (shown in sidebar on desktop) */}
           <div className="md:hidden">
