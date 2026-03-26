@@ -16,6 +16,7 @@ export function PostForm() {
   const listingSlug = searchParams.get("slug") || "";
   const listingName = searchParams.get("name") || "";
 
+  const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
@@ -50,6 +51,7 @@ export function PostForm() {
           type: listingType,
           id: listingId,
           slug: listingSlug,
+          title: title.trim() || undefined,
           body: body.trim(),
           imageUrl: imageUrl || undefined,
           videoUrl: videoUrl || undefined,
@@ -85,6 +87,18 @@ export function PostForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-2xl p-6 md:p-8 border border-border">
+        {/* Title */}
+        <div>
+          <label className="block text-sm font-semibold text-primary mb-2">Title (optional)</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Give your post a headline..."
+            className="w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30"
+          />
+        </div>
+
         {/* Body */}
         <div>
           <label className="block text-sm font-semibold text-primary mb-2">Post Content *</label>
