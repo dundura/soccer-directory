@@ -15,57 +15,56 @@ const TYPE_PATHS: Record<string, string> = {
   scrimmage: "scrimmages", marketplace: "shop", ebook: "ebooks", giveaway: "giveaways",
 };
 
-export function ListingEventsSection({ listingType, listingId, listingSlug, ownerId }: { listingType: string; listingId: string; listingSlug: string; ownerId: string | null }) {
-  const { data: session } = useSession();
-  const isOwner = !!(ownerId && session?.user?.id === ownerId) || (session?.user as any)?.role === "admin";
-
+function useListingEvents(listingType: string, listingId: string) {
   const [events, setEvents] = useState<ListingEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [saving, setSaving] = useState(false);
-
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [previewImage, setPreviewImage] = useState("");
-  const [eventDate, setEventDate] = useState("");
-  const [eventTime, setEventTime] = useState("");
-  const [address, setAddress] = useState("");
-  const [location, setLocation] = useState("");
-  const [website, setWebsite] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
-
-  const pathPrefix = TYPE_PATHS[listingType] || listingType;
-
   const fetchEvents = useCallback(async () => {
     const res = await fetch(`/api/listing-events?listingType=${listingType}&listingId=${listingId}`);
     const data = await res.json();
     setEvents(data.events || []);
     setLoading(false);
   }, [listingType, listingId]);
-
   useEffect(() => { fetchEvents(); }, [fetchEvents]);
+  return { events, loading, refetch: fetchEvents };
+}
 
-  const resetForm = () => {
-    setTitle(""); setDescription(""); setPreviewImage(""); setEventDate("");
-    setEventTime(""); setAddress(""); setLocation(""); setWebsite(""); setContactEmail("");
-    setShowForm(false);
-  };
+/* ── Sidebar Widget: shows create form + event count ── */
+export function ListingEventsSidebar({ listingType, listingId, listingSlug, ownerId }: { listingType: string; listingId: string; listingSlug: string; ownerId: string | null }) {
+  const { data: session } = useSession();
+  const isOwner = !!(ownerId && session?.user?.id === ownerId) || (session?.user as any)?.role === "admin";
+  const { events, loading } = useListingEvents(listingType, listingId);
 
-  const handleCreate = async () => {
-    if (!title.trim()) return;
-    setSaving(true);
-    await fetch("/api/listing-events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "create", listingType, listingId, title, description, previewImage,
-        eventDate, eventTime, address, location, website, contactEmail,
-      }),
-    });
-    setSaving(false);
-    resetForm();
-    fetchEvents();
-  };
+  if (loading) return null;
+  if (events.length === 0 && !isOwner) return null;
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
+        <h4 className="text-sm font-bold">Special Events</h4>
+        {isOwner && (
+          <a href={`/event/new?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(listingSlug)}`} className="text-[11px] font-semibold text-accent hover:text-accent-hover transition-colors">
+            + Add Special Event
+          </a>
+        )}
+      </div>
+      {events.length > 0 && (
+        <div className="px-4 pb-3.5 space-y-2">
+          {events.map((evt) => (
+            <a key={evt.id} href={`/event/${evt.slug || evt.id}`} className="block text-sm font-semibold text-accent hover:text-accent-hover transition-colors truncate">
+              {evt.title}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Main Content Display: shows events as GPS-style rows ── */
+export function ListingEventsDisplay({ listingType, listingId, listingSlug, ownerId }: { listingType: string; listingId: string; listingSlug: string; ownerId: string | null }) {
+  const { data: session } = useSession();
+  const isOwner = !!(ownerId && session?.user?.id === ownerId) || (session?.user as any)?.role === "admin";
+  const { events, loading, refetch } = useListingEvents(listingType, listingId);
 
   const handleDelete = async (eventId: string) => {
     if (!confirm("Delete this special event?")) return;
@@ -74,11 +73,10 @@ export function ListingEventsSection({ listingType, listingId, listingSlug, owne
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "delete", listingType, listingId, eventId }),
     });
-    fetchEvents();
+    refetch();
   };
 
-  if (loading) return null;
-  if (events.length === 0 && !isOwner) return null;
+  if (loading || events.length === 0) return null;
 
   return (
     <section className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -89,59 +87,8 @@ export function ListingEventsSection({ listingType, listingId, listingSlug, owne
           </div>
           <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Special Events</h2>
         </div>
-        {isOwner && (
-          <button onClick={() => setShowForm(!showForm)} className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors">
-            + Add Special Event
-          </button>
-        )}
       </div>
-
-      <div className="p-5 sm:p-6 pt-4 space-y-4">
-        {/* Create Form */}
-        {isOwner && showForm && (
-          <div className="bg-white rounded-xl p-5 border border-border space-y-3">
-            <p className="text-sm font-bold text-primary">New Special Event</p>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Event title *" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" rows={3} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent resize-none" />
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-muted mb-1">Date</label>
-                <input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-muted mb-1">Time</label>
-                <input type="time" value={eventTime} onChange={(e) => setEventTime(e.target.value)} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
-              </div>
-            </div>
-            <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Location / Venue name" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
-            <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Address (optional)" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
-            <input type="url" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="Website / Registration URL (optional)" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
-            <input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="Contact email (optional)" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
-            <div>
-              <label className="block text-xs font-medium text-muted mb-1">Preview Image (optional — shown when sharing)</label>
-              {previewImage ? (
-                <div className="relative inline-block">
-                  <img src={previewImage} alt="Preview" className="max-h-[120px] rounded-lg object-cover" />
-                  <button type="button" onClick={() => setPreviewImage("")} className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center hover:bg-black/80">&#x2715;</button>
-                </div>
-              ) : (
-                <ImageUpload onUploaded={(url) => setPreviewImage(url)} />
-              )}
-            </div>
-            <div className="flex gap-2 pt-1">
-              <button onClick={handleCreate} disabled={saving || !title.trim()} className="px-5 py-2.5 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
-                {saving ? "Saving..." : "Create Special Event"}
-              </button>
-              <button onClick={resetForm} className="px-5 py-2.5 rounded-lg border border-border text-sm font-medium hover:bg-surface transition-colors">Cancel</button>
-            </div>
-          </div>
-        )}
-
-        {events.length === 0 && isOwner && (
-          <p className="text-sm text-muted text-center py-4">No special events yet. Add your first special event.</p>
-        )}
-
-        {/* Events List */}
+      <div className="p-5 sm:p-6 pt-4 space-y-3">
         {events.map((evt) => (
           <a
             key={evt.id}
@@ -170,12 +117,7 @@ export function ListingEventsSection({ listingType, listingId, listingSlug, owne
                 <span className="text-sm font-semibold text-accent group-hover:text-accent-hover transition-colors mt-1 inline-block">View Details →</span>
               </div>
               {isOwner && (
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(evt.id); }}
-                  className="text-xs text-muted hover:text-red-500 transition-colors flex-shrink-0"
-                >
-                  Delete
-                </button>
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(evt.id); }} className="text-xs text-muted hover:text-red-500 transition-colors flex-shrink-0">Delete</button>
               )}
             </div>
             <div className="flex items-center justify-center w-12 sm:w-14 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
@@ -186,4 +128,9 @@ export function ListingEventsSection({ listingType, listingId, listingSlug, owne
       </div>
     </section>
   );
+}
+
+/* ── Legacy: combined component (backwards compat) ── */
+export function ListingEventsSection({ listingType, listingId, listingSlug, ownerId }: { listingType: string; listingId: string; listingSlug: string; ownerId: string | null }) {
+  return <ListingEventsDisplay listingType={listingType} listingId={listingId} listingSlug={listingSlug} ownerId={ownerId} />;
 }
