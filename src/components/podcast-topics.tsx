@@ -153,7 +153,7 @@ export function PodcastTopicsSection({ podcastId, ownerId }: { podcastId: string
       <div className="p-5 sm:p-6 pt-4 space-y-4">
         {/* Create Topic Form */}
         {isOwner && showTopicForm && (
-          <div className="bg-surface rounded-xl p-4 space-y-3">
+          <div className="bg-white rounded-xl p-4 space-y-3 border border-border">
             <p className="text-sm font-bold text-primary">New Topic</p>
             <input
               type="text" value={topicTitle} onChange={(e) => setTopicTitle(e.target.value)}
@@ -176,7 +176,7 @@ export function PodcastTopicsSection({ podcastId, ownerId }: { podcastId: string
 
         {/* Add Episode Form */}
         {isOwner && showEpisodeForm && topics.length > 0 && (
-          <div className="bg-surface rounded-xl p-4 space-y-3">
+          <div className="bg-white rounded-xl p-4 space-y-3 border border-border">
             <p className="text-sm font-bold text-primary">Add Episode</p>
             <select
               value={epTopicId} onChange={(e) => setEpTopicId(e.target.value)}
