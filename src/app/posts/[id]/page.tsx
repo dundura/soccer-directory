@@ -203,6 +203,7 @@ export default async function PostPage({ params }: Props) {
               postId={post.id}
               title={post.title}
               body={enrichedBody}
+              blogLayout
               slug={post.slug || post.id}
               imageUrl={post.imageUrl}
               videoUrl={post.videoUrl}
