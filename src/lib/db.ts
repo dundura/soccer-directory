@@ -2351,6 +2351,11 @@ export async function getListingOwner(type: string, slug: string): Promise<strin
     case "trainingapp": rows = await sql`SELECT user_id FROM training_apps WHERE slug = ${slug} LIMIT 1`; break;
     case "blog": rows = await sql`SELECT user_id FROM blogs WHERE slug = ${slug} LIMIT 1`; break;
     case "youtube": rows = await sql`SELECT user_id FROM youtube_channels WHERE slug = ${slug} LIMIT 1`; break;
+    case "soccerbook": rows = await sql`SELECT user_id FROM books WHERE slug = ${slug} LIMIT 1`; break;
+    case "photovideo": rows = await sql`SELECT user_id FROM photo_video_services WHERE slug = ${slug} LIMIT 1`; break;
+    case "ebook": rows = await sql`SELECT user_id FROM marketplace WHERE slug = ${slug} AND category = 'Ebook' LIMIT 1`; break;
+    case "giveaway": rows = await sql`SELECT user_id FROM marketplace WHERE slug = ${slug} AND category = 'Giveaway' LIMIT 1`; break;
+    case "fundraiser": rows = await sql`SELECT user_id FROM fundraisers WHERE slug = ${slug} LIMIT 1`; break;
     default: return null;
   }
   return rows[0]?.user_id as string | null;
