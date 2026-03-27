@@ -180,7 +180,7 @@ export default async function PostPage({ params }: Props) {
             <ClickableImage
               src={post.ogImageUrl || post.imageUrl!}
               alt={post.title || "Post"}
-              className="w-full h-[220px] sm:h-[300px] object-cover cursor-zoom-in"
+              className="w-full max-h-[500px] object-contain bg-surface cursor-zoom-in"
             />
           )}
 
