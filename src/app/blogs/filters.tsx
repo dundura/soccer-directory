@@ -41,6 +41,8 @@ export function BlogFilters({ blogs }: { blogs: Blog[] }) {
   const totalPages = Math.ceil(nonFeatured.length / PER_PAGE);
   const visibleNonFeatured = viewAll ? nonFeatured : nonFeatured.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
+  const hasActiveFilters = !!(state || category);
+
   return (
     <>
       {/* ====== HERO SECTION ====== */}
@@ -92,7 +94,7 @@ export function BlogFilters({ blogs }: { blogs: Blog[] }) {
         ) : (
           <>
             {/* ====== FEATURED CARDS ====== */}
-            {page === 1 && topCards.length > 0 && (
+            {page === 1 && !hasActiveFilters && topCards.length > 0 && (
               <div className="mb-10">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary mb-5 uppercase tracking-wide flex items-center gap-2">
                   <span className="text-amber-500">&#9733;</span> {allFeatured.length > 0 ? "Featured Blogs" : "Top Blogs"}

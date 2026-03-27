@@ -52,6 +52,8 @@ export function FacebookGroupFilters({ groups }: { groups: FacebookGroup[] }) {
   const totalPages = Math.ceil(nonFeaturedGroups.length / PER_PAGE);
   const visibleNonFeatured = viewAll ? nonFeaturedGroups : nonFeaturedGroups.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
+  const hasActiveFilters = !!(search || state || category);
+
   return (
     <>
       {/* ====== HERO SECTION ====== */}
@@ -106,7 +108,7 @@ export function FacebookGroupFilters({ groups }: { groups: FacebookGroup[] }) {
         ) : (
           <>
             {/* ====== FEATURED CARDS ====== */}
-            {page === 1 && topCards.length > 0 && (
+            {page === 1 && !hasActiveFilters && topCards.length > 0 && (
               <div className="mb-10">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary mb-5 uppercase tracking-wide flex items-center gap-2">
                   <span className="text-amber-500">&#9733;</span> {allFeatured.length > 0 ? "Featured Groups" : "Top Groups"}

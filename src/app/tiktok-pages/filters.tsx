@@ -67,6 +67,8 @@ export function TikTokPageFilters({ pages }: { pages: TikTokPage[] }) {
   const totalPages = Math.ceil(nonFeaturedPages.length / PER_PAGE);
   const visibleNonFeatured = viewAll ? nonFeaturedPages : nonFeaturedPages.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
+  const hasActiveFilters = !!(search || category || state);
+
   return (
     <>
       {/* ====== HERO SECTION ====== */}
@@ -128,7 +130,7 @@ export function TikTokPageFilters({ pages }: { pages: TikTokPage[] }) {
         ) : (
           <>
             {/* ====== FEATURED CARDS ====== */}
-            {page === 1 && topCards.length > 0 && (
+            {page === 1 && !hasActiveFilters && topCards.length > 0 && (
               <div className="mb-6">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary mb-3 uppercase tracking-wide flex items-center gap-2">
                   <span className="text-amber-500">&#9733;</span> {allFeatured.length > 0 ? "Featured Pages" : "Top Pages"}
