@@ -1,6 +1,6 @@
 /**
- * RSS News Fetcher for soccer news feeds.
- * Fetches from multiple sources, caches for 15 minutes, and returns top 10 articles.
+ * RSS News Fetcher for soccer news feeds (youth soccer focus).
+ * Fetches from multiple sources, caches for 15 minutes, returns top 12 articles.
  */
 
 export interface NewsArticle {
@@ -9,14 +9,16 @@ export interface NewsArticle {
   description: string;
   source: string;
   publishedAt: Date;
-  imageUrl: string | null;
+  imageUrl: string;
 }
 
 const RSS_FEEDS = [
-  { url: "https://www.espn.com/espn/rss/soccer/news", source: "ESPN" },
-  { url: "http://feeds.bbci.co.uk/sport/football/rss.xml", source: "BBC" },
-  { url: "https://www.theguardian.com/football/rss", source: "The Guardian" },
-  { url: "https://www.mlssoccer.com/rss/", source: "MLS" },
+  { url: "https://www.soccerwire.com/feed/", source: "SoccerWire", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp" },
+  { url: "https://www.topdrawersoccer.com/feeds/club.xml", source: "TopDrawerSoccer", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg" },
+  { url: "https://www.ussoccer.com/rss", source: "US Soccer", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg" },
+  { url: "https://www.mlssoccer.com/rss/", source: "MLS", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/02/futsal-scaled.jpg" },
+  { url: "https://www.espn.com/espn/rss/soccer/news", source: "ESPN", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp" },
+  { url: "http://feeds.bbci.co.uk/sport/football/rss.xml", source: "BBC", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp" },
 ];
 
 /* ── In-memory cache ────────────────────────────────────────── */
@@ -27,47 +29,56 @@ const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
 /* ── XML helpers (no dependency) ────────────────────────────── */
 
-/** Extract text content between XML tags */
 function extractTag(xml: string, tag: string): string {
-  const regex = new RegExp(`<${tag}[^>]*>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?</${tag}>`);
+  // Handle CDATA
+  const cdataRegex = new RegExp(`<${tag}[^>]*>\\s*<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>\\s*</${tag}>`);
+  const cdataMatch = xml.match(cdataRegex);
+  if (cdataMatch) return cdataMatch[1].trim();
+  // Normal tag
+  const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`);
   const match = xml.match(regex);
   return match ? match[1].trim() : "";
 }
 
-/** Extract attribute value from a self-closing or open tag */
 function extractAttr(xml: string, tag: string, attr: string): string {
-  const regex = new RegExp(`<${tag}[^>]*?${attr}=["']([^"']*)["']`);
+  const regex = new RegExp(`<${tag}[^>]*?${attr}\\s*=\\s*["']([^"']*)["']`, "i");
   const match = xml.match(regex);
   return match ? match[1] : "";
 }
 
-/** Extract image URL from an RSS item block */
 function extractImage(itemXml: string): string | null {
-  // Try <enclosure> with image type
+  // <enclosure> with image type or image extension
   const encUrl = extractAttr(itemXml, "enclosure", "url");
-  if (encUrl && /\.(jpg|jpeg|png|gif|webp)/i.test(encUrl)) return encUrl;
-  // If enclosure has type="image/*"
-  const encType = extractAttr(itemXml, "enclosure", "type");
-  if (encUrl && encType.startsWith("image/")) return encUrl;
+  if (encUrl && (/\.(jpg|jpeg|png|gif|webp)/i.test(encUrl) || itemXml.includes('type="image'))) return encUrl;
 
-  // Try <media:content> or <media:thumbnail>
-  const mediaUrl =
-    extractAttr(itemXml, "media:content", "url") ||
-    extractAttr(itemXml, "media:thumbnail", "url");
-  if (mediaUrl) return mediaUrl;
+  // <media:content> or <media:thumbnail>
+  for (const tag of ["media:content", "media:thumbnail", "media\\:content", "media\\:thumbnail"]) {
+    const url = extractAttr(itemXml, tag, "url");
+    if (url) return url;
+  }
 
-  // Try <image> inside item (some feeds)
-  const imgInTag = extractTag(itemXml, "image");
-  if (imgInTag && imgInTag.startsWith("http")) return imgInTag;
+  // <image><url>...</url></image>
+  const imageBlock = extractTag(itemXml, "image");
+  if (imageBlock) {
+    const imgUrl = extractTag(imageBlock, "url");
+    if (imgUrl && imgUrl.startsWith("http")) return imgUrl;
+    if (imageBlock.startsWith("http")) return imageBlock;
+  }
 
-  // Try to find an <img> src in description HTML
-  const imgSrcMatch = itemXml.match(/<img[^>]+src=["']([^"']+)["']/);
-  if (imgSrcMatch) return imgSrcMatch[1];
+  // <img src="..."> in description or content
+  const imgSrcMatch = itemXml.match(/<img[^>]+src\s*=\s*["']([^"']+)["']/i);
+  if (imgSrcMatch && imgSrcMatch[1].startsWith("http")) return imgSrcMatch[1];
+
+  // content:encoded may have images
+  const contentEncoded = extractTag(itemXml, "content:encoded") || extractTag(itemXml, "content\\:encoded");
+  if (contentEncoded) {
+    const contentImgMatch = contentEncoded.match(/<img[^>]+src\s*=\s*["']([^"']+)["']/i);
+    if (contentImgMatch && contentImgMatch[1].startsWith("http")) return contentImgMatch[1];
+  }
 
   return null;
 }
 
-/** Split RSS XML into individual <item> blocks */
 function extractItems(xml: string): string[] {
   const items: string[] = [];
   const regex = /<item[\s>]([\s\S]*?)<\/item>/g;
@@ -80,14 +91,14 @@ function extractItems(xml: string): string[] {
 
 /* ── Fetch a single feed ────────────────────────────────────── */
 
-async function fetchFeed(feedUrl: string, source: string): Promise<NewsArticle[]> {
+async function fetchFeed(feedUrl: string, source: string, fallbackImg: string): Promise<NewsArticle[]> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
 
     const res = await fetch(feedUrl, {
       signal: controller.signal,
-      headers: { "User-Agent": "SoccerNearMe/1.0" },
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; SoccerNearMe/1.0)" },
       next: { revalidate: 0 },
     });
     clearTimeout(timeout);
@@ -97,15 +108,14 @@ async function fetchFeed(feedUrl: string, source: string): Promise<NewsArticle[]
     const xml = await res.text();
     const items = extractItems(xml);
 
-    return items.map((itemXml) => {
+    return items.slice(0, 5).map((itemXml) => {
       const title = extractTag(itemXml, "title");
-      const link = extractTag(itemXml, "link");
+      const link = extractTag(itemXml, "link") || extractAttr(itemXml, "link", "href");
       const rawDesc = extractTag(itemXml, "description");
-      // Strip HTML tags from description
-      const cleanDesc = rawDesc.replace(/<[^>]*>/g, "").replace(/&[a-z]+;/gi, " ").trim();
+      const cleanDesc = rawDesc.replace(/<[^>]*>/g, "").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
       const description = cleanDesc.length > 120 ? cleanDesc.slice(0, 117) + "..." : cleanDesc;
-      const pubDate = extractTag(itemXml, "pubDate");
-      const imageUrl = extractImage(itemXml);
+      const pubDate = extractTag(itemXml, "pubDate") || extractTag(itemXml, "dc:date") || extractTag(itemXml, "dc\\:date");
+      const imageUrl = extractImage(itemXml) || fallbackImg;
 
       return {
         title,
@@ -124,14 +134,13 @@ async function fetchFeed(feedUrl: string, source: string): Promise<NewsArticle[]
 /* ── Public API ─────────────────────────────────────────────── */
 
 export async function getNewsArticles(): Promise<NewsArticle[]> {
-  // Return cached results if still valid
   if (cachedArticles.length > 0 && Date.now() - cacheTimestamp < CACHE_TTL) {
     return cachedArticles;
   }
 
   try {
     const results = await Promise.allSettled(
-      RSS_FEEDS.map((feed) => fetchFeed(feed.url, feed.source))
+      RSS_FEEDS.map((feed) => fetchFeed(feed.url, feed.source, feed.fallbackImg))
     );
 
     const allArticles: NewsArticle[] = [];
@@ -144,7 +153,7 @@ export async function getNewsArticles(): Promise<NewsArticle[]> {
     // Sort by date descending
     allArticles.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
 
-    // Deduplicate by title (case-insensitive)
+    // Deduplicate by title
     const seen = new Set<string>();
     const unique: NewsArticle[] = [];
     for (const article of allArticles) {
@@ -155,8 +164,7 @@ export async function getNewsArticles(): Promise<NewsArticle[]> {
       }
     }
 
-    // Cache top 10
-    cachedArticles = unique.slice(0, 10);
+    cachedArticles = unique.slice(0, 12);
     cacheTimestamp = Date.now();
     return cachedArticles;
   } catch {

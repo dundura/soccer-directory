@@ -349,21 +349,13 @@ export default async function HomePage() {
                 className="flex-shrink-0 w-[320px] group flex flex-col bg-white rounded-2xl border border-border overflow-hidden hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 h-full"
               >
                 {/* Image */}
-                {article.imageUrl ? (
-                  <div className="w-full h-44 overflow-hidden bg-surface flex-shrink-0">
-                    <img
-                      src={article.imageUrl}
-                      alt={article.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full h-44 flex-shrink-0 bg-gradient-to-br from-primary/80 to-accent/60 flex items-center justify-center">
-                    <svg className="w-12 h-12 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
-                    </svg>
-                  </div>
-                )}
+                <div className="w-full h-44 overflow-hidden bg-surface flex-shrink-0">
+                  <img
+                    src={article.imageUrl}
+                    alt={article.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
 
                 {/* Content */}
                 <div className="p-5 flex flex-col flex-1">
