@@ -3643,3 +3643,57 @@ export async function deleteListingEvent(id: string): Promise<boolean> {
   const rows = await sql`DELETE FROM listing_events WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
+
+// ── Book Media Appearances ──────────────────────────────────
+
+export interface BookMediaAppearance {
+  id: string;
+  bookId: string;
+  title: string;
+  slug?: string;
+  description?: string;
+  url?: string;
+  previewImage?: string;
+  pinned: boolean;
+  sortOrder: number;
+}
+
+export async function getBookMediaAppearances(bookId: string): Promise<BookMediaAppearance[]> {
+  const rows = await sql`SELECT * FROM book_media_appearances WHERE book_id = ${bookId} ORDER BY sort_order ASC, created_at DESC`;
+  return rows.map((r) => ({
+    id: r.id as string, bookId: r.book_id as string, title: r.title as string,
+    slug: r.slug as string | undefined, description: r.description as string | undefined,
+    url: r.url as string | undefined, previewImage: r.preview_image as string | undefined,
+    pinned: !!r.pinned, sortOrder: r.sort_order as number,
+  }));
+}
+
+export async function getBookMediaAppearanceBySlug(bookId: string, appearanceSlug: string): Promise<BookMediaAppearance | null> {
+  let rows = await sql`SELECT * FROM book_media_appearances WHERE book_id = ${bookId} AND slug = ${appearanceSlug} LIMIT 1`;
+  if (!rows[0]) rows = await sql`SELECT * FROM book_media_appearances WHERE id = ${appearanceSlug} LIMIT 1`;
+  if (!rows[0]) return null;
+  const r = rows[0];
+  return {
+    id: r.id as string, bookId: r.book_id as string, title: r.title as string,
+    slug: r.slug as string | undefined, description: r.description as string | undefined,
+    url: r.url as string | undefined, previewImage: r.preview_image as string | undefined,
+    pinned: !!r.pinned, sortOrder: r.sort_order as number,
+  };
+}
+
+export async function createBookMediaAppearance(bookId: string, data: { title: string; description?: string; url?: string; previewImage?: string }): Promise<string> {
+  const id = genId();
+  const slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  await sql`INSERT INTO book_media_appearances (id, book_id, title, slug, description, url, preview_image) VALUES (${id}, ${bookId}, ${data.title}, ${slug}, ${data.description || null}, ${data.url || null}, ${data.previewImage || null})`;
+  return id;
+}
+
+export async function updateBookMediaAppearance(id: string, data: { title?: string; slug?: string; description?: string; url?: string; previewImage?: string }): Promise<boolean> {
+  const rows = await sql`UPDATE book_media_appearances SET title = COALESCE(${data.title || null}, title), slug = COALESCE(${data.slug || null}, slug), description = ${data.description ?? null}, url = ${data.url ?? null}, preview_image = ${data.previewImage ?? null}, updated_at = NOW() WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function deleteBookMediaAppearance(id: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM book_media_appearances WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}

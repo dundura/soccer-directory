@@ -13,6 +13,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingEventsSection } from "@/components/listing-events-section";
+import { BookMediaSection } from "@/components/book-media-section";
 
 export const dynamic = "force-dynamic";
 
@@ -196,36 +197,7 @@ export default async function ServiceDetailPage({ params }: Props) {
             <ListingEventsSection listingType="soccerbook" listingId={service.id} listingSlug={slug} ownerId={ownerId} />
 
             {/* Media Appearances */}
-            {service.mediaAppearances && service.mediaAppearances.length > 0 && (
-              <div className="border-t border-border pt-6 mt-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Media Appearances</h3>
-                  <EditSectionLink ownerId={ownerId} listingType="soccerbook" listingId={service.id} />
-                </div>
-                <div className="space-y-4">
-                  {service.mediaAppearances.map((item, i) => {
-                    const isVideo = item.url.includes("youtube.com") || item.url.includes("youtu.be");
-                    return (
-                      <div key={i} className="bg-white rounded-xl border border-border overflow-hidden">
-                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="group flex hover:border-accent/30 transition-all">
-                          <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
-                          <div className="flex-1 min-w-0 p-4 sm:p-5">
-                            <h4 className="font-[family-name:var(--font-display)] text-lg font-extrabold text-primary uppercase tracking-tight group-hover:text-accent transition-colors">{item.title}</h4>
-                            {item.description && <p className="text-sm text-primary/70 mt-1 whitespace-pre-line">{item.description}</p>}
-                            <span className="text-sm font-semibold text-accent mt-2 inline-block">{isVideo ? "Watch →" : "Read →"}</span>
-                          </div>
-                        </a>
-                        {isVideo && (
-                          <div className="px-4 pb-4">
-                            <VideoEmbed url={item.url} />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            <BookMediaSection bookId={service.id} bookSlug={slug} ownerId={ownerId} />
 
             {/* Our Posts — only shows when posts exist */}
             <ListingPostsSidebar listingType="soccerbook" listingId={service.id} slug={slug} ownerId={ownerId} />
