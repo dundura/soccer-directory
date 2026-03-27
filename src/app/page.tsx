@@ -400,7 +400,7 @@ export default async function HomePage() {
 
         {/* ── Community Posts ── */}
         {communityPosts.length > 0 && (
-          <section className="py-6">
+          <section className="pb-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-extrabold text-primary uppercase tracking-tight">Community Posts</h3>
               <a href="/blogs" className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors">View All &rarr;</a>
