@@ -63,11 +63,11 @@ function extractImage(itemXml: string): string | null {
   const encUrl = extractAttr(itemXml, "enclosure", "url");
   if (encUrl && (/\.(jpg|jpeg|png|gif|webp)/i.test(encUrl) || itemXml.includes('type="image'))) return encUrl;
 
-  // <media:content> or <media:thumbnail>
-  for (const tag of ["media:content", "media:thumbnail", "media\\:content", "media\\:thumbnail"]) {
-    const url = extractAttr(itemXml, tag, "url");
-    if (url) return url;
-  }
+  // <media:content> or <media:thumbnail> — handle namespace colon
+  const mediaContentMatch = itemXml.match(/media:content[^>]*url\s*=\s*["']([^"']+)["']/i);
+  if (mediaContentMatch && mediaContentMatch[1].startsWith("http")) return mediaContentMatch[1];
+  const mediaThumbnailMatch = itemXml.match(/media:thumbnail[^>]*url\s*=\s*["']([^"']+)["']/i);
+  if (mediaThumbnailMatch && mediaThumbnailMatch[1].startsWith("http")) return mediaThumbnailMatch[1];
 
   // <image><url>...</url></image>
   const imageBlock = extractTag(itemXml, "image");
