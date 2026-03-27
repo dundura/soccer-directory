@@ -158,15 +158,19 @@ export default async function PostPage({ params }: Props) {
     <>
       {/* Breadcrumb */}
       <div className="max-w-[900px] mx-auto px-6 py-3.5 text-sm text-muted">
-        <a href={`/${typePath}`} className="text-primary hover:underline">{typeLabel}</a>
-        {" \u203A "}
-        {listingName && listingSlug && (
+        {listingName && listingSlug ? (
           <>
             <a href={profileUrl} className="text-primary hover:underline">{listingName}</a>
             {" \u203A "}
+            <span>Post</span>
+          </>
+        ) : (
+          <>
+            <a href={`/${typePath}`} className="text-primary hover:underline">{typeLabel}</a>
+            {" \u203A "}
+            <span>Post</span>
           </>
         )}
-        <span>Post</span>
       </div>
 
       <div className="max-w-[900px] mx-auto px-6 pb-16">
