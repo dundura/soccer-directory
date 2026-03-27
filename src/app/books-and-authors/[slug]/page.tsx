@@ -192,6 +192,16 @@ export default async function ServiceDetailPage({ params }: Props) {
               </div>
             )}
 
+            {/* Our Posts */}
+            <div className="border-t border-border pt-6 mt-6">
+              <ListingPostsSidebar listingType="soccerbook" listingId={service.id} slug={slug} ownerId={ownerId} />
+            </div>
+
+            {/* Special Events */}
+            <div className="border-t border-border pt-6 mt-6">
+              <ListingEventsSection listingType="soccerbook" listingId={service.id} listingSlug={slug} ownerId={ownerId} />
+            </div>
+
             {/* Media Appearances */}
             {service.mediaAppearances && service.mediaAppearances.length > 0 && (
               <div className="border-t border-border pt-6 mt-6">
@@ -266,11 +276,7 @@ export default async function ServiceDetailPage({ params }: Props) {
           </div>
         )}
 
-        {/* Events */}
-        <ListingEventsSection listingType="soccerbook" listingId={service.id} listingSlug={slug} ownerId={ownerId} />
-
         <div className="mt-8"><FeaturedArticles /></div>
-        <ListingPostsSidebar listingType="soccerbook" listingId={service.id} slug={slug} ownerId={ownerId} />
         <div className="mt-8"><AnytimeInlineCTA /></div>
       </div>
     </>
