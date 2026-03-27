@@ -16,7 +16,7 @@ export function PhotoGrid({ photos, alt = "Photo" }: { photos: string[]; alt?: s
           <img
             src={photo}
             alt={`${alt} ${i + 1}`}
-            className="w-full aspect-square object-cover rounded-xl block group-hover:scale-[1.03] transition-transform duration-200"
+            className="w-full aspect-[4/3] object-contain bg-surface rounded-xl block group-hover:scale-[1.03] transition-transform duration-200"
           />
         </button>
       ))}
