@@ -161,7 +161,7 @@ export function AnytimeInlineCTA() {
     <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-light p-6 md:p-8 text-white flex items-center gap-6">
       <div className="flex-1">
         <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">{v.label}</p>
-        <h3 className="font-[family-name:var(--font-display)] text-xl font-bold mb-2">{v.title}</h3>
+        <h3 className="font-[family-name:var(--font-display)] text-xl font-extrabold uppercase tracking-tight mb-2">{v.title}</h3>
         <p className="text-white/70 text-sm mb-4">{v.desc}</p>
         <a href={v.href} target="_blank" rel="noopener" className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors">
           {v.cta}

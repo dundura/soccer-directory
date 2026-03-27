@@ -156,7 +156,7 @@ export default async function EventPage({ params }: Props) {
         <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-light p-6 md:p-8 text-white flex items-center gap-6">
           <div className="flex-1">
             <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Free Training Plan</p>
-            <h3 className="font-[family-name:var(--font-display)] text-xl font-bold mb-2">
+            <h3 className="font-[family-name:var(--font-display)] text-xl font-extrabold uppercase tracking-tight mb-2">
               Free 7-Day Training Plan
             </h3>
             <p className="text-white/70 text-sm mb-4">
