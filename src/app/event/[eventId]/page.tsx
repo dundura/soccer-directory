@@ -149,7 +149,7 @@ export default async function EventPage({ params }: Props) {
       </div>
 
       {/* 7-Day Training Plan Banner */}
-      <div className="max-w-[900px] mx-auto px-6 pb-16">
+      <div className="max-w-[900px] mx-auto px-6 pb-16 -mt-6">
         <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-light p-6 md:p-8 text-white flex items-center gap-6">
           <div className="flex-1">
             <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Free Training Plan</p>
