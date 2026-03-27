@@ -179,37 +179,38 @@ export function ListingPostsSidebar({
       )}
 
       {/* Post links */}
-      <div className="divide-y divide-border">
+      <div className="space-y-2 px-4 pb-3">
         {posts.map((post) => {
           const plainBody = post.body.replace(/<[^>]*>/g, "").replace(/&[a-z#0-9]+;/gi, " ").trim();
           const excerpt = plainBody.length > 100 ? plainBody.slice(0, 97) + "..." : plainBody;
           const img = post.imageUrl || post.ogImageUrl;
           return (
-          <div key={post.id} className={`px-4 py-3 ${post.hidden ? "opacity-50" : ""}`}>
-            <div className="flex items-start gap-3">
-              <a href={`/posts/${post.slug || post.id}`} className="flex-1 min-w-0 group">
-                <div className="flex gap-3">
-                  {img && (
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-surface flex-shrink-0">
+          <div key={post.id} className={`${post.hidden ? "opacity-50" : ""}`}>
+            <div className="flex items-start gap-2">
+              <a href={`/posts/${post.slug || post.id}`} className="group flex flex-1 bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-md transition-all overflow-hidden">
+                <div className="w-1 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+                {img && (
+                  <div className="flex items-center justify-center flex-shrink-0 p-2">
+                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-surface">
                       <img src={img} alt="" className="w-full h-full object-cover" />
                     </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    {post.title && (
-                      <p className="text-sm font-bold text-primary leading-snug group-hover:text-accent transition-colors line-clamp-2">
-                        {post.title}
-                      </p>
-                    )}
-                    {(!post.title || excerpt) && (
-                      <p className={`text-xs ${post.title ? "text-muted mt-0.5" : "text-primary"} leading-snug line-clamp-2 group-hover:text-accent transition-colors`}>
-                        {excerpt}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] text-muted">{timeAgo(post.createdAt)}</span>
-                      {post.hidden && <span className="text-[10px] text-orange-500 font-medium">Hidden</span>}
-                    </div>
                   </div>
+                )}
+                <div className="flex-1 min-w-0 p-3">
+                  {post.title && (
+                    <h4 className="font-[family-name:var(--font-display)] text-sm font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors line-clamp-2">{post.title}</h4>
+                  )}
+                  {(!post.title || excerpt) && (
+                    <p className={`text-xs ${post.title ? "text-muted mt-0.5" : "text-primary font-medium"} leading-snug line-clamp-2`}>{excerpt}</p>
+                  )}
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[10px] text-muted">{timeAgo(post.createdAt)}</span>
+                    {post.hidden && <span className="text-[10px] text-orange-500 font-medium">Hidden</span>}
+                    <span className="text-[10px] font-semibold text-accent">Read →</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center w-8 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
+                  <span className="text-white text-lg font-light">&#8250;</span>
                 </div>
               </a>
               {canManage && (
