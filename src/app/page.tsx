@@ -420,7 +420,7 @@ export default async function HomePage() {
         {/* ── List Your Club CTA ─────────────────── */}
         <section className="py-16 border-t border-border">
           <div className="bg-surface rounded-2xl p-8 md:p-12 text-center">
-            <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold mb-4">
+            <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-extrabold uppercase tracking-tight mb-4">
               Are you a club, coach, or trainer?
             </h2>
             <p className="text-muted text-lg mb-8 max-w-xl mx-auto">
