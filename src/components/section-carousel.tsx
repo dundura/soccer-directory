@@ -10,7 +10,7 @@ export function SectionCarousel({
 }: {
   title: string;
   subtitle: string;
-  viewAllHref: string;
+  viewAllHref?: string;
   children: React.ReactNode;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -44,7 +44,7 @@ export function SectionCarousel({
               <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
             </button>
           </div>
-          <a href={viewAllHref} className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all &rarr;</a>
+          {viewAllHref && <a href={viewAllHref} className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">View all &rarr;</a>}
         </div>
       </div>
       <div

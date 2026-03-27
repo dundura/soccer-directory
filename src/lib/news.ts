@@ -12,13 +12,25 @@ export interface NewsArticle {
   imageUrl: string;
 }
 
+const FALLBACK_IMAGES = [
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp",
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg",
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg",
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/02/futsal-scaled.jpg",
+  "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp",
+];
+
+function randomFallbackImage(): string {
+  return FALLBACK_IMAGES[Math.floor(Math.random() * FALLBACK_IMAGES.length)];
+}
+
 const RSS_FEEDS = [
-  { url: "https://www.soccerwire.com/feed/", source: "SoccerWire", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp" },
-  { url: "https://www.topdrawersoccer.com/feeds/club.xml", source: "TopDrawerSoccer", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg" },
-  { url: "https://www.ussoccer.com/rss", source: "US Soccer", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg" },
-  { url: "https://www.mlssoccer.com/rss/", source: "MLS", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/02/futsal-scaled.jpg" },
-  { url: "https://www.espn.com/espn/rss/soccer/news", source: "ESPN", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp" },
-  { url: "http://feeds.bbci.co.uk/sport/football/rss.xml", source: "BBC", fallbackImg: "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp" },
+  { url: "https://www.espn.com/espn/rss/soccer/news", source: "ESPN" },
+  { url: "http://feeds.bbci.co.uk/sport/football/rss.xml", source: "BBC" },
+  { url: "https://www.theguardian.com/football/rss", source: "The Guardian" },
+  { url: "https://sports.yahoo.com/soccer/rss", source: "Yahoo Sports" },
+  { url: "https://www.90min.com/posts.rss", source: "90min" },
+  { url: "https://www.fourfourtwo.com/feeds/all", source: "FourFourTwo" },
 ];
 
 /* ── In-memory cache ────────────────────────────────────────── */
@@ -91,7 +103,7 @@ function extractItems(xml: string): string[] {
 
 /* ── Fetch a single feed ────────────────────────────────────── */
 
-async function fetchFeed(feedUrl: string, source: string, fallbackImg: string): Promise<NewsArticle[]> {
+async function fetchFeed(feedUrl: string, source: string): Promise<NewsArticle[]> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
@@ -115,7 +127,7 @@ async function fetchFeed(feedUrl: string, source: string, fallbackImg: string): 
       const cleanDesc = rawDesc.replace(/<[^>]*>/g, "").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
       const description = cleanDesc.length > 120 ? cleanDesc.slice(0, 117) + "..." : cleanDesc;
       const pubDate = extractTag(itemXml, "pubDate") || extractTag(itemXml, "dc:date") || extractTag(itemXml, "dc\\:date");
-      const imageUrl = extractImage(itemXml) || fallbackImg;
+      const imageUrl = extractImage(itemXml) || randomFallbackImage();
 
       return {
         title,
@@ -140,7 +152,7 @@ export async function getNewsArticles(): Promise<NewsArticle[]> {
 
   try {
     const results = await Promise.allSettled(
-      RSS_FEEDS.map((feed) => fetchFeed(feed.url, feed.source, feed.fallbackImg))
+      RSS_FEEDS.map((feed) => fetchFeed(feed.url, feed.source))
     );
 
     const allArticles: NewsArticle[] = [];
@@ -164,7 +176,24 @@ export async function getNewsArticles(): Promise<NewsArticle[]> {
       }
     }
 
-    cachedArticles = unique.slice(0, 12);
+    // Interleave sources so same source isn't next to each other
+    const interleaved: NewsArticle[] = [];
+    const bySource: Record<string, NewsArticle[]> = {};
+    for (const a of unique) {
+      if (!bySource[a.source]) bySource[a.source] = [];
+      bySource[a.source].push(a);
+    }
+    const sources = Object.keys(bySource);
+    let idx = 0;
+    while (interleaved.length < 12 && sources.some(s => bySource[s].length > 0)) {
+      const source = sources[idx % sources.length];
+      if (bySource[source].length > 0) {
+        interleaved.push(bySource[source].shift()!);
+      }
+      idx++;
+    }
+
+    cachedArticles = interleaved;
     cacheTimestamp = Date.now();
     return cachedArticles;
   } catch {

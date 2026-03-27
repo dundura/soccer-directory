@@ -339,7 +339,7 @@ export default async function HomePage() {
 
         {/* ── Soccer News Carousel ────────────────── */}
         {newsArticles.length > 0 && (
-          <SectionCarousel title="Soccer News" subtitle="Latest headlines from top soccer sources" viewAllHref="#">
+          <SectionCarousel title="Soccer News" subtitle="Latest headlines from top soccer sources">
             {newsArticles.map((article, idx) => (
               <a
                 key={idx}
