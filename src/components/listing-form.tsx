@@ -806,6 +806,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "price", label: "Price (e.g. $14.99, Free)" },
     { name: "description", label: "Description", required: true, type: "textarea" },
     { name: "aboutAuthor", label: "About the Author", type: "textarea" },
+    { name: "_media", label: "Media Appearances", type: "heading" },
+    { name: "mediaAppearances", label: "Articles, Podcasts & Videos (up to 10 — title + URL)", type: "top-episodes" },
     { name: "website", label: "Website / Purchase Link" },
     { name: "email", label: "Contact Email", type: "email" },
     { name: "phone", label: "Phone" },

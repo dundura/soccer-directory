@@ -720,6 +720,13 @@ export interface Scrimmage extends ProfileFields {
   updatedAt: string;
 }
 
+export interface MediaAppearance {
+  title: string;
+  url: string;
+  type?: string;
+  description?: string;
+}
+
 export interface SoccerBook extends ProfileFields {
   id: string;
   slug: string;
@@ -733,6 +740,7 @@ export interface SoccerBook extends ProfileFields {
   description?: string;
   website?: string;
   email?: string;
+  mediaAppearances?: MediaAppearance[];
   announcementHeading?: string;
   announcementText?: string;
   announcementImage?: string;
