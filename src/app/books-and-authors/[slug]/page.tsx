@@ -205,26 +205,27 @@ export default async function ServiceDetailPage({ params }: Props) {
                   <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Media Appearances</h3>
                   <EditSectionLink ownerId={ownerId} listingType="soccerbook" listingId={service.id} />
                 </div>
-                <div className="space-y-3">
-                  {service.mediaAppearances.map((item, i) => (
-                    <a
-                      key={i}
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden"
-                    >
-                      <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
-                      <div className="flex-1 min-w-0 p-4 sm:p-5">
-                        <h4 className="font-[family-name:var(--font-display)] text-lg font-extrabold text-primary uppercase tracking-tight group-hover:text-accent transition-colors">{item.title}</h4>
-                        {item.description && <p className="text-sm text-primary/70 mt-1 line-clamp-2">{item.description}</p>}
-                        <span className="text-sm font-semibold text-accent mt-1 inline-block">Read / Watch →</span>
+                <div className="space-y-4">
+                  {service.mediaAppearances.map((item, i) => {
+                    const isVideo = item.url.includes("youtube.com") || item.url.includes("youtu.be");
+                    return (
+                      <div key={i} className="bg-white rounded-xl border border-border overflow-hidden">
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="group flex hover:border-accent/30 transition-all">
+                          <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+                          <div className="flex-1 min-w-0 p-4 sm:p-5">
+                            <h4 className="font-[family-name:var(--font-display)] text-lg font-extrabold text-primary uppercase tracking-tight group-hover:text-accent transition-colors">{item.title}</h4>
+                            {item.description && <p className="text-sm text-primary/70 mt-1 whitespace-pre-line">{item.description}</p>}
+                            <span className="text-sm font-semibold text-accent mt-2 inline-block">{isVideo ? "Watch →" : "Read →"}</span>
+                          </div>
+                        </a>
+                        {isVideo && (
+                          <div className="px-4 pb-4">
+                            <VideoEmbed url={item.url} />
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center justify-center w-12 sm:w-14 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                      </div>
-                    </a>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
