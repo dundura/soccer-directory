@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getListingPostById, getListingPostBySlug, getListingNameById, getListingSlugById, getListingImages } from "@/lib/db";
+import { getListingPostById, getListingPostBySlug, getListingNameById, getListingSlugById, getListingImages, getListingOwnerIdById } from "@/lib/db";
 import { ShareButtons, VideoEmbed } from "@/components/profile-ui";
 import { PostEditableContent } from "@/components/post-editable";
 import { ClickableImage } from "@/components/clickable-image";
@@ -110,10 +110,11 @@ export default async function PostPage({ params }: Props) {
   const post = await resolvePost(id);
   if (!post || post.hidden) notFound();
 
-  const [listingName, listingSlug, listingImages] = await Promise.all([
+  const [listingName, listingSlug, listingImages, listingOwnerId] = await Promise.all([
     getListingNameById(post.listingType, post.listingId),
     getListingSlugById(post.listingType, post.listingId),
     getListingImages(post.listingType, post.listingId),
+    getListingOwnerIdById(post.listingType, post.listingId),
   ]);
 
   const typePath = TYPE_PATHS[post.listingType] || "clubs";
@@ -211,6 +212,7 @@ export default async function PostPage({ params }: Props) {
               ctaLabel={post.ctaLabel}
               ogImageUrl={post.ogImageUrl}
               userId={post.userId}
+              listingOwnerId={listingOwnerId || undefined}
               profileName={listingName || undefined}
               profileUrl={listingSlug ? profileUrl : undefined}
             />

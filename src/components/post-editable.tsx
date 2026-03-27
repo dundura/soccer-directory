@@ -57,6 +57,7 @@ export function PostEditableContent({
   ctaLabel,
   ogImageUrl,
   userId,
+  listingOwnerId,
   blogLayout,
   profileName,
   profileUrl,
@@ -71,14 +72,16 @@ export function PostEditableContent({
   ctaLabel?: string;
   ogImageUrl?: string;
   userId: string;
+  listingOwnerId?: string;
   blogLayout?: boolean;
   profileName?: string;
   profileUrl?: string;
 }) {
   const { data: session } = useSession();
-  const isOwner = session?.user?.id === userId;
+  const isPostCreator = session?.user?.id === userId;
+  const isListingOwner = !!(listingOwnerId && session?.user?.id === listingOwnerId);
   const isAdmin = (session?.user as { role?: string } | undefined)?.role === "admin";
-  const canEdit = isOwner || isAdmin;
+  const canEdit = isPostCreator || isListingOwner || isAdmin;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [editingBody, setEditingBody] = useState(false);
