@@ -127,7 +127,7 @@ export function ListingPostsSidebar({
     {(posts.length > 0 || canManage) && (
     <div id="create-post" className="bg-white rounded-2xl shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
-        <h4 className="text-sm font-bold">Our Posts</h4>
+        <h4 className="font-[family-name:var(--font-display)] text-lg font-extrabold text-primary uppercase tracking-tight">Our Posts</h4>
         {canManage && (
           <a
             href={`/posts/new-post?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(slug)}&name=${encodeURIComponent(listingName)}`}

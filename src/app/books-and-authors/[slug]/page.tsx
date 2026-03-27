@@ -192,9 +192,6 @@ export default async function ServiceDetailPage({ params }: Props) {
               </div>
             )}
 
-            {/* Our Posts — only shows when posts exist */}
-            <ListingPostsSidebar listingType="soccerbook" listingId={service.id} slug={slug} ownerId={ownerId} />
-
             {/* Special Events — only shows when events exist */}
             <ListingEventsSection listingType="soccerbook" listingId={service.id} listingSlug={slug} ownerId={ownerId} />
 
@@ -229,6 +226,9 @@ export default async function ServiceDetailPage({ params }: Props) {
                 </div>
               </div>
             )}
+
+            {/* Our Posts — only shows when posts exist */}
+            <ListingPostsSidebar listingType="soccerbook" listingId={service.id} slug={slug} ownerId={ownerId} />
 
             {/* Additional Photos */}
             {photos.length > 0 && (
