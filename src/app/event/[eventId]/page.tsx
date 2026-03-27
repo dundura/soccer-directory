@@ -150,21 +150,30 @@ export default async function EventPage({ params }: Props) {
 
       {/* 7-Day Training Plan Banner */}
       <div className="max-w-[900px] mx-auto px-6 pb-16">
-        <a
-          href="https://www.anytime-soccer.com/free-soccer-drills-for-kids"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center gap-4 bg-primary rounded-xl p-4 sm:p-5 hover:shadow-lg transition-all overflow-hidden"
-        >
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-light p-6 md:p-8 text-white flex items-center gap-6">
+          <div className="flex-1">
+            <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Free Training Plan</p>
+            <h3 className="font-[family-name:var(--font-display)] text-xl font-bold mb-2">
+              Free 7-Day Training Plan
+            </h3>
+            <p className="text-white/70 text-sm mb-4">
+              Get 5,000+ quality touches per day in less than 10 minutes. No guessing. Just press play.
+            </p>
+            <a
+              href="https://www.anytime-soccer.com/free-soccer-drills-for-kids"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors"
+            >
+              Start My Free Plan &rarr;
+            </a>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-white font-extrabold text-base sm:text-lg leading-tight">Free 7-Day Training Plan</p>
-            <p className="text-white/70 text-sm mt-0.5">Get 5,000+ quality touches per day in less than 10 minutes. Just press play.</p>
-          </div>
-          <span className="text-white/50 group-hover:text-white text-2xl flex-shrink-0 transition-colors">&#8250;</span>
-        </a>
+          <img
+            src="https://d2vm0l3c6tu9qp.cloudfront.net/Anytime-soccer-camp.webp"
+            alt="Anytime Soccer Training"
+            className="hidden sm:block w-32 h-32 md:w-40 md:h-40 rounded-xl object-cover flex-shrink-0"
+          />
+        </div>
       </div>
     </>
   );
