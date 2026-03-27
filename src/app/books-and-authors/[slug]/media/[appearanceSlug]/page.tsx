@@ -76,7 +76,7 @@ export default async function MediaAppearancePage({ params }: Props) {
             </p>
 
             {appearance.description && (
-              <div className="text-primary leading-relaxed whitespace-pre-line mb-6 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: appearance.description }} />
+              <div className="text-primary leading-relaxed mb-6 prose prose-sm max-w-none [&>p]:mb-4 [&>p:last-child]:mb-0" dangerouslySetInnerHTML={{ __html: appearance.description }} />
             )}
 
             {/* Video Embed */}
