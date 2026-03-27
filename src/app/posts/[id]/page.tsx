@@ -159,6 +159,14 @@ export default async function PostPage({ params }: Props) {
     <>
 
       <div className="max-w-[900px] mx-auto px-6 pb-16">
+        {/* Back to listing */}
+        {listingName && listingSlug && (
+          <div className="mb-4">
+            <a href={profileUrl} className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors">
+              &larr; Back to {listingName}
+            </a>
+          </div>
+        )}
         <div className="bg-white rounded-2xl border border-border overflow-hidden">
           {/* Preview image */}
           {(post.imageUrl || post.ogImageUrl) && (
@@ -179,10 +187,6 @@ export default async function PostPage({ params }: Props) {
 
             {/* Meta */}
             <div className="flex items-center gap-3 text-sm text-muted mb-5">
-              {listingName && (
-                <a href={profileUrl} className="text-accent hover:underline font-semibold">{listingName}</a>
-              )}
-              <span>&middot;</span>
               <span>{date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
               <span>&middot;</span>
               <span>{estimateReadTime(post.body)} read</span>
