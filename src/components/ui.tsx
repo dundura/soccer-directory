@@ -145,50 +145,29 @@ export function FilterBar({
 }
 
 // ── Inline Anytime CTA (for use within listing pages) ───────
-export function AnytimeInlineCTA() {
-  const variant = Math.random() < 0.5 ? "text" : "image";
+const CTA_VARIANTS = [
+  { label: "Free Training Plan", title: "Free 7-Day Training Plan", desc: "Get 5,000+ quality touches per day in less than 10 minutes. Just press play.", cta: "Start My Free Plan →", href: "https://www.anytime-soccer.com/free-soccer-drills-for-kids", img: "https://d2vm0l3c6tu9qp.cloudfront.net/Anytime-soccer-camp.webp" },
+  { label: "Recommended Resource", title: "5,000+ Follow-Along Training Videos", desc: "Structured sessions your player can do at home, in the backyard, or at the park.", cta: "Try It Free →", href: "https://anytime-soccer.com?ref=soccernearme", img: "/ast-shield.png" },
+  { label: "Free Ebook", title: "The Most Important Skill Never Taught", desc: "This powerful (yet simple) tip will change your child's game forever.", cta: "Download Free →", href: "https://anytime-soccer.com/the-most-important-skill-in-youth-soccer/", img: "https://media.anytime-soccer.com/wp-content/uploads/2021/01/ast_facebook_image_3.jpg" },
+  { label: "Free Ebook", title: "Must-Have Guide to In-Home Training", desc: "Everything you need to know to start training at home effectively.", cta: "Get the Guide →", href: "https://anytime-soccer.com/must-have-guide-for-serious-soccer-parents/", img: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/home/bg-1.png" },
+  { label: "Free Ebook", title: "The Parent Trainer's Playbook", desc: "20 unconventional tips for raising a competitive soccer player.", cta: "Get the Playbook →", href: "https://anytime-soccer.com/the-parent-trainers-playbook/", img: "https://media.anytime-soccer.com/wp-content/uploads/2024/08/the-playbook-20-unconventional-tips-for-raising-a-compeitive-soccer-player-thus-far-1024x789.png" },
+  { label: "Free Ebook", title: "20 Questions for Every Club", desc: "Essential questions to ask before joining any youth soccer club.", cta: "Download Free →", href: "https://anytime-soccer.com/20-questions-every-parent-should-ask/", img: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/ebook/ebook-1.png" },
+];
 
-  if (variant === "image") {
-    return (
-      <a
-        href="https://hustleos.io/soccer?via=anytimesoccer#free-guides"
-        target="_blank"
-        rel="noopener"
-        className="block rounded-2xl overflow-hidden hover:shadow-lg transition-shadow"
-      >
-        <img
-          src="https://d2vm0l3c6tu9qp.cloudfront.net/Homepage_Hero_Banner_No_Logo_1200x300.png"
-          alt="Anytime Soccer Training"
-          className="w-full h-auto"
-        />
-      </a>
-    );
-  }
+export function AnytimeInlineCTA() {
+  const v = CTA_VARIANTS[Math.floor(Math.random() * CTA_VARIANTS.length)];
 
   return (
     <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-light p-6 md:p-8 text-white flex items-center gap-6">
       <div className="flex-1">
-        <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">Recommended Resource</p>
-        <h3 className="font-[family-name:var(--font-display)] text-xl font-bold mb-2">
-          Supplement Team Training with 5,000+ Videos
-        </h3>
-        <p className="text-white/70 text-sm mb-4">
-          Anytime Soccer Training offers structured follow-along sessions your player can do at home, in the backyard, or at the park.
-        </p>
-        <a
-          href="https://anytime-soccer.com?ref=soccernearme"
-          target="_blank"
-          rel="noopener"
-          className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors"
-        >
-          Try It Free →
+        <p className="text-accent text-xs font-semibold uppercase tracking-wider mb-1">{v.label}</p>
+        <h3 className="font-[family-name:var(--font-display)] text-xl font-bold mb-2">{v.title}</h3>
+        <p className="text-white/70 text-sm mb-4">{v.desc}</p>
+        <a href={v.href} target="_blank" rel="noopener" className="inline-flex items-center px-5 py-2.5 rounded-lg bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors">
+          {v.cta}
         </a>
       </div>
-      <img
-        src="/ast-shield.png"
-        alt="Anytime Soccer Training"
-        className="hidden sm:block h-32 md:h-[150px] w-auto opacity-80 shrink-0 mr-4"
-      />
+      <img src={v.img} alt={v.title} className="hidden sm:block w-32 h-32 md:w-40 md:h-40 rounded-xl object-cover flex-shrink-0" />
     </div>
   );
 }
