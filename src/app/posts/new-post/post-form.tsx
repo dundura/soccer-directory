@@ -69,6 +69,8 @@ export function PostForm() {
         youtube: "youtube-channels", trainingapp: "training-apps", ebook: "ebooks",
         giveaway: "giveaways", blog: "blogs", recruiter: "college-recruiting",
         instagrampage: "instagram-pages", tiktokpage: "tiktok-pages",
+        soccerbook: "books-and-authors", photovideo: "photo-video-services",
+        scrimmage: "scrimmages", marketplace: "shop", player: "players",
       };
       router.push(`/${typePaths[listingType] || listingType}/${listingSlug}`);
     } catch {
