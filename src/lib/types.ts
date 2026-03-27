@@ -27,6 +27,7 @@ export interface ProfileFields {
   imagePosition?: number;
   heroImagePosition?: number;
   tagline?: string;
+  previewImage?: string;
   sponsors?: Sponsor[];
 }
 
