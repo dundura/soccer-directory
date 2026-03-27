@@ -5,6 +5,7 @@ import { ShareButtons, VideoEmbed } from "@/components/profile-ui";
 import { PostEditableContent } from "@/components/post-editable";
 import { ClickableImage } from "@/components/clickable-image";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { PostDeleteButton } from "./post-delete";
 
 export const dynamic = "force-dynamic";
 
@@ -241,14 +242,15 @@ export default async function PostPage({ params }: Props) {
               <ShareButtons url={postUrl} title={post.title || stripHtml(post.body).slice(0, 100)} />
             </div>
 
-            {/* Back to listing */}
-            {listingName && listingSlug && (
-              <div className="mt-6 pt-4 border-t border-border">
+            {/* Back to listing + Delete */}
+            <div className="mt-6 pt-4 border-t border-border flex items-center justify-between">
+              {listingName && listingSlug ? (
                 <a href={profileUrl} className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors">
                   &larr; Back to {listingName}
                 </a>
-              </div>
-            )}
+              ) : <span />}
+              <PostDeleteButton postId={post.id} postUserId={post.userId} listingOwnerId={listingOwnerId || undefined} backUrl={listingSlug ? profileUrl : undefined} />
+            </div>
           </div>
         </div>
 
