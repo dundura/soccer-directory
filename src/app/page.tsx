@@ -137,7 +137,7 @@ function CategorySection({ title, viewAllHref, listings }: { title: string; view
   return (
     <section className="py-10 border-t border-border">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold">{title}</h2>
+        <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-extrabold uppercase tracking-tight">{title}</h2>
         <a href={viewAllHref} className="text-sm font-semibold text-accent-hover hover:text-accent transition-colors">
           View All &rarr;
         </a>
