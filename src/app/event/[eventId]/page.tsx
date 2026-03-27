@@ -147,6 +147,25 @@ export default async function EventPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      {/* 7-Day Training Plan Banner */}
+      <div className="max-w-[900px] mx-auto px-6 pb-16">
+        <a
+          href="https://www.anytime-soccer.com/free-soccer-drills-for-kids"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-4 bg-primary rounded-xl p-4 sm:p-5 hover:shadow-lg transition-all overflow-hidden"
+        >
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-extrabold text-base sm:text-lg leading-tight">Free 7-Day Training Plan</p>
+            <p className="text-white/70 text-sm mt-0.5">Get 5,000+ quality touches per day in less than 10 minutes. Just press play.</p>
+          </div>
+          <span className="text-white/50 group-hover:text-white text-2xl flex-shrink-0 transition-colors">&#8250;</span>
+        </a>
+      </div>
     </>
   );
 }
