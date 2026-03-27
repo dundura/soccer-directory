@@ -1083,13 +1083,14 @@ export async function getListingsByUserId(userId: string) {
 }
 
 // ── Create Listings ──────────────────────────────────────────
-function parsePhotos(raw: string | undefined | null): string[] | null {
+function parsePhotos(raw: string | undefined | null): string | null {
   if (!raw) return null;
   try {
     const arr = JSON.parse(raw);
-    if (Array.isArray(arr) && arr.length > 0) return arr.filter(Boolean);
+    if (Array.isArray(arr) && arr.length > 0) return JSON.stringify(arr.filter(Boolean));
+    return raw;
   } catch { /* not JSON, try as-is */ }
-  return raw ? [raw] : null;
+  return raw ? JSON.stringify([raw]) : null;
 }
 
 function profileFields(data: Record<string, string>) {
