@@ -192,7 +192,16 @@ export async function getNewsArticles(): Promise<{ carousel: NewsArticle[]; link
     linkAll.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
 
     cachedCarousel = dedupeAndInterleave(carouselAll, 12);
-    cachedLinks = dedupeAndInterleave(linkAll, 10);
+    // One article per source for links
+    const linkSeen = new Set<string>();
+    const linkOneEach: NewsArticle[] = [];
+    for (const a of linkAll) {
+      if (!linkSeen.has(a.source)) {
+        linkSeen.add(a.source);
+        linkOneEach.push(a);
+      }
+    }
+    cachedLinks = linkOneEach;
     cacheTimestamp = Date.now();
     return { carousel: cachedCarousel, links: cachedLinks };
   } catch {
