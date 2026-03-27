@@ -95,23 +95,19 @@ export default async function TrainingAppDetailPage({ params }: Props) {
 
           {/* Product Info */}
           <div className="p-6 md:p-8">
-            <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
-              <div>
-                <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold mb-2">
-                  {app.category}
-                </span>
-                <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="name" value={app.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
-                {app.tagline && (
-                  <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="tagline" value={app.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
-                )}
-                <p className="text-sm text-muted mt-1">
-                  by {app.providerName} &middot; {app.city}, {app.state}
-                </p>
-              </div>
+            <div className="mb-4">
+              <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold mb-2">
+                {app.category}
+              </span>
+              <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="name" value={app.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
+              {app.tagline && (
+                <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="tagline" value={app.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+              )}
+              <p className="text-sm text-muted mt-1">
+                by {app.providerName} &middot; {app.city}, {app.state}
+              </p>
               {app.price && (
-                <div className="text-2xl font-bold text-primary">
-                  {app.price}
-                </div>
+                <p className="text-lg font-bold text-primary mt-2">{app.price}</p>
               )}
             </div>
 
