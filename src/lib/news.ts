@@ -25,7 +25,11 @@ function randomFallbackImage(): string {
 }
 
 const CAROUSEL_FEEDS = [
-  { url: "https://www.espn.com/espn/rss/soccer/news", source: "ESPN" },
+  { url: "https://www.espn.com/espn/rss/soccer/news", source: "ESPN", fallbacks: [
+    "https://img.hulu.com/user/v3/artwork/95944399-80d3-45ef-8efb-68f0ef721a97?base_image_bucket_name=image_manager&base_image=019d0d3c-6e98-76ba-ab50-04686638d3e1&size=600x338&format=webp",
+    "https://s.secure.espncdn.com/stitcher/artwork/collections/media/2caa4910-bcf1-45ef-9691-fa82b9ebfbf7/16x9.jpg?timestamp=202603222140&showBadge=true&cb=12&package=ESPN_PLUS&width=464&height=261",
+    "https://s.secure.espncdn.com/stitcher/artwork/collections/media/15c2f24f-9b48-4a20-9850-79c3748d00fb/16x9.jpg?timestamp=202603211913&showBadge=true&cb=12&package=ESPN_PLUS",
+  ] },
   { url: "http://feeds.bbci.co.uk/sport/football/rss.xml", source: "BBC" },
   { url: "https://www.fourfourtwo.com/feeds/all", source: "FourFourTwo" },
   { url: "https://www.90min.com/posts.rss", source: "90min" },
@@ -107,7 +111,7 @@ function extractItems(xml: string): string[] {
 
 /* ── Fetch a single feed ────────────────────────────────────── */
 
-async function fetchFeed(feedUrl: string, source: string): Promise<NewsArticle[]> {
+async function fetchFeed(feedUrl: string, source: string, fallbacks?: string[]): Promise<NewsArticle[]> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
@@ -131,7 +135,7 @@ async function fetchFeed(feedUrl: string, source: string): Promise<NewsArticle[]
       const cleanDesc = rawDesc.replace(/<[^>]*>/g, "").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
       const description = cleanDesc.length > 120 ? cleanDesc.slice(0, 117) + "..." : cleanDesc;
       const pubDate = extractTag(itemXml, "pubDate") || extractTag(itemXml, "dc:date") || extractTag(itemXml, "dc\\:date");
-      const imageUrl = extractImage(itemXml) || randomFallbackImage();
+      const imageUrl = extractImage(itemXml) || (fallbacks ? fallbacks[Math.floor(Math.random() * fallbacks.length)] : randomFallbackImage());
 
       return {
         title,
@@ -179,7 +183,7 @@ export async function getNewsArticles(): Promise<{ carousel: NewsArticle[]; link
 
   try {
     const [carouselResults, linkResults] = await Promise.all([
-      Promise.allSettled(CAROUSEL_FEEDS.map((f) => fetchFeed(f.url, f.source))),
+      Promise.allSettled(CAROUSEL_FEEDS.map((f) => fetchFeed(f.url, f.source, (f as any).fallbacks))),
       Promise.allSettled(LINK_FEEDS.map((f) => fetchFeed(f.url, f.source))),
     ]);
 
