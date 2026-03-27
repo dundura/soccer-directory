@@ -33,6 +33,8 @@ const CAROUSEL_FEEDS = [
   { url: "http://feeds.bbci.co.uk/sport/football/rss.xml", source: "BBC" },
   { url: "https://www.fourfourtwo.com/feeds/all", source: "FourFourTwo" },
   { url: "https://www.90min.com/posts.rss", source: "90min" },
+  { url: "https://www.socceramerica.com/feed/", source: "SoccerAmerica" },
+  { url: "https://prepsoccer.com/feed/", source: "PrepSoccer" },
 ];
 
 const LINK_FEEDS = [

@@ -348,6 +348,8 @@ export default async function HomePage() {
                 article.source === "BBC" ? "bg-blue-50 text-blue-700" :
                 article.source === "FourFourTwo" ? "bg-green-50 text-green-700" :
                 article.source === "90min" ? "bg-orange-50 text-orange-700" :
+                article.source === "SoccerAmerica" ? "bg-yellow-50 text-yellow-700" :
+                article.source === "PrepSoccer" ? "bg-teal-50 text-teal-700" :
                 "bg-gray-100 text-gray-700";
               return (
                 <a key={idx} href={article.link} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 w-[320px] group flex flex-col bg-white rounded-2xl border border-border overflow-hidden hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 h-full">
