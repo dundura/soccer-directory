@@ -24,18 +24,22 @@ function randomFallbackImage(): string {
   return FALLBACK_IMAGES[Math.floor(Math.random() * FALLBACK_IMAGES.length)];
 }
 
-const RSS_FEEDS = [
+const CAROUSEL_FEEDS = [
   { url: "https://www.espn.com/espn/rss/soccer/news", source: "ESPN" },
   { url: "http://feeds.bbci.co.uk/sport/football/rss.xml", source: "BBC" },
-  { url: "https://www.theguardian.com/football/rss", source: "The Guardian" },
-  { url: "https://sports.yahoo.com/soccer/rss", source: "Yahoo Sports" },
-  { url: "https://www.90min.com/posts.rss", source: "90min" },
   { url: "https://www.fourfourtwo.com/feeds/all", source: "FourFourTwo" },
+  { url: "https://www.90min.com/posts.rss", source: "90min" },
+];
+
+const LINK_FEEDS = [
+  { url: "https://sports.yahoo.com/soccer/rss", source: "Yahoo Sports" },
+  { url: "https://www.theguardian.com/football/rss", source: "The Guardian" },
 ];
 
 /* ── In-memory cache ────────────────────────────────────────── */
 
-let cachedArticles: NewsArticle[] = [];
+let cachedCarousel: NewsArticle[] = [];
+let cachedLinks: NewsArticle[] = [];
 let cacheTimestamp = 0;
 const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
@@ -145,58 +149,53 @@ async function fetchFeed(feedUrl: string, source: string): Promise<NewsArticle[]
 
 /* ── Public API ─────────────────────────────────────────────── */
 
-export async function getNewsArticles(): Promise<NewsArticle[]> {
-  if (cachedArticles.length > 0 && Date.now() - cacheTimestamp < CACHE_TTL) {
-    return cachedArticles;
+function dedupeAndInterleave(articles: NewsArticle[], max: number): NewsArticle[] {
+  const seen = new Set<string>();
+  const unique: NewsArticle[] = [];
+  for (const a of articles) {
+    const key = a.title.toLowerCase().trim();
+    if (!seen.has(key)) { seen.add(key); unique.push(a); }
+  }
+  const bySource: Record<string, NewsArticle[]> = {};
+  for (const a of unique) {
+    if (!bySource[a.source]) bySource[a.source] = [];
+    bySource[a.source].push(a);
+  }
+  const interleaved: NewsArticle[] = [];
+  const sources = Object.keys(bySource);
+  let idx = 0;
+  while (interleaved.length < max && sources.some(s => bySource[s].length > 0)) {
+    const source = sources[idx % sources.length];
+    if (bySource[source].length > 0) interleaved.push(bySource[source].shift()!);
+    idx++;
+  }
+  return interleaved;
+}
+
+export async function getNewsArticles(): Promise<{ carousel: NewsArticle[]; links: NewsArticle[] }> {
+  if ((cachedCarousel.length > 0 || cachedLinks.length > 0) && Date.now() - cacheTimestamp < CACHE_TTL) {
+    return { carousel: cachedCarousel, links: cachedLinks };
   }
 
   try {
-    const results = await Promise.allSettled(
-      RSS_FEEDS.map((feed) => fetchFeed(feed.url, feed.source))
-    );
+    const [carouselResults, linkResults] = await Promise.all([
+      Promise.allSettled(CAROUSEL_FEEDS.map((f) => fetchFeed(f.url, f.source))),
+      Promise.allSettled(LINK_FEEDS.map((f) => fetchFeed(f.url, f.source))),
+    ]);
 
-    const allArticles: NewsArticle[] = [];
-    for (const result of results) {
-      if (result.status === "fulfilled") {
-        allArticles.push(...result.value);
-      }
-    }
+    const carouselAll: NewsArticle[] = [];
+    for (const r of carouselResults) { if (r.status === "fulfilled") carouselAll.push(...r.value); }
+    carouselAll.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
 
-    // Sort by date descending
-    allArticles.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+    const linkAll: NewsArticle[] = [];
+    for (const r of linkResults) { if (r.status === "fulfilled") linkAll.push(...r.value); }
+    linkAll.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
 
-    // Deduplicate by title
-    const seen = new Set<string>();
-    const unique: NewsArticle[] = [];
-    for (const article of allArticles) {
-      const key = article.title.toLowerCase().trim();
-      if (!seen.has(key)) {
-        seen.add(key);
-        unique.push(article);
-      }
-    }
-
-    // Interleave sources so same source isn't next to each other
-    const interleaved: NewsArticle[] = [];
-    const bySource: Record<string, NewsArticle[]> = {};
-    for (const a of unique) {
-      if (!bySource[a.source]) bySource[a.source] = [];
-      bySource[a.source].push(a);
-    }
-    const sources = Object.keys(bySource);
-    let idx = 0;
-    while (interleaved.length < 12 && sources.some(s => bySource[s].length > 0)) {
-      const source = sources[idx % sources.length];
-      if (bySource[source].length > 0) {
-        interleaved.push(bySource[source].shift()!);
-      }
-      idx++;
-    }
-
-    cachedArticles = interleaved;
+    cachedCarousel = dedupeAndInterleave(carouselAll, 12);
+    cachedLinks = dedupeAndInterleave(linkAll, 10);
     cacheTimestamp = Date.now();
-    return cachedArticles;
+    return { carousel: cachedCarousel, links: cachedLinks };
   } catch {
-    return [];
+    return { carousel: [], links: [] };
   }
 }

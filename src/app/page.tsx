@@ -166,7 +166,7 @@ export default async function HomePage() {
     getBlogs(), getSoccerBooks(), getPhotoVideoServices(), getScrimmages(),
   ]);
 
-  const newsArticles = await getNewsArticles();
+  const { carousel: newsCarousel, links: newsLinks } = await getNewsArticles();
 
   /* ── Featured carousel: pool all featured from every category ── */
   const featuredPool: RowListing[] = [
@@ -337,59 +337,53 @@ export default async function HomePage() {
           </SectionCarousel>
         )}
 
-        {/* ── Soccer News Carousel ────────────────── */}
-        {newsArticles.length > 0 && (
+        {/* ── Soccer News Carousel (ESPN, BBC, FourFourTwo, 90min) ── */}
+        {newsCarousel.length > 0 && (
           <SectionCarousel title="Soccer News" subtitle="Latest headlines from top soccer sources">
-            {newsArticles.map((article, idx) => (
-              <a
-                key={idx}
-                href={article.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-shrink-0 w-[320px] group flex flex-col bg-white rounded-2xl border border-border overflow-hidden hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 h-full"
-              >
-                {/* Image */}
-                <div className="w-full h-44 overflow-hidden bg-surface flex-shrink-0">
-                  <img
-                    src={article.imageUrl}
-                    alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-
-                {/* Content */}
-                <div className="p-5 flex flex-col flex-1">
-                  {/* Source badge */}
-                  <span className={`self-start px-2.5 py-0.5 rounded-full text-xs font-semibold mb-3 ${
-                    article.source === "ESPN" ? "bg-red-50 text-red-700" :
-                    article.source === "BBC" ? "bg-blue-50 text-blue-700" :
-                    article.source === "The Guardian" ? "bg-indigo-50 text-indigo-700" :
-                    article.source === "MLS" ? "bg-purple-50 text-purple-700" :
-                    "bg-gray-100 text-gray-700"
-                  }`}>
-                    {article.source}
-                  </span>
-
-                  {/* Title */}
-                  <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary leading-tight line-clamp-2 group-hover:text-accent transition-colors mb-2">
-                    {article.title}
-                  </h3>
-
-                  {/* Description */}
-                  {article.description && (
-                    <p className="text-sm text-muted line-clamp-2 leading-relaxed mb-3 flex-1">
-                      {article.description}
-                    </p>
-                  )}
-
-                  {/* Date */}
-                  <p className="text-xs text-muted mt-auto">
-                    {article.publishedAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                  </p>
-                </div>
-              </a>
-            ))}
+            {newsCarousel.map((article, idx) => {
+              const badgeColor = article.source === "ESPN" ? "bg-red-50 text-red-700" :
+                article.source === "BBC" ? "bg-blue-50 text-blue-700" :
+                article.source === "FourFourTwo" ? "bg-green-50 text-green-700" :
+                article.source === "90min" ? "bg-orange-50 text-orange-700" :
+                "bg-gray-100 text-gray-700";
+              return (
+                <a key={idx} href={article.link} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 w-[320px] group flex flex-col bg-white rounded-2xl border border-border overflow-hidden hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 h-full">
+                  <div className="w-full h-44 overflow-hidden bg-surface flex-shrink-0">
+                    <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                  <div className="p-5 flex flex-col flex-1">
+                    <span className={`self-start px-2.5 py-0.5 rounded-full text-xs font-semibold mb-3 ${badgeColor}`}>{article.source}</span>
+                    <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary leading-tight line-clamp-2 group-hover:text-accent transition-colors mb-2">{article.title}</h3>
+                    {article.description && <p className="text-sm text-muted line-clamp-2 leading-relaxed mb-3 flex-1">{article.description}</p>}
+                    <p className="text-xs text-muted mt-auto">{article.publishedAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+                  </div>
+                </a>
+              );
+            })}
           </SectionCarousel>
+        )}
+
+        {/* ── More News (Yahoo Sports, The Guardian) ── */}
+        {newsLinks.length > 0 && (
+          <section className="py-8 border-t border-border">
+            <h3 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary mb-4">More News</h3>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {newsLinks.map((article, idx) => (
+                <a key={idx} href={article.link} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-3 bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-md transition-all p-4">
+                  <div className="flex-1 min-w-0">
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mb-1.5 ${
+                      article.source === "Yahoo Sports" ? "bg-purple-50 text-purple-700" :
+                      article.source === "The Guardian" ? "bg-indigo-50 text-indigo-700" :
+                      "bg-gray-100 text-gray-700"
+                    }`}>{article.source}</span>
+                    <h4 className="text-sm font-bold text-primary group-hover:text-accent transition-colors line-clamp-2 leading-snug">{article.title}</h4>
+                    <p className="text-xs text-muted mt-1">{article.publishedAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+                  </div>
+                  <svg className="w-4 h-4 text-muted group-hover:text-accent transition-colors flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                </a>
+              ))}
+            </div>
+          </section>
         )}
 
         {/* ── Main Category Sections (3 rows each) ── */}
