@@ -369,17 +369,20 @@ export default async function HomePage() {
             <h3 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-extrabold text-primary uppercase tracking-tight mb-4">More News</h3>
             <div className="grid sm:grid-cols-2 gap-3">
               {newsLinks.map((article, idx) => (
-                <a key={idx} href={article.link} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-3 bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-md transition-all p-4">
-                  <div className="flex-1 min-w-0">
-                    <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mb-1.5 ${
+                <a key={idx} href={article.link} target="_blank" rel="noopener noreferrer" className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden">
+                  <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+                  <div className="flex-1 min-w-0 p-4 sm:p-5">
+                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold mb-2 ${
                       article.source === "Yahoo Sports" ? "bg-purple-50 text-purple-700" :
                       article.source === "The Guardian" ? "bg-indigo-50 text-indigo-700" :
                       "bg-gray-100 text-gray-700"
                     }`}>{article.source}</span>
-                    <h4 className="text-sm font-bold text-primary group-hover:text-accent transition-colors line-clamp-2 leading-snug">{article.title}</h4>
-                    <p className="text-xs text-muted mt-1">{article.publishedAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+                    <h4 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors">{article.title}</h4>
+                    <p className="text-xs text-muted mt-1.5">{article.publishedAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
                   </div>
-                  <svg className="w-4 h-4 text-muted group-hover:text-accent transition-colors flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                  <div className="flex items-center justify-center w-12 sm:w-14 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
+                    <span className="text-white text-2xl font-light">&#8250;</span>
+                  </div>
                 </a>
               ))}
             </div>
