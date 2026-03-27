@@ -180,26 +180,36 @@ export function ListingPostsSidebar({
 
       {/* Post links */}
       <div className="divide-y divide-border">
-        {posts.map((post) => (
+        {posts.map((post) => {
+          const plainBody = post.body.replace(/<[^>]*>/g, "").replace(/&[a-z#0-9]+;/gi, " ").trim();
+          const excerpt = plainBody.length > 100 ? plainBody.slice(0, 97) + "..." : plainBody;
+          const img = post.imageUrl || post.ogImageUrl;
+          return (
           <div key={post.id} className={`px-4 py-3 ${post.hidden ? "opacity-50" : ""}`}>
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-3">
               <a href={`/posts/${post.slug || post.id}`} className="flex-1 min-w-0 group">
-                {(post.imageUrl || post.ogImageUrl) && (
-                  <img src={post.imageUrl || post.ogImageUrl} alt="" className="w-full rounded-lg max-h-[100px] object-cover mb-2" />
-                )}
-                {post.title && (
-                  <p className="text-[13px] font-bold text-primary leading-snug group-hover:text-accent transition-colors">
-                    {post.title}
-                  </p>
-                )}
-                <p className={`text-[13px] ${post.title ? "text-muted" : "text-primary"} leading-snug line-clamp-2 group-hover:text-accent transition-colors`}>
-                  {post.body.replace(/<[^>]*>/g, "").slice(0, 150)}
-                </p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] text-muted">{timeAgo(post.createdAt)}</span>
-                  {post.imageUrl && <span className="text-[10px] text-muted">&#128247;</span>}
-                  {post.videoUrl && <span className="text-[10px] text-muted">&#127909;</span>}
-                  {post.hidden && <span className="text-[10px] text-orange-500 font-medium">Hidden</span>}
+                <div className="flex gap-3">
+                  {img && (
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-surface flex-shrink-0">
+                      <img src={img} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    {post.title && (
+                      <p className="text-sm font-bold text-primary leading-snug group-hover:text-accent transition-colors line-clamp-2">
+                        {post.title}
+                      </p>
+                    )}
+                    {(!post.title || excerpt) && (
+                      <p className={`text-xs ${post.title ? "text-muted mt-0.5" : "text-primary"} leading-snug line-clamp-2 group-hover:text-accent transition-colors`}>
+                        {excerpt}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px] text-muted">{timeAgo(post.createdAt)}</span>
+                      {post.hidden && <span className="text-[10px] text-orange-500 font-medium">Hidden</span>}
+                    </div>
+                  </div>
                 </div>
               </a>
               {canManage && (
@@ -226,7 +236,8 @@ export function ListingPostsSidebar({
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {posts.length === 0 && canManage && !showForm && (
