@@ -33,6 +33,7 @@ const CAROUSEL_FEEDS = [
   { url: "http://feeds.bbci.co.uk/sport/football/rss.xml", source: "BBC" },
   { url: "https://www.fourfourtwo.com/feeds/all", source: "FourFourTwo" },
   { url: "https://www.90min.com/posts.rss", source: "90min" },
+  { url: "https://www.soccerwire.com/feed/", source: "SoccerWire" },
 ];
 
 const LINK_FEEDS = [
@@ -174,6 +175,54 @@ function dedupeAndInterleave(articles: NewsArticle[], max: number): NewsArticle[
     idx++;
   }
   return interleaved;
+}
+
+export interface PodcastEpisode {
+  title: string;
+  link: string;
+  description: string;
+  publishedAt: Date;
+  imageUrl: string;
+  duration?: string;
+}
+
+let cachedPodcast: PodcastEpisode | null = null;
+let podcastCacheTimestamp = 0;
+
+export async function getLatestPodcastEpisode(): Promise<PodcastEpisode | null> {
+  if (cachedPodcast && Date.now() - podcastCacheTimestamp < CACHE_TTL) return cachedPodcast;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch("https://anchor.fm/s/1f9b165c/podcast/rss", {
+      signal: controller.signal,
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; SoccerNearMe/1.0)" },
+      next: { revalidate: 0 },
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+
+    const xml = await res.text();
+    const channelImage = extractTag(extractTag(xml, "image"), "url") || extractAttr(xml, "itunes:image", "href") || "";
+    const items = extractItems(xml);
+    if (!items.length) return null;
+
+    const item = items[0];
+    const title = extractTag(item, "title");
+    const link = extractTag(item, "link") || extractAttr(item, "link", "href");
+    const rawDesc = extractTag(item, "description") || extractTag(item, "itunes:summary") || extractTag(item, "itunes\\:summary");
+    const description = rawDesc.replace(/<[^>]*>/g, "").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim().slice(0, 200);
+    const pubDate = extractTag(item, "pubDate");
+    const duration = extractTag(item, "itunes:duration") || extractTag(item, "itunes\\:duration") || "";
+    const imageUrl = extractAttr(item, "itunes:image", "href") || extractAttr(item, "itunes\\:image", "href") || extractImage(item) || channelImage || randomFallbackImage();
+
+    cachedPodcast = { title, link, description, publishedAt: pubDate ? new Date(pubDate) : new Date(), imageUrl, duration };
+    podcastCacheTimestamp = Date.now();
+    return cachedPodcast;
+  } catch {
+    return null;
+  }
 }
 
 export async function getNewsArticles(): Promise<{ carousel: NewsArticle[]; links: NewsArticle[] }> {

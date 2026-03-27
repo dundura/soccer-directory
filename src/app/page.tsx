@@ -4,7 +4,7 @@ import {
   getFacebookGroups, getInstagramPages, getTikTokPages, getServices, getTrainingApps,
   getBlogs, getSoccerBooks, getPhotoVideoServices, getScrimmages,
 } from "@/lib/db";
-import { getNewsArticles, type NewsArticle } from "@/lib/news";
+import { getNewsArticles, getLatestPodcastEpisode, type NewsArticle } from "@/lib/news";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
 import { RotatingText } from "@/components/rotating-text";
@@ -166,7 +166,10 @@ export default async function HomePage() {
     getBlogs(), getSoccerBooks(), getPhotoVideoServices(), getScrimmages(),
   ]);
 
-  const { carousel: newsCarousel, links: newsLinks } = await getNewsArticles();
+  const [{ carousel: newsCarousel, links: newsLinks }, latestEpisode] = await Promise.all([
+    getNewsArticles(),
+    getLatestPodcastEpisode(),
+  ]);
 
   /* ── Featured carousel: pool all featured from every category ── */
   const featuredPool: RowListing[] = [
@@ -345,6 +348,7 @@ export default async function HomePage() {
                 article.source === "BBC" ? "bg-blue-50 text-blue-700" :
                 article.source === "FourFourTwo" ? "bg-green-50 text-green-700" :
                 article.source === "90min" ? "bg-orange-50 text-orange-700" :
+                article.source === "SoccerWire" ? "bg-yellow-50 text-yellow-700" :
                 "bg-gray-100 text-gray-700";
               return (
                 <a key={idx} href={article.link} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 w-[320px] group flex flex-col bg-white rounded-2xl border border-border overflow-hidden hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 h-full">
@@ -392,6 +396,33 @@ export default async function HomePage() {
         {/* ── Main Category Sections (3 rows each) ── */}
         <CategorySection title="Clubs" viewAllHref="/clubs" listings={clubRows} />
         <CategorySection title="Teams" viewAllHref="/teams" listings={teamRows} />
+        {/* ── Latest Podcast Episode ── */}
+        {latestEpisode && (
+          <section className="py-6">
+            <h3 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-extrabold text-primary uppercase tracking-tight mb-4">The Inside Scoop Podcast</h3>
+            <a href={latestEpisode.link} target="_blank" rel="noopener noreferrer" className="group flex bg-white rounded-2xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden">
+              <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-2xl" />
+              <div className="flex flex-col sm:flex-row flex-1 min-w-0">
+                <div className="sm:w-48 md:w-56 flex-shrink-0 overflow-hidden">
+                  <img src={latestEpisode.imageUrl} alt={latestEpisode.title} className="w-full h-44 sm:h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <div className="flex-1 min-w-0 p-5 sm:p-6 flex flex-col justify-center">
+                  <span className="inline-block self-start px-2.5 py-0.5 rounded-full text-xs font-semibold mb-2 bg-accent/10 text-accent">Latest Episode</span>
+                  <h4 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors mb-2">{latestEpisode.title}</h4>
+                  {latestEpisode.description && <p className="text-sm text-muted line-clamp-2 leading-relaxed mb-3">{latestEpisode.description}</p>}
+                  <div className="flex items-center gap-3 text-xs text-muted">
+                    <span>{latestEpisode.publishedAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                    {latestEpisode.duration && <><span>&middot;</span><span>{latestEpisode.duration}</span></>}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center w-12 sm:w-14 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-2xl">
+                <span className="text-white text-2xl font-light">&#9654;</span>
+              </div>
+            </a>
+          </section>
+        )}
+
         <CategorySection title="Trainers" viewAllHref="/trainers" listings={trainerRows} />
         <CategorySection title="Camps" viewAllHref="/camps" listings={campRows} />
         <CategorySection title="Tryouts" viewAllHref="/tryouts" listings={tryoutRows} />
