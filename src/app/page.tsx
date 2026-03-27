@@ -406,7 +406,7 @@ export default async function HomePage() {
               <a href="/blogs" className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors">View All &rarr;</a>
             </div>
             <div className="grid sm:grid-cols-2 gap-3">
-              {communityPosts.slice(0, 6).map((post) => {
+              {communityPosts.slice(0, 2).map((post) => {
                 const img = post.ogImageUrl || post.imageUrl;
                 const desc = post.body?.replace(/<[^>]*>/g, "").slice(0, 120) || "";
                 return (
