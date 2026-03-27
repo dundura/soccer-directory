@@ -2,7 +2,7 @@ import {
   getClubs, getTeams, getTrainers, getCamps, getTournaments, getFutsalTeams, getBlogPosts,
   getPlayerProfiles, getTryouts, getSpecialEvents, getPodcasts, getYoutubeChannels,
   getFacebookGroups, getInstagramPages, getTikTokPages, getServices, getTrainingApps,
-  getBlogs, getSoccerBooks, getPhotoVideoServices, getScrimmages,
+  getBlogs, getSoccerBooks, getPhotoVideoServices, getScrimmages, getMemberArticles,
 } from "@/lib/db";
 import { getNewsArticles, getLatestPodcastEpisode, type NewsArticle } from "@/lib/news";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
@@ -166,9 +166,10 @@ export default async function HomePage() {
     getBlogs(), getSoccerBooks(), getPhotoVideoServices(), getScrimmages(),
   ]);
 
-  const [{ carousel: newsCarousel, links: newsLinks }, latestEpisode] = await Promise.all([
+  const [{ carousel: newsCarousel, links: newsLinks }, latestEpisode, communityPosts] = await Promise.all([
     getNewsArticles(),
     getLatestPodcastEpisode(),
+    getMemberArticles(),
   ]);
 
   /* ── Featured carousel: pool all featured from every category ── */
@@ -396,6 +397,45 @@ export default async function HomePage() {
 
         {/* ── Main Category Sections (3 rows each) ── */}
         <CategorySection title="Clubs" viewAllHref="/clubs" listings={clubRows} />
+
+        {/* ── Community Posts ── */}
+        {communityPosts.length > 0 && (
+          <section className="py-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-extrabold text-primary uppercase tracking-tight">Community Posts</h3>
+              <a href="/blogs" className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors">View All &rarr;</a>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {communityPosts.slice(0, 6).map((post) => {
+                const img = post.ogImageUrl || post.imageUrl;
+                const desc = post.body?.replace(/<[^>]*>/g, "").slice(0, 120) || "";
+                return (
+                  <a key={post.id} href={`/posts/${post.slug || post.id}`} className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden">
+                    <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+                    <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-3">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-surface flex items-center justify-center">
+                        {img ? (
+                          <img src={img} alt={post.title || "Post"} className="w-full h-full object-cover" />
+                        ) : (
+                          <svg className="w-8 h-8 text-muted/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0 p-3 sm:p-4 flex flex-col justify-center">
+                      <h4 className="font-[family-name:var(--font-display)] text-sm sm:text-base font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors line-clamp-2">{post.title}</h4>
+                      {desc && <p className="text-xs text-muted line-clamp-1 mt-1 hidden sm:block">{desc}</p>}
+                      <p className="text-xs text-muted mt-1">{new Date(post.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
+                    </div>
+                    <div className="hidden sm:flex items-center justify-center w-10 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
+                      <span className="text-white text-lg font-light">&#8250;</span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         <CategorySection title="Teams" viewAllHref="/teams" listings={teamRows} />
         {/* ── Latest Podcast Episode ── */}
         {latestEpisode && (
