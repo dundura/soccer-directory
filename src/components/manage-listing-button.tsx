@@ -175,6 +175,16 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
         </a>
       )}
 
+      {/* Add Special Event */}
+      {listingType && listingId && (
+        <a
+          href={`/event/new?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(currentSlug)}`}
+          className="block w-full text-center px-4 py-2 rounded-xl border-2 border-accent/20 bg-accent/5 text-accent text-sm font-bold hover:bg-accent/10 transition-colors"
+        >
+          Add Special Event
+        </a>
+      )}
+
       {/* Write Blog Post (not for players) */}
       {createPostHref && listingType !== "player" && (
         <a
