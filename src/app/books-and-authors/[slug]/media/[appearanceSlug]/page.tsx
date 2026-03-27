@@ -59,6 +59,9 @@ export default async function MediaAppearancePage({ params }: Props) {
       </div>
 
       <div className="max-w-[900px] mx-auto px-6 pb-16">
+        {/* Edit section for owner */}
+        <MediaAppearanceDetail appearance={appearance} bookId={book.id} bookSlug={slug} ownerId={ownerId} />
+
         <div className="bg-white rounded-2xl border border-border overflow-hidden mb-6">
           {appearance.previewImage && (
             <ClickableImage src={appearance.previewImage} alt={appearance.title} className="w-full h-[220px] sm:h-[300px] object-cover cursor-zoom-in" />
@@ -102,8 +105,6 @@ export default async function MediaAppearancePage({ params }: Props) {
           </div>
         </div>
 
-        {/* Edit section for owner */}
-        <MediaAppearanceDetail appearance={appearance} bookId={book.id} bookSlug={slug} ownerId={ownerId} />
       </div>
     </>
   );

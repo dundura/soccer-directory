@@ -96,24 +96,20 @@ export default async function ServiceDetailPage({ params }: Props) {
 
           {/* Product Info */}
           <div className="p-6 md:p-8">
-            <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
-              <div>
-                <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold mb-2">
-                  {service.category}
-                </span>
-                <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="name" value={service.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
-                {service.tagline && (
-                  <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="tagline" value={service.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
-                )}
-                <p className="text-sm text-muted mt-1">
-                  by {service.author} &middot; {service.city}, {service.state}
-                </p>
-              </div>
+            <div className="mb-4">
+              <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold mb-2">
+                {service.category}
+              </span>
+              <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="name" value={service.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
               {service.price && (
-                <div className="text-2xl font-bold text-primary">
-                  {service.price}
-                </div>
+                <p className="text-2xl font-bold text-primary mt-1">{service.price}</p>
               )}
+              {service.tagline && (
+                <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="tagline" value={service.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+              )}
+              <p className="text-sm text-muted mt-1">
+                by {service.author} &middot; {service.city}, {service.state}
+              </p>
             </div>
 
             {service.description && (

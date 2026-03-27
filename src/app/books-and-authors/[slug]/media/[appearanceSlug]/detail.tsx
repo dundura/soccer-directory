@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import type { BookMediaAppearance } from "@/lib/db";
 import { ImageUpload } from "@/components/image-upload";
+import { RichTextEditor } from "@/components/rich-text-editor";
 
 export function MediaAppearanceDetail({ appearance, bookId, bookSlug, ownerId }: { appearance: BookMediaAppearance; bookId: string; bookSlug: string; ownerId: string | null }) {
   const { data: session } = useSession();
@@ -31,7 +32,7 @@ export function MediaAppearanceDetail({ appearance, bookId, bookSlug, ownerId }:
   if (!isOwner) return null;
 
   return (
-    <div className="mt-4">
+    <div className="mb-4">
       <button onClick={() => setShowEdit(!showEdit)} className="px-4 py-2 rounded-lg border border-border text-sm font-semibold text-primary hover:bg-surface transition-colors">
         Edit Appearance
       </button>
@@ -39,7 +40,10 @@ export function MediaAppearanceDetail({ appearance, bookId, bookSlug, ownerId }:
       {showEdit && (
         <div className="bg-white rounded-xl p-5 border border-border space-y-3 mt-3">
           <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Title" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
-          <textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} placeholder="Description" rows={4} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent resize-none" />
+          <div>
+            <label className="block text-xs font-medium text-muted mb-1">Description</label>
+            <RichTextEditor content={editDesc} onChange={setEditDesc} placeholder="Description" />
+          </div>
           <input type="url" value={editUrl} onChange={(e) => setEditUrl(e.target.value)} placeholder="URL" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
           <div>
             <label className="block text-xs font-medium text-muted mb-1">URL Slug</label>
