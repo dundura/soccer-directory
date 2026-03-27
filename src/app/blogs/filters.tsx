@@ -17,9 +17,10 @@ interface BlogPost {
   date: string;
   readTime: string;
   coverImage?: string;
+  type?: "blog" | "post";
 }
 
-export function BlogFilters({ blogs, blogPosts = [] }: { blogs: Blog[]; blogPosts?: BlogPost[] }) {
+export function BlogFilters({ blogs, blogPosts = [], userPosts = [] }: { blogs: Blog[]; blogPosts?: BlogPost[]; userPosts?: BlogPost[] }) {
   const searchParams = useSearchParams();
   const [state, setState] = useState(searchParams.get("state") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
@@ -269,6 +270,50 @@ export function BlogFilters({ blogs, blogPosts = [] }: { blogs: Blog[]; blogPost
                             <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">{post.category}</span>
                             <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{post.date}</span>
                             <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{post.readTime}</span>
+                          </div>
+                          {post.excerpt && (
+                            <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{post.excerpt}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="hidden sm:flex items-center justify-center w-14 md:w-16 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
+                        <span className="text-white text-2xl font-light">&#8250;</span>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ====== USER POSTS ====== */}
+            {userPosts.length > 0 && (
+              <div className="mt-10">
+                <h2 className="font-[family-name:var(--font-display)] text-xl font-bold text-primary uppercase tracking-wide mb-4">Community Posts</h2>
+                <div className="space-y-3">
+                  {userPosts.map((post) => (
+                    <a
+                      key={post.id}
+                      href={`/posts/${post.slug}`}
+                      className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden"
+                    >
+                      <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
+                      <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-4">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-lg overflow-hidden bg-surface flex items-center justify-center">
+                          {post.coverImage ? (
+                            <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
+                          ) : (
+                            <svg className="w-10 h-10 text-muted/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-5 sm:gap-6 flex-1 min-w-0 p-5 sm:p-6">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl md:text-[1.75rem] font-extrabold text-primary uppercase tracking-tight leading-tight group-hover:text-accent transition-colors">
+                            {post.title}
+                          </h3>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                            <span className="px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold">Community</span>
+                            <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{post.date}</span>
                           </div>
                           {post.excerpt && (
                             <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{post.excerpt}</p>

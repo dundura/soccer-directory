@@ -1,4 +1,4 @@
-import { getBlogs, getBlogPosts } from "@/lib/db";
+import { getBlogs, getBlogPosts, getMemberArticles } from "@/lib/db";
 import { BlogFilters } from "./filters";
 import type { Metadata } from "next";
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogsPage() {
-  const [blogs, blogPosts] = await Promise.all([getBlogs(), getBlogPosts()]);
+  const [blogs, blogPosts, memberArticles] = await Promise.all([getBlogs(), getBlogPosts(), getMemberArticles()]);
   const recentPosts = blogPosts.slice(0, 6).map((p) => ({
     id: p.id,
     slug: p.slug,
@@ -20,6 +20,18 @@ export default async function BlogsPage() {
     date: p.date,
     readTime: p.readTime,
     coverImage: p.coverImage,
+    type: "blog" as const,
   }));
-  return <BlogFilters blogs={blogs} blogPosts={recentPosts} />;
+  const userPosts = memberArticles.slice(0, 10).map((p) => ({
+    id: p.id,
+    slug: p.slug || p.id,
+    title: p.title || "",
+    excerpt: p.body?.replace(/<[^>]*>/g, "").slice(0, 150) || "",
+    category: "",
+    date: new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    readTime: "",
+    coverImage: p.ogImageUrl || p.imageUrl || undefined,
+    type: "post" as const,
+  }));
+  return <BlogFilters blogs={blogs} blogPosts={recentPosts} userPosts={userPosts} />;
 }

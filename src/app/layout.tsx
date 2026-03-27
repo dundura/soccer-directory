@@ -151,7 +151,7 @@ function Header() {
             <NavDropdown
               label="Media"
               items={[
-                { label: "Blog", href: "/blog" },
+                { label: "Our Blog", href: "/blog" },
                 { label: "Podcasts", href: "/podcasts" },
                 { label: "YouTube Channels", href: "/youtube-channels" },
                 { label: "Soccer Blogs", href: "/blogs" },
@@ -216,7 +216,7 @@ function Footer() {
           <div>
             <h4 className="font-[family-name:var(--font-display)] text-white font-semibold mb-4 text-sm">Resources</h4>
             <div className="flex flex-col gap-2 text-sm">
-              <a href="/blog" className="hover:text-white transition-colors">Blog</a>
+              <a href="/blog" className="hover:text-white transition-colors">Our Blog</a>
               <a href="https://anytime-soccer.com" target="_blank" className="hover:text-white transition-colors">Anytime Soccer Training</a>
               <a href="https://anytime-soccer.com/podcast" target="_blank" className="hover:text-white transition-colors">The Inside Scoop Podcast</a>
             </div>

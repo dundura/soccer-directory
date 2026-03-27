@@ -77,7 +77,7 @@ const navGroups: NavGroup[] = [
   {
     label: "Media",
     links: [
-      { label: "Blog", href: "/blog" },
+      { label: "Our Blog", href: "/blog" },
       { label: "Podcasts", href: "/podcasts" },
       { label: "YouTube Channels", href: "/youtube-channels" },
       { label: "Soccer Blogs", href: "/blogs" },
