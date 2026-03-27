@@ -192,15 +192,11 @@ export default async function ServiceDetailPage({ params }: Props) {
               </div>
             )}
 
-            {/* Our Posts */}
-            <div className="border-t border-border pt-6 mt-6">
-              <ListingPostsSidebar listingType="soccerbook" listingId={service.id} slug={slug} ownerId={ownerId} />
-            </div>
+            {/* Our Posts — only shows when posts exist */}
+            <ListingPostsSidebar listingType="soccerbook" listingId={service.id} slug={slug} ownerId={ownerId} />
 
-            {/* Special Events */}
-            <div className="border-t border-border pt-6 mt-6">
-              <ListingEventsSection listingType="soccerbook" listingId={service.id} listingSlug={slug} ownerId={ownerId} />
-            </div>
+            {/* Special Events — only shows when events exist */}
+            <ListingEventsSection listingType="soccerbook" listingId={service.id} listingSlug={slug} ownerId={ownerId} />
 
             {/* Media Appearances */}
             {service.mediaAppearances && service.mediaAppearances.length > 0 && (

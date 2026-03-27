@@ -35,7 +35,7 @@ export function ListingEventsSidebar({ listingType, listingId, listingSlug, owne
   const { events, loading } = useListingEvents(listingType, listingId);
 
   if (loading) return null;
-  if (events.length === 0 && !isOwner) return null;
+  if (events.length === 0) return null;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -77,7 +77,7 @@ export function ListingEventsDisplay({ listingType, listingId, listingSlug, owne
   };
 
   if (loading) return null;
-  if (events.length === 0 && !isOwner) return null;
+  if (events.length === 0) return null;
 
   return (
     <section className="bg-white rounded-2xl shadow-sm overflow-hidden">

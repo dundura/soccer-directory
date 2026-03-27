@@ -119,7 +119,7 @@ export function ListingPostsSidebar({
   }
 
   if (loading) return null;
-  if (!canManage && posts.length === 0) return null;
+  if (posts.length === 0) return null;
 
   return (
     <>
