@@ -1,7 +1,8 @@
-import { getListingNameById, getListingSlugById } from "@/lib/db";
+import { getListingNameById, getListingSlugById, getListingOwnerIdById } from "@/lib/db";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ShareButtons } from "@/components/profile-ui";
+import { EventEdit } from "./event-edit";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,7 @@ export default async function EventPage({ params }: Props) {
 
   const listingName = await getListingNameById(event.listingType, event.listingId) || "Listing";
   const listingSlug = await getListingSlugById(event.listingType, event.listingId) || "";
+  const ownerId = await getListingOwnerIdById(event.listingType, event.listingId).catch(() => null);
   const pathPrefix = TYPE_PATHS[event.listingType] || event.listingType;
   const pageUrl = `https://www.soccer-near-me.com/event/${event.slug || event.id}`;
 
@@ -72,6 +74,7 @@ export default async function EventPage({ params }: Props) {
       </div>
 
       <div className="max-w-[900px] mx-auto px-6 pb-6">
+        <EventEdit event={event} ownerId={ownerId} />
         {/* Event Header */}
         <div className="bg-white rounded-2xl border border-border overflow-hidden mb-6">
           {event.previewImage && (
