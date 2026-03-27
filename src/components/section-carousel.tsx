@@ -21,7 +21,7 @@ export function SectionCarousel({
   }
 
   return (
-    <section className="py-16 border-t border-border">
+    <section className="py-8 border-t border-border">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-extrabold uppercase tracking-tight">{title}</h2>

@@ -365,7 +365,7 @@ export default async function HomePage() {
 
         {/* ── More News (Yahoo Sports, The Guardian) ── */}
         {newsLinks.length > 0 && (
-          <section className="py-8 border-t border-border">
+          <section className="pt-2 pb-8">
             <h3 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-extrabold text-primary uppercase tracking-tight mb-4">More News</h3>
             <div className="grid sm:grid-cols-2 gap-3">
               {newsLinks.map((article, idx) => (
