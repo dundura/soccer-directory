@@ -4,6 +4,7 @@ import {
   getFacebookGroups, getInstagramPages, getTikTokPages, getServices, getTrainingApps,
   getBlogs, getSoccerBooks, getPhotoVideoServices, getScrimmages,
 } from "@/lib/db";
+import { getNewsArticles, type NewsArticle } from "@/lib/news";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
 import { RotatingText } from "@/components/rotating-text";
@@ -164,6 +165,8 @@ export default async function HomePage() {
     getFacebookGroups(), getInstagramPages(), getTikTokPages(), getServices(), getTrainingApps(),
     getBlogs(), getSoccerBooks(), getPhotoVideoServices(), getScrimmages(),
   ]);
+
+  const newsArticles = await getNewsArticles();
 
   /* ── Featured carousel: pool all featured from every category ── */
   const featuredPool: RowListing[] = [
@@ -330,6 +333,69 @@ export default async function HomePage() {
                   cta={`View ${listing.typeBadge || "Listing"}`}
                 />
               </div>
+            ))}
+          </SectionCarousel>
+        )}
+
+        {/* ── Soccer News Carousel ────────────────── */}
+        {newsArticles.length > 0 && (
+          <SectionCarousel title="Soccer News" subtitle="Latest headlines from top soccer sources" viewAllHref="#">
+            {newsArticles.map((article, idx) => (
+              <a
+                key={idx}
+                href={article.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 w-[320px] group flex flex-col bg-white rounded-2xl border border-border overflow-hidden hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 h-full"
+              >
+                {/* Image */}
+                {article.imageUrl ? (
+                  <div className="w-full h-44 overflow-hidden bg-surface flex-shrink-0">
+                    <img
+                      src={article.imageUrl}
+                      alt={article.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-44 flex-shrink-0 bg-gradient-to-br from-primary/80 to-accent/60 flex items-center justify-center">
+                    <svg className="w-12 h-12 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+                    </svg>
+                  </div>
+                )}
+
+                {/* Content */}
+                <div className="p-5 flex flex-col flex-1">
+                  {/* Source badge */}
+                  <span className={`self-start px-2.5 py-0.5 rounded-full text-xs font-semibold mb-3 ${
+                    article.source === "ESPN" ? "bg-red-50 text-red-700" :
+                    article.source === "BBC" ? "bg-blue-50 text-blue-700" :
+                    article.source === "The Guardian" ? "bg-indigo-50 text-indigo-700" :
+                    article.source === "MLS" ? "bg-purple-50 text-purple-700" :
+                    "bg-gray-100 text-gray-700"
+                  }`}>
+                    {article.source}
+                  </span>
+
+                  {/* Title */}
+                  <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary leading-tight line-clamp-2 group-hover:text-accent transition-colors mb-2">
+                    {article.title}
+                  </h3>
+
+                  {/* Description */}
+                  {article.description && (
+                    <p className="text-sm text-muted line-clamp-2 leading-relaxed mb-3 flex-1">
+                      {article.description}
+                    </p>
+                  )}
+
+                  {/* Date */}
+                  <p className="text-xs text-muted mt-auto">
+                    {article.publishedAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </p>
+                </div>
+              </a>
             ))}
           </SectionCarousel>
         )}
