@@ -221,13 +221,6 @@ export default async function PostPage({ params }: Props) {
               profileUrl={listingSlug ? profileUrl : undefined}
             />
 
-            {/* Video embed */}
-            {post.videoUrl && (
-              <div className="mt-6 rounded-lg overflow-hidden">
-                <VideoEmbed url={post.videoUrl} />
-              </div>
-            )}
-
             {/* CTA buttons */}
             {post.ctaUrl && post.ctaLabel && (
               <div className="mt-6">
