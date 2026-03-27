@@ -309,6 +309,9 @@ export default async function SpecialEventDetailPage({ params }: Props) {
               </div>
             </div>
 
+            {/* Events */}
+            <ListingEventsSection listingType="specialevent" listingId={event.id} listingSlug={slug} ownerId={ownerId} />
+
             {/* Photos & Video */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
@@ -320,9 +323,6 @@ export default async function SpecialEventDetailPage({ params }: Props) {
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
             </div>
-
-            {/* Events */}
-            <ListingEventsSection listingType="specialevent" listingId={event.id} listingSlug={slug} ownerId={ownerId} />
 
             <FeaturedArticles />
 
