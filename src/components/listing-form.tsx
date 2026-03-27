@@ -1454,7 +1454,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                         <select
                           value={formData[field.name] || ""}
                           onChange={(e) => handleChange(field.name, e.target.value)}
-                          required={field.required}
+                          
                           className={selectClass}
                         >
                           <option value="">Select...</option>
@@ -1468,7 +1468,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                         <select
                           value={formData[field.name] || "United States"}
                           onChange={(e) => handleChange(field.name, e.target.value)}
-                          required={field.required}
+                          
                           className={selectClass}
                         >
                           {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -1480,7 +1480,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                           <select
                             value={formData[field.name] || ""}
                             onChange={(e) => handleChange(field.name, e.target.value)}
-                            required={field.required}
+                            
                             className={selectClass}
                           >
                             <option value="">Select state...</option>
@@ -1501,7 +1501,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                         <select
                           value={formData[field.name] || ""}
                           onChange={(e) => handleChange(field.name, e.target.value)}
-                          required={field.required}
+                          
                           className={selectClass}
                         >
                           <option value="">Select age group...</option>
@@ -1517,7 +1517,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                               const max = (formData[field.name] || "").split("–")[1] || "";
                               handleChange(field.name, max ? `${e.target.value}–${max}` : e.target.value);
                             }}
-                            required={field.required}
+                            
                             className={selectClass}
                           >
                             <option value="">From...</option>
@@ -1529,7 +1529,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                               const min = (formData[field.name] || "").split("–")[0] || "";
                               handleChange(field.name, min ? `${min}–${e.target.value}` : e.target.value);
                             }}
-                            required={field.required}
+                            
                             className={selectClass}
                           >
                             <option value="">To...</option>
@@ -2176,7 +2176,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
               <textarea
                 value={formData[field.name] || ""}
                 onChange={(e) => handleChange(field.name, e.target.value)}
-                required={field.required}
+                
                 rows={4}
                 className={inputClass + " resize-none"}
               />
@@ -2212,7 +2212,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                           type={field.type || "text"}
                           value={formData[field.name] || ""}
                           onChange={(e) => handleChange(field.name, e.target.value)}
-                          required={field.required}
+                          
                           className={inputClass}
                         />
                       )}
