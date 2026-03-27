@@ -130,7 +130,7 @@ export default async function TeamDetailPage({ params }: Props) {
 
             {/* Photo + Team ID + Roster */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <ClickableImage src={team.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={team.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
+              <ClickableImage src={team.previewImage || team.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={team.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
               <div className="text-center py-3.5 px-4">
                 <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-snug">{team.name}</h3>
                 <p className="text-sm text-muted mt-1">{team.city}, {team.state}</p>

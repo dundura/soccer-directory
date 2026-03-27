@@ -99,7 +99,7 @@ export default async function SpecialEventDetailPage({ params }: Props) {
 
             {/* Photo + Name + CTA */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <ClickableImage src={event.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={event.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
+              <ClickableImage src={event.previewImage || event.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={event.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
               <div className="text-center py-3.5 px-4">
                 <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-snug">{event.name}</h3>
                 {event.clubName && <p className="text-sm text-muted">{event.clubName}</p>}

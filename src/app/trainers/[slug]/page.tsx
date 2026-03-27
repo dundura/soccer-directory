@@ -85,7 +85,7 @@ export default async function TrainerDetailPage({ params }: Props) {
     <>
       {/* Photo + Name + Contact */}
       <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <ClickableImage src={trainer.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={trainer.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
+        <ClickableImage src={trainer.previewImage || trainer.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={trainer.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" style={{ objectPosition: `center ${imgPos}%` }} />
         <div className="text-center py-3.5 px-4">
           <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-snug">{trainer.name}</h3>
           <p className="text-sm text-muted mt-1">{trainer.city}, {trainer.state}</p>

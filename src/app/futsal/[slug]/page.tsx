@@ -88,7 +88,7 @@ export default async function FutsalDetailPage({ params }: Props) {
 
             {/* Photo + Team ID + Contact */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <ClickableImage src={team.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={team.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" />
+              <ClickableImage src={team.previewImage || team.teamPhoto || DEFAULT_SIDEBAR_PHOTO} alt={team.name} className="w-full min-h-[150px] max-h-[280px] object-contain bg-surface block p-2" />
               <div className="text-center py-3.5 px-4">
                 <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight leading-snug">{team.name}</h3>
                 <p className="text-sm text-muted mt-1">{team.city}, {team.state}</p>
