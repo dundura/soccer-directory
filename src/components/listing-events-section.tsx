@@ -76,7 +76,8 @@ export function ListingEventsDisplay({ listingType, listingId, listingSlug, owne
     refetch();
   };
 
-  if (loading || events.length === 0) return null;
+  if (loading) return null;
+  if (events.length === 0 && !isOwner) return null;
 
   return (
     <section className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -87,6 +88,11 @@ export function ListingEventsDisplay({ listingType, listingId, listingSlug, owne
           </div>
           <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Special Events</h2>
         </div>
+        {isOwner && (
+          <a href={`/event/new?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(listingSlug)}`} className="text-xs font-semibold text-accent hover:text-accent-hover transition-colors">
+            + Add Special Event
+          </a>
+        )}
       </div>
       <div className="p-5 sm:p-6 pt-4 space-y-3">
         {events.map((evt) => (
