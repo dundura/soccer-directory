@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getListingPosts, createListingPost, deleteListingPost, toggleListingPostHidden, getListingOwner, getListingNameById } from "@/lib/db";
+import { getListingPosts, createListingPost, deleteListingPost, toggleListingPostHidden, getListingOwner, getListingNameById, getListingPostById } from "@/lib/db";
 import { notifyNewPost } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
@@ -98,7 +98,6 @@ export async function DELETE(req: Request) {
     const { id } = await req.json();
     // Admins can delete any post; owners can only delete their own
     if (isAdmin(session)) {
-      // Admin bypass: delete regardless of user_id
       const { deleteListingPostAdmin } = await import("@/lib/db");
       const deleted = await deleteListingPostAdmin(id);
       if (!deleted) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -120,8 +119,21 @@ export async function PATCH(req: Request) {
 
   try {
     const { id, action, body, slug, imageUrl, videoUrl, ctaUrl, ctaLabel, ctaUrl2, ctaLabel2, ctaUrl3, ctaLabel3, ogImageUrl, title } = await req.json();
+
+    // Check if user is listing owner (allows editing any post on their listing)
+    let isListingOwner = false;
+    if (id && !isAdmin(session)) {
+      const post = await getListingPostById(id);
+      if (post) {
+        const { getListingOwnerIdById } = await import("@/lib/db");
+        const ownerUserId = await getListingOwnerIdById(post.listingType, post.listingId);
+        isListingOwner = ownerUserId === session.user.id;
+      }
+    }
+    const canUseAdmin = isAdmin(session) || isListingOwner;
+
     if (action === "toggle_hidden") {
-      if (isAdmin(session)) {
+      if (canUseAdmin) {
         const { toggleListingPostHiddenAdmin } = await import("@/lib/db");
         const toggled = await toggleListingPostHiddenAdmin(id);
         if (!toggled) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -132,7 +144,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ success: true });
     }
     if (action === "edit_body" && typeof body === "string") {
-      if (isAdmin(session)) {
+      if (canUseAdmin) {
         const { updateListingPostBodyAdmin } = await import("@/lib/db");
         const ok = await updateListingPostBodyAdmin(id, body, title || undefined);
         if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -144,7 +156,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ success: true });
     }
     if (action === "edit_slug" && typeof slug === "string") {
-      if (isAdmin(session)) {
+      if (canUseAdmin) {
         const { updateListingPostSlugAdmin } = await import("@/lib/db");
         const ok = await updateListingPostSlugAdmin(id, slug);
         if (!ok) return NextResponse.json({ error: "Slug taken or invalid" }, { status: 400 });
@@ -157,7 +169,7 @@ export async function PATCH(req: Request) {
     }
     if (action === "edit_media") {
       const { updateListingPostMedia, updateListingPostMediaAdmin } = await import("@/lib/db");
-      const ok = isAdmin(session)
+      const ok = canUseAdmin
         ? await updateListingPostMediaAdmin(id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null, ogImageUrl ?? null, ctaUrl2 ?? null, ctaLabel2 ?? null, ctaUrl3 ?? null, ctaLabel3 ?? null)
         : await updateListingPostMedia(id, session.user.id, imageUrl ?? null, videoUrl ?? null, ctaUrl ?? null, ctaLabel ?? null, ogImageUrl ?? null, ctaUrl2 ?? null, ctaLabel2 ?? null, ctaUrl3 ?? null, ctaLabel3 ?? null);
       if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 });
