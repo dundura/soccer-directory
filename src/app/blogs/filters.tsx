@@ -8,7 +8,18 @@ import { ListingCard, EmptyState, AnytimeInlineCTA } from "@/components/ui";
 const CATEGORIES = ["Youth Soccer", "Coaching", "Player Development", "College Recruiting", "Professional Soccer", "Soccer Culture", "Training & Fitness", "Soccer Parenting", "Other"];
 const PER_PAGE = 10;
 
-export function BlogFilters({ blogs }: { blogs: Blog[] }) {
+interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  date: string;
+  readTime: string;
+  coverImage?: string;
+}
+
+export function BlogFilters({ blogs, blogPosts = [] }: { blogs: Blog[]; blogPosts?: BlogPost[] }) {
   const searchParams = useSearchParams();
   const [state, setState] = useState(searchParams.get("state") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
@@ -85,6 +96,37 @@ export function BlogFilters({ blogs }: { blogs: Blog[] }) {
           </div>
         </div>
       </div>
+
+      {/* ====== BLOG POSTS ====== */}
+      {blogPosts.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-extrabold text-primary uppercase tracking-tight">Blog Posts</h2>
+            <a href="/blog" className="text-sm font-semibold text-accent hover:text-accent-hover transition-colors">View All &rarr;</a>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {blogPosts.map((post) => (
+              <a key={post.id} href={`/blog/${post.slug}`} className="group flex flex-col bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden">
+                {post.coverImage && (
+                  <div className="h-40 overflow-hidden bg-surface">
+                    <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                )}
+                <div className="p-4 flex flex-col flex-1">
+                  <span className="self-start px-2.5 py-0.5 rounded-full text-xs font-semibold mb-2 bg-blue-50 text-blue-700">{post.category}</span>
+                  <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-primary leading-tight group-hover:text-accent transition-colors mb-2 line-clamp-2">{post.title}</h3>
+                  <p className="text-sm text-muted line-clamp-2 leading-relaxed mb-3 flex-1">{post.excerpt}</p>
+                  <div className="flex items-center gap-2 text-xs text-muted mt-auto">
+                    <span>{post.date}</span>
+                    <span>&middot;</span>
+                    <span>{post.readTime}</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ====== CONTENT ====== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
