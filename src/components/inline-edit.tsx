@@ -95,11 +95,19 @@ export function InlineEditField({
     );
   }
 
+  const hasHtml = /<[a-z][\s\S]*>/i.test(current);
+
   return (
     <div className="group/inline relative">
-      <Tag className={className}>
-        {current || <span className="text-muted italic">Not set</span>}
-      </Tag>
+      {current ? (
+        hasHtml ? (
+          <Tag className={className} dangerouslySetInnerHTML={{ __html: current }} />
+        ) : (
+          <Tag className={className}>{current}</Tag>
+        )
+      ) : (
+        <Tag className={className}><span className="text-muted italic">Not set</span></Tag>
+      )}
       {canEdit && (
         <button
           onClick={() => { setDraft(current); setEditing(true); }}
