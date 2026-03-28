@@ -122,7 +122,7 @@ export default async function GuestDetailPage({ params }: Props) {
             {opp.description && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About This Opportunity</h2>
-                <InlineEditField ownerId={ownerId} listingType="guest" listingId={opp.id} field="description" value={opp.description} tag="p" className="text-muted leading-relaxed whitespace-pre-line" multiline />
+                <InlineEditField ownerId={ownerId} listingType="guest" listingId={opp.id} field="description" value={opp.description} tag="div" className="text-muted leading-relaxed whitespace-pre-line [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
               </section>
             )}
 

@@ -100,7 +100,7 @@ export default async function ShopDetailPage({ params }: Props) {
             {/* Description */}
             <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
               <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Description</h2>
-              <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="description" value={item.description} tag="p" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap" multiline />
+              <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="description" value={item.description} tag="div" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
             </div>
 
             {/* About the Author */}

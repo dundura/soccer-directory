@@ -170,7 +170,7 @@ export default async function PodcastPage({ params }: Props) {
             <div className="bg-white rounded-2xl border border-border p-6">
               <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-3">About the Show</h2>
               {podcast.description && (
-                <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="description" value={podcast.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="description" value={podcast.description} tag="div" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
               )}
               <div className="flex flex-wrap gap-3 mt-4">
                 {podcast.website && (

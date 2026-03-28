@@ -106,7 +106,7 @@ export default async function EbookDetailPage({ params }: Props) {
           <div className="flex-1 min-w-0">
             <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
               <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Description</h2>
-              <InlineEditField ownerId={ownerId} listingType="ebook" listingId={item.id} field="description" value={item.description} tag="p" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap" multiline />
+              <InlineEditField ownerId={ownerId} listingType="ebook" listingId={item.id} field="description" value={item.description} tag="div" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
             </div>
 
             {item.aboutAuthor && (

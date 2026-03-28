@@ -8,7 +8,7 @@ type Props = {
   ownerId: string;
   field: string;
   value: string;
-  as?: "h1" | "p" | "span";
+  as?: "h1" | "p" | "span" | "div";
   className?: string;
   multiline?: boolean;
   placeholder?: string;
@@ -32,8 +32,11 @@ export function InlineEdit({ slug, ownerId, field, value: initialValue, as: Tag 
     }
   }, [editing]);
 
+  const hasHtml = /<[a-z][\s\S]*>/i.test(value);
+
   if (!isOwner) {
-    return value ? <Tag className={className}>{value}</Tag> : null;
+    if (!value) return null;
+    return hasHtml ? <Tag className={className} dangerouslySetInnerHTML={{ __html: value }} /> : <Tag className={className}>{value}</Tag>;
   }
 
   async function save(newValue: string) {
@@ -99,7 +102,7 @@ export function InlineEdit({ slug, ownerId, field, value: initialValue, as: Tag 
       onClick={() => setEditing(true)}
       title="Click to edit"
     >
-      {value || <span className="text-muted/50 italic">{placeholder || "Click to add..."}</span>}
+      {value ? (hasHtml ? <span dangerouslySetInnerHTML={{ __html: value }} /> : value) : <span className="text-muted/50 italic">{placeholder || "Click to add..."}</span>}
       <svg className="inline-block w-3.5 h-3.5 ml-1.5 text-accent/40 group-hover:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
       </svg>

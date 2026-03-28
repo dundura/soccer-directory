@@ -161,8 +161,8 @@ export default async function FundraiserPage({ params }: Props) {
               ownerId={fundraiser.userId}
               field="description"
               value={fundraiser.description || ""}
-              as="p"
-              className="text-[15px] leading-[1.7] text-primary/80 whitespace-pre-line"
+              as="div"
+              className="text-[15px] leading-[1.7] text-primary/80 whitespace-pre-line [&>p]:mb-2 [&>p:last-child]:mb-0"
               multiline
               placeholder="Add a description..."
             />

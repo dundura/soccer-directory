@@ -224,7 +224,7 @@ export default async function CampDetailPage({ params }: Props) {
                   </p>
                   {camp.description && (
                     <div className="mb-0">
-                      <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="description" value={camp.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                      <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="description" value={camp.description} tag="div" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
                     </div>
                   )}
                   <div className="flex gap-2.5 mt-[18px] flex-wrap">

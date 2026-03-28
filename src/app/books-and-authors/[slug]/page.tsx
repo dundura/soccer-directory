@@ -114,7 +114,7 @@ export default async function ServiceDetailPage({ params }: Props) {
 
             {service.description && (
               <div className="mb-6">
-                <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="description" value={service.description} tag="p" className="text-gray-600 leading-relaxed whitespace-pre-line" multiline />
+                <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="description" value={service.description} tag="div" className="text-gray-600 leading-relaxed whitespace-pre-line [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
               </div>
             )}
 

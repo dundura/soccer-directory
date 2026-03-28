@@ -235,7 +235,7 @@ export default async function TryoutDetailPage({ params }: Props) {
                   </p>
                   {tryout.description && (
                     <div className="mb-0">
-                      <InlineEditField ownerId={ownerId} listingType="tryout" listingId={tryout.id} field="description" value={tryout.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                      <InlineEditField ownerId={ownerId} listingType="tryout" listingId={tryout.id} field="description" value={tryout.description} tag="div" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
                     </div>
                   )}
                   <div className="flex gap-2.5 mt-[18px] flex-wrap">

@@ -163,7 +163,7 @@ export default async function ScrimmageDetailPage({ params }: Props) {
                   {s.city}, {s.state}
                 </p>
                 {s.description && (
-                  <InlineEditField ownerId={ownerId} listingType="scrimmage" listingId={s.id} field="description" value={s.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                  <InlineEditField ownerId={ownerId} listingType="scrimmage" listingId={s.id} field="description" value={s.description} tag="div" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
                 )}
                 <div className="flex gap-2.5 mt-[18px] flex-wrap">
                   <a

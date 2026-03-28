@@ -212,7 +212,7 @@ export default async function RecruiterDetailPage({ params }: Props) {
                   </p>
                   {recruiter.description && (
                     <div className="mb-0">
-                      <InlineEditField ownerId={ownerId} listingType="recruiter" listingId={recruiter.id} field="description" value={recruiter.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                      <InlineEditField ownerId={ownerId} listingType="recruiter" listingId={recruiter.id} field="description" value={recruiter.description} tag="div" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
                     </div>
                   )}
                   <div className="flex gap-2.5 mt-[18px] flex-wrap">

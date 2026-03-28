@@ -165,7 +165,7 @@ export default async function PlayerDetailPage({ params }: Props) {
                     <EditSectionLink ownerId={ownerId} listingType="player" listingId={player.id} />
                   </div>
                   {player.description && (
-                    <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="description" value={player.description} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line" multiline />
+                    <InlineEditField ownerId={ownerId} listingType="player" listingId={player.id} field="description" value={player.description} tag="div" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
                   )}
                   {player.lookingFor && (
                     <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-line mt-3">{player.lookingFor}</p>
