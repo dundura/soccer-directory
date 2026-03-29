@@ -71,12 +71,13 @@ const TYPE_LABELS: Record<string, string> = {
 type Listing = { id: string; slug: string; name: string; status: string; type: string };
 
 function AuthForm() {
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -111,20 +112,51 @@ function AuthForm() {
     setLoading(false);
   }
 
+  async function handleForgot(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error);
+      }
+      setResetSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    }
+    setLoading(false);
+  }
+
   return (
     <div className="max-w-lg mx-auto">
       <div className="bg-white rounded-2xl border border-border p-8 md:p-10 text-center mb-8">
-        <div className="text-5xl mb-4">{mode === "login" ? "👋" : "🚀"}</div>
+        <div className="text-5xl mb-4">{mode === "forgot" ? "📧" : mode === "login" ? "👋" : "🚀"}</div>
         <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold mb-3">
-          {mode === "login" ? "Sign in to your account" : "Create your free account"}
+          {mode === "forgot" ? "Reset your password" : mode === "login" ? "Sign in to your account" : "Create your free account"}
         </h2>
         <p className="text-muted mb-6">
-          {mode === "login"
+          {mode === "forgot"
+            ? "Enter your email and we'll send you a reset link"
+            : mode === "login"
             ? "Manage your listings on Soccer Near Me"
             : "Start listing your club, team, camp, or training services"}
         </p>
 
-        <form onSubmit={mode === "login" ? handleLogin : handleSignup} className="space-y-3 mb-6 text-left">
+        {mode === "forgot" && resetSent ? (
+          <div className="mb-6">
+            <p className="text-sm text-green-600 font-medium mb-4">If an account exists with that email, a reset link has been sent. Check your inbox.</p>
+            <button onClick={() => { setMode("login"); setResetSent(false); setError(""); }} className="text-accent-hover font-semibold hover:underline text-sm">
+              Back to Sign In
+            </button>
+          </div>
+        ) : (
+        <form onSubmit={mode === "forgot" ? handleForgot : mode === "login" ? handleLogin : handleSignup} className="space-y-3 mb-6 text-left">
           {mode === "signup" && (
             <input
               type="text"
@@ -143,6 +175,7 @@ function AuthForm() {
             required
             className="w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
           />
+          {mode !== "forgot" && (
           <input
             type="password"
             placeholder={mode === "signup" ? "Password (min. 6 characters)" : "Password"}
@@ -152,6 +185,7 @@ function AuthForm() {
             minLength={mode === "signup" ? 6 : undefined}
             className="w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
           />
+          )}
 
           {error && <p className="text-accent text-sm text-center">{error}</p>}
 
@@ -160,26 +194,38 @@ function AuthForm() {
             disabled={loading}
             className="w-full py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-light transition-colors disabled:opacity-50"
           >
-            {loading ? "Please wait..." : mode === "login" ? "Sign In" : "Create Account"}
+            {loading ? "Please wait..." : mode === "forgot" ? "Send Reset Link" : mode === "login" ? "Sign In" : "Create Account"}
           </button>
         </form>
+        )}
 
         <p className="text-sm text-muted">
           {mode === "login" ? (
             <>
+              <button onClick={() => { setMode("forgot"); setError(""); }} className="text-accent-hover font-semibold hover:underline">
+                Forgot password?
+              </button>
+              <span className="mx-2">&middot;</span>
               Don&apos;t have an account?{" "}
               <button onClick={() => { setMode("signup"); setError(""); }} className="text-accent-hover font-semibold hover:underline">
                 Sign up free
               </button>
             </>
-          ) : (
+          ) : mode === "forgot" && !resetSent ? (
+            <>
+              Remember your password?{" "}
+              <button onClick={() => { setMode("login"); setError(""); }} className="text-accent-hover font-semibold hover:underline">
+                Sign in
+              </button>
+            </>
+          ) : mode === "signup" ? (
             <>
               Already have an account?{" "}
               <button onClick={() => { setMode("login"); setError(""); }} className="text-accent-hover font-semibold hover:underline">
                 Sign in
               </button>
             </>
-          )}
+          ) : null}
         </p>
       </div>
 

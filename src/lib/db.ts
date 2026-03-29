@@ -877,6 +877,25 @@ export async function updateUserProfile(userId: string, name: string, email: str
   await sql`UPDATE users SET name = ${name}, email = ${email.toLowerCase()} WHERE id = ${userId}`;
 }
 
+export async function createPasswordResetToken(email: string, token: string, expiresAt: Date): Promise<void> {
+  await sql`DELETE FROM password_resets WHERE email = ${email.toLowerCase()}`;
+  await sql`INSERT INTO password_resets (email, token, expires_at) VALUES (${email.toLowerCase()}, ${token}, ${expiresAt.toISOString()})`;
+}
+
+export async function getPasswordResetToken(token: string): Promise<{ email: string; expiresAt: string } | null> {
+  const rows = await sql`SELECT email, expires_at FROM password_resets WHERE token = ${token} LIMIT 1`;
+  if (!rows[0]) return null;
+  return { email: rows[0].email as string, expiresAt: rows[0].expires_at as string };
+}
+
+export async function deletePasswordResetToken(token: string): Promise<void> {
+  await sql`DELETE FROM password_resets WHERE token = ${token}`;
+}
+
+export async function updateUserPassword(email: string, passwordHash: string): Promise<void> {
+  await sql`UPDATE users SET password_hash = ${passwordHash} WHERE LOWER(email) = ${email.toLowerCase()}`;
+}
+
 export async function deleteUserAccount(userId: string): Promise<void> {
   await sql`DELETE FROM teams WHERE user_id = ${userId}`;
   await sql`DELETE FROM clubs WHERE user_id = ${userId}`;
