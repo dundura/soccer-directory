@@ -861,18 +861,18 @@ export interface DbUser {
 }
 
 export async function getUserByEmail(email: string): Promise<DbUser | null> {
-  const rows = await sql`SELECT * FROM users WHERE email = ${email} LIMIT 1`;
+  const rows = await sql`SELECT * FROM users WHERE LOWER(email) = ${email.toLowerCase()} LIMIT 1`;
   if (!rows[0]) return null;
   const r = rows[0];
   return { id: r.id as string, email: r.email as string, name: r.name as string, passwordHash: r.password_hash as string, role: r.role as string };
 }
 
 export async function createUser(id: string, email: string, name: string, passwordHash: string): Promise<void> {
-  await sql`INSERT INTO users (id, email, name, password_hash, role) VALUES (${id}, ${email}, ${name}, ${passwordHash}, 'user')`;
+  await sql`INSERT INTO users (id, email, name, password_hash, role) VALUES (${id}, ${email.toLowerCase()}, ${name}, ${passwordHash}, 'user')`;
 }
 
 export async function updateUserProfile(userId: string, name: string, email: string): Promise<void> {
-  await sql`UPDATE users SET name = ${name}, email = ${email} WHERE id = ${userId}`;
+  await sql`UPDATE users SET name = ${name}, email = ${email.toLowerCase()} WHERE id = ${userId}`;
 }
 
 export async function deleteUserAccount(userId: string): Promise<void> {
