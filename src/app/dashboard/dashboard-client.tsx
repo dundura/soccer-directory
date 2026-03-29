@@ -370,7 +370,7 @@ function DashboardContent() {
       if (res.ok) {
         const data = await res.json();
         setEditData(data);
-        setEditingListing(listing);
+        setEditingListing({ ...listing, slug: data.slug || listing.slug, name: data.name || listing.name });
       }
     } catch { /* ignore */ }
     setEditLoading(false);
