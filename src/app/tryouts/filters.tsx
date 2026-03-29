@@ -26,6 +26,7 @@ export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tr
     if (tab === "past" && !t.isPast) return false;
     if (state && t.state !== state) return false;
     if (gender && t.gender !== gender) return false;
+    if (search && !t.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 

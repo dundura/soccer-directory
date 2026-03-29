@@ -26,6 +26,7 @@ export function SpecialEventFilters({ events }: { events: SpecialEvent[] }) {
     if (tab === "past" && !t.isPast) return false;
     if (state && t.state !== state) return false;
     if (gender && t.gender !== gender) return false;
+    if (search && !t.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
@@ -154,7 +155,7 @@ export function SpecialEventFilters({ events }: { events: SpecialEvent[] }) {
                       ]}
                       featured
                       imagePosition={event.imagePosition}
-                                            description={event.description ? event.description.split(" ").slice(0, 25).join(" ") + (event.description.split(" ").length > 25 ? "..." : "") : undefined}
+                                            description={event.description ? event.description.replace(/<[^>]*>/g, '').split(" ").slice(0, 25).join(" ") + (event.description.replace(/<[^>]*>/g, '').split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Event"
                     />
                   ))}
@@ -215,7 +216,7 @@ export function SpecialEventFilters({ events }: { events: SpecialEvent[] }) {
                           <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{event.ageGroup}</span>
                         </div>
                         {event.description && (
-                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{event.description.split(" ").slice(0, 30).join(" ")}{event.description.split(" ").length > 30 ? "..." : ""}</p>
+                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{event.description.replace(/<[^>]*>/g, '').split(" ").slice(0, 30).join(" ")}{event.description.replace(/<[^>]*>/g, '').split(" ").length > 30 ? "..." : ""}</p>
                         )}
                       </div>
                     </a>

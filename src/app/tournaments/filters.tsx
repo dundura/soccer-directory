@@ -23,6 +23,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
     if (state && t.state !== state) return false;
     if (gender && t.gender !== gender) return false;
     if (level && t.level !== level) return false;
+    if (search && !t.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 

@@ -21,6 +21,7 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
   const filtered = trainers.filter((t) => {
     if (specialty && t.specialty !== specialty) return false;
     if (state && t.state !== state) return false;
+    if (search && !t.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
