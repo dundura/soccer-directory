@@ -26,7 +26,8 @@ export async function updateSetting(key: string, value: string) {
 function mapProfileFields(r: Record<string, unknown>): ProfileFields {
   let photos: string[] | undefined;
   if (r.photos) {
-    try { photos = JSON.parse(r.photos as string); } catch { photos = undefined; }
+    if (Array.isArray(r.photos)) { photos = r.photos as string[]; }
+    else { try { photos = JSON.parse(r.photos as string); } catch { photos = undefined; } }
   }
   let schedule: string[] | undefined;
   if (r.practice_schedule) {
@@ -714,7 +715,8 @@ export async function getMarketplaceItemBySlug(slug: string): Promise<Marketplac
 function mapMarketplaceItem(r: Record<string, unknown>): MarketplaceItem {
   let photos: string[] | undefined;
   if (r.photos) {
-    try { photos = JSON.parse(r.photos as string); } catch { photos = undefined; }
+    if (Array.isArray(r.photos)) { photos = r.photos as string[]; }
+    else { try { photos = JSON.parse(r.photos as string); } catch { photos = undefined; } }
   }
   return {
     id: r.id as string, slug: r.slug as string, name: r.name as string,
