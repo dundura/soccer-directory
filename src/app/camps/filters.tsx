@@ -21,6 +21,7 @@ export function CampFilters({ camps }: { camps: Camp[] }) {
   const filtered = camps.filter((c) => {
     if (campType && c.campType !== campType) return false;
     if (state && c.state !== state) return false;
+    if (search && !c.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
