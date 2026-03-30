@@ -45,12 +45,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!podcast) return {};
   const episode = await getPodcastEpisodeBySlug(episodeSlug);
   if (!episode) return {};
+  const plainDesc = episode.description ? episode.description.replace(/<[^>]*>/g, '').slice(0, 200) : `${episode.title || "Episode"} from ${podcast.name}`;
   return {
     title: `${episode.title || "Episode"} | ${podcast.name} | Soccer Near Me`,
-    description: episode.description || `${episode.title || "Episode"} from ${podcast.name}`,
+    description: plainDesc,
     openGraph: {
       title: `${episode.title || "Episode"} | ${podcast.name}`,
-      description: episode.description || `${episode.title || "Episode"} from ${podcast.name}`,
+      description: plainDesc,
       images: episode.previewImage ? [episode.previewImage] : getVideoThumbnail(episode.embedUrl) ? [getVideoThumbnail(episode.embedUrl)!] : undefined,
     },
   };
