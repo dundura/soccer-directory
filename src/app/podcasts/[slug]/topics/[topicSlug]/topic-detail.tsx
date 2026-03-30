@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import type { PodcastTopic } from "@/lib/db";
 import { ImageUpload } from "@/components/image-upload";
+import { RichTextEditor } from "@/components/rich-text-editor";
 
 function EmbedPlayer({ embedUrl, embedHtml }: { embedUrl?: string; embedHtml?: string }) {
   if (embedHtml) {
@@ -156,7 +157,7 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
         <div className="bg-white rounded-xl p-5 border border-border space-y-3">
           <p className="text-sm font-bold text-primary">Add Episode to {topic.title}</p>
           <input type="text" value={epTitle} onChange={(e) => setEpTitle(e.target.value)} placeholder="Episode title (optional)" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
-          <textarea value={epDesc} onChange={(e) => setEpDesc(e.target.value)} placeholder="Description (optional)" rows={2} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent resize-none" />
+          <RichTextEditor content={epDesc} onChange={setEpDesc} placeholder="Description (optional)" minHeight="120px" />
           <div className="flex gap-2 mb-2">
             <button onClick={() => setEmbedMode("url")} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${embedMode === "url" ? "bg-primary text-white" : "bg-white border border-border text-muted"}`}>Paste URL</button>
             <button onClick={() => setEmbedMode("html")} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${embedMode === "html" ? "bg-primary text-white" : "bg-white border border-border text-muted"}`}>Paste Embed Code</button>
@@ -182,7 +183,7 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
           {editingId === ep.id ? (
             <div className="space-y-3">
               <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Episode title" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
-              <textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} placeholder="Description" rows={3} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent resize-none" />
+              <RichTextEditor content={editDesc} onChange={setEditDesc} placeholder="Episode description..." minHeight="150px" />
               <div>
                 <label className="block text-xs font-medium text-muted mb-1">URL Slug</label>
                 <input type="text" value={editSlug} onChange={(e) => setEditSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-"))} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm font-mono focus:outline-none focus:border-accent" />
@@ -210,7 +211,11 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   {ep.title && <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="hover:text-accent transition-colors"><h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight hover:text-accent">{ep.title}</h3></a>}
-                  {ep.description && <p className="text-sm text-primary/70 mt-1 leading-relaxed">{ep.description}</p>}
+                  {ep.description && (
+                    ep.description.includes("<") ?
+                      <div className="text-sm text-primary/70 mt-1 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: ep.description }} /> :
+                      <p className="text-sm text-primary/70 mt-1 leading-relaxed">{ep.description}</p>
+                  )}
                   <div className="flex items-center gap-3 mt-2">
                     <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="text-xs font-semibold text-accent hover:underline">Share Episode →</a>
                     {ep.slug && <span className="text-[10px] text-muted font-mono">/{ep.slug}</span>}
