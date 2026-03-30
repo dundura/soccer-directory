@@ -145,7 +145,7 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
   return (
     <div className="relative">
       {/* Compact toolbar */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 bg-white rounded-xl border border-border p-2.5">
         <a href={editHref} className="px-3 py-1.5 rounded-lg bg-accent text-white text-xs font-bold hover:bg-accent-hover transition-colors">
           Edit Listing
         </a>
