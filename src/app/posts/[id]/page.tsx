@@ -187,7 +187,7 @@ export default async function PostPage({ params }: Props) {
               {listingName && listingSlug && (
                 <>
                   <span>&middot;</span>
-                  <a href={profileUrl} className="font-semibold text-accent hover:text-accent-hover transition-colors">{listingName}</a>
+                  <a href={profileUrl} className="font-semibold text-accent hover:text-accent-hover transition-colors">&larr; {listingName}</a>
                 </>
               )}
             </div>
