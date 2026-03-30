@@ -157,7 +157,7 @@ export function ServiceFilters({ services }: { services: Service[] }) {
             <div className="space-y-3">
               {visibleNonFeatured.map((service) => {
                 const img = service.logo || service.teamPhoto || service.imageUrl;
-                const desc = service.description ? service.description.split(/\s+/).slice(0, 30).join(" ") : "";
+                const desc = service.description ? service.description.replace(/<[^>]*>/g, '').split(/\s+/).slice(0, 30).join(" ") : "";
                 return (
                   <a
                     key={service.id}
