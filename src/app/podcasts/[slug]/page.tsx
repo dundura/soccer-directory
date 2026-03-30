@@ -210,13 +210,11 @@ export default async function PodcastPage({ params }: Props) {
           {(podcast.hostBio || ownerId) && (
             <div className="bg-white rounded-2xl border border-border p-6">
               <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="hostHeading" value={podcast.hostHeading || "Meet the Host"} tag="h2" className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-4" />
-              <div className="flex flex-col sm:flex-row gap-5 items-start">
+              <div>
                 {podcast.hostImage && (
-                  <img src={podcast.hostImage} alt={podcast.hostHeading || "Meet the Host"} className="w-32 h-32 rounded-xl object-cover shrink-0" />
+                  <img src={podcast.hostImage} alt={podcast.hostHeading || "Meet the Host"} className="w-40 h-40 rounded-xl object-cover float-left mr-5 mb-3" />
                 )}
-                <div className="min-w-0 flex-1">
-                  <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="hostBio" value={podcast.hostBio || ""} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line break-words" multiline />
-                </div>
+                <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="hostBio" value={podcast.hostBio || ""} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line break-words" multiline />
               </div>
             </div>
           )}

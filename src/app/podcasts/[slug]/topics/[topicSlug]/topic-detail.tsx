@@ -213,8 +213,8 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
                   {ep.title && <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="hover:text-accent transition-colors"><h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight hover:text-accent">{ep.title}</h3></a>}
                   {ep.description && (
                     ep.description.includes("<") ?
-                      <div className="text-sm text-primary/70 mt-1 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: ep.description }} /> :
-                      <p className="text-sm text-primary/70 mt-1 leading-relaxed">{ep.description}</p>
+                      <div className="text-sm text-primary/70 mt-1 leading-relaxed prose prose-sm max-w-none [&_a]:text-[#DC373E] [&_a]:underline [&_a]:font-semibold" dangerouslySetInnerHTML={{ __html: ep.description }} /> :
+                      <p className="text-sm text-primary/70 mt-1 leading-relaxed whitespace-pre-line">{ep.description}</p>
                   )}
                   <div className="flex items-center gap-3 mt-2">
                     <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="text-xs font-semibold text-accent hover:underline">Share Episode →</a>
