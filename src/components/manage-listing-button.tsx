@@ -17,6 +17,7 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
   const [inviteMsg, setInviteMsg] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (listingType && listingId && session?.user?.id) {
@@ -140,8 +141,6 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
     } catch { /* */ }
     setRestoring(false);
   }
-
-  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="relative">
