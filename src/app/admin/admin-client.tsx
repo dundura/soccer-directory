@@ -32,6 +32,12 @@ const TYPE_LABELS: Record<string, string> = {
   giveaway: "Free Giveaway",
   blog: "Blog",
   youtube: "YouTube Channel",
+  soccerbook: "Book & Author",
+  photovideo: "Photo/Video Service",
+  scrimmage: "Scrimmage",
+  fundraiser: "Fundraiser",
+  instagrampage: "Instagram Page",
+  tiktokpage: "TikTok Page",
 };
 
 const TYPE_PATHS: Record<string, string> = {
@@ -44,6 +50,12 @@ const TYPE_PATHS: Record<string, string> = {
   trainingapp: "training-apps", ebook: "ebooks", giveaway: "giveaways",
   blog: "blogs",
   youtube: "youtube-channels",
+  soccerbook: "books-and-authors",
+  photovideo: "photo-video-services",
+  scrimmage: "scrimmages",
+  fundraiser: "fundraiser",
+  instagrampage: "instagram-pages",
+  tiktokpage: "tiktok-pages",
 };
 
 export default function AdminClient() {

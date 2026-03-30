@@ -155,6 +155,12 @@ function typeToPath(type: string): string {
     trainingapp: "training-apps",
     blog: "blogs",
     youtube: "youtube-channels",
+    soccerbook: "books-and-authors",
+    photovideo: "photo-video-services",
+    scrimmage: "scrimmages",
+    fundraiser: "fundraisers",
+    ebook: "ebooks",
+    giveaway: "giveaways",
   };
   return paths[type] || type;
 }
