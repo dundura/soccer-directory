@@ -92,7 +92,9 @@ export default async function EpisodePage({ params }: Props) {
               Topic: {episode.topicTitle}
             </p>
             {episode.description && (
-              <p className="text-primary leading-relaxed whitespace-pre-line mb-6">{episode.description}</p>
+              episode.description.includes("<") ?
+                <div className="text-primary leading-relaxed mb-6 prose prose-sm max-w-none [&_a]:text-[#DC373E] [&_a]:underline [&_a]:font-semibold" dangerouslySetInnerHTML={{ __html: episode.description }} /> :
+                <p className="text-primary leading-relaxed whitespace-pre-line mb-6">{episode.description}</p>
             )}
 
             <div className="mb-6">
