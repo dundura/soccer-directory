@@ -1297,7 +1297,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
   const [openSections, setOpenSections] = useState<Set<number>>(new Set());
 
   const baseFields = FIELDS[type];
-  const fields = type === "player"
+  const fields = (type === "player" || type === "soccerbook")
     ? baseFields
     : [baseFields[0], { name: "tagline", label: "Tagline (short subtitle shown on listing page)" } as FieldDef, ...baseFields.slice(1)];
 
