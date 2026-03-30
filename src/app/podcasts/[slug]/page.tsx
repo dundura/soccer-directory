@@ -209,14 +209,11 @@ export default async function PodcastPage({ params }: Props) {
           {/* Meet the Host */}
           {(podcast.hostBio || ownerId) && (
             <div className="bg-white rounded-2xl border border-border p-6">
-              <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-4">{podcast.hostHeading || "Meet the Host"}</h2>
-              <div className="flex flex-col sm:flex-row gap-5">
-                <div className="shrink-0">
-                  {podcast.hostImage ? (
-                    <img src={podcast.hostImage} alt={podcast.hostHeading || "Meet the Host"} className="w-32 h-32 rounded-xl object-cover" />
-                  ) : null}
-                  <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="hostImage" value={podcast.hostImage || ""} tag="span" className="text-xs text-muted" />
-                </div>
+              <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="hostHeading" value={podcast.hostHeading || "Meet the Host"} tag="h2" className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-4" />
+              <div className="flex flex-col sm:flex-row gap-5 items-start">
+                {podcast.hostImage && (
+                  <img src={podcast.hostImage} alt={podcast.hostHeading || "Meet the Host"} className="w-32 h-32 rounded-xl object-cover shrink-0" />
+                )}
                 <div className="min-w-0 flex-1">
                   <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="hostBio" value={podcast.hostBio || ""} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line break-words" multiline />
                 </div>
