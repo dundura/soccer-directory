@@ -738,6 +738,7 @@ export interface SoccerBook extends ProfileFields {
   country?: string;
   price?: string;
   description?: string;
+  authorImage?: string;
   website?: string;
   email?: string;
   mediaAppearances?: MediaAppearance[];
