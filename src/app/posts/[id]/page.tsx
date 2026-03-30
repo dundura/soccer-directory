@@ -29,7 +29,8 @@ const TYPE_PATHS: Record<string, string> = {
   fbgroup: "facebook-groups", instagrampage: "instagram-pages", tiktokpage: "tiktok-pages", podcast: "podcasts", youtube: "youtube-channels",
   service: "services", trainingapp: "training-apps", ebook: "ebooks",
   giveaway: "giveaways", guest: "guest-play", trip: "international-trips",
-  marketplace: "shop", fundraiser: "fundraiser",
+  marketplace: "shop", fundraiser: "fundraiser", soccerbook: "books-and-authors",
+  photovideo: "photo-video-services", scrimmage: "scrimmages",
 };
 
 function stripHtml(html: string): string {
