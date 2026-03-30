@@ -1038,7 +1038,7 @@ const TYPE_TO_TABLE: Record<string, string> = {
 
 const FIELD_TO_COLUMN: Record<string, string> = {
   name: "name", description: "description", tagline: "tagline",
-  aboutAuthor: "about_author", price: "price", website: "website",
+  aboutAuthor: "about_author", authorImage: "author_image", price: "price", website: "website",
   email: "email", phone: "phone", providerName: "provider_name",
   hostName: "host_name", creatorName: "creator_name", ownerName: "owner_name",
   organizerName: "organizer_name", organizer: "organizer",
@@ -1387,6 +1387,7 @@ function mapService(r: Record<string, unknown>): Service {
     announcementCta3: r.announcement_cta_3 as string | undefined,
     announcementCtaUrl3: r.announcement_cta_url_3 as string | undefined,
     aboutAuthor: r.about_author as string | undefined,
+    authorImage: r.author_image as string | undefined,
     featured: r.featured as boolean, status: r.status as string | undefined,
     userId: r.user_id as string | undefined, createdAt: r.created_at as string,
     updatedAt: r.updated_at as string | undefined,
