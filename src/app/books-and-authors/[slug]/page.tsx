@@ -194,7 +194,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                   <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="aboutAuthor" value={service.aboutAuthor || ""} tag="div" className="text-gray-600 leading-relaxed [&>p]:mb-3 [&>p:last-child]:mb-0 [&>p:empty]:hidden" multiline />
                 </div>
                 <div className="clear-both mt-4">
-                  <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="authorImage" value={service.authorImage || ""} tag="p" className="text-xs text-muted break-all" placeholder="Author image URL" />
+                  <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="authorImage" value={service.authorImage || ""} tag="p" className="text-xs text-muted break-all" />
                 </div>
               </div>
             )}
