@@ -2497,6 +2497,23 @@ export async function getListingNameById(type: string, id: string): Promise<stri
     case "specialevent": rows = await sql`SELECT name FROM special_events WHERE id = ${id} LIMIT 1`; break;
     case "instagrampage": rows = await sql`SELECT name FROM instagram_pages WHERE id = ${id} LIMIT 1`; break;
     case "tiktokpage": rows = await sql`SELECT name FROM tiktok_pages WHERE id = ${id} LIMIT 1`; break;
+    case "soccerbook": rows = await sql`SELECT name FROM books WHERE id = ${id} LIMIT 1`; break;
+    case "marketplace": rows = await sql`SELECT name FROM marketplace WHERE id = ${id} LIMIT 1`; break;
+    case "tournament": rows = await sql`SELECT name FROM tournaments WHERE id = ${id} LIMIT 1`; break;
+    case "futsal": rows = await sql`SELECT name FROM futsal_teams WHERE id = ${id} LIMIT 1`; break;
+    case "guest": rows = await sql`SELECT team_name as name FROM guest_opportunities WHERE id = ${id} LIMIT 1`; break;
+    case "podcast": rows = await sql`SELECT name FROM podcasts WHERE id = ${id} LIMIT 1`; break;
+    case "service": rows = await sql`SELECT name FROM services WHERE id = ${id} LIMIT 1`; break;
+    case "photovideo": rows = await sql`SELECT name FROM photo_video_services WHERE id = ${id} LIMIT 1`; break;
+    case "blog": rows = await sql`SELECT name FROM blogs WHERE id = ${id} LIMIT 1`; break;
+    case "youtube": rows = await sql`SELECT name FROM youtube_channels WHERE id = ${id} LIMIT 1`; break;
+    case "trainingapp": rows = await sql`SELECT name FROM training_apps WHERE id = ${id} LIMIT 1`; break;
+    case "fbgroup": rows = await sql`SELECT name FROM facebook_groups WHERE id = ${id} LIMIT 1`; break;
+    case "player": rows = await sql`SELECT player_name as name FROM player_profiles WHERE id = ${id} LIMIT 1`; break;
+    case "scrimmage": rows = await sql`SELECT name FROM scrimmages WHERE id = ${id} LIMIT 1`; break;
+    case "ebook": rows = await sql`SELECT name FROM ebooks WHERE id = ${id} LIMIT 1`; break;
+    case "giveaway": rows = await sql`SELECT name FROM giveaways WHERE id = ${id} LIMIT 1`; break;
+    case "fundraiser": rows = await sql`SELECT name FROM fundraisers WHERE id = ${id} LIMIT 1`; break;
     default: return null;
   }
   return (rows[0]?.name as string) || null;
