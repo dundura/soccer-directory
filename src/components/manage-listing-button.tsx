@@ -141,141 +141,92 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
     setRestoring(false);
   }
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <div className="space-y-2">
-      <a
-        href={editHref}
-        className="block w-full text-center px-4 py-2 rounded-xl border-2 border-accent/20 bg-accent/5 text-accent text-sm font-bold hover:bg-accent/10 transition-colors"
-      >
-        Edit Listing
-      </a>
-
-      {/* Feature toggle (admin only) */}
-      {isAdmin && listingType && listingId && (
-        <button
-          onClick={handleToggleFeatured}
-          disabled={featureLoading}
-          className={`block w-full text-center px-4 py-2 rounded-xl border-2 text-sm font-bold transition-colors disabled:opacity-50 ${
-            featured
-              ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
-              : "border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
-          }`}
-        >
-          {featureLoading ? "Updating..." : featured ? "★ Featured — Unfeature" : "☆ Feature on Homepage"}
+    <div className="relative">
+      {/* Compact toolbar */}
+      <div className="flex flex-wrap items-center gap-2">
+        <a href={editHref} className="px-3 py-1.5 rounded-lg bg-accent text-white text-xs font-bold hover:bg-accent-hover transition-colors">
+          Edit Listing
+        </a>
+        {createPostHref && (
+          <a href={createPostHref} className="px-3 py-1.5 rounded-lg border border-border text-xs font-bold text-primary hover:bg-surface transition-colors">
+            {listingType === "player" ? "Post" : "Create Post"}
+          </a>
+        )}
+        {listingType && listingId && (
+          <a href={`/event/new?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(currentSlug)}`} className="px-3 py-1.5 rounded-lg border border-border text-xs font-bold text-primary hover:bg-surface transition-colors">
+            Add Event
+          </a>
+        )}
+        {listingType === "soccerbook" && listingId && (
+          <a href={`#media-appearances`} className="px-3 py-1.5 rounded-lg border border-border text-xs font-bold text-primary hover:bg-surface transition-colors">
+            Add Media
+          </a>
+        )}
+        <button onClick={() => setMenuOpen(!menuOpen)} className="px-3 py-1.5 rounded-lg border border-border text-xs font-bold text-muted hover:bg-surface transition-colors">
+          More ▾
         </button>
-      )}
+      </div>
 
-      {/* Create Post */}
-      {createPostHref && (
-        <a
-          href={createPostHref}
-          className="block w-full text-center px-4 py-2 rounded-xl border-2 border-primary/20 bg-primary/5 text-primary text-sm font-bold hover:bg-primary/10 transition-colors"
-        >
-          {listingType === "player" ? "Create Guest Player Post" : "Create Post"}
-        </a>
-      )}
-
-      {/* Add Special Event */}
-      {listingType && listingId && (
-        <a
-          href={`/event/new?type=${listingType}&id=${listingId}&slug=${encodeURIComponent(currentSlug)}`}
-          className="block w-full text-center px-4 py-2 rounded-xl border-2 border-accent/20 bg-accent/5 text-accent text-sm font-bold hover:bg-accent/10 transition-colors"
-        >
-          Add Special Event
-        </a>
-      )}
-
-      {/* Write Blog Post (not for players) */}
-      {createPostHref && listingType !== "player" && (
-        <a
-          href={createPostHref.replace("/posts/new?", "/posts/new-blog?")}
-          className="block w-full text-center px-4 py-2 rounded-xl border-2 border-accent/20 bg-accent/5 text-accent text-sm font-bold hover:bg-accent/10 transition-colors"
-        >
-          Write Blog Post
-        </a>
-      )}
-
-      {/* Invite Feedback (not for Instagram/TikTok/Player) */}
-      {listingType && listingId && listingType !== "instagrampage" && listingType !== "tiktokpage" && listingType !== "player" && (
-        <>
-          {!showInviteForm ? (
-            <button
-              onClick={() => setShowInviteForm(true)}
-              className="block w-full text-center px-4 py-2 rounded-xl border-2 border-green-200 bg-green-50 text-green-700 text-sm font-bold hover:bg-green-100 transition-colors"
-            >
+      {/* Dropdown menu */}
+      {menuOpen && (
+        <div className="absolute right-0 top-full mt-1 bg-white rounded-xl border border-border shadow-lg z-50 min-w-[200px] py-1" onMouseLeave={() => setMenuOpen(false)}>
+          {isAdmin && listingType && listingId && (
+            <button onClick={() => { handleToggleFeatured(); setMenuOpen(false); }} disabled={featureLoading} className="block w-full text-left px-4 py-2 text-sm hover:bg-surface transition-colors">
+              {featureLoading ? "Updating..." : featured ? "★ Unfeature" : "☆ Feature on Homepage"}
+            </button>
+          )}
+          {createPostHref && listingType !== "player" && (
+            <a href={createPostHref.replace("/posts/new?", "/posts/new-blog?")} className="block px-4 py-2 text-sm text-primary hover:bg-surface transition-colors">
+              Write Blog Post
+            </a>
+          )}
+          {listingType && listingId && listingType !== "instagrampage" && listingType !== "tiktokpage" && listingType !== "player" && !showInviteForm && (
+            <button onClick={() => { setShowInviteForm(true); setMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-primary hover:bg-surface transition-colors">
               {inviteMsg || "Invite Feedback"}
             </button>
-          ) : (
-            <form onSubmit={handleInviteReview} className="rounded-xl border-2 border-green-200 bg-white p-3 space-y-2">
-              <p className="text-xs text-muted">Send a review invitation by email</p>
-              <input
-                type="email"
-                required
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                placeholder="reviewer@email.com"
-                className="w-full text-xs px-3 py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-green-300 focus:border-green-400"
-                autoFocus
-              />
-              {inviteMsg && <p className={`text-xs ${inviteMsg.includes("sent") ? "text-green-600" : "text-red-500"}`}>{inviteMsg}</p>}
-              <div className="flex gap-2 justify-end">
-                <button type="button" onClick={() => { setShowInviteForm(false); setInviteEmail(""); setInviteMsg(""); }} className="px-3 py-1.5 rounded-lg text-xs font-medium text-muted hover:bg-surface transition-colors">
-                  Cancel
-                </button>
-                <button type="submit" disabled={inviting || !inviteEmail.trim()} className="px-4 py-1.5 rounded-lg text-xs font-bold bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50">
-                  {inviting ? "Sending..." : "Send Invite"}
-                </button>
-              </div>
-            </form>
           )}
-        </>
-      )}
-
-      {listingType === "player" && listingId && isOwner && (
-        <a
-          href={`/dashboard/player?id=${listingId}`}
-          className="block w-full text-center px-4 py-2 rounded-xl border-2 border-primary/20 bg-primary/5 text-primary text-sm font-bold hover:bg-primary/10 transition-colors"
-        >
-          Player Dashboard
-        </a>
-      )}
-      {listingType === "fundraiser" && listingSlug && isOwner && (
-        <a
-          href={`/fundraiser/${listingSlug}/edit`}
-          className="block w-full text-center px-4 py-2 rounded-xl border-2 border-primary/20 bg-primary/5 text-primary text-sm font-bold hover:bg-primary/10 transition-colors"
-        >
-          Manage Roster
-        </a>
-      )}
-      {listingType && listingId && (
-        <>
-          {!archived ? (
-            <button
-              onClick={handleArchive}
-              disabled={archiving}
-              className="block w-full px-4 py-2 rounded-xl border border-amber-200 text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors disabled:opacity-50"
-            >
+          {listingType === "player" && listingId && isOwner && (
+            <a href={`/dashboard/player?id=${listingId}`} className="block px-4 py-2 text-sm text-primary hover:bg-surface transition-colors">
+              Player Dashboard
+            </a>
+          )}
+          {listingType === "fundraiser" && listingSlug && isOwner && (
+            <a href={`/fundraiser/${listingSlug}/edit`} className="block px-4 py-2 text-sm text-primary hover:bg-surface transition-colors">
+              Manage Roster
+            </a>
+          )}
+          {listingType && listingId && !archived && (
+            <button onClick={() => { handleArchive(); setMenuOpen(false); }} disabled={archiving} className="block w-full text-left px-4 py-2 text-sm text-amber-600 hover:bg-surface transition-colors disabled:opacity-50">
               {archiving ? "Archiving..." : "Archive Listing"}
             </button>
-          ) : (
+          )}
+          {listingType && listingId && archived && (
             <>
-              <button
-                onClick={handleRestore}
-                disabled={restoring}
-                className="block w-full px-4 py-2 rounded-xl border border-green-200 text-sm font-medium text-green-600 hover:bg-green-50 transition-colors disabled:opacity-50"
-              >
+              <button onClick={() => { handleRestore(); setMenuOpen(false); }} disabled={restoring} className="block w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-surface transition-colors disabled:opacity-50">
                 {restoring ? "Restoring..." : "Restore Listing"}
               </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="block w-full px-4 py-2 rounded-xl border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
-              >
+              <button onClick={() => { handleDelete(); setMenuOpen(false); }} disabled={deleting} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-surface transition-colors disabled:opacity-50">
                 {deleting ? "Deleting..." : "Delete Permanently"}
               </button>
             </>
           )}
-        </>
+        </div>
+      )}
+
+      {/* Invite form (shown inline when triggered) */}
+      {showInviteForm && (
+        <form onSubmit={handleInviteReview} className="mt-2 rounded-xl border border-border bg-white p-3 space-y-2">
+          <p className="text-xs text-muted">Send a review invitation by email</p>
+          <input type="email" required value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="reviewer@email.com" className="w-full text-xs px-3 py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-green-300" autoFocus />
+          {inviteMsg && <p className={`text-xs ${inviteMsg.includes("sent") ? "text-green-600" : "text-red-500"}`}>{inviteMsg}</p>}
+          <div className="flex gap-2 justify-end">
+            <button type="button" onClick={() => { setShowInviteForm(false); setInviteEmail(""); setInviteMsg(""); }} className="px-3 py-1.5 rounded-lg text-xs text-muted hover:bg-surface">Cancel</button>
+            <button type="submit" disabled={inviting || !inviteEmail.trim()} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-green-600 text-white hover:bg-green-700 disabled:opacity-50">{inviting ? "Sending..." : "Send"}</button>
+          </div>
+        </form>
       )}
     </div>
   );

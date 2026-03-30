@@ -79,7 +79,7 @@ export function BookMediaSection({ bookId, bookSlug, ownerId }: { bookId: string
   };
 
   if (loading) return null;
-  if (appearances.length === 0 && !isOwner) return null;
+  if (appearances.length === 0) return null;
 
   const pinnedAppearances = appearances.filter(a => a.pinned);
   const displayAppearances = pinnedAppearances.length > 0 ? pinnedAppearances : appearances.slice(0, 3);
