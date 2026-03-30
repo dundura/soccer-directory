@@ -54,8 +54,6 @@ const TYPE_PATHS: Record<string, string> = {
   photovideo: "photo-video-services",
   scrimmage: "scrimmages",
   fundraiser: "fundraiser",
-  instagrampage: "instagram-pages",
-  tiktokpage: "tiktok-pages",
 };
 
 export default function AdminClient() {
