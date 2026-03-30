@@ -144,7 +144,7 @@ export function BookMediaSection({ bookId, bookSlug, ownerId }: { bookId: string
             <div className="flex-1 min-w-0 p-4 sm:p-5 flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <h4 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight group-hover:text-accent transition-colors">{item.title}</h4>
-                {item.description && <p className="text-sm text-primary/70 mt-1 line-clamp-2">{item.description}</p>}
+                {item.description && <p className="text-sm text-primary/70 mt-1 line-clamp-2">{item.description.replace(/<[^>]*>/g, '')}</p>}
                 <span className="text-sm font-semibold text-accent group-hover:text-accent-hover transition-colors mt-1 inline-block">View →</span>
               </div>
               {isOwner && (
