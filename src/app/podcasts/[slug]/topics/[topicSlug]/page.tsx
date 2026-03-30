@@ -50,7 +50,9 @@ export default async function TopicPage({ params }: Props) {
         {/* Topic Header */}
         <div className="bg-white rounded-2xl border border-border overflow-hidden mb-6">
           {topic.previewImage && (
-            <img src={topic.previewImage} alt={topic.title} className="w-full h-[200px] sm:h-[280px] object-cover" />
+            <a href={topic.previewImage} target="_blank" rel="noopener noreferrer">
+              <img src={topic.previewImage} alt={topic.title} className="w-full h-[200px] sm:h-[280px] object-cover cursor-pointer hover:opacity-90 transition-opacity" />
+            </a>
           )}
           <div className="p-6 sm:p-8">
             <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase tracking-tight leading-tight mb-3">
