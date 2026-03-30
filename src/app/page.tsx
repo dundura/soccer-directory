@@ -192,7 +192,7 @@ export default async function HomePage() {
     ...tiktokPages.filter((t) => t.featured).map((t) => toRowListing(t, "tiktok", "name", [t.category], "TikTok")),
     ...services.filter((s) => s.featured).map((s) => toRowListing(s, "services", "name", [s.category], "Service")),
     ...trainingApps.filter((a) => a.featured).map((a) => toRowListing(a, "training-apps", "name", [a.category], "App")),
-    ...soccerBooks.filter((b) => b.featured).map((b) => toRowListing(b, "books", "name", [b.category], "Book")),
+    ...soccerBooks.filter((b) => b.featured).map((b) => toRowListing(b, "books-and-authors", "name", [b.category], "Book")),
     ...photoVideoServices.filter((p) => p.featured).map((p) => toRowListing(p, "photo-video", "name", [p.category], "Photo/Video")),
   ].sort(() => Math.random() - 0.5);
 
@@ -217,7 +217,7 @@ export default async function HomePage() {
   const tiktokRows = sortFeaturedFirst(tiktokPages).map((t) => toRowListing(t, "tiktok", "name", [t.category]));
   const serviceRows = sortFeaturedFirst(services).map((s) => toRowListing(s, "services", "name", [s.category]));
   const appRows = sortFeaturedFirst(trainingApps).map((a) => toRowListing(a, "training-apps", "name", [a.category]));
-  const bookRows = sortFeaturedFirst(soccerBooks).map((b) => toRowListing(b, "books", "name", [b.category]));
+  const bookRows = sortFeaturedFirst(soccerBooks).map((b) => toRowListing(b, "books-and-authors", "name", [b.category]));
   const photoVideoRows = sortFeaturedFirst(photoVideoServices).map((p) => toRowListing(p, "photo-video", "name", [p.category]));
 
   return (
@@ -483,7 +483,7 @@ export default async function HomePage() {
           <CategorySection title="TikTok Pages" viewAllHref="/tiktok" listings={tiktokRows} />
           <CategorySection title="Services" viewAllHref="/services" listings={serviceRows} />
           <CategorySection title="Training Apps" viewAllHref="/training-apps" listings={appRows} />
-          <CategorySection title="Books" viewAllHref="/books" listings={bookRows} />
+          <CategorySection title="Books" viewAllHref="/books-and-authors" listings={bookRows} />
           <CategorySection title="Photo/Video Services" viewAllHref="/photo-video" listings={photoVideoRows} />
         </ExpandableCategories>
 
