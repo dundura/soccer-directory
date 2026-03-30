@@ -6,7 +6,7 @@ import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 interface RichTextEditorProps {
   content: string;
@@ -31,6 +31,9 @@ function ToolbarButton({ active, onClick, title, children }: { active?: boolean;
 }
 
 export function RichTextEditor({ content, onChange, placeholder, minHeight = "300px" }: RichTextEditorProps) {
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -51,7 +54,7 @@ export function RichTextEditor({ content, onChange, placeholder, minHeight = "30
     ],
     content: content || "",
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      onChangeRef.current(editor.getHTML());
     },
     editorProps: {
       attributes: {
@@ -60,14 +63,6 @@ export function RichTextEditor({ content, onChange, placeholder, minHeight = "30
       },
     },
   });
-
-  const initializedRef = useRef(false);
-  useEffect(() => {
-    if (editor && !initializedRef.current && content) {
-      editor.commands.setContent(content);
-      initializedRef.current = true;
-    }
-  }, [content, editor]);
 
   if (!editor) return null;
 
