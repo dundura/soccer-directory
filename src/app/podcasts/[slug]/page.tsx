@@ -212,7 +212,9 @@ export default async function PodcastPage({ params }: Props) {
               <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="hostHeading" value={podcast.hostHeading || "Meet the Host"} tag="h2" className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight mb-4" />
               <div>
                 {podcast.hostImage && (
-                  <img src={podcast.hostImage} alt={podcast.hostHeading || "Meet the Host"} className="w-40 h-40 rounded-xl object-cover float-left mr-5 mb-3" />
+                  <a href={podcast.hostImage} target="_blank" rel="noopener noreferrer">
+                    <img src={podcast.hostImage} alt={podcast.hostHeading || "Meet the Host"} className="w-40 h-40 rounded-xl object-cover float-left mr-5 mb-3 cursor-pointer hover:opacity-90 transition-opacity" />
+                  </a>
                 )}
                 <InlineEditField ownerId={ownerId} listingType="podcast" listingId={podcast.id} field="hostBio" value={podcast.hostBio || ""} tag="p" className="text-sm leading-relaxed text-gray-500 whitespace-pre-line break-words" multiline />
               </div>
