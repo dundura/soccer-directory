@@ -6,7 +6,7 @@ import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface RichTextEditorProps {
   content: string;
@@ -20,7 +20,9 @@ function ToolbarButton({ active, onClick, title, children }: { active?: boolean;
     <button
       type="button"
       onClick={onClick}
+      onMouseDown={(e) => e.preventDefault()}
       title={title}
+      tabIndex={-1}
       className={`px-2 py-1 rounded text-xs font-bold transition-colors ${active ? "bg-primary text-white" : "text-primary hover:bg-white"}`}
     >
       {children}
@@ -59,9 +61,11 @@ export function RichTextEditor({ content, onChange, placeholder, minHeight = "30
     },
   });
 
+  const initializedRef = useRef(false);
   useEffect(() => {
-    if (editor && content && !editor.getHTML().replace(/<[^>]*>/g, "").trim() && content.replace(/<[^>]*>/g, "").trim()) {
+    if (editor && !initializedRef.current && content) {
       editor.commands.setContent(content);
+      initializedRef.current = true;
     }
   }, [content, editor]);
 
