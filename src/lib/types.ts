@@ -21,7 +21,7 @@ export interface ProfileFields {
   address?: string;
   imageUrl?: string;
   logo?: string;
-  socialMedia?: { facebook?: string; instagram?: string; youtube?: string };
+  socialMedia?: { facebook?: string; instagram?: string; youtube?: string; linkedin?: string; twitter?: string };
   phone?: string;
   mediaLinks?: MediaLink[];
   imagePosition?: number;
