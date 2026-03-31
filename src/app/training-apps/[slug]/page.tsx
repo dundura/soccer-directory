@@ -129,6 +129,18 @@ export default async function TrainingAppDetailPage({ params }: Props) {
                   Visit Website &rarr;
                 </a>
               )}
+              {app.socialMedia?.facebook && (
+                <a href={app.socialMedia.facebook} target="_blank" rel="noopener" className="bg-white text-primary border-2 border-border px-4 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors">Facebook</a>
+              )}
+              {app.socialMedia?.instagram && (
+                <a href={app.socialMedia.instagram} target="_blank" rel="noopener" className="bg-white text-primary border-2 border-border px-4 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors">Instagram</a>
+              )}
+              {app.socialMedia?.linkedin && (
+                <a href={app.socialMedia.linkedin} target="_blank" rel="noopener" className="bg-white text-primary border-2 border-border px-4 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors">LinkedIn</a>
+              )}
+              {app.socialMedia?.twitter && (
+                <a href={app.socialMedia.twitter} target="_blank" rel="noopener" className="bg-white text-primary border-2 border-border px-4 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors">X / Twitter</a>
+              )}
               <a
                 href={`/contact/trainingapp/${slug}`}
                 className="bg-white text-primary border-2 border-border px-6 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors"

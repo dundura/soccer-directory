@@ -148,6 +148,18 @@ export default async function ServiceDetailPage({ params }: Props) {
                   Visit Website &rarr;
                 </a>
               )}
+              {service.socialMedia?.facebook && (
+                <a href={service.socialMedia.facebook} target="_blank" rel="noopener" className="bg-white text-primary border-2 border-border px-4 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors">Facebook</a>
+              )}
+              {service.socialMedia?.instagram && (
+                <a href={service.socialMedia.instagram} target="_blank" rel="noopener" className="bg-white text-primary border-2 border-border px-4 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors">Instagram</a>
+              )}
+              {service.socialMedia?.linkedin && (
+                <a href={service.socialMedia.linkedin} target="_blank" rel="noopener" className="bg-white text-primary border-2 border-border px-4 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors">LinkedIn</a>
+              )}
+              {service.socialMedia?.twitter && (
+                <a href={service.socialMedia.twitter} target="_blank" rel="noopener" className="bg-white text-primary border-2 border-border px-4 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors">X / Twitter</a>
+              )}
               <a
                 href={`/contact/service/${slug}`}
                 className="bg-white text-primary border-2 border-border px-6 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors"
