@@ -101,7 +101,7 @@ export default async function TrainingAppDetailPage({ params }: Props) {
               </span>
               <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="name" value={app.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
               {app.tagline && (
-                <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="tagline" value={app.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="tagline" value={app.tagline} tag="p" className="text-base text-accent font-semibold mt-1.5" />
               )}
               <p className="text-sm text-muted mt-1">
                 by {app.providerName} &middot; {app.city}, {app.state}
