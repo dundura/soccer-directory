@@ -615,6 +615,8 @@ export interface TrainingApp extends ProfileFields {
   slug: string;
   name: string;
   providerName: string;
+  appStoreUrl?: string;
+  googlePlayUrl?: string;
   category: string;
   city: string;
   state: string;

@@ -118,7 +118,17 @@ export default async function TrainingAppDetailPage({ params }: Props) {
             )}
 
             {/* Action Buttons */}
-            <div className="flex gap-3 flex-wrap mb-6">
+            <div className="flex gap-3 flex-wrap items-center mb-6">
+              {app.appStoreUrl && (
+                <a href={app.appStoreUrl.startsWith("http") ? app.appStoreUrl : `https://${app.appStoreUrl}`} target="_blank" rel="noopener">
+                  <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on App Store" style={{ height: '40px' }} />
+                </a>
+              )}
+              {app.googlePlayUrl && (
+                <a href={app.googlePlayUrl.startsWith("http") ? app.googlePlayUrl : `https://${app.googlePlayUrl}`} target="_blank" rel="noopener">
+                  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" style={{ height: '48px' }} />
+                </a>
+              )}
               {app.website && (
                 <a
                   href={app.website.startsWith("http") ? app.website : `https://${app.website}`}

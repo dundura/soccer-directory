@@ -949,6 +949,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "aboutAuthor", label: "About the Developer (optional)", type: "richtext" },
     { name: "_links", label: "Links", type: "heading" },
     { name: "website", label: "Website / App Store Link" },
+    { name: "appStoreUrl", label: "Apple App Store URL" },
+    { name: "googlePlayUrl", label: "Google Play Store URL" },
     { name: "facebook", label: "Facebook URL" },
     { name: "instagram", label: "Instagram URL" },
     { name: "linkedin", label: "LinkedIn URL" },
