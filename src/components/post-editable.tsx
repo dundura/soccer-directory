@@ -170,7 +170,7 @@ export function PostEditableContent({
     <>
       {/* Profile card + edit controls (blog layout, always at top) */}
       {/* Admin edit controls */}
-      {blogLayout && isAdmin && !editingBody && !editingMedia && (
+      {blogLayout && canEdit && !editingBody && !editingMedia && (
         <div className="mb-6 flex items-center gap-4">
           <button
             onClick={() => setEditingBody(true)}
