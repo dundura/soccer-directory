@@ -407,7 +407,8 @@ export default async function HomePage() {
             </div>
             <div className="grid sm:grid-cols-2 gap-3">
               {communityPosts.slice(0, 2).map((post) => {
-                const img = post.ogImageUrl || post.imageUrl;
+                const ytMatch = post.videoUrl?.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
+                const img = post.ogImageUrl || post.imageUrl || (ytMatch ? `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg` : null);
                 const desc = post.body?.replace(/<[^>]*>/g, "").slice(0, 120) || "";
                 return (
                   <a key={post.id} href={`/posts/${post.slug || post.id}`} className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden">

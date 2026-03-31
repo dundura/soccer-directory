@@ -183,7 +183,13 @@ export function ListingPostsSidebar({
         {posts.map((post) => {
           const plainBody = post.body.replace(/<[^>]*>/g, "").replace(/&[a-z#0-9]+;/gi, " ").trim();
           const excerpt = plainBody.length > 100 ? plainBody.slice(0, 97) + "..." : plainBody;
-          const img = post.imageUrl || post.ogImageUrl;
+          const getVideoThumb = (url?: string) => {
+            if (!url) return null;
+            const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
+            if (yt) return `https://img.youtube.com/vi/${yt[1]}/hqdefault.jpg`;
+            return null;
+          };
+          const img = post.imageUrl || post.ogImageUrl || getVideoThumb(post.videoUrl);
           return (
           <div key={post.id} className={`${post.hidden ? "opacity-50" : ""}`}>
             <div className="flex items-start gap-2">
