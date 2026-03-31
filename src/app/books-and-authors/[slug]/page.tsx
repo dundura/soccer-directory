@@ -145,6 +145,26 @@ export default async function ServiceDetailPage({ params }: Props) {
                   Visit Website &rarr;
                 </a>
               )}
+              {service.link2Url && (
+                <a
+                  href={service.link2Url.startsWith("http") ? service.link2Url : `https://${service.link2Url}`}
+                  target="_blank"
+                  rel="noopener"
+                  className="bg-white text-primary border-2 border-accent px-6 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors"
+                >
+                  {service.link2Label || 'Link'} &rarr;
+                </a>
+              )}
+              {service.link3Url && (
+                <a
+                  href={service.link3Url.startsWith("http") ? service.link3Url : `https://${service.link3Url}`}
+                  target="_blank"
+                  rel="noopener"
+                  className="bg-white text-primary border-2 border-accent px-6 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors"
+                >
+                  {service.link3Label || 'Link'} &rarr;
+                </a>
+              )}
               <a
                 href={`/contact/service/${slug}`}
                 className="bg-white text-primary border-2 border-border px-6 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors"
