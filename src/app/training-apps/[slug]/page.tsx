@@ -113,7 +113,7 @@ export default async function TrainingAppDetailPage({ params }: Props) {
 
             {app.description && (
               <div className="mb-6">
-                <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="description" value={app.description} tag="div" className="text-gray-600 leading-relaxed [&>p]:mb-3 [&>p:last-child]:mb-0 [&>p:empty]:hidden" multiline />
+                <InlineEditField ownerId={ownerId} listingType="trainingapp" listingId={app.id} field="description" value={app.description} tag="div" className="text-gray-600 leading-relaxed [&>p]:mb-3 [&>p:last-child]:mb-0 [&>p:empty]:hidden [&_a]:text-[#DC373E] [&_a]:underline [&_a]:font-semibold" multiline />
               </div>
             )}
 
