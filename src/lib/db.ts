@@ -1852,7 +1852,12 @@ function mapTrainerToForm(r: Record<string, unknown>): Record<string, string> {
 }
 function mapRecruiterToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
-  return { name: s(r.name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), specialty: s(r.specialty), experience: s(r.experience), credentials: s(r.credentials), priceRange: s(r.price_range), serviceArea: s(r.service_area), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
+  const pf = profileFormFields(r);
+  // Pre-fill defaults so users can see and remove them
+  if (!pf.photos || pf.photos === "" || pf.photos === "[]" || pf.photos === "null") {
+    pf.photos = JSON.stringify(["https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg", "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecnl_girls.jpg"]);
+  }
+  return { name: s(r.name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), specialty: s(r.specialty), experience: s(r.experience), credentials: s(r.credentials), priceRange: s(r.price_range), serviceArea: s(r.service_area), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...pf };
 }
 function mapCampToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);

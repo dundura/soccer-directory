@@ -73,8 +73,8 @@ export default async function RecruiterDetailPage({ params }: Props) {
   const pageUrl = `https://www.soccer-near-me.com/college-recruiting/${slug}`;
   const imgPos = recruiter.imagePosition ?? 50;
   const heroPos = recruiter.heroImagePosition ?? 50;
-  const heroPhoto = recruiter.imageUrl || recruiter.teamPhoto || DEFAULT_HERO_PHOTO;
-  const recruiterPhotos = recruiter.photos && recruiter.photos.length > 0 ? recruiter.photos : DEFAULT_PHOTOS;
+  const heroPhoto = recruiter.imageUrl ?? recruiter.teamPhoto ?? DEFAULT_HERO_PHOTO;
+  const recruiterPhotos = recruiter.photos !== undefined && recruiter.photos !== null ? (recruiter.photos.length > 0 ? recruiter.photos : []) : DEFAULT_PHOTOS;
   const logo = recruiter.logo || DEFAULT_LOGO;
   const videoUrl = recruiter.videoUrl === undefined || recruiter.videoUrl === null ? DEFAULT_VIDEO : recruiter.videoUrl || null;
   const availabilitySet = new Set(
