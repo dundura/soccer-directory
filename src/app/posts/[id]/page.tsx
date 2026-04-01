@@ -210,19 +210,7 @@ export default async function PostPage({ params }: Props) {
               profileUrl={listingSlug ? profileUrl : undefined}
             />
 
-            {/* CTA buttons */}
-            {post.ctaUrl && post.ctaLabel && (
-              <div className="mt-6">
-                <a
-                  href={post.ctaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors"
-                >
-                  {post.ctaLabel} &rarr;
-                </a>
-              </div>
-            )}
+            {/* CTA rendered inside PostEditableContent */}
 
             {/* Share */}
             <div className="mt-8 pt-6 border-t border-border">
