@@ -3755,3 +3755,4 @@ export async function deleteBookMediaAppearance(id: string): Promise<boolean> {
   const rows = await sql`DELETE FROM book_media_appearances WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
+// deploy trigger 1775041945
