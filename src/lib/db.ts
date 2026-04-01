@@ -1828,7 +1828,13 @@ function parseSocial(raw: unknown): { facebook: string; instagram: string; youtu
 
 function s(v: unknown): string { return (v as string) || ""; }
 
-function jsonOrStr(v: unknown): string { return !v ? "" : typeof v === "object" ? JSON.stringify(v) : String(v); }
+function jsonOrStr(v: unknown): string {
+  if (!v) return "";
+  if (Array.isArray(v)) return JSON.stringify(v);
+  if (typeof v === "object" && Object.keys(v as Record<string, unknown>).length === 0) return "[]";
+  if (typeof v === "object") return JSON.stringify(v);
+  return String(v);
+}
 function profileFormFields(r: Record<string, unknown>): Record<string, string> {
   return { teamPhoto: s(r.team_photo), photos: jsonOrStr(r.photos), videoUrl: s(r.video_url), practiceSchedule: jsonOrStr(r.practice_schedule), address: s(r.address), imagePosition: String(r.image_position ?? 50), heroImagePosition: String(r.hero_image_position ?? 50), tagline: s(r.tagline), previewImage: s(r.preview_image), mediaLinks: jsonOrStr(r.media_links), sponsors: jsonOrStr(r.sponsors) };
 }
