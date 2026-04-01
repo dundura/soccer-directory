@@ -274,6 +274,32 @@ export default async function RecruiterDetailPage({ params }: Props) {
               </div>
             </div>
 
+            {/* Availability Schedule */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-3.5">
+                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Availability</h3>
+                <EditSectionLink ownerId={ownerId} listingType="recruiter" listingId={recruiter.id} />
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {ALL_DAYS.map((day) => (
+                  <span
+                    key={day}
+                    className={`px-3.5 py-[7px] rounded-full text-sm font-semibold ${
+                      availabilitySet.has(day.toLowerCase())
+                        ? "bg-primary text-white"
+                        : "bg-surface text-gray-400"
+                    }`}
+                  >
+                    {day}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
+                <span className="text-base">&#128205;</span>
+                <span>{recruiter.address || recruiter.serviceArea || `${recruiter.city}, ${recruiter.state}`}</span>
+              </div>
+            </div>
+
             {/* Mobile sidebar - shown only on mobile, right after At a Glance */}
             <div className="flex flex-col gap-4 lg:hidden">
               {sidebarContent}
@@ -303,34 +329,6 @@ export default async function RecruiterDetailPage({ params }: Props) {
             {/* Events */}
             <ListingEventsSection listingType="recruiter" listingId={recruiter.id} listingSlug={slug} ownerId={ownerId} />
 
-            <FeaturedArticles />
-
-            {/* Availability Schedule */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-3.5">
-                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Availability</h3>
-                <EditSectionLink ownerId={ownerId} listingType="recruiter" listingId={recruiter.id} />
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                {ALL_DAYS.map((day) => (
-                  <span
-                    key={day}
-                    className={`px-3.5 py-[7px] rounded-full text-sm font-semibold ${
-                      availabilitySet.has(day.toLowerCase())
-                        ? "bg-primary text-white"
-                        : "bg-surface text-gray-400"
-                    }`}
-                  >
-                    {day}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
-                <span className="text-base">&#128205;</span>
-                <span>{recruiter.address || recruiter.serviceArea || `${recruiter.city}, ${recruiter.state}`}</span>
-              </div>
-            </div>
-
             {/* Photos & Video */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-3.5">
@@ -342,6 +340,8 @@ export default async function RecruiterDetailPage({ params }: Props) {
               </div>
               {videoUrl && <VideoEmbed url={videoUrl} />}
             </div>
+
+            <FeaturedArticles />
 
             {/* Reviews */}
             <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
