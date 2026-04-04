@@ -138,7 +138,7 @@ export function PhotoVideoFilters({ services }: { services: PhotoVideoService[] 
                       ]}
                       featured
                       imagePosition={service.imagePosition}
-                      description={service.description ? service.description.split(" ").slice(0, 25).join(" ") + (service.description.split(" ").length > 25 ? "..." : "") : undefined}
+                      description={service.description ? service.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (service.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Details"
                     />
                   ))}
@@ -206,7 +206,7 @@ export function PhotoVideoFilters({ services }: { services: PhotoVideoService[] 
                         </div>
                         {service.description && (
                           <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">
-                            {service.description.split(" ").slice(0, 30).join(" ")}{service.description.split(" ").length > 30 ? "..." : ""}
+                            {service.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{service.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}
                           </p>
                         )}
                       </div>

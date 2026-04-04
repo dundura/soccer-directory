@@ -142,7 +142,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
                       ]}
                       featured
                       imagePosition={tournament.imagePosition}
-                                            description={tournament.description ? tournament.description.split(" ").slice(0, 25).join(" ") + (tournament.description.split(" ").length > 25 ? "..." : "") : undefined}
+                                            description={tournament.description ? tournament.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (tournament.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Tournament"
                     />
                   ))}
@@ -211,7 +211,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
                           <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-medium">{tournament.format}</span>
                         </div>
                         {tournament.description && (
-                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{tournament.description.split(" ").slice(0, 30).join(" ")}{tournament.description.split(" ").length > 30 ? "..." : ""}</p>
+                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{tournament.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{tournament.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}</p>
                         )}
                       </div>
                     </div>

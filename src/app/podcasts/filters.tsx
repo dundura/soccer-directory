@@ -134,7 +134,7 @@ export function PodcastFilters({ podcasts }: { podcasts: Podcast[] }) {
                         { label: "Host", value: podcast.hostName },
                       ]}
                       featured
-                      description={podcast.description ? podcast.description.split(" ").slice(0, 25).join(" ") + (podcast.description.split(" ").length > 25 ? "..." : "") : undefined}
+                      description={podcast.description ? podcast.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (podcast.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Podcast"
                     />
                   ))}
@@ -203,7 +203,7 @@ export function PodcastFilters({ podcasts }: { podcasts: Podcast[] }) {
                         </div>
                         {podcast.description && (
                           <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">
-                            {podcast.description.split(" ").slice(0, 30).join(" ")}{podcast.description.split(" ").length > 30 ? "..." : ""}
+                            {podcast.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{podcast.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}
                           </p>
                         )}
                       </div>

@@ -127,7 +127,7 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
                       ]}
                       featured
                       imagePosition={trainer.imagePosition}
-                                            description={trainer.description ? trainer.description.split(" ").slice(0, 25).join(" ") + (trainer.description.split(" ").length > 25 ? "..." : "") : undefined}
+                                            description={trainer.description ? trainer.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (trainer.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Trainer"
                     />
                   ))}
@@ -194,7 +194,7 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
                           )}
                         </div>
                         {trainer.description && (
-                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{trainer.description.split(" ").slice(0, 30).join(" ")}{trainer.description.split(" ").length > 30 ? "..." : ""}</p>
+                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{trainer.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{trainer.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}</p>
                         )}
                       </div>
                     </div>

@@ -158,7 +158,7 @@ export function FutsalFilters({ teams }: { teams: FutsalTeam[] }) {
                       ]}
                       featured
                       imagePosition={team.imagePosition}
-                      description={team.description ? team.description.split(" ").slice(0, 25).join(" ") + (team.description.split(" ").length > 25 ? "..." : "") : undefined}
+                      description={team.description ? team.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (team.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Team"
                     />
                   ))}
@@ -229,7 +229,7 @@ export function FutsalFilters({ teams }: { teams: FutsalTeam[] }) {
                         </div>
                         {team.description && (
                           <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">
-                            {team.description.split(" ").slice(0, 30).join(" ") + (team.description.split(" ").length > 30 ? "..." : "")}
+                            {team.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ") + (team.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : "")}
                           </p>
                         )}
                       </div>

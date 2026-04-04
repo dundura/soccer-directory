@@ -147,7 +147,7 @@ export function TrainingAppFilters({ apps }: { apps: TrainingApp[] }) {
                       ]}
                       featured
                       imagePosition={app.imagePosition}
-                      description={app.description ? app.description.split(" ").slice(0, 25).join(" ") + (app.description.split(" ").length > 25 ? "..." : "") : undefined}
+                      description={app.description ? app.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (app.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View App"
                     />
                   ))}
@@ -215,7 +215,7 @@ export function TrainingAppFilters({ apps }: { apps: TrainingApp[] }) {
                         </div>
                         {app.description && (
                           <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">
-                            {app.description.split(" ").slice(0, 30).join(" ")}{app.description.split(" ").length > 30 ? "..." : ""}
+                            {app.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{app.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}
                           </p>
                         )}
                       </div>

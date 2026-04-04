@@ -167,7 +167,7 @@ export function ScrimmageFilters({ scrimmages }: { scrimmages: Scrimmage[] }) {
                       ]}
                       featured
                       imagePosition={s.imagePosition}
-                      description={s.description ? s.description.split(" ").slice(0, 25).join(" ") + (s.description.split(" ").length > 25 ? "..." : "") : undefined}
+                      description={s.description ? s.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (s.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="Contact Team"
                     />
                   ))}
@@ -235,7 +235,7 @@ export function ScrimmageFilters({ scrimmages }: { scrimmages: Scrimmage[] }) {
                         </div>
                         {s.description && (
                           <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">
-                            {s.description.split(" ").slice(0, 30).join(" ")}{s.description.split(" ").length > 30 ? "..." : ""}
+                            {s.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{s.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}
                           </p>
                         )}
                       </div>

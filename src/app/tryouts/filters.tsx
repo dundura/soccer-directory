@@ -158,7 +158,7 @@ export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tr
                       ]}
                       featured
                       imagePosition={tryout.imagePosition}
-                                            description={tryout.description ? tryout.description.split(" ").slice(0, 25).join(" ") + (tryout.description.split(" ").length > 25 ? "..." : "") : undefined}
+                                            description={tryout.description ? tryout.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (tryout.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Tryout"
                     />
                   ))}
@@ -228,7 +228,7 @@ export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tr
                           {tryout.dates}{tryout.time && ` · ${tryout.time}`}
                         </p>
                         {tryout.description && (
-                          <p className="text-sm text-primary mt-1.5 line-clamp-2 hidden sm:block leading-relaxed">{tryout.description.split(" ").slice(0, 30).join(" ")}{tryout.description.split(" ").length > 30 ? "..." : ""}</p>
+                          <p className="text-sm text-primary mt-1.5 line-clamp-2 hidden sm:block leading-relaxed">{tryout.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{tryout.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}</p>
                         )}
                         {isAdmin && (
                           <button
@@ -318,7 +318,7 @@ export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tr
                         <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{team.gender}</span>
                         {team.lookingForPlayers && <span className="px-3 py-1 rounded-full bg-red-50 text-accent text-xs font-bold">Recruiting</span>}
                       </div>
-                      {team.description && <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{team.description.split(" ").slice(0, 30).join(" ")}{team.description.split(" ").length > 30 ? "..." : ""}</p>}
+                      {team.description && <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{team.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{team.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}</p>}
                     </div>
                   </div>
                   <div className="hidden sm:flex items-center justify-center w-14 md:w-16 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
@@ -364,7 +364,7 @@ export function TryoutFilters({ tryouts, clubs = [], teams = [] }: { tryouts: Tr
                         <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">{club.level}</span>
                         <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{club.gender}</span>
                       </div>
-                      {club.description && <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{club.description.split(" ").slice(0, 30).join(" ")}{club.description.split(" ").length > 30 ? "..." : ""}</p>}
+                      {club.description && <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{club.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{club.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}</p>}
                     </div>
                   </div>
                   <div className="hidden sm:flex items-center justify-center w-14 md:w-16 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">

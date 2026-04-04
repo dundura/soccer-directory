@@ -228,7 +228,7 @@ export function ShopFilters({ items }: { items: MarketplaceItem[] }) {
                       ]}
                       details={[{ label: "Price", value: item.price }]}
                       featured
-                      description={item.description ? item.description.split(" ").slice(0, 25).join(" ") + (item.description.split(" ").length > 25 ? "..." : "") : undefined}
+                      description={item.description ? item.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (item.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Item"
                     />
                   ))}
@@ -297,7 +297,7 @@ export function ShopFilters({ items }: { items: MarketplaceItem[] }) {
                         </div>
                         {item.description && (
                           <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">
-                            {item.description.split(" ").slice(0, 30).join(" ")}{item.description.split(" ").length > 30 ? "..." : ""}
+                            {item.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{item.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}
                           </p>
                         )}
                       </div>

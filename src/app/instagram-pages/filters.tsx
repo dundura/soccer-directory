@@ -151,7 +151,7 @@ export function InstagramPageFilters({ pages }: { pages: InstagramPage[] }) {
                         { label: "Followers", value: igPage.followerCount || "—" },
                       ]}
                       featured
-                      description={igPage.description ? igPage.description.split(" ").slice(0, 25).join(" ") + (igPage.description.split(" ").length > 25 ? "..." : "") : undefined}
+                      description={igPage.description ? igPage.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (igPage.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Page"
                     />
                   ))}
@@ -219,7 +219,7 @@ export function InstagramPageFilters({ pages }: { pages: InstagramPage[] }) {
                           )}
                         </div>
                         <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">
-                          {igPage.description ? (igPage.description.split(" ").slice(0, 30).join(" ") + (igPage.description.split(" ").length > 30 ? "..." : "")) : `Follow ${igPage.name} on Instagram`}
+                          {igPage.description ? (igPage.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ") + (igPage.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : "")) : `Follow ${igPage.name} on Instagram`}
                         </p>
                       </div>
                     </div>

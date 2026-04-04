@@ -129,7 +129,7 @@ export function CampFilters({ camps }: { camps: Camp[] }) {
                       ]}
                       featured
                       imagePosition={camp.imagePosition}
-                                            description={camp.description ? camp.description.split(" ").slice(0, 25).join(" ") + (camp.description.split(" ").length > 25 ? "..." : "") : undefined}
+                                            description={camp.description ? camp.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (camp.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Camp"
                     />
                   ))}
@@ -195,7 +195,7 @@ export function CampFilters({ camps }: { camps: Camp[] }) {
                           <span className="px-3 py-1 rounded-full bg-surface text-muted text-xs font-medium">{camp.ageRange}</span>
                         </div>
                         {camp.description && (
-                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{camp.description.split(" ").slice(0, 30).join(" ")}{camp.description.split(" ").length > 30 ? "..." : ""}</p>
+                          <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">{camp.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{camp.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}</p>
                         )}
                       </div>
                     </div>

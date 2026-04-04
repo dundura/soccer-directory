@@ -150,7 +150,7 @@ export function SoccerBookFilters({ soccerbooks }: { soccerbooks: SoccerBook[] }
                       ]}
                       featured
                       imagePosition={book.imagePosition}
-                      description={book.description ? book.description.split(" ").slice(0, 25).join(" ") + (book.description.split(" ").length > 25 ? "..." : "") : undefined}
+                      description={book.description ? book.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (book.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Details"
                     />
                   ))}
@@ -219,7 +219,7 @@ export function SoccerBookFilters({ soccerbooks }: { soccerbooks: SoccerBook[] }
                         </div>
                         {book.description && (
                           <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">
-                            {book.description.split(" ").slice(0, 30).join(" ")}{book.description.split(" ").length > 30 ? "..." : ""}
+                            {book.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{book.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}
                           </p>
                         )}
                       </div>

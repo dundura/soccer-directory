@@ -131,7 +131,7 @@ export function RecruiterFilters({ recruiters }: { recruiters: Recruiter[] }) {
                       ]}
                       featured
                       imagePosition={recruiter.imagePosition}
-                      description={recruiter.description ? recruiter.description.split(" ").slice(0, 25).join(" ") + (recruiter.description.split(" ").length > 25 ? "..." : "") : undefined}
+                      description={recruiter.description ? recruiter.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (recruiter.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Advisor"
                     />
                   ))}
@@ -206,7 +206,7 @@ export function RecruiterFilters({ recruiters }: { recruiters: Recruiter[] }) {
                         </div>
                         {recruiter.description && (
                           <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">
-                            {recruiter.description.split(" ").slice(0, 30).join(" ")}{recruiter.description.split(" ").length > 30 ? "..." : ""}
+                            {recruiter.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{recruiter.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}
                           </p>
                         )}
                       </div>

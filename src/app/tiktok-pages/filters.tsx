@@ -151,7 +151,7 @@ export function TikTokPageFilters({ pages }: { pages: TikTokPage[] }) {
                         { label: "Followers", value: tkPage.followerCount || "—" },
                       ]}
                       featured
-                      description={tkPage.description ? tkPage.description.split(" ").slice(0, 25).join(" ") + (tkPage.description.split(" ").length > 25 ? "..." : "") : undefined}
+                      description={tkPage.description ? tkPage.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 25).join(" ") + (tkPage.description.replace(/<[^>]*>/g, "").split(" ").length > 25 ? "..." : "") : undefined}
                       cta="View Page"
                     />
                   ))}
@@ -218,7 +218,7 @@ export function TikTokPageFilters({ pages }: { pages: TikTokPage[] }) {
                         </div>
                         {tkPage.description && (
                           <p className="text-sm text-primary mt-2.5 line-clamp-2 hidden sm:block leading-relaxed">
-                            {tkPage.description.split(" ").slice(0, 30).join(" ")}{tkPage.description.split(" ").length > 30 ? "..." : ""}
+                            {tkPage.description.replace(/<[^>]*>/g, "").split(" ").slice(0, 30).join(" ")}{tkPage.description.replace(/<[^>]*>/g, "").split(" ").length > 30 ? "..." : ""}
                           </p>
                         )}
                       </div>

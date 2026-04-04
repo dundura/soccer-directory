@@ -67,7 +67,7 @@ export function ListingCard({
         </h3>
         <p className="text-muted text-sm mb-2">{subtitle}</p>
         {description && (
-          <p className="text-sm text-primary/70 line-clamp-2 mb-3 leading-relaxed">{description}</p>
+          <p className="text-sm text-primary/70 line-clamp-2 mb-3 leading-relaxed">{description.replace(/<[^>]*>/g, "")}</p>
         )}
         <div className="grid grid-cols-2 gap-2 flex-1">
           {details.map((d, i) => (
