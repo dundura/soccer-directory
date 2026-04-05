@@ -64,7 +64,7 @@ export default async function MediaAppearancePage({ params }: Props) {
 
         <div className="bg-white rounded-2xl border border-border overflow-hidden mb-6">
           {appearance.previewImage && (
-            <ClickableImage src={appearance.previewImage} alt={appearance.title} className="w-full h-[220px] sm:h-[300px] object-cover cursor-zoom-in" />
+            <ClickableImage src={appearance.previewImage} alt={appearance.title} className="w-full max-h-[500px] object-contain cursor-zoom-in" />
           )}
           <div className="p-6 sm:p-8">
             <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase tracking-tight leading-tight mb-3">
