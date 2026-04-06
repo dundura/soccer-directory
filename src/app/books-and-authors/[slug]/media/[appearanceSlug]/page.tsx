@@ -15,13 +15,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!book) return {};
   const appearance = await getBookMediaAppearanceBySlug(book.id, appearanceSlug);
   if (!appearance) return {};
+
+  const plainDescription = appearance.description
+    ? appearance.description.replace(/<[^>]*>/g, "").trim()
+    : `${appearance.title} - media appearance from ${book.name}`;
+
+  const ogImage = appearance.previewImage || getVideoThumbnail(appearance.url ?? undefined) || undefined;
+  const images = ogImage ? [{ url: ogImage, width: 1280, height: 720, alt: appearance.title }] : undefined;
+  const pageUrl = `https://www.soccer-near-me.com/books-and-authors/${slug}/media/${appearance.slug || appearance.id}`;
+
   return {
     title: `${appearance.title} | ${book.name} | Soccer Near Me`,
-    description: appearance.description || `${appearance.title} - media appearance from ${book.name}`,
+    description: plainDescription,
     openGraph: {
       title: `${appearance.title} | ${book.name}`,
-      description: appearance.description || `${appearance.title} - ${book.name}`,
-      images: appearance.previewImage ? [appearance.previewImage] : undefined,
+      description: plainDescription,
+      url: pageUrl,
+      type: "article",
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${appearance.title} | ${book.name}`,
+      description: plainDescription,
+      images: ogImage ? [ogImage] : undefined,
     },
   };
 }
