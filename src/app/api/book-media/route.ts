@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   const body = await req.json();
-  const { action, bookId, appearanceId, title, slug, description, url, previewImage } = body;
+  const { action, bookId, appearanceId, title, slug, description, url, previewImage, cta1Label, cta1Url, cta2Label, cta2Url, cta3Label, cta3Url } = body;
   if (!bookId) return NextResponse.json({ error: "Missing bookId" }, { status: 400 });
   const allowed = await isOwnerOrAdmin(session.user.id, session.user.email ?? undefined, bookId);
   if (!allowed) return NextResponse.json({ error: "Not authorized" }, { status: 403 });
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     }
     if (action === "update") {
       if (!appearanceId) return NextResponse.json({ error: "Missing appearanceId" }, { status: 400 });
-      await updateBookMediaAppearance(appearanceId, { title, slug, description, url, previewImage });
+      await updateBookMediaAppearance(appearanceId, { title, slug, description, url, previewImage, cta1Label, cta1Url, cta2Label, cta2Url, cta3Label, cta3Url });
       return NextResponse.json({ success: true });
     }
     if (action === "delete") {

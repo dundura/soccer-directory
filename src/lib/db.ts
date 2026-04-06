@@ -3719,6 +3719,12 @@ export interface BookMediaAppearance {
   previewImage?: string;
   pinned: boolean;
   sortOrder: number;
+  cta1Label?: string;
+  cta1Url?: string;
+  cta2Label?: string;
+  cta2Url?: string;
+  cta3Label?: string;
+  cta3Url?: string;
 }
 
 export async function getBookMediaAppearances(bookId: string): Promise<BookMediaAppearance[]> {
@@ -3728,6 +3734,9 @@ export async function getBookMediaAppearances(bookId: string): Promise<BookMedia
     slug: r.slug as string | undefined, description: r.description as string | undefined,
     url: r.url as string | undefined, previewImage: r.preview_image as string | undefined,
     pinned: !!r.pinned, sortOrder: r.sort_order as number,
+    cta1Label: r.cta1_label as string | undefined, cta1Url: r.cta1_url as string | undefined,
+    cta2Label: r.cta2_label as string | undefined, cta2Url: r.cta2_url as string | undefined,
+    cta3Label: r.cta3_label as string | undefined, cta3Url: r.cta3_url as string | undefined,
   }));
 }
 
@@ -3741,6 +3750,9 @@ export async function getBookMediaAppearanceBySlug(bookId: string, appearanceSlu
     slug: r.slug as string | undefined, description: r.description as string | undefined,
     url: r.url as string | undefined, previewImage: r.preview_image as string | undefined,
     pinned: !!r.pinned, sortOrder: r.sort_order as number,
+    cta1Label: r.cta1_label as string | undefined, cta1Url: r.cta1_url as string | undefined,
+    cta2Label: r.cta2_label as string | undefined, cta2Url: r.cta2_url as string | undefined,
+    cta3Label: r.cta3_label as string | undefined, cta3Url: r.cta3_url as string | undefined,
   };
 }
 
@@ -3751,8 +3763,8 @@ export async function createBookMediaAppearance(bookId: string, data: { title: s
   return id;
 }
 
-export async function updateBookMediaAppearance(id: string, data: { title?: string; slug?: string; description?: string; url?: string; previewImage?: string }): Promise<boolean> {
-  const rows = await sql`UPDATE book_media_appearances SET title = COALESCE(${data.title || null}, title), slug = COALESCE(${data.slug || null}, slug), description = ${data.description ?? null}, url = ${data.url ?? null}, preview_image = ${data.previewImage ?? null}, updated_at = NOW() WHERE id = ${id} RETURNING id`;
+export async function updateBookMediaAppearance(id: string, data: { title?: string; slug?: string; description?: string; url?: string; previewImage?: string; cta1Label?: string; cta1Url?: string; cta2Label?: string; cta2Url?: string; cta3Label?: string; cta3Url?: string }): Promise<boolean> {
+  const rows = await sql`UPDATE book_media_appearances SET title = COALESCE(${data.title || null}, title), slug = COALESCE(${data.slug || null}, slug), description = ${data.description ?? null}, url = ${data.url ?? null}, preview_image = ${data.previewImage ?? null}, cta1_label = ${data.cta1Label ?? null}, cta1_url = ${data.cta1Url ?? null}, cta2_label = ${data.cta2Label ?? null}, cta2_url = ${data.cta2Url ?? null}, cta3_label = ${data.cta3Label ?? null}, cta3_url = ${data.cta3Url ?? null}, updated_at = NOW() WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
 

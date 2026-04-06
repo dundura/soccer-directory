@@ -112,6 +112,25 @@ export default async function MediaAppearancePage({ params }: Props) {
               </div>
             )}
 
+            {/* CTA Buttons */}
+            {[
+              { label: appearance.cta1Label, url: appearance.cta1Url },
+              { label: appearance.cta2Label, url: appearance.cta2Url },
+              { label: appearance.cta3Label, url: appearance.cta3Url },
+            ].some(b => b.label && b.url) && (
+              <div className="flex flex-wrap gap-3 mb-6">
+                {[
+                  { label: appearance.cta1Label, url: appearance.cta1Url },
+                  { label: appearance.cta2Label, url: appearance.cta2Url },
+                  { label: appearance.cta3Label, url: appearance.cta3Url },
+                ].filter(b => b.label && b.url).map((b, i) => (
+                  <a key={i} href={b.url!} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent-hover transition-colors">
+                    {b.label}
+                  </a>
+                ))}
+              </div>
+            )}
+
             <ShareButtons url={pageUrl} title={`${appearance.title} | ${book.name}`} />
 
             <div className="mt-6 pt-4 border-t border-border">
