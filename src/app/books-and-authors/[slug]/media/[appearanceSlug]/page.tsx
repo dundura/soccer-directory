@@ -118,7 +118,9 @@ export default async function MediaAppearancePage({ params }: Props) {
               { label: appearance.cta2Label, url: appearance.cta2Url },
               { label: appearance.cta3Label, url: appearance.cta3Url },
             ].some(b => b.label && b.url) && (
-              <div className="flex flex-wrap gap-3 mb-6">
+              <div className="mb-6">
+              <h3 className="text-lg font-bold text-primary mb-3">Resources & Links</h3>
+              <div className="flex flex-wrap gap-3">
                 {[
                   { label: appearance.cta1Label, url: appearance.cta1Url },
                   { label: appearance.cta2Label, url: appearance.cta2Url },
@@ -128,6 +130,7 @@ export default async function MediaAppearancePage({ params }: Props) {
                     {b.label}
                   </a>
                 ))}
+              </div>
               </div>
             )}
 
