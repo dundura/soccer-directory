@@ -44,7 +44,7 @@ export function MediaAppearanceDetail({ appearance, bookId, bookSlug, ownerId }:
             <label className="block text-xs font-medium text-muted mb-1">Description</label>
             <RichTextEditor content={editDesc} onChange={setEditDesc} placeholder="Description" />
           </div>
-          <input type="url" value={editUrl} onChange={(e) => setEditUrl(e.target.value)} placeholder="URL" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
+          <input type="url" value={editUrl} onChange={(e) => setEditUrl(e.target.value)} placeholder="Video URL" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
           <div>
             <label className="block text-xs font-medium text-muted mb-1">URL Slug</label>
             <input type="text" value={editSlug} onChange={(e) => setEditSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-"))} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm font-mono focus:outline-none focus:border-accent" />
