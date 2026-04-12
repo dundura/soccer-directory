@@ -152,6 +152,7 @@ const CTA_VARIANTS = [
   { label: "Free Ebook", title: "Must-Have Guide to In-Home Training", desc: "Everything you need to know to start training at home effectively.", cta: "Get the Guide →", href: "https://anytime-soccer.com/must-have-guide-for-serious-soccer-parents/", img: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/home/bg-1.png" },
   { label: "Free Ebook", title: "The Parent Trainer's Playbook", desc: "20 unconventional tips for raising a competitive soccer player.", cta: "Get the Playbook →", href: "https://anytime-soccer.com/the-parent-trainers-playbook/", img: "https://media.anytime-soccer.com/wp-content/uploads/2024/08/the-playbook-20-unconventional-tips-for-raising-a-compeitive-soccer-player-thus-far-1024x789.png" },
   { label: "Free Ebook", title: "20 Questions for Every Club", desc: "Essential questions to ask before joining any youth soccer club.", cta: "Download Free →", href: "https://anytime-soccer.com/20-questions-every-parent-should-ask/", img: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/ebook/ebook-1.png" },
+  { label: "Our Top Picks", title: "Train 20 Minutes a Day", desc: "The gear our coaches recommend for at-home training.", cta: "See Our Picks →", href: "https://www.anytime-soccer.com/our-picks", img: "https://d2vm0l3c6tu9qp.cloudfront.net/Anytime-soccer-camp.webp" },
 ];
 
 export function AnytimeInlineCTA() {
