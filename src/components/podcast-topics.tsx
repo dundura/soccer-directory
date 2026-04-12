@@ -271,7 +271,8 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
 
         {(() => {
           const pinnedTopics = topics.filter(t => t.pinned);
-          const displayTopics = pinnedTopics.length > 0 ? pinnedTopics : topics.slice(0, 3);
+          const otherTopics = topics.filter(t => !t.pinned);
+          const displayTopics = [...pinnedTopics, ...otherTopics].slice(0, 3);
           const shownTopics = expanded ? topics : displayTopics;
           return shownTopics;
         })().map((topic) => (
