@@ -81,7 +81,7 @@ export default async function EpisodePage({ params }: Props) {
       <div className="max-w-[900px] mx-auto px-6 pb-16">
         <div className="bg-white rounded-2xl border border-border overflow-hidden">
           {episode.previewImage && (
-            <ClickableImage src={episode.previewImage} alt={episode.title || "Episode"} className="w-full h-[220px] sm:h-[300px] object-cover cursor-zoom-in" />
+            <ClickableImage src={episode.previewImage} alt={episode.title || "Episode"} className="w-full max-h-[520px] object-contain cursor-zoom-in" />
           )}
           <div className="p-6 sm:p-8">
             <h1 className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase tracking-tight leading-tight mb-3">
@@ -94,7 +94,7 @@ export default async function EpisodePage({ params }: Props) {
             </p>
             {episode.description && (
               episode.description.includes("<") ?
-                <div className="text-primary leading-relaxed mb-6 prose prose-sm max-w-none [&_a]:text-[#DC373E] [&_a]:underline [&_a]:font-semibold" dangerouslySetInnerHTML={{ __html: episode.description }} /> :
+                <div className="text-primary leading-relaxed mb-6 prose prose-sm max-w-none [&_a]:text-[#DC373E] [&_a]:underline [&_a]:font-semibold [&_p]:mb-3 [&_p:last-child]:mb-0" dangerouslySetInnerHTML={{ __html: episode.description }} /> :
                 <p className="text-primary leading-relaxed whitespace-pre-line mb-6">{episode.description}</p>
             )}
 

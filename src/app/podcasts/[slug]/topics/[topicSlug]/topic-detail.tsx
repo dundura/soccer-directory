@@ -38,6 +38,7 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
   const [epEmbedUrl, setEpEmbedUrl] = useState("");
   const [epEmbedHtml, setEpEmbedHtml] = useState("");
   const [embedMode, setEmbedMode] = useState<"url" | "html">("url");
+  const [epLinks, setEpLinks] = useState([{ label: "", url: "" }, { label: "", url: "" }, { label: "", url: "" }]);
   const [saving, setSaving] = useState(false);
 
   // Edit topic
@@ -64,13 +65,26 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
   const [editDesc, setEditDesc] = useState("");
   const [editSlug, setEditSlug] = useState("");
   const [editImage, setEditImage] = useState("");
+  const [editEmbedUrl, setEditEmbedUrl] = useState("");
+  const [editEmbedHtml, setEditEmbedHtml] = useState("");
+  const [editEmbedMode, setEditEmbedMode] = useState<"url" | "html">("url");
+  const [editLinks, setEditLinks] = useState([{ label: "", url: "" }, { label: "", url: "" }, { label: "", url: "" }]);
 
-  const handleEdit = (ep: { id: string; title?: string; description?: string; slug?: string; previewImage?: string }) => {
+  const handleEdit = (ep: { id: string; title?: string; description?: string; slug?: string; previewImage?: string; embedUrl?: string; embedHtml?: string; links?: { label: string; url: string }[] }) => {
     setEditingId(ep.id);
     setEditTitle(ep.title || "");
     setEditDesc(ep.description || "");
     setEditSlug(ep.slug || "");
     setEditImage(ep.previewImage || "");
+    setEditEmbedUrl(ep.embedUrl || "");
+    setEditEmbedHtml(ep.embedHtml || "");
+    setEditEmbedMode(ep.embedHtml ? "html" : "url");
+    const existingLinks = ep.links || [];
+    setEditLinks([
+      existingLinks[0] || { label: "", url: "" },
+      existingLinks[1] || { label: "", url: "" },
+      existingLinks[2] || { label: "", url: "" },
+    ]);
   };
 
   const handleSaveEdit = async () => {
@@ -79,7 +93,13 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
     await fetch("/api/podcast-topics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "updateEpisode", podcastId, episodeId: editingId, title: editTitle, description: editDesc, slug: editSlug, previewImage: editImage }),
+      body: JSON.stringify({
+        action: "updateEpisode", podcastId, episodeId: editingId,
+        title: editTitle, description: editDesc, slug: editSlug, previewImage: editImage,
+        embedUrl: editEmbedMode === "url" ? (editEmbedUrl || null) : null,
+        embedHtml: editEmbedMode === "html" ? (editEmbedHtml || null) : null,
+        links: editLinks.filter(l => l.label.trim() && l.url.trim()),
+      }),
     });
     setSaving(false);
     setEditingId(null);
@@ -97,6 +117,7 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
         title: epTitle || undefined, description: epDesc || undefined,
         embedUrl: embedMode === "url" ? epEmbedUrl : undefined,
         embedHtml: embedMode === "html" ? epEmbedHtml : undefined,
+        links: epLinks.filter(l => l.label.trim() && l.url.trim()),
       }),
     });
     setSaving(false);
@@ -167,6 +188,17 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
           ) : (
             <textarea value={epEmbedHtml} onChange={(e) => setEpEmbedHtml(e.target.value)} placeholder='Paste embed HTML (e.g. <iframe src="..."></iframe>)' rows={3} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm font-mono focus:outline-none focus:border-accent resize-none" />
           )}
+          <div>
+            <label className="block text-xs font-medium text-muted mb-2">Link Buttons (optional — up to 3 clickable links)</label>
+            <div className="space-y-2">
+              {epLinks.map((link, i) => (
+                <div key={i} className="flex gap-2">
+                  <input type="text" value={link.label} onChange={(e) => { const n = [...epLinks]; n[i] = { ...n[i], label: e.target.value }; setEpLinks(n); }} placeholder={`Button ${i + 1} label (e.g. Listen on Spotify)`} className="w-1/3 px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
+                  <input type="url" value={link.url} onChange={(e) => { const n = [...epLinks]; n[i] = { ...n[i], url: e.target.value }; setEpLinks(n); }} placeholder="URL" className="flex-1 px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
+                </div>
+              ))}
+            </div>
+          </div>
           <div className="flex gap-2">
             <button onClick={handleAdd} disabled={saving || (!epEmbedUrl && !epEmbedHtml)} className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">{saving ? "Saving..." : "Add Episode"}</button>
             <button onClick={() => setShowForm(false)} className="px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-surface transition-colors">Cancel</button>
@@ -200,11 +232,39 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
                   <ImageUpload onUploaded={(url) => setEditImage(url)} />
                 )}
               </div>
+              <div>
+                <label className="block text-xs font-medium text-muted mb-1">Embed (podcast/video)</label>
+                <div className="flex gap-2 mb-2">
+                  <button type="button" onClick={() => setEditEmbedMode("url")} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${editEmbedMode === "url" ? "bg-primary text-white" : "bg-white border border-border text-muted"}`}>URL</button>
+                  <button type="button" onClick={() => setEditEmbedMode("html")} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${editEmbedMode === "html" ? "bg-primary text-white" : "bg-white border border-border text-muted"}`}>Embed Code</button>
+                </div>
+                {editEmbedMode === "url" ? (
+                  <div className="flex gap-2">
+                    <input type="url" value={editEmbedUrl} onChange={(e) => setEditEmbedUrl(e.target.value)} placeholder="Spotify, Apple Podcasts, or YouTube URL..." className="flex-1 px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
+                    {editEmbedUrl && <button type="button" onClick={() => setEditEmbedUrl("")} className="px-3 py-2 rounded-lg border border-border text-xs text-red-500 hover:bg-red-50 transition-colors">Remove</button>}
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <textarea value={editEmbedHtml} onChange={(e) => setEditEmbedHtml(e.target.value)} placeholder='Paste embed HTML...' rows={3} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm font-mono focus:outline-none focus:border-accent resize-none" />
+                    {editEmbedHtml && <button type="button" onClick={() => setEditEmbedHtml("")} className="text-xs text-red-500 hover:underline">Remove embed</button>}
+                  </div>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-muted mb-2">Link Buttons (up to 3 clickable links)</label>
+                <div className="space-y-2">
+                  {editLinks.map((link, i) => (
+                    <div key={i} className="flex gap-2">
+                      <input type="text" value={link.label} onChange={(e) => { const n = [...editLinks]; n[i] = { ...n[i], label: e.target.value }; setEditLinks(n); }} placeholder={`Button ${i + 1} label (e.g. Listen on Spotify)`} className="w-1/3 px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
+                      <input type="url" value={link.url} onChange={(e) => { const n = [...editLinks]; n[i] = { ...n[i], url: e.target.value }; setEditLinks(n); }} placeholder="URL" className="flex-1 px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="flex gap-2">
                 <button onClick={handleSaveEdit} disabled={saving} className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">{saving ? "Saving..." : "Save"}</button>
                 <button onClick={() => setEditingId(null)} className="px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-surface transition-colors">Cancel</button>
               </div>
-              <EmbedPlayer embedUrl={ep.embedUrl} embedHtml={ep.embedHtml} />
             </div>
           ) : (
             <>
@@ -213,13 +273,22 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
                   {ep.title && <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="hover:text-accent transition-colors"><h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight hover:text-accent">{ep.title}</h3></a>}
                   {ep.description && (
                     ep.description.includes("<") ?
-                      <div className="text-sm text-primary/70 mt-1 leading-relaxed prose prose-sm max-w-none [&_a]:text-[#DC373E] [&_a]:underline [&_a]:font-semibold" dangerouslySetInnerHTML={{ __html: ep.description }} /> :
+                      <div className="text-sm text-primary/70 mt-1 leading-relaxed prose prose-sm max-w-none [&_a]:text-[#DC373E] [&_a]:underline [&_a]:font-semibold [&_p]:mb-3 [&_p:last-child]:mb-0" dangerouslySetInnerHTML={{ __html: ep.description }} /> :
                       <p className="text-sm text-primary/70 mt-1 leading-relaxed whitespace-pre-line">{ep.description}</p>
                   )}
-                  <div className="flex items-center gap-3 mt-2">
+                  <div className="flex items-center gap-3 mt-2 flex-wrap">
                     <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="text-xs font-semibold text-accent hover:underline">Share Episode →</a>
-                    {ep.slug && <span className="text-[10px] text-muted font-mono">/{ep.slug}</span>}
                   </div>
+                  {ep.links && ep.links.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {ep.links.map((link, i) => (
+                        <a key={i} href={link.url} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border-2 border-primary text-primary text-xs font-bold hover:bg-primary hover:text-white transition-colors">
+                          {link.label} ↗
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 {isOwner && (
                   <div className="flex gap-3 flex-shrink-0">

@@ -3550,6 +3550,11 @@ export interface PodcastTopic {
   episodes: PodcastEpisode[];
 }
 
+export interface PodcastEpisodeLink {
+  label: string;
+  url: string;
+}
+
 export interface PodcastEpisode {
   id: string;
   topicId: string;
@@ -3559,6 +3564,7 @@ export interface PodcastEpisode {
   embedUrl?: string;
   embedHtml?: string;
   previewImage?: string;
+  links?: PodcastEpisodeLink[];
   sortOrder: number;
 }
 
@@ -3575,6 +3581,7 @@ export async function getPodcastTopics(podcastId: string): Promise<PodcastTopic[
         id: e.id as string, topicId: e.topic_id as string, title: e.title as string | undefined,
         description: e.description as string | undefined, embedUrl: e.embed_url as string | undefined,
         embedHtml: e.embed_html as string | undefined, previewImage: e.preview_image as string | undefined, slug: e.slug as string | undefined, sortOrder: e.sort_order as number,
+        links: e.links ? (typeof e.links === 'string' ? JSON.parse(e.links) : e.links) : undefined,
       })),
     });
   }
@@ -3616,10 +3623,12 @@ export async function deletePodcastTopic(id: string): Promise<boolean> {
   return rows.length > 0;
 }
 
-export async function createPodcastEpisode(topicId: string, data: { title?: string; description?: string; embedUrl?: string; embedHtml?: string }): Promise<string> {
+export async function createPodcastEpisode(topicId: string, data: { title?: string; description?: string; embedUrl?: string; embedHtml?: string; links?: PodcastEpisodeLink[] }): Promise<string> {
+  await sql`ALTER TABLE podcast_episodes ADD COLUMN IF NOT EXISTS links JSONB`;
   const id = genId();
   const slug = data.title ? data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : id;
-  await sql`INSERT INTO podcast_episodes (id, topic_id, title, slug, description, embed_url, embed_html) VALUES (${id}, ${topicId}, ${data.title || null}, ${slug}, ${data.description || null}, ${data.embedUrl || null}, ${data.embedHtml || null})`;
+  const linksJson = data.links ? JSON.stringify(data.links) : null;
+  await sql`INSERT INTO podcast_episodes (id, topic_id, title, slug, description, embed_url, embed_html, links) VALUES (${id}, ${topicId}, ${data.title || null}, ${slug}, ${data.description || null}, ${data.embedUrl || null}, ${data.embedHtml || null}, ${linksJson})`;
   return id;
 }
 
@@ -3637,8 +3646,19 @@ export async function getPodcastEpisodeBySlug(episodeSlug: string): Promise<(Pod
   };
 }
 
-export async function updatePodcastEpisode(id: string, data: { title?: string; description?: string; embedUrl?: string; embedHtml?: string; slug?: string; previewImage?: string }): Promise<boolean> {
-  const rows = await sql`UPDATE podcast_episodes SET title = ${data.title ?? null}, description = ${data.description ?? null}, slug = COALESCE(${data.slug || null}, slug), embed_url = COALESCE(${data.embedUrl || null}, embed_url), embed_html = COALESCE(${data.embedHtml || null}, embed_html), preview_image = COALESCE(${data.previewImage || null}, preview_image) WHERE id = ${id} RETURNING id`;
+export async function updatePodcastEpisode(id: string, data: { title?: string; description?: string; embedUrl?: string | null; embedHtml?: string | null; slug?: string; previewImage?: string; links?: PodcastEpisodeLink[] }): Promise<boolean> {
+  // Add links column if it doesn't exist (safe to run repeatedly)
+  await sql`ALTER TABLE podcast_episodes ADD COLUMN IF NOT EXISTS links JSONB`;
+  const linksJson = data.links ? JSON.stringify(data.links) : null;
+  const rows = await sql`UPDATE podcast_episodes SET
+    title = ${data.title ?? null},
+    description = ${data.description ?? null},
+    slug = COALESCE(${data.slug || null}, slug),
+    embed_url = ${data.embedUrl ?? null},
+    embed_html = ${data.embedHtml ?? null},
+    preview_image = COALESCE(${data.previewImage || null}, preview_image),
+    links = ${linksJson}
+    WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
 
