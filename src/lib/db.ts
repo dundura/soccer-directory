@@ -3612,8 +3612,10 @@ export async function getPodcastTopicBySlug(podcastId: string, topicSlug: string
     previewImage: t.preview_image as string | undefined, pinned: !!t.pinned, sortOrder: t.sort_order as number,
     episodes: episodeRows.map((e) => ({
       id: e.id as string, topicId: e.topic_id as string, title: e.title as string | undefined,
-      description: e.description as string | undefined, embedUrl: e.embed_url as string | undefined,
-      embedHtml: e.embed_html as string | undefined, sortOrder: e.sort_order as number,
+      slug: e.slug as string | undefined, description: e.description as string | undefined,
+      embedUrl: e.embed_url as string | undefined, embedHtml: e.embed_html as string | undefined,
+      previewImage: e.preview_image as string | undefined, sortOrder: e.sort_order as number,
+      links: e.links ? (typeof e.links === 'string' ? JSON.parse(e.links) : e.links) : undefined,
     })),
   };
 }
@@ -3642,6 +3644,7 @@ export async function getPodcastEpisodeBySlug(episodeSlug: string): Promise<(Pod
     slug: e.slug as string | undefined, description: e.description as string | undefined,
     embedUrl: e.embed_url as string | undefined, embedHtml: e.embed_html as string | undefined,
     previewImage: e.preview_image as string | undefined,
+    links: e.links ? (typeof e.links === 'string' ? JSON.parse(e.links) : e.links) : undefined,
     sortOrder: e.sort_order as number, podcastId: e.podcast_id as string, topicTitle: e.topic_title as string,
   };
 }
