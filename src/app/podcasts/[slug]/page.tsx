@@ -128,6 +128,11 @@ export default async function PodcastPage({ params }: Props) {
             Be a Guest
           </a>
 
+          {/* Contact Host CTA */}
+          <a href="#be-a-guest" className="block w-full py-3 text-center rounded-xl border-2 border-accent text-accent font-semibold hover:bg-accent hover:text-white transition-colors">
+            Contact Host
+          </a>
+
           {ownerId && <ManageListingButton listingType="podcast" listingId={podcast.id} ownerId={ownerId} />}
 
           {/* Topics - desktop sidebar shortcut */}
