@@ -63,7 +63,7 @@ export default async function AllTopicsPage({ params }: Props) {
                 {topic.previewImage && (
                   <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-4">
                     <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-surface">
-                      <img src={topic.previewImage} alt={topic.title} className="w-full h-full object-cover" />
+                      <img src={topic.previewImage} alt={topic.title} className="w-full h-full object-contain" />
                     </div>
                   </div>
                 )}
