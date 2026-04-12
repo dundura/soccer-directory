@@ -51,7 +51,7 @@ export default async function TopicPage({ params }: Props) {
         <div className="bg-white rounded-2xl border border-border overflow-hidden mb-6">
           {topic.previewImage && (
             <a href={topic.previewImage} target="_blank" rel="noopener noreferrer">
-              <img src={topic.previewImage} alt={topic.title} className="w-full h-[200px] sm:h-[280px] object-cover cursor-pointer hover:opacity-90 transition-opacity" />
+              <img src={topic.previewImage} alt={topic.title} className="w-full max-h-[520px] object-contain cursor-pointer hover:opacity-90 transition-opacity" />
             </a>
           )}
           <div className="p-6 sm:p-8">
