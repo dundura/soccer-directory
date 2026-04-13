@@ -40,6 +40,7 @@ export default async function GearDetailPage({ params }: Props) {
   const ownerId = await getListingOwner("marketplace", slug);
 
   const mainImage = item.imageUrl || DEFAULT_IMAGE;
+  const hasBanner = !!item.imageUrl;
 
   return (
     <>
@@ -68,7 +69,7 @@ export default async function GearDetailPage({ params }: Props) {
           {/* Sidebar */}
           <div className="lg:w-[280px] shrink-0 space-y-6">
             <div className="bg-white rounded-2xl border border-border overflow-hidden">
-              <HeroImage src={mainImage} alt={item.name} id={item.id} imagePosition={item.heroImagePosition} />
+              {hasBanner && <HeroImage src={mainImage} alt={item.name} id={item.id} imagePosition={item.heroImagePosition} />}
               <div className="p-6 space-y-4">
                 <div>
                   <p className="text-xs text-muted font-medium uppercase tracking-wide">Price</p>
