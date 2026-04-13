@@ -53,13 +53,13 @@ export default async function GearDetailPage({ params }: Props) {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="name" value={item.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
+              <InlineEditField ownerId={ownerId} listingType="gear" listingId={item.id} field="name" value={item.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
               {item.tagline && (
-                <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="tagline" value={item.tagline} tag="p" className="text-white/80 text-sm font-medium" />
+                <InlineEditField ownerId={ownerId} listingType="gear" listingId={item.id} field="tagline" value={item.tagline} tag="p" className="text-white/80 text-sm font-medium" />
               )}
               <p className="text-white/60 text-lg">{item.city}, {item.state}</p>
             </div>
-            <ManageListingButton ownerId={ownerId} listingType="marketplace" listingId={item.id} />
+            <ManageListingButton ownerId={ownerId} listingType="gear" listingId={item.id} />
           </div>
         </div>
       </div>
@@ -103,7 +103,7 @@ export default async function GearDetailPage({ params }: Props) {
             {/* Description */}
             <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
               <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Description</h2>
-              <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="description" value={item.description} tag="div" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
+              <InlineEditField ownerId={ownerId} listingType="gear" listingId={item.id} field="description" value={item.description} tag="div" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
             </div>
 
             {/* Special Offer */}
@@ -123,7 +123,7 @@ export default async function GearDetailPage({ params }: Props) {
             {item.aboutAuthor && (
               <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About the Author</h2>
-                <InlineEditField ownerId={ownerId} listingType="marketplace" listingId={item.id} field="aboutAuthor" value={item.aboutAuthor} tag="p" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap" multiline />
+                <InlineEditField ownerId={ownerId} listingType="gear" listingId={item.id} field="aboutAuthor" value={item.aboutAuthor} tag="p" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap" multiline />
               </div>
             )}
 
@@ -132,19 +132,19 @@ export default async function GearDetailPage({ params }: Props) {
               <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Photos</h2>
-                  <EditSectionLink ownerId={ownerId} listingType="marketplace" listingId={item.id} />
+                  <EditSectionLink ownerId={ownerId} listingType="gear" listingId={item.id} />
                 </div>
                 <PhotoGallery photos={item.photos} />
               </div>
             )}
 
             <Suspense fallback={<div className="bg-white rounded-2xl p-6 shadow-sm"><div className="h-5 w-24 bg-gray-200 rounded animate-pulse mb-4" /><div className="h-20 bg-gray-200 rounded animate-pulse" /></div>}>
-              <ReviewSection listingType="marketplace" listingId={item.id} />
+              <ReviewSection listingType="gear" listingId={item.id} />
             </Suspense>
 
-            <ListingEventsSection listingType="marketplace" listingId={item.id} listingSlug={slug} ownerId={ownerId} />
+            <ListingEventsSection listingType="gear" listingId={item.id} listingSlug={slug} ownerId={ownerId} />
             <FeaturedArticles />
-            <ListingPostsSidebar listingType="marketplace" listingId={item.id} slug={slug} ownerId={ownerId} />
+            <ListingPostsSidebar listingType="gear" listingId={item.id} slug={slug} ownerId={ownerId} />
 
             {item.sponsors && item.sponsors.length > 0 && (
               <SponsorsSection sponsors={item.sponsors} />
