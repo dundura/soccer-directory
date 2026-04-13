@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getMarketplaceItemBySlug, getListingOwner } from "@/lib/db";
+import { getGearItemBySlug, getListingOwner } from "@/lib/db";
 import { Badge } from "@/components/ui";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
@@ -10,9 +10,9 @@ import { ReviewSection } from "@/components/review-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { ListingEventsSection } from "@/components/listing-events-section";
 import { HeroImage } from "@/components/hero-image";
 import { AnnouncementSection } from "@/components/announcement-section";
-import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
 
@@ -20,22 +20,22 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const item = await getMarketplaceItemBySlug(slug);
+  const item = await getGearItemBySlug(slug);
   if (!item) return {};
   const { ogMeta } = await import("@/lib/og");
   return ogMeta(
-    `${item.name} — ${item.category} | Soccer Near Me`,
-    item.description?.slice(0, 160) || `${item.category} for sale — ${item.price} in ${item.city}, ${item.state}`,
+    `${item.name} — Gear | Soccer Near Me`,
+    item.description?.slice(0, 160) || `Soccer gear — ${item.price} in ${item.city}, ${item.state}`,
     item.imageUrl,
-    `/shop/${slug}`,
+    `/gear/${slug}`,
   );
 }
 
 const DEFAULT_IMAGE = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp";
 
-export default async function ShopDetailPage({ params }: Props) {
+export default async function GearDetailPage({ params }: Props) {
   const { slug } = await params;
-  const item = await getMarketplaceItemBySlug(slug);
+  const item = await getGearItemBySlug(slug);
   if (!item) notFound();
   const ownerId = await getListingOwner("marketplace", slug);
 
@@ -45,7 +45,7 @@ export default async function ShopDetailPage({ params }: Props) {
     <>
       <div className="bg-primary text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <a href="/shop" className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">&larr; Back to Shop</a>
+          <a href="/gear" className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">&larr; Back to Gear</a>
           <div className="flex flex-wrap gap-2 mb-4">
             <Badge variant="green">{item.category}</Badge>
             <Badge variant="default">{item.condition}</Badge>
@@ -141,19 +141,15 @@ export default async function ShopDetailPage({ params }: Props) {
               <ReviewSection listingType="marketplace" listingId={item.id} />
             </Suspense>
 
-            {/* Events */}
             <ListingEventsSection listingType="marketplace" listingId={item.id} listingSlug={slug} ownerId={ownerId} />
-
             <FeaturedArticles />
-
             <ListingPostsSidebar listingType="marketplace" listingId={item.id} slug={slug} ownerId={ownerId} />
 
-            {/* Sponsors */}
             {item.sponsors && item.sponsors.length > 0 && (
               <SponsorsSection sponsors={item.sponsors} />
             )}
           </div>
-</div>
+        </div>
       </div>
     </>
   );

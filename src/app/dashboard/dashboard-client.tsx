@@ -16,7 +16,7 @@ const TYPE_PATHS: Record<string, string> = {
   futsal: "futsal",
   marketplace: "shop",
   equipment: "shop",
-  gear: "shop",
+  gear: "gear",
   soccerbook: "books-and-authors",
   showcase: "camps",
   player: "players",

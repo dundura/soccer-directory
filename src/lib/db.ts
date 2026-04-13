@@ -701,6 +701,17 @@ function mapTrip(r: Record<string, unknown>): InternationalTrip {
   };
 }
 
+// ── Gear ─────────────────────────────────────────────────────
+export async function getGearItems(): Promise<MarketplaceItem[]> {
+  const rows = await sql`SELECT * FROM marketplace WHERE status = 'approved' AND category = 'Gear' ORDER BY featured DESC, created_at DESC`;
+  return rows.map(mapMarketplaceItem);
+}
+
+export async function getGearItemBySlug(slug: string): Promise<MarketplaceItem | null> {
+  const rows = await sql`SELECT * FROM marketplace WHERE slug = ${slug} AND status = 'approved' AND category = 'Gear' LIMIT 1`;
+  return rows[0] ? mapMarketplaceItem(rows[0]) : null;
+}
+
 // ── Marketplace ─────────────────────────────────────────────
 export async function getMarketplaceItems(): Promise<MarketplaceItem[]> {
   const rows = await sql`SELECT * FROM marketplace WHERE status = 'approved' ORDER BY featured DESC, created_at DESC`;
@@ -729,6 +740,11 @@ function mapMarketplaceItem(r: Record<string, unknown>): MarketplaceItem {
     photos,
     aboutAuthor: r.about_author as string | undefined,
     tagline: r.tagline as string | undefined,
+    announcementHeading: r.announcement_heading as string | undefined,
+    announcementText: r.announcement_text as string | undefined,
+    announcementImage: r.announcement_image as string | undefined,
+    announcementCta: r.announcement_cta as string | undefined,
+    announcementCtaUrl: r.announcement_cta_url as string | undefined,
     sponsors: r.sponsors ? (() => { try { return JSON.parse(r.sponsors as string); } catch { return undefined; } })() : undefined,
     featured: r.featured as boolean, createdAt: r.created_at as string,
   };

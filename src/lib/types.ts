@@ -390,6 +390,11 @@ export interface MarketplaceItem {
   photos?: string[];
   aboutAuthor?: string;
   tagline?: string;
+  announcementHeading?: string;
+  announcementText?: string;
+  announcementImage?: string;
+  announcementCta?: string;
+  announcementCtaUrl?: string;
   sponsors?: Sponsor[];
   featured: boolean;
   createdAt: string;
