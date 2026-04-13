@@ -533,7 +533,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "phone", label: "Phone" },
     { name: "_profile", label: "Photos", type: "heading" },
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they will expire.", type: "warning" },
-    { name: "imageUrl", label: "Banner Image (optional)", type: "image" },
+    { name: "previewImage", label: "Banner Image (optional)", type: "image" },
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
     { name: "_offers", label: "Special Offer", type: "heading" },
     { name: "announcementHeading", label: "Offer Heading" },

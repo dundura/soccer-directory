@@ -39,7 +39,7 @@ export default async function GearDetailPage({ params }: Props) {
   if (!item) notFound();
   const ownerId = await getListingOwner("marketplace", slug);
 
-  const sidebarImage = (item.photos && item.photos[0]) || DEFAULT_IMAGE;
+  const sidebarImage = item.imageUrl || DEFAULT_IMAGE;
 
   return (
     <>
@@ -100,9 +100,9 @@ export default async function GearDetailPage({ params }: Props) {
           {/* Main Content */}
           <div className="flex-1 min-w-0">
             {/* Banner Image */}
-            {item.imageUrl && (
+            {item.previewImage && (
               <div className="rounded-2xl overflow-hidden mb-6">
-                <HeroImage src={item.imageUrl} alt={item.name} id={item.id} imagePosition={item.heroImagePosition} />
+                <HeroImage src={item.previewImage} alt={item.name} id={item.id} imagePosition={item.heroImagePosition} />
               </div>
             )}
 

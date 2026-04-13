@@ -386,6 +386,7 @@ export interface MarketplaceItem {
   contactEmail: string;
   phone?: string;
   imageUrl?: string;
+  previewImage?: string;
   heroImagePosition?: number;
   photos?: string[];
   aboutAuthor?: string;
