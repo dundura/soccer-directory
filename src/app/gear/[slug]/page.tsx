@@ -69,7 +69,7 @@ export default async function GearDetailPage({ params }: Props) {
           {/* Sidebar */}
           <div className="lg:w-[280px] shrink-0 space-y-6">
             <div className="bg-white rounded-2xl border border-border overflow-hidden">
-              {hasBanner && <HeroImage src={mainImage} alt={item.name} id={item.id} imagePosition={item.heroImagePosition} />}
+              <img src={mainImage} alt={item.name} className="w-full h-48 object-cover" />
               <div className="p-6 space-y-4">
                 <div>
                   <p className="text-xs text-muted font-medium uppercase tracking-wide">Price</p>
