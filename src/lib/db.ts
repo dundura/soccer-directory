@@ -5,7 +5,7 @@ const sql = neon(process.env.DATABASE_URL!);
 
 // ── Type normalization (virtual → DB) ────────────────────────
 function normalizeType(type: string): string {
-  if (type === "equipment" || type === "books" || type === "ebook" || type === "giveaway") return "marketplace";
+  if (type === "equipment" || type === "gear" || type === "books" || type === "ebook" || type === "giveaway") return "marketplace";
   if (type === "showcase") return "camp";
   if (type === "instagrampage" || type === "instagram") return "instagrampage";
   if (type === "tiktokpage" || type === "tiktok") return "tiktokpage";
@@ -1101,7 +1101,7 @@ export async function getListingsByUserId(userId: string) {
     sql`SELECT id, slug, name, status, 'tournament' as type FROM tournaments WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'futsal' as type FROM futsal_teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, trip_name as name, status, 'trip' as type FROM international_trips WHERE user_id = ${userId} ORDER BY created_at DESC`,
-    sql`SELECT id, slug, name, status, CASE WHEN category = 'Books' THEN 'books' WHEN category = 'Ebook' THEN 'ebook' WHEN category = 'Giveaway' THEN 'giveaway' ELSE 'equipment' END as type FROM marketplace WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, CASE WHEN category = 'Books' THEN 'books' WHEN category = 'Ebook' THEN 'ebook' WHEN category = 'Giveaway' THEN 'giveaway' WHEN category = 'Gear' THEN 'gear' ELSE 'equipment' END as type FROM marketplace WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, player_name as name, status, 'player' as type FROM player_profiles WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'podcast' as type FROM podcasts WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'fbgroup' as type FROM facebook_groups WHERE user_id = ${userId} ORDER BY created_at DESC`,
