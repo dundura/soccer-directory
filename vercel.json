@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/fb-group-email",
       "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/neil-fb-reminder",
+      "schedule": "0 14 * * 1,6"
     }
   ]
 }
