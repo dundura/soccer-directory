@@ -10,6 +10,7 @@ import { ReviewSection } from "@/components/review-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
+import { HeroImage } from "@/components/hero-image";
 import { ListingEventsSection } from "@/components/listing-events-section";
 
 export const dynamic = "force-dynamic";
@@ -41,6 +42,9 @@ export default async function ShopDetailPage({ params }: Props) {
 
   return (
     <>
+      {item.imageUrl && (
+        <HeroImage src={item.imageUrl} alt={item.name} id={item.id} imagePosition={item.heroImagePosition} />
+      )}
       <div className="bg-primary text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <a href="/shop" className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">&larr; Back to Shop</a>
