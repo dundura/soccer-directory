@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Future: add image domains, rewrites for API, etc.
+  async redirects() {
+    return [
+      { source: "/shop", destination: "/gear", permanent: true },
+      { source: "/shop/:slug", destination: "/gear/:slug", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
