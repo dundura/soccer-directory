@@ -808,7 +808,7 @@ export interface PhotoVideoService extends ProfileFields {
   updatedAt?: string;
 }
 
-export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "instagrampage" | "tiktokpage" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube" | "specialevent" | "recruiter" | "fundraiser" | "scrimmage" | "soccerbook" | "photovideo";
+export type ListingType = "club" | "team" | "trainer" | "camp" | "guest" | "tournament" | "futsal" | "trip" | "marketplace" | "equipment" | "gear" | "books" | "showcase" | "player" | "podcast" | "fbgroup" | "instagrampage" | "tiktokpage" | "service" | "tryout" | "trainingapp" | "ebook" | "giveaway" | "blog" | "youtube" | "specialevent" | "recruiter" | "fundraiser" | "scrimmage" | "soccerbook" | "photovideo";
 
 // ── Reviews ─────────────────────────────────────────────────
 export type ReviewerRole = "Parent" | "Player" | "Coach" | "Other";

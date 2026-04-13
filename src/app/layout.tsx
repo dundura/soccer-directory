@@ -109,6 +109,7 @@ function Header() {
                   items: [
                     { label: "Coaches & Trainers", href: "/trainers", desc: "Private & group training", icon: "🎯" },
                     { label: "Training Apps", href: "/training-apps", desc: "Soccer training apps", icon: "📱" },
+                    { label: "Gear", href: "/shop", desc: "Soccer gear & equipment", icon: "🛡️" },
                     { label: "Books & Authors", href: "/books-and-authors", desc: "Soccer books & authors", icon: "📚" },
                     { label: "Photo & Video Services", href: "/photo-video-services", desc: "Photography & videography", icon: "📸" },
                     { label: "Other Products & Services", href: "/services", desc: "Soccer products & services", icon: "🛒" },

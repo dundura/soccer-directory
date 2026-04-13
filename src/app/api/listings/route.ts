@@ -115,6 +115,10 @@ export async function POST(req: Request) {
         data.category = "Equipment";
         slug = await createMarketplaceListing(data, session.user.id);
         break;
+      case "gear":
+        data.category = "Gear";
+        slug = await createMarketplaceListing(data, session.user.id);
+        break;
       case "books":
         data.category = "Books";
         slug = await createMarketplaceListing(data, session.user.id);
