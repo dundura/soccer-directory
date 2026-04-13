@@ -1410,7 +1410,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Listing type selector */}
-      {(!isEdit || (isEdit && !isAdmin)) && (
+      {(true) && (
         <div>
           <label className="block text-sm font-medium mb-2">Listing Type</label>
           {isEdit && type !== editType && (
