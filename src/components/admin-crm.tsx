@@ -26,6 +26,7 @@ export function AdminCRM() {
   const [expandedComments, setExpandedComments] = useState<Set<number>>(new Set());
   const [commentingId, setCommentingId] = useState<number | null>(null);
   const [commentBody, setCommentBody] = useState("");
+  const [search, setSearch] = useState("");
 
   const commentsByContact = useMemo(() => {
     const map = new Map<number, CrmComment[]>();
@@ -250,18 +251,54 @@ export function AdminCRM() {
         </form>
       </div>
 
+      {/* Search */}
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Search contacts by name, email, phone, or team..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full px-4 py-2.5 pl-9 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 bg-white"
+        />
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" /></svg>
+        {search && <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-primary text-lg leading-none">&times;</button>}
+      </div>
+
+      {/* Flat search results */}
+      {search.trim() && (() => {
+        const q = search.toLowerCase();
+        const filtered = contacts.filter(c =>
+          `${c.first_name} ${c.last_name}`.toLowerCase().includes(q) ||
+          c.email?.toLowerCase().includes(q) ||
+          c.phone?.toLowerCase().includes(q) ||
+          c.team?.toLowerCase().includes(q)
+        );
+        return (
+          <div className="bg-white rounded-2xl border border-border overflow-hidden">
+            <div className="px-5 py-3 border-b border-border text-sm font-semibold text-primary">
+              {filtered.length} result{filtered.length !== 1 ? "s" : ""} for &ldquo;{search}&rdquo;
+            </div>
+            {filtered.length > 0 ? (
+              <div className="overflow-x-auto">{renderContactTable(filtered)}</div>
+            ) : (
+              <div className="px-5 py-4 text-sm text-muted">No contacts found.</div>
+            )}
+          </div>
+        );
+      })()}
+
       {/* Group Manager Toggle */}
-      <div className="flex items-center justify-between">
+      {!search.trim() && <div className="flex items-center justify-between">
         <h3 className="font-[family-name:var(--font-display)] text-lg font-bold">
           Pipeline ({contacts.length} contacts)
         </h3>
         <button onClick={() => setShowGroupManager(!showGroupManager)} className="text-sm text-accent font-semibold hover:text-accent-hover transition-colors">
           {showGroupManager ? "Hide" : "Manage"} Groups
         </button>
-      </div>
+      </div>}
 
       {/* Group Manager */}
-      {showGroupManager && (
+      {!search.trim() && showGroupManager && (
         <div className="bg-white rounded-2xl border border-border p-5">
           <div className="space-y-2 mb-4">
             {groups.map((g, i) => (
@@ -281,7 +318,7 @@ export function AdminCRM() {
       )}
 
       {/* Contacts by Group */}
-      {groups.map((group) => {
+      {!search.trim() && groups.map((group) => {
         const gc = contacts.filter((c) => c.group_name === group.name);
         const isExpanded = expanded.has(group.name);
         return (
@@ -303,7 +340,7 @@ export function AdminCRM() {
       })}
 
       {/* Ungrouped */}
-      {ungrouped.length > 0 && (
+      {!search.trim() && ungrouped.length > 0 && (
         <div className="bg-white rounded-2xl border border-border overflow-hidden">
           <button onClick={() => toggleCollapse("__ungrouped")} className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-surface/50 transition-colors">
             <span className="font-bold text-sm text-muted">No Group</span>
