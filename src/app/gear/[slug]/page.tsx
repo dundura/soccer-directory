@@ -100,6 +100,13 @@ export default async function GearDetailPage({ params }: Props) {
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">
+            {/* Banner Image */}
+            {item.imageUrl && (
+              <div className="rounded-2xl overflow-hidden mb-6">
+                <HeroImage src={item.imageUrl} alt={item.name} id={item.id} imagePosition={item.heroImagePosition} />
+              </div>
+            )}
+
             {/* Description */}
             <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
               <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">Description</h2>
