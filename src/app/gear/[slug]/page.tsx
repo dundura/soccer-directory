@@ -95,6 +95,7 @@ export default async function GearDetailPage({ params }: Props) {
                 </a>
               </div>
             </div>
+            <ListingPostsSidebar listingType="gear" listingId={item.id} slug={slug} ownerId={ownerId} />
           </div>
 
           {/* Main Content */}
@@ -149,8 +150,8 @@ export default async function GearDetailPage({ params }: Props) {
             </Suspense>
 
             <ListingEventsSection listingType="gear" listingId={item.id} listingSlug={slug} ownerId={ownerId} />
-            <FeaturedArticles />
             <ListingPostsSidebar listingType="gear" listingId={item.id} slug={slug} ownerId={ownerId} />
+            <FeaturedArticles />
 
             {item.sponsors && item.sponsors.length > 0 && (
               <SponsorsSection sponsors={item.sponsors} />
