@@ -1067,6 +1067,9 @@ const FIELD_TO_COLUMN: Record<string, string> = {
   teamName: "team_name", tripName: "trip_name", playerName: "player_name",
   hostBio: "host_bio", creatorBio: "creator_bio", authorBio: "author_bio",
   hostHeading: "host_heading", creatorHeading: "creator_heading",
+  state: "state", city: "city", dates: "dates", location: "location",
+  ageRange: "age_range", gender: "gender", campType: "camp_type",
+  address: "address",
 };
 
 export async function patchListingField(

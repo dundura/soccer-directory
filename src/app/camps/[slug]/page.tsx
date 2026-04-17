@@ -220,7 +220,7 @@ export default async function CampDetailPage({ params }: Props) {
                     <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="tagline" value={camp.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
                   )}
                   <p className="text-sm text-muted mt-1.5 mb-3 font-medium">
-                    {camp.organizerName} {" \u00b7 "} {camp.city}, {camp.state}
+                    {camp.organizerName} {" \u00b7 "} {camp.city}, <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="state" value={camp.state} tag="span" className="text-sm text-muted font-medium" />
                   </p>
                   {camp.description && (
                     <div className="mb-0">
@@ -279,7 +279,7 @@ export default async function CampDetailPage({ params }: Props) {
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg leading-none">&#128197;</span>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Dates</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{camp.dates}</span>
+                  <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="dates" value={camp.dates} tag="span" className="text-sm font-bold text-primary ml-auto" />
                 </div>
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg leading-none">&#128176;</span>
@@ -299,7 +299,7 @@ export default async function CampDetailPage({ params }: Props) {
                 <div className="flex items-center gap-2.5">
                   <span className="text-lg leading-none">&#128205;</span>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Location</span>
-                  <span className="text-sm font-bold text-primary ml-auto">{camp.location || `${camp.city}, ${camp.state}`}</span>
+                  <InlineEditField ownerId={ownerId} listingType="camp" listingId={camp.id} field="location" value={camp.location || `${camp.city}, ${camp.state}`} tag="span" className="text-sm font-bold text-primary ml-auto" />
                 </div>
               </div>
             </div>
