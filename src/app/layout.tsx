@@ -125,6 +125,7 @@ function Header() {
                 {
                   title: "Consultants",
                   items: [
+                    { label: "Performance Consultants", href: "/consultants", desc: "Biomechanics, sports science & more", icon: "🔬" },
                     { label: "Mental Training", href: "/trainers?specialty=Mental+Training", desc: "Sports psychology", icon: "🧠" },
                     { label: "College Recruiting", href: "/college-recruiting", desc: "Recruiting advisors", icon: "🎓" },
                   ],
