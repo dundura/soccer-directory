@@ -36,6 +36,7 @@ const TYPE_PATHS: Record<string, string> = {
   youtube: "youtube-channels",
   fundraiser: "fundraiser",
   scrimmage: "scrimmages",
+  consultant: "consultants",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -68,6 +69,7 @@ const TYPE_LABELS: Record<string, string> = {
   youtube: "YouTube Channel",
   fundraiser: "Fundraiser",
   scrimmage: "Scrimmage",
+  consultant: "Performance Consultant",
 };
 
 type Listing = { id: string; slug: string; name: string; status: string; type: string };

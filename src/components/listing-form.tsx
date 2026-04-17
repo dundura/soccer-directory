@@ -110,6 +110,7 @@ const DEFAULT_DESCRIPTIONS: Record<ListingType, string> = {
   recruiter: "I am a college recruiting advisor helping student-athletes navigate the college soccer recruiting process, from building highlight reels to communicating with coaches.",
   fundraiser: "Help our team reach its fundraising goal! Every donation makes a difference and supports our players.",
   scrimmage: "We're looking for teams to scrimmage in our area. Contact us to set up a friendly match!",
+  consultant: "I am a soccer performance specialist offering expert consulting in biomechanics, injury prevention, sports science, and athlete development for elite soccer players.",
 };
 
 // ── Field definitions ──────────────────────────────────────────
@@ -1110,6 +1111,37 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
   ],
+  consultant: [
+    { name: "name", label: "Your Name", required: true },
+    { name: "city", label: "City", required: true },
+    { name: "country", label: "Country", required: true, type: "country" },
+    { name: "state", label: "State", required: true, type: "state-select" },
+    { name: "specialty", label: "Specialty", required: true, options: ["Clinical Biomechanics", "Injury Prevention & Rehab", "Sports Science", "Performance Analytics", "Strength & Conditioning", "Mental Performance", "Nutrition & Recovery", "Tactical & Strategy", "Sports Psychology", "Video Analysis", "Goalkeeper Development", "Academy & Club Development", "General"] },
+    { name: "experience", label: "Experience & Background", required: true, type: "richtext" },
+    { name: "credentials", label: "Credentials / Certifications", required: true, type: "richtext" },
+    { name: "priceRange", label: "Rate / Pricing (e.g. $150/hr)", required: true },
+    { name: "serviceArea", label: "Service Area (in-person or remote)", required: true },
+    { name: "description", label: "Description", type: "richtext" },
+    { name: "website", label: "Website" },
+    { name: "email", label: "Contact Email", type: "email" },
+    { name: "phone", label: "Phone" },
+    { name: "_socials", label: "Social Media", type: "heading" },
+    { name: "facebook", label: "Facebook URL" },
+    { name: "instagram", label: "Instagram URL" },
+    { name: "youtube", label: "YouTube URL" },
+    { name: "_profile", label: "Images & Media", type: "heading" },
+    { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they will expire.", type: "warning" },
+    { name: "previewImage", label: "Preview Image (sidebar & sharing)", type: "image" },
+    { name: "teamPhoto", label: "Sidebar Image", type: "image" },
+    { name: "logo", label: "Logo / Headshot URL" },
+    { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
+    { name: "address", label: "Office / Studio Address" },
+    { name: "practiceSchedule", label: "Availability", type: "schedule" },
+    { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
+    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
+    { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+  ],
 };
 
 const TYPE_LABELS: Record<ListingType, string> = {
@@ -1144,6 +1176,7 @@ const TYPE_LABELS: Record<ListingType, string> = {
   youtube: "YouTube Channel",
   fundraiser: "Fundraiser",
   scrimmage: "Scrimmage",
+  consultant: "Performance Consultant",
 };
 
 // ── Shared styles ──────────────────────────────────────────────

@@ -20,6 +20,7 @@ const TYPE_LABELS: Record<string, string> = {
   service: "Services", trainingapp: "Training Apps", ebook: "Ebooks",
   giveaway: "Giveaways", guest: "Guest Play", trip: "International Trips",
   marketplace: "Shop", fundraiser: "Fundraisers",
+  consultant: "Performance Consultants",
 };
 const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers",
@@ -31,6 +32,7 @@ const TYPE_PATHS: Record<string, string> = {
   giveaway: "giveaways", guest: "guest-play", trip: "international-trips",
   marketplace: "shop", fundraiser: "fundraiser", soccerbook: "books-and-authors",
   photovideo: "photo-video-services", scrimmage: "scrimmages",
+  consultant: "consultants",
 };
 
 function stripHtml(html: string): string {

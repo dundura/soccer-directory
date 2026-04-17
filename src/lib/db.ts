@@ -217,6 +217,37 @@ function mapTrainer(r: Record<string, unknown>): Trainer {
   };
 }
 
+// ── Consultants ───────────────────────────────────────────────
+export async function getConsultants() {
+  const rows = await sql`SELECT * FROM consultants WHERE status = 'approved' ORDER BY featured DESC, name ASC`;
+  return rows.map(mapConsultant);
+}
+
+export async function getConsultantBySlug(slug: string) {
+  const rows = await sql`SELECT * FROM consultants WHERE slug = ${slug} AND status = 'approved' LIMIT 1`;
+  return rows[0] ? mapConsultant(rows[0]) : null;
+}
+
+export async function getConsultantSlugs(): Promise<string[]> {
+  const rows = await sql`SELECT slug FROM consultants WHERE status = 'approved'`;
+  return rows.map((r) => r.slug as string);
+}
+
+function mapConsultant(r: Record<string, unknown>) {
+  return {
+    id: r.id as string, slug: r.slug as string, name: r.name as string,
+    city: r.city as string, state: r.state as string, country: r.country as string | undefined,
+    specialty: r.specialty as string, experience: r.experience as string,
+    credentials: r.credentials as string, priceRange: r.price_range as string,
+    serviceArea: r.service_area as string, description: r.description as string | undefined,
+    rating: Number(r.rating), reviewCount: Number(r.review_count),
+    website: r.website as string | undefined, email: r.email as string | undefined,
+    featured: r.featured as boolean,
+    createdAt: r.created_at as string, updatedAt: r.updated_at as string,
+    ...mapProfileFields(r),
+  };
+}
+
 // ── Recruiters ────────────────────────────────────────────────
 export async function getRecruiters(): Promise<Recruiter[]> {
   const rows = await sql`SELECT * FROM recruiters WHERE status != 'archived' ORDER BY featured DESC, created_at DESC`;
@@ -948,11 +979,12 @@ export async function updateUserRole(userId: string, role: string): Promise<void
 }
 
 export async function getAllListings() {
-  const [clubs, teams, trainers, recruiters, camps, guests, tournaments, futsals, trips, marketplace, players, podcasts, fbgroups, services, tryouts, specialEvents, trainingApps, blogRows, youtubeRows, scrimmageRows, soccerBookRows, photoVideoRows] = await Promise.all([
+  const [clubs, teams, trainers, recruiters, consultants, camps, guests, tournaments, futsals, trips, marketplace, players, podcasts, fbgroups, services, tryouts, specialEvents, trainingApps, blogRows, youtubeRows, scrimmageRows, soccerBookRows, photoVideoRows] = await Promise.all([
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'club' as type FROM clubs ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'team' as type FROM teams ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'trainer' as type FROM trainers ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'recruiter' as type FROM recruiters ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'consultant' as type FROM consultants ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, CASE WHEN camp_type = 'College Showcase' THEN 'showcase' ELSE 'camp' END as type FROM camps ORDER BY created_at DESC`,
     sql`SELECT id, slug, team_name as name, status, featured, user_id, created_at, 'guest' as type FROM guest_opportunities ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'tournament' as type FROM tournaments ORDER BY created_at DESC`,
@@ -971,8 +1003,9 @@ export async function getAllListings() {
     sql`SELECT id, slug, team_name as name, status, featured, user_id, created_at, 'scrimmage' as type FROM scrimmages ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'soccerbook' as type FROM books ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, featured, user_id, created_at, 'photovideo' as type FROM photo_video_services ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, featured, user_id, created_at, 'consultant' as type FROM consultants ORDER BY created_at DESC`,
   ]);
-  return [...clubs, ...teams, ...trainers, ...recruiters, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace, ...players, ...podcasts, ...fbgroups, ...services, ...tryouts, ...specialEvents, ...trainingApps, ...blogRows, ...youtubeRows, ...scrimmageRows, ...soccerBookRows, ...photoVideoRows].map((r) => ({
+  return [...clubs, ...teams, ...trainers, ...recruiters, ...consultants, ...camps, ...guests, ...tournaments, ...futsals, ...trips, ...marketplace, ...players, ...podcasts, ...fbgroups, ...services, ...tryouts, ...specialEvents, ...trainingApps, ...blogRows, ...youtubeRows, ...scrimmageRows, ...soccerBookRows, ...photoVideoRows].map((r) => ({
     id: r.id as string,
     slug: r.slug as string,
     name: r.name as string,
@@ -990,6 +1023,7 @@ export async function updateListingStatus(type: string, id: string, status: stri
     case "club": await sql`UPDATE clubs SET status = ${status} WHERE id = ${id}`; break;
     case "team": await sql`UPDATE teams SET status = ${status} WHERE id = ${id}`; break;
     case "trainer": await sql`UPDATE trainers SET status = ${status} WHERE id = ${id}`; break;
+    case "consultant": await sql`UPDATE consultants SET status = ${status} WHERE id = ${id}`; break;
     case "recruiter": await sql`UPDATE recruiters SET status = ${status} WHERE id = ${id}`; break;
     case "camp": await sql`UPDATE camps SET status = ${status} WHERE id = ${id}`; break;
     case "guest": await sql`UPDATE guest_opportunities SET status = ${status} WHERE id = ${id}`; break;
@@ -1020,6 +1054,7 @@ export async function updateListingFeatured(type: string, id: string, featured: 
     case "club": await sql`UPDATE clubs SET featured = ${featured} WHERE id = ${id}`; break;
     case "team": await sql`UPDATE teams SET featured = ${featured} WHERE id = ${id}`; break;
     case "trainer": await sql`UPDATE trainers SET featured = ${featured} WHERE id = ${id}`; break;
+    case "consultant": await sql`UPDATE consultants SET featured = ${featured} WHERE id = ${id}`; break;
     case "recruiter": await sql`UPDATE recruiters SET featured = ${featured} WHERE id = ${id}`; break;
     case "camp": await sql`UPDATE camps SET featured = ${featured} WHERE id = ${id}`; break;
     case "guest": await sql`UPDATE guest_opportunities SET featured = ${featured} WHERE id = ${id}`; break;
@@ -1052,7 +1087,7 @@ const TYPE_TO_TABLE: Record<string, string> = {
   trip: "international_trips", marketplace: "marketplace", player: "player_profiles",
   podcast: "podcasts", fbgroup: "facebook_groups", instagrampage: "instagram_pages", tiktokpage: "tiktok_pages", service: "services",
   tryout: "tryouts", specialevent: "special_events", trainingapp: "training_apps", blog: "blogs", youtube: "youtube_channels",
-  scrimmage: "scrimmages", soccerbook: "books", photovideo: "photo_video_services",
+  scrimmage: "scrimmages", soccerbook: "books", photovideo: "photo_video_services", consultant: "consultants",
 };
 
 const FIELD_TO_COLUMN: Record<string, string> = {
@@ -1095,10 +1130,11 @@ export async function patchListingField(
 
 // ── Listings by User ─────────────────────────────────────────
 export async function getListingsByUserId(userId: string) {
-  const [clubRows, teamRows, trainerRows, recruiterRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows, podcastRows, fbgroupRows, instagramRows, tiktokRows, serviceRows, tryoutRows, specialEventRows, trainingAppRows, blogRows, youtubeRows, fundraiserRows, scrimmageRows, soccerBookRows, photoVideoRows] = await Promise.all([
+  const [clubRows, teamRows, trainerRows, consultantRows, recruiterRows, campRows, guestRows, tournamentRows, futsalRows, tripRows, marketplaceRows, playerRows, podcastRows, fbgroupRows, instagramRows, tiktokRows, serviceRows, tryoutRows, specialEventRows, trainingAppRows, blogRows, youtubeRows, fundraiserRows, scrimmageRows, soccerBookRows, photoVideoRows] = await Promise.all([
     sql`SELECT id, slug, name, status, 'club' as type FROM clubs WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'team' as type FROM teams WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'trainer' as type FROM trainers WHERE user_id = ${userId} ORDER BY created_at DESC`,
+    sql`SELECT id, slug, name, status, 'consultant' as type FROM consultants WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'recruiter' as type FROM recruiters WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, CASE WHEN camp_type = 'College Showcase' THEN 'showcase' ELSE 'camp' END as type FROM camps WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, team_name as name, status, 'guest' as type FROM guest_opportunities WHERE user_id = ${userId} ORDER BY created_at DESC`,
@@ -1122,7 +1158,7 @@ export async function getListingsByUserId(userId: string) {
     sql`SELECT id, slug, name, status, 'soccerbook' as type FROM books WHERE user_id = ${userId} ORDER BY created_at DESC`,
     sql`SELECT id, slug, name, status, 'photovideo' as type FROM photo_video_services WHERE user_id = ${userId} ORDER BY created_at DESC`,
   ]);
-  return [...clubRows, ...teamRows, ...trainerRows, ...recruiterRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows, ...playerRows, ...podcastRows, ...fbgroupRows, ...instagramRows, ...tiktokRows, ...serviceRows, ...tryoutRows, ...specialEventRows, ...trainingAppRows, ...blogRows, ...youtubeRows, ...fundraiserRows, ...scrimmageRows, ...soccerBookRows, ...photoVideoRows] as { id: string; slug: string; name: string; status: string; type: string }[];
+  return [...clubRows, ...teamRows, ...trainerRows, ...consultantRows, ...recruiterRows, ...campRows, ...guestRows, ...tournamentRows, ...futsalRows, ...tripRows, ...marketplaceRows, ...playerRows, ...podcastRows, ...fbgroupRows, ...instagramRows, ...tiktokRows, ...serviceRows, ...tryoutRows, ...specialEventRows, ...trainingAppRows, ...blogRows, ...youtubeRows, ...fundraiserRows, ...scrimmageRows, ...soccerBookRows, ...photoVideoRows] as { id: string; slug: string; name: string; status: string; type: string }[];
 }
 
 // ── Create Listings ──────────────────────────────────────────
@@ -1184,6 +1220,15 @@ export async function createTrainerListing(data: Record<string, string>, userId:
   const sm = buildSocialMedia(data);
   const pf = profileFields(data);
   await sql`INSERT INTO trainers (id, slug, name, city, country, state, specialty, experience, credentials, price_range, service_area, description, phone, social_media, logo, image_url, team_photo, image_position, hero_image_position, photos, video_url, practice_schedule, address, rating, review_count, sponsors, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.specialty}, ${data.experience}, ${data.credentials}, ${data.priceRange}, ${data.serviceArea}, ${data.description || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, ${pf.teamPhoto}, ${pf.imagePosition}, ${pf.heroImagePosition}, ${pf.photos}, ${pf.videoUrl}, ${pf.practiceSchedule}, ${pf.address}, 0, 0, ${pf.sponsors}, false, ${userId}, 'approved')`;
+  return slug;
+}
+
+export async function createConsultantListing(data: Record<string, string>, userId: string) {
+  const id = genId();
+  const slug = slugify(data.name);
+  const sm = buildSocialMedia(data);
+  const pf = profileFields(data);
+  await sql`INSERT INTO consultants (id, slug, name, city, country, state, specialty, experience, credentials, price_range, service_area, description, phone, social_media, logo, image_url, team_photo, image_position, hero_image_position, photos, video_url, practice_schedule, address, rating, review_count, sponsors, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.specialty}, ${data.experience}, ${data.credentials}, ${data.priceRange}, ${data.serviceArea}, ${data.description || null}, ${data.phone || null}, ${sm}, ${data.logo || null}, ${data.imageUrl || null}, ${pf.teamPhoto}, ${pf.imagePosition}, ${pf.heroImagePosition}, ${pf.photos}, ${pf.videoUrl}, ${pf.practiceSchedule}, ${pf.address}, 0, 0, ${pf.sponsors}, false, ${userId}, 'approved')`;
   return slug;
 }
 
@@ -1647,6 +1692,10 @@ export async function getListingData(type: string, id: string, userId: string): 
       rows = await sql`SELECT * FROM trainers WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
       return mapTrainerToForm(rows[0]);
+    case "consultant":
+      rows = await sql`SELECT * FROM consultants WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
+      if (!rows[0]) return null;
+      return mapConsultantToForm(rows[0]);
     case "recruiter":
       rows = await sql`SELECT * FROM recruiters WHERE id = ${id} AND user_id = ${userId} LIMIT 1`;
       if (!rows[0]) return null;
@@ -1748,6 +1797,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "club": rows = await sql`SELECT * FROM clubs WHERE id = ${id} LIMIT 1`; break;
     case "team": rows = await sql`SELECT * FROM teams WHERE id = ${id} LIMIT 1`; break;
     case "trainer": rows = await sql`SELECT * FROM trainers WHERE id = ${id} LIMIT 1`; break;
+    case "consultant": rows = await sql`SELECT * FROM consultants WHERE id = ${id} LIMIT 1`; break;
     case "recruiter": rows = await sql`SELECT * FROM recruiters WHERE id = ${id} LIMIT 1`; break;
     case "camp": rows = await sql`SELECT * FROM camps WHERE id = ${id} LIMIT 1`; break;
     case "guest": rows = await sql`SELECT * FROM guest_opportunities WHERE id = ${id} LIMIT 1`; break;
@@ -1777,6 +1827,7 @@ export async function getListingDataAdmin(type: string, id: string): Promise<Rec
     case "club": return mapClubToForm(rows[0]);
     case "team": return mapTeamToForm(rows[0]);
     case "trainer": return mapTrainerToForm(rows[0]);
+    case "consultant": return mapConsultantToForm(rows[0]);
     case "recruiter": return mapRecruiterToForm(rows[0]);
     case "camp": return mapCampToForm(rows[0]);
     case "guest": return mapGuestToForm(rows[0]);
@@ -1869,6 +1920,10 @@ function mapTeamToForm(r: Record<string, unknown>): Record<string, string> {
   return { name: s(r.name), clubName: s(r.club_name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), level: s(r.level), ageGroup: s(r.age_group), gender: s(r.gender), coach: s(r.coach), lookingForPlayers: r.looking_for_players ? "true" : "false", guestPlayersWelcome: r.guest_players_welcomed !== false ? "true" : "false", positionsNeeded: s(r.positions_needed), season: s(r.season), description: s(r.description), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), events: s(r.events), annualTournaments: s(r.annual_tournaments), scholarshipsAvailable: s(r.scholarships_available), fundraiserSlug: s(r.fundraiser_slug), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3), ...profileFormFields(r) };
 }
 function mapTrainerToForm(r: Record<string, unknown>): Record<string, string> {
+  const sm = parseSocial(r.social_media);
+  return { name: s(r.name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), specialty: s(r.specialty), experience: s(r.experience), credentials: s(r.credentials), priceRange: s(r.price_range), serviceArea: s(r.service_area), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
+}
+function mapConsultantToForm(r: Record<string, unknown>): Record<string, string> {
   const sm = parseSocial(r.social_media);
   return { name: s(r.name), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), specialty: s(r.specialty), experience: s(r.experience), credentials: s(r.credentials), priceRange: s(r.price_range), serviceArea: s(r.service_area), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), facebook: sm.facebook, instagram: sm.instagram, youtube: sm.youtube, logo: s(r.logo), imageUrl: s(r.image_url), ...profileFormFields(r) };
 }
@@ -1984,6 +2039,9 @@ export async function updateListing(type: string, id: string, data: Record<strin
     case "trainer":
       rows = await sql`UPDATE trainers SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty}, experience=${data.experience}, credentials=${data.credentials}, price_range=${data.priceRange}, service_area=${data.serviceArea}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
+    case "consultant":
+      rows = await sql`UPDATE consultants SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty}, experience=${data.experience}, credentials=${data.credentials}, price_range=${data.priceRange}, service_area=${data.serviceArea}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      break;
     case "recruiter":
       rows = await sql`UPDATE recruiters SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty || null}, experience=${data.experience || null}, credentials=${data.credentials || null}, price_range=${data.priceRange || null}, service_area=${data.serviceArea || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
@@ -2081,6 +2139,9 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
     case "trainer":
       rows = await sql`UPDATE trainers SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty}, experience=${data.experience}, credentials=${data.credentials}, price_range=${data.priceRange}, service_area=${data.serviceArea}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, tagline=${pf.tagline}, preview_image=${pf.previewImage}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
+    case "consultant":
+      rows = await sql`UPDATE consultants SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty}, experience=${data.experience}, credentials=${data.credentials}, price_range=${data.priceRange}, service_area=${data.serviceArea}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, tagline=${pf.tagline}, preview_image=${pf.previewImage}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} RETURNING id`;
+      break;
     case "recruiter":
       rows = await sql`UPDATE recruiters SET name=${data.name}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, specialty=${data.specialty || null}, experience=${data.experience || null}, credentials=${data.credentials || null}, price_range=${data.priceRange || null}, service_area=${data.serviceArea || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, social_media=${sm}, logo=${data.logo || null}, image_url=${data.imageUrl || null}, team_photo=${pf.teamPhoto}, image_position=${pf.imagePosition}, hero_image_position=${pf.heroImagePosition}, photos=${pf.photos}, video_url=${pf.videoUrl}, practice_schedule=${pf.practiceSchedule}, address=${pf.address}, tagline=${pf.tagline}, preview_image=${pf.previewImage}, sponsors=${pf.sponsors}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       break;
@@ -2171,6 +2232,7 @@ export async function archiveListing(type: string, id: string, userId: string, i
       case "club": rows = await sql`UPDATE clubs SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "team": rows = await sql`UPDATE teams SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "trainer": rows = await sql`UPDATE trainers SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "consultant": rows = await sql`UPDATE consultants SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "recruiter": rows = await sql`UPDATE recruiters SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "camp": rows = await sql`UPDATE camps SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "guest": rows = await sql`UPDATE guest_opportunities SET status = 'archived', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
@@ -2200,6 +2262,7 @@ export async function archiveListing(type: string, id: string, userId: string, i
       case "club": rows = await sql`UPDATE clubs SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "team": rows = await sql`UPDATE teams SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "trainer": rows = await sql`UPDATE trainers SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "consultant": rows = await sql`UPDATE consultants SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "recruiter": rows = await sql`UPDATE recruiters SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "camp": rows = await sql`UPDATE camps SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "guest": rows = await sql`UPDATE guest_opportunities SET status = 'archived', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
@@ -2237,6 +2300,7 @@ export async function restoreListing(type: string, id: string, userId: string, i
       case "club": rows = await sql`UPDATE clubs SET status = 'approved', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "team": rows = await sql`UPDATE teams SET status = 'approved', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "trainer": rows = await sql`UPDATE trainers SET status = 'approved', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
+      case "consultant": rows = await sql`UPDATE consultants SET status = 'approved', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "recruiter": rows = await sql`UPDATE recruiters SET status = 'approved', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "camp": rows = await sql`UPDATE camps SET status = 'approved', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
       case "guest": rows = await sql`UPDATE guest_opportunities SET status = 'approved', updated_at = NOW() WHERE id = ${id} RETURNING id`; break;
@@ -2263,6 +2327,7 @@ export async function restoreListing(type: string, id: string, userId: string, i
       case "club": rows = await sql`UPDATE clubs SET status = 'approved', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "team": rows = await sql`UPDATE teams SET status = 'approved', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "trainer": rows = await sql`UPDATE trainers SET status = 'approved', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "consultant": rows = await sql`UPDATE consultants SET status = 'approved', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "recruiter": rows = await sql`UPDATE recruiters SET status = 'approved', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "camp": rows = await sql`UPDATE camps SET status = 'approved', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "guest": rows = await sql`UPDATE guest_opportunities SET status = 'approved', updated_at = NOW() WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
@@ -2297,6 +2362,7 @@ export async function deleteListing(type: string, id: string, userId: string, is
       case "club": rows = await sql`DELETE FROM clubs WHERE id = ${id} RETURNING id`; break;
       case "team": rows = await sql`DELETE FROM teams WHERE id = ${id} RETURNING id`; break;
       case "trainer": rows = await sql`DELETE FROM trainers WHERE id = ${id} RETURNING id`; break;
+      case "consultant": rows = await sql`DELETE FROM consultants WHERE id = ${id} RETURNING id`; break;
       case "recruiter": rows = await sql`DELETE FROM recruiters WHERE id = ${id} RETURNING id`; break;
       case "camp": rows = await sql`DELETE FROM camps WHERE id = ${id} RETURNING id`; break;
       case "guest": rows = await sql`DELETE FROM guest_opportunities WHERE id = ${id} RETURNING id`; break;
@@ -2324,6 +2390,7 @@ export async function deleteListing(type: string, id: string, userId: string, is
       case "club": rows = await sql`DELETE FROM clubs WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "team": rows = await sql`DELETE FROM teams WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "trainer": rows = await sql`DELETE FROM trainers WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
+      case "consultant": rows = await sql`DELETE FROM consultants WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "recruiter": rows = await sql`DELETE FROM recruiters WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "camp": rows = await sql`DELETE FROM camps WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
       case "guest": rows = await sql`DELETE FROM guest_opportunities WHERE id = ${id} AND user_id = ${userId} RETURNING id`; break;
@@ -2358,6 +2425,7 @@ export async function getListingContact(type: string, slug: string): Promise<{ n
     case "club": rows = await sql`SELECT name, email, user_id FROM clubs WHERE slug = ${slug} LIMIT 1`; break;
     case "team": rows = await sql`SELECT name, NULL as email, user_id FROM teams WHERE slug = ${slug} LIMIT 1`; break;
     case "trainer": rows = await sql`SELECT name, email, user_id FROM trainers WHERE slug = ${slug} LIMIT 1`; break;
+    case "consultant": rows = await sql`SELECT name, email, user_id FROM consultants WHERE slug = ${slug} LIMIT 1`; break;
     case "recruiter": rows = await sql`SELECT name, email, user_id FROM recruiters WHERE slug = ${slug} LIMIT 1`; break;
     case "camp": rows = await sql`SELECT name, email, user_id FROM camps WHERE slug = ${slug} LIMIT 1`; break;
     case "guest": rows = await sql`SELECT team_name as name, contact_email as email, user_id FROM guest_opportunities WHERE slug = ${slug} LIMIT 1`; break;
@@ -2395,6 +2463,7 @@ export async function getListingOwner(type: string, slug: string): Promise<strin
     case "club": rows = await sql`SELECT user_id FROM clubs WHERE slug = ${slug} LIMIT 1`; break;
     case "team": rows = await sql`SELECT user_id FROM teams WHERE slug = ${slug} LIMIT 1`; break;
     case "trainer": rows = await sql`SELECT user_id FROM trainers WHERE slug = ${slug} LIMIT 1`; break;
+    case "consultant": rows = await sql`SELECT user_id FROM consultants WHERE slug = ${slug} LIMIT 1`; break;
     case "recruiter": rows = await sql`SELECT user_id FROM recruiters WHERE slug = ${slug} LIMIT 1`; break;
     case "camp": rows = await sql`SELECT user_id FROM camps WHERE slug = ${slug} LIMIT 1`; break;
     case "guest": rows = await sql`SELECT user_id FROM guest_opportunities WHERE slug = ${slug} LIMIT 1`; break;
@@ -2450,6 +2519,7 @@ export async function getListingOwnerIdById(type: string, id: string): Promise<s
     case "club": rows = await sql`SELECT user_id FROM clubs WHERE id = ${id} LIMIT 1`; break;
     case "team": rows = await sql`SELECT user_id FROM teams WHERE id = ${id} LIMIT 1`; break;
     case "trainer": rows = await sql`SELECT user_id FROM trainers WHERE id = ${id} LIMIT 1`; break;
+    case "consultant": rows = await sql`SELECT user_id FROM consultants WHERE id = ${id} LIMIT 1`; break;
     case "recruiter": rows = await sql`SELECT user_id FROM recruiters WHERE id = ${id} LIMIT 1`; break;
     case "camp":
     case "showcase": rows = await sql`SELECT user_id FROM camps WHERE id = ${id} LIMIT 1`; break;
@@ -2480,6 +2550,7 @@ export async function getListingSlugById(type: string, id: string): Promise<stri
     case "club": rows = await sql`SELECT slug FROM clubs WHERE id = ${id} LIMIT 1`; break;
     case "team": rows = await sql`SELECT slug FROM teams WHERE id = ${id} LIMIT 1`; break;
     case "trainer": rows = await sql`SELECT slug FROM trainers WHERE id = ${id} LIMIT 1`; break;
+    case "consultant": rows = await sql`SELECT slug FROM consultants WHERE id = ${id} LIMIT 1`; break;
     case "recruiter": rows = await sql`SELECT slug FROM recruiters WHERE id = ${id} LIMIT 1`; break;
     case "camp":
     case "showcase": rows = await sql`SELECT slug FROM camps WHERE id = ${id} LIMIT 1`; break;
@@ -2533,6 +2604,7 @@ export async function getListingNameById(type: string, id: string): Promise<stri
     case "club": rows = await sql`SELECT name FROM clubs WHERE id = ${id} LIMIT 1`; break;
     case "team": rows = await sql`SELECT name FROM teams WHERE id = ${id} LIMIT 1`; break;
     case "trainer": rows = await sql`SELECT name FROM trainers WHERE id = ${id} LIMIT 1`; break;
+    case "consultant": rows = await sql`SELECT name FROM consultants WHERE id = ${id} LIMIT 1`; break;
     case "recruiter": rows = await sql`SELECT name FROM recruiters WHERE id = ${id} LIMIT 1`; break;
     case "camp": rows = await sql`SELECT name FROM camps WHERE id = ${id} LIMIT 1`; break;
     case "tryout": rows = await sql`SELECT name FROM tryouts WHERE id = ${id} LIMIT 1`; break;
@@ -2605,6 +2677,7 @@ export async function getListingOwnerEmailById(type: string, id: string): Promis
     case "club": rows = await sql`SELECT user_id FROM clubs WHERE id = ${id} LIMIT 1`; break;
     case "team": rows = await sql`SELECT user_id FROM teams WHERE id = ${id} LIMIT 1`; break;
     case "trainer": rows = await sql`SELECT user_id FROM trainers WHERE id = ${id} LIMIT 1`; break;
+    case "consultant": rows = await sql`SELECT user_id FROM consultants WHERE id = ${id} LIMIT 1`; break;
     case "recruiter": rows = await sql`SELECT user_id FROM recruiters WHERE id = ${id} LIMIT 1`; break;
     case "camp":
     case "showcase": rows = await sql`SELECT user_id FROM camps WHERE id = ${id} LIMIT 1`; break;
