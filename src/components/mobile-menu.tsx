@@ -53,9 +53,9 @@ const navGroups: NavGroup[] = [
       {
         label: "Consultants",
         links: [
-          { label: "Performance Consultants", href: "/consultants" },
           { label: "Mental Training", href: "/trainers?specialty=Mental+Training" },
           { label: "College Recruiting", href: "/college-recruiting" },
+          { label: "Performance Consultants", href: "/consultants" },
         ],
       },
     ],
