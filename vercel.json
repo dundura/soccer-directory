@@ -6,7 +6,11 @@
     },
     {
       "path": "/api/cron/neil-fb-reminder",
-      "schedule": "0 14 * * 1,6"
+      "schedule": "0 14 * * 1,5"
+    },
+    {
+      "path": "/api/cron/neil-blog-reminder",
+      "schedule": "0 14 * * 2,3"
     }
   ]
 }
