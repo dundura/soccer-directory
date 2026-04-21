@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 const sql = neon(process.env.DATABASE_URL!);
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
-const LISTING_TABLES: { table: string; urlPath: string; label: string }[] = [
+const LISTING_TABLES: { table: string; urlPath: string; label: string; nameCol?: string }[] = [
   { table: "clubs", urlPath: "clubs", label: "Club" },
   { table: "teams", urlPath: "teams", label: "Team" },
   { table: "tryouts", urlPath: "tryouts", label: "Tryout" },
@@ -18,9 +18,9 @@ const LISTING_TABLES: { table: string; urlPath: string; label: string }[] = [
   { table: "services", urlPath: "services", label: "Service" },
   { table: "training_apps", urlPath: "training-apps", label: "Training App" },
   { table: "futsal_teams", urlPath: "futsal", label: "Futsal Team" },
-  { table: "guest_opportunities", urlPath: "guest-play", label: "Guest Play" },
+  { table: "guest_opportunities", urlPath: "guest-play", label: "Guest Play", nameCol: "team_name" },
   { table: "recruiters", urlPath: "college-recruiting", label: "College Recruiting" },
-  { table: "fundraisers", urlPath: "fundraiser", label: "Fundraiser" },
+  { table: "fundraisers", urlPath: "fundraiser", label: "Fundraiser", nameCol: "title" },
 ];
 
 function buildEmail(
@@ -81,8 +81,10 @@ export async function GET(req: Request) {
 
   const picks: { label: string; name: string; url: string; city: string | null; state: string | null }[] = [];
 
-  for (const { table, urlPath, label } of LISTING_TABLES) {
+  for (const { table, urlPath, label, nameCol } of LISTING_TABLES) {
     try {
+      const col = nameCol ?? "name";
+
       // Get the last sent listing for this type to avoid repeating it
       const lastRows = await sql`
         SELECT listing_id FROM neil_fb_reminders
@@ -92,8 +94,8 @@ export async function GET(req: Request) {
       const lastId = (lastRows[0] as { listing_id: string } | undefined)?.listing_id;
 
       const query = lastId
-        ? `SELECT id::text as id, name, slug, city, state FROM ${table} WHERE status = 'approved' AND slug IS NOT NULL AND id::text != '${lastId}' ORDER BY RANDOM() LIMIT 1`
-        : `SELECT id::text as id, name, slug, city, state FROM ${table} WHERE status = 'approved' AND slug IS NOT NULL ORDER BY RANDOM() LIMIT 1`;
+        ? `SELECT id::text as id, ${col} as name, slug, city, state FROM ${table} WHERE status = 'approved' AND slug IS NOT NULL AND id::text != '${lastId}' ORDER BY RANDOM() LIMIT 1`
+        : `SELECT id::text as id, ${col} as name, slug, city, state FROM ${table} WHERE status = 'approved' AND slug IS NOT NULL ORDER BY RANDOM() LIMIT 1`;
 
       const raw = [query] as unknown as TemplateStringsArray;
       const rows = await sql(raw);
