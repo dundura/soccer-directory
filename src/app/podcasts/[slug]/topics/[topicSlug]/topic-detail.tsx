@@ -274,7 +274,7 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
                   {(ep.previewImage || ep.description) && (
                     <div className="mt-1 overflow-hidden">
                       {ep.previewImage && (
-                        <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="float-right ml-4 mb-2 block flex-shrink-0">
+                        <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="float-left mr-4 mb-2 block flex-shrink-0">
                           <img src={ep.previewImage} alt={ep.title || 'Episode preview'} className="w-32 sm:w-44 rounded-lg object-cover" />
                         </a>
                       )}
