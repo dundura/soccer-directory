@@ -271,10 +271,19 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   {ep.title && <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="hover:text-accent transition-colors"><h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight hover:text-accent">{ep.title}</h3></a>}
-                  {ep.description && (
-                    ep.description.includes("<") ?
-                      <div className="text-sm text-primary/70 mt-1 leading-relaxed prose prose-sm max-w-none [&_a]:text-[#DC373E] [&_a]:underline [&_a]:font-semibold [&_p]:mb-3 [&_p:last-child]:mb-0" dangerouslySetInnerHTML={{ __html: ep.description }} /> :
-                      <p className="text-sm text-primary/70 mt-1 leading-relaxed whitespace-pre-line">{ep.description}</p>
+                  {(ep.previewImage || ep.description) && (
+                    <div className="mt-1 overflow-hidden">
+                      {ep.previewImage && (
+                        <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="float-right ml-4 mb-2 block flex-shrink-0">
+                          <img src={ep.previewImage} alt={ep.title || 'Episode preview'} className="w-32 sm:w-44 rounded-lg object-cover" />
+                        </a>
+                      )}
+                      {ep.description && (
+                        ep.description.includes("<") ?
+                          <div className="text-sm text-primary/70 leading-relaxed prose prose-sm max-w-none [&_a]:text-[#DC373E] [&_a]:underline [&_a]:font-semibold [&_p]:mb-3 [&_p:last-child]:mb-0" dangerouslySetInnerHTML={{ __html: ep.description }} /> :
+                          <p className="text-sm text-primary/70 leading-relaxed whitespace-pre-line">{ep.description}</p>
+                      )}
+                    </div>
                   )}
                   <div className="flex items-center gap-3 mt-2 flex-wrap">
                     <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="text-xs font-semibold text-accent hover:underline">Share Episode →</a>
