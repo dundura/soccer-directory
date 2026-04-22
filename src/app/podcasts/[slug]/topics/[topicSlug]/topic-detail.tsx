@@ -272,9 +272,9 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
                 <div className="flex-1 min-w-0">
                   {ep.title && <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="hover:text-accent transition-colors"><h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight hover:text-accent">{ep.title}</h3></a>}
                   {(ep.previewImage || ep.description) && (
-                    <div className="mt-1 overflow-hidden">
+                    <div className="mt-2 overflow-hidden">
                       {ep.previewImage && (
-                        <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="float-left mr-4 mb-2 block flex-shrink-0">
+                        <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="float-left mr-5 mb-3 block flex-shrink-0">
                           <img src={ep.previewImage} alt={ep.title || 'Episode preview'} className="w-32 sm:w-44 rounded-lg object-cover" />
                         </a>
                       )}
