@@ -109,6 +109,9 @@ export default async function YoutubeChannelPage({ params }: Props) {
         
             {/* Special Events */}
             <ListingEventsSidebar listingType="youtube" listingId={channel.id} listingSlug={slug} ownerId={ownerId} />
+
+          {/* Posts */}
+          <ListingPostsSidebar listingType="youtube" listingId={channel.id} slug={slug} ownerId={ownerId} />
           </aside>
 
         {/* Main Content */}
@@ -262,8 +265,6 @@ export default async function YoutubeChannelPage({ params }: Props) {
           <ListingEventsSection listingType="youtube" listingId={channel.id} listingSlug={slug} ownerId={ownerId} />
 
           <FeaturedArticles />
-
-          <ListingPostsSidebar listingType="youtube" listingId={channel.id} slug={slug} ownerId={ownerId} />
 
           {/* Collaborate Form */}
           <div id="collaborate" className="bg-white rounded-2xl border-2 border-accent/20 p-6">
