@@ -33,9 +33,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const s = await getScrimmageBySlug(slug);
   if (!s) return {};
   const { ogMeta } = await import("@/lib/og");
-  return ogMeta(
+const plainDescription = s.description
+    ? s.description.replace(/<[^>]*>/g, " ").replace(/s+/g, " ").trim()
+    : `${s.level} ${s.ageGroup} ${s.gender} team ${s.availability.toLowerCase()} in ${s.city}, ${s.state}`;
+    return ogMeta(
     `${s.teamName} | Scrimmage in ${s.city}, ${s.state}`,
-    s.description || `${s.level} ${s.ageGroup} ${s.gender} team ${s.availability.toLowerCase()} in ${s.city}, ${s.state}`,
+    plainDescription,
     s.imageUrl || s.teamPhoto || s.logo,
     `/scrimmages/${slug}`,
   );

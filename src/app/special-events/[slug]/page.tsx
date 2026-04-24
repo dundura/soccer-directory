@@ -43,9 +43,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const event = await getSpecialEventBySlug(slug);
   if (!event) return {};
   const { ogMeta } = await import("@/lib/og");
-  return ogMeta(
+const plainDescription = event.description
+    ? event.description.replace(/<[^>]*>/g, " ").replace(/s+/g, " ").trim()
+    : `Soccer event in ${event.city}, ${event.state}`;
+    return ogMeta(
     `${event.name} | Soccer Event in ${event.city}, ${event.state}`,
-    event.description || `Soccer event in ${event.city}, ${event.state}`,
+    plainDescription,
     event.imageUrl || event.teamPhoto || event.logo,
     `/special-events/${slug}`,
   );

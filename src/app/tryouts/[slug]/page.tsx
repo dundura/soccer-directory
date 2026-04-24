@@ -44,9 +44,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tryout = await getTryoutBySlug(slug);
   if (!tryout) return {};
   const { ogMeta } = await import("@/lib/og");
-  return ogMeta(
+const plainDescription = tryout.description
+    ? tryout.description.replace(/<[^>]*>/g, " ").replace(/s+/g, " ").trim()
+    : `Soccer tryout in ${tryout.city}, ${tryout.state}`;
+    return ogMeta(
     `${tryout.name} | Soccer Tryout in ${tryout.city}, ${tryout.state}`,
-    tryout.description || `Soccer tryout in ${tryout.city}, ${tryout.state}`,
+    plainDescription,
     tryout.imageUrl || tryout.teamPhoto || tryout.logo,
     `/tryouts/${slug}`,
   );

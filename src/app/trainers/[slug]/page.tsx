@@ -44,9 +44,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const trainer = await getTrainerBySlug(slug);
   if (!trainer) return {};
   const { ogMeta } = await import("@/lib/og");
-  return ogMeta(
+const plainDescription = trainer.description
+    ? trainer.description.replace(/<[^>]*>/g, " ").replace(/s+/g, " ").trim()
+    : `${trainer.specialty} trainer in ${trainer.serviceArea}`;
+    return ogMeta(
     `${trainer.name} | Private Soccer Trainer in ${trainer.city}, ${trainer.state}`,
-    trainer.description || `${trainer.specialty} trainer in ${trainer.serviceArea}`,
+    plainDescription,
     trainer.imageUrl || trainer.teamPhoto || trainer.logo,
     `/trainers/${slug}`,
   );

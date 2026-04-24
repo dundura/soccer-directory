@@ -35,9 +35,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const service = await getServiceBySlug(slug);
   if (!service) return {};
   const { ogMeta } = await import("@/lib/og");
-  return ogMeta(
+const plainDescription = service.description
+    ? service.description.replace(/<[^>]*>/g, " ").replace(/s+/g, " ").trim()
+    : `${service.category} by ${service.providerName}`;
+    return ogMeta(
     `${service.name} | Products & Services | Soccer Near Me`,
-    service.description || `${service.category} by ${service.providerName}`,
+    plainDescription,
     service.imageUrl,
     `/services/${slug}`,
   );

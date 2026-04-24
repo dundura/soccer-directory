@@ -64,9 +64,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const team = await getTeamBySlug(slug);
   if (!team) return {};
   const { ogMeta } = await import("@/lib/og");
-  return ogMeta(
+const plainDescription = team.description
+    ? team.description.replace(/<[^>]*>/g, " ").replace(/s+/g, " ").trim()
+    : `${team.level} team for ${team.ageGroup} ${team.gender} in ${team.city}, ${team.state}`;
+    return ogMeta(
     `${team.name} | Youth Soccer Team in ${team.city}, ${team.state}`,
-    team.description || `${team.level} team for ${team.ageGroup} ${team.gender} in ${team.city}, ${team.state}`,
+    plainDescription,
     team.imageUrl || team.teamPhoto || team.logo,
     `/teams/${slug}`,
   );

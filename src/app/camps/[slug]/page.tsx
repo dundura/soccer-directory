@@ -43,9 +43,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const camp = await getCampBySlug(slug);
   if (!camp) return {};
   const { ogMeta } = await import("@/lib/og");
+  const plainDescription = camp.description
+    ? camp.description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
+    : `Soccer camp in ${camp.city}, ${camp.state}`;
   return ogMeta(
     `${camp.name} | Soccer Camp in ${camp.city}, ${camp.state}`,
-    camp.description || `Soccer camp in ${camp.city}, ${camp.state}`,
+    plainDescription,
     camp.imageUrl || camp.teamPhoto || camp.logo,
     `/camps/${slug}`,
   );
