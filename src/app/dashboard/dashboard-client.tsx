@@ -37,6 +37,7 @@ const TYPE_PATHS: Record<string, string> = {
   fundraiser: "fundraiser",
   scrimmage: "scrimmages",
   consultant: "consultants",
+  trip: "international-trips",
 };
 
 const TYPE_LABELS: Record<string, string> = {
