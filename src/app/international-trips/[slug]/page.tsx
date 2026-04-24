@@ -32,9 +32,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const trip = await getTripBySlug(slug);
   if (!trip) return {};
   const { ogMeta } = await import("@/lib/og");
+  const plainDescription = trip.description
+    ? trip.description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
+    : `${trip.level} international soccer trip for ${trip.ageGroup} ${trip.gender} to ${trip.destination}`;
   return ogMeta(
     `${trip.tripName} — International Soccer Trip | ${trip.destination}`,
-    trip.description || `${trip.level} international soccer trip for ${trip.ageGroup} ${trip.gender} to ${trip.destination}`,
+    plainDescription,
     trip.imageUrl || trip.teamPhoto || trip.logo,
     `/international-trips/${slug}`,
   );
