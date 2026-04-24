@@ -370,6 +370,7 @@ export interface InternationalTrip extends ProfileFields {
   featured: boolean;
   createdAt: string;
   updatedAt: string;
+  staffMembers?: { name: string; role: string; photo?: string; bio?: string }[];
 }
 
 export interface MarketplaceItem {

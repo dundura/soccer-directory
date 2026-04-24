@@ -474,6 +474,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_staff", label: "Meet Our Staff (up to 3)", type: "heading" },
+    { name: "staffMembers", label: "Staff Members", type: "staff-members", max: 3 },
   ],
   marketplace: [
     { name: "name", label: "Item Name", required: true },
@@ -1893,6 +1895,37 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                   );
                 })}
                 <p className="text-xs text-muted">Add up to 3 sponsors. Each sponsor shows as a card with image, name, description, and a link button.</p>
+              </div>
+
+            /* Staff Members (up to 3) */
+            ) : field.type === "staff-members" ? (
+              <div className="space-y-4">
+                {Array.from({ length: Math.min(field.max || 3, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                  let arr: { name: string; role: string; photo?: string; bio?: string }[] = [];
+                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  const sm = arr[i] || { name: "", role: "", photo: "", bio: "" };
+                  const updateSm = (key: string, val: string) => {
+                    const updated = [...arr];
+                    if (!updated[i]) updated[i] = { name: "", role: "", photo: "", bio: "" };
+                    (updated[i] as Record<string, string>)[key] = val;
+                    const filtered = updated.filter((s) => s.name);
+                    handleChange(field.name, JSON.stringify(filtered));
+                  };
+                  return (
+                    <div key={i} className="flex gap-2 items-start">
+                      <div className="flex-1 space-y-1.5">
+                        <input type="text" value={sm.name || ""} onChange={(e) => updateSm("name", e.target.value)} placeholder="Staff member name" className={inputClass} />
+                        <input type="text" value={sm.role || ""} onChange={(e) => updateSm("role", e.target.value)} placeholder="Role / title (e.g. Head Coach)" className={inputClass} />
+                        <input type="url" value={sm.photo || ""} onChange={(e) => updateSm("photo", e.target.value)} placeholder="Photo URL" className={inputClass} />
+                        <textarea value={sm.bio || ""} onChange={(e) => updateSm("bio", e.target.value.slice(0, 300))} placeholder="Short bio (max 300 chars)" maxLength={300} rows={3} className={inputClass + " resize-none"} />
+                      </div>
+                      {sm.name && (
+                        <button type="button" onClick={() => { const updated = arr.filter((_, j) => j !== i); handleChange(field.name, JSON.stringify(updated)); }} className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0 mt-2">x</button>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-muted">Add up to 3 staff members. Each shows a photo, name, role, and bio.</p>
               </div>
 
             /* Game Highlights (up to 10 — title + URL) */

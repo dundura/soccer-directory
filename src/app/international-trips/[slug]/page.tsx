@@ -12,6 +12,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingEventsSection } from "@/components/listing-events-section";
+import { HeroImage } from "@/components/hero-image";
 
 export const dynamic = "force-dynamic";
 
@@ -45,20 +46,10 @@ export default async function TripDetailPage({ params }: Props) {
   if (!trip) notFound();
   const ownerId = await getListingOwner("trip", slug);
 
-  const heroBanner = trip.imageUrl || trip.teamPhoto;
-
   return (
     <>
-      <div
-        className="relative text-white py-12"
-        style={heroBanner ? {
-          backgroundImage: `url(${heroBanner})`,
-          backgroundSize: "cover",
-          backgroundPosition: `center ${trip.heroImagePosition ?? 50}%`,
-        } : { background: "var(--color-primary)" }}
-      >
-        {heroBanner && <div className="absolute inset-0 bg-primary/75" />}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-primary text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <a href="/international-trips" className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">&larr; All International Trips</a>
           <div className="flex flex-wrap gap-2 mb-4">
             <Badge variant="blue">{trip.level}</Badge>
@@ -136,6 +127,12 @@ export default async function TripDetailPage({ params }: Props) {
 
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
+            {(trip.imageUrl || trip.teamPhoto) && (
+              <div className="bg-white rounded-2xl border border-border overflow-hidden">
+                <HeroImage src={trip.imageUrl || trip.teamPhoto || ""} alt={trip.tripName} id={trip.id} imagePosition={trip.heroImagePosition} />
+              </div>
+            )}
+
             {trip.description && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About This Trip</h2>
@@ -159,6 +156,31 @@ export default async function TripDetailPage({ params }: Props) {
                 {trip.spotsAvailable && <div><p className="text-xs text-muted mb-1">Spots Available</p><p className="font-medium">{trip.spotsAvailable}</p></div>}
               </div>
             </section>
+
+            {trip.staffMembers && trip.staffMembers.length > 0 && (
+              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Meet Our Staff</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="trip" listingId={trip.id} />
+                </div>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {trip.staffMembers.map((member, i) => (
+                    <div key={i} className="flex flex-col items-center text-center gap-3">
+                      {member.photo ? (
+                        <img src={member.photo} alt={member.name} className="w-20 h-20 rounded-full object-cover border-2 border-border" />
+                      ) : (
+                        <div className="w-20 h-20 rounded-full bg-surface border-2 border-border flex items-center justify-center text-2xl text-muted">👤</div>
+                      )}
+                      <div>
+                        <p className="font-semibold text-primary">{member.name}</p>
+                        {member.role && <p className="text-sm text-accent font-medium">{member.role}</p>}
+                        {member.bio && <p className="text-sm text-muted mt-1 leading-relaxed">{member.bio}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {trip.videoUrl && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
