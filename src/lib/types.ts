@@ -371,6 +371,7 @@ export interface InternationalTrip extends ProfileFields {
   createdAt: string;
   updatedAt: string;
   staffMembers?: { name: string; role: string; photo?: string; bio?: string }[];
+  extraVideos?: string[];
 }
 
 export interface MarketplaceItem {

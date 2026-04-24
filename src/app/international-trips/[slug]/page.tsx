@@ -136,7 +136,7 @@ export default async function TripDetailPage({ params }: Props) {
             {trip.description && (
               <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About This Trip</h2>
-                <InlineEditField ownerId={ownerId} listingType="trip" listingId={trip.id} field="description" value={trip.description} tag="div" className="text-muted leading-relaxed whitespace-pre-line [&>p]:mb-2 [&>p:last-child]:mb-0" multiline />
+                <InlineEditField ownerId={ownerId} listingType="trip" listingId={trip.id} field="description" value={trip.description} tag="div" className="prose prose-sm max-w-none text-muted [&_p]:leading-relaxed [&_p]:mb-3 [&_p:last-child]:mb-0" multiline />
               </section>
             )}
 
@@ -189,6 +189,20 @@ export default async function TripDetailPage({ params }: Props) {
                   <EditSectionLink ownerId={ownerId} listingType="trip" listingId={trip.id} />
                 </div>
                 <VideoEmbed url={trip.videoUrl} />
+              </section>
+            )}
+
+            {trip.extraVideos && trip.extraVideos.length > 0 && (
+              <section className="bg-white rounded-2xl border border-border p-6 md:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">More Videos</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="trip" listingId={trip.id} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {trip.extraVideos.slice(0, 6).map((url, i) => (
+                    <VideoEmbed key={i} url={url} />
+                  ))}
+                </div>
               </section>
             )}
 

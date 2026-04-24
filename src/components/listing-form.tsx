@@ -471,7 +471,9 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "logo", label: "Logo URL" },
     { name: "imageUrl", label: "Hero Banner Image", type: "hero-image-or-color" },
     { name: "photos", label: "Photos (up to 5 URLs)", type: "photos" },
-    { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
+    { name: "videoUrl", label: "Featured Video URL (YouTube/Vimeo)" },
+    { name: "_extraVideos", label: "Extra Videos (up to 6)", type: "heading" },
+    { name: "extraVideos", label: "Extra Videos", type: "extra-videos", max: 6 },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
     { name: "_staff", label: "Meet Our Staff (up to 3)", type: "heading" },
@@ -1926,6 +1928,31 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                   );
                 })}
                 <p className="text-xs text-muted">Add up to 3 staff members. Each shows a photo, name, role, and bio.</p>
+              </div>
+
+            /* Extra Videos (up to 6 URLs) */
+            ) : field.type === "extra-videos" ? (
+              <div className="space-y-2">
+                {Array.from({ length: Math.min(field.max || 6, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                  let arr: string[] = [];
+                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
+                  const val = arr[i] || "";
+                  const updateVal = (v: string) => {
+                    const updated = [...arr];
+                    updated[i] = v;
+                    const filtered = updated.filter((s) => s.trim());
+                    handleChange(field.name, JSON.stringify(filtered));
+                  };
+                  return (
+                    <div key={i} className="flex gap-2 items-center">
+                      <input type="url" value={val} onChange={(e) => updateVal(e.target.value)} placeholder={`Video ${i + 1} URL (YouTube/Vimeo)`} className={inputClass + " flex-1"} />
+                      {val && (
+                        <button type="button" onClick={() => { const updated = arr.filter((_, j) => j !== i); handleChange(field.name, JSON.stringify(updated)); }} className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0">x</button>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="text-xs text-muted">Add up to 6 extra video URLs. They display in a 2×3 grid below the featured video.</p>
               </div>
 
             /* Game Highlights (up to 10 — title + URL) */
