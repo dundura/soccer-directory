@@ -28,6 +28,7 @@ const navGroups: NavGroup[] = [
           { label: "Player ID Camps", href: "/camps?type=Player+ID+Camp" },
           { label: "US Tournaments", href: "/tournaments?region=US" },
           { label: "Int'l Tournaments", href: "/tournaments?region=International" },
+          { label: "International Trips", href: "/international-trips" },
           { label: "Special Events", href: "/special-events" },
           { label: "Fundraisers", href: "/fundraiser" },
         ],

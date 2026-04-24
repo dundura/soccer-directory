@@ -120,6 +120,7 @@ function Header() {
                   items: [
                     { label: "US Tournaments", href: "/tournaments?region=US", desc: "Domestic tournaments", icon: "🇺🇸" },
                     { label: "Int'l Tournaments", href: "/tournaments?region=International", desc: "International events", icon: "🌎" },
+                    { label: "International Trips", href: "/international-trips", desc: "Soccer trips abroad", icon: "✈️" },
                   ],
                 },
                 {

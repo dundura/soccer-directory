@@ -45,10 +45,20 @@ export default async function TripDetailPage({ params }: Props) {
   if (!trip) notFound();
   const ownerId = await getListingOwner("trip", slug);
 
+  const heroBanner = trip.imageUrl || trip.teamPhoto;
+
   return (
     <>
-      <div className="bg-primary text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div
+        className="relative text-white py-12"
+        style={heroBanner ? {
+          backgroundImage: `url(${heroBanner})`,
+          backgroundSize: "cover",
+          backgroundPosition: `center ${trip.heroImagePosition ?? 50}%`,
+        } : { background: "var(--color-primary)" }}
+      >
+        {heroBanner && <div className="absolute inset-0 bg-primary/75" />}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <a href="/international-trips" className="text-white/50 text-sm hover:text-white transition-colors mb-4 inline-block">&larr; All International Trips</a>
           <div className="flex flex-wrap gap-2 mb-4">
             <Badge variant="blue">{trip.level}</Badge>
