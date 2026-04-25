@@ -1935,7 +1935,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
             /* Extra Videos (up to N — optional title + URL) */
             ) : field.type === "extra-videos" ? (
               <div className="space-y-3">
-                {Array.from({ length: Math.min(field.max || 5, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                {Array.from({ length: field.max || 5 }).map((_, i) => {
                   let arr: { title?: string; url: string }[] = [];
                   try {
                     const parsed = JSON.parse(formData[field.name] || "[]");
@@ -1945,25 +1945,20 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                   } catch { /* */ }
                   const ev = arr[i] || { title: "", url: "" };
                   const updateEv = (key: string, val: string) => {
-                    const updated = [...arr];
-                    if (!updated[i]) updated[i] = { title: "", url: "" };
-                    (updated[i] as Record<string, string>)[key] = val;
-                    const filtered = updated.filter((v) => v.url?.trim());
+                    const next = Array.from({ length: field.max || 5 }).map((_, j) => arr[j] || { title: "", url: "" }) as { title?: string; url: string }[];
+                    (next[i] as Record<string, string>)[key] = val;
+                    const filtered = next.filter((v) => v.url?.trim());
                     handleChange(field.name, JSON.stringify(filtered));
                   };
                   return (
                     <div key={i} className="space-y-1.5 border border-border rounded-lg p-3 bg-gray-50">
-                      <input type="text" value={ev.title || ""} onChange={(e) => updateEv("title", e.target.value)} placeholder={`Video ${i + 1} title (optional)`} className={inputClass} />
-                      <div className="flex gap-2 items-center">
-                        <input type="url" value={ev.url || ""} onChange={(e) => updateEv("url", e.target.value)} placeholder={`Video ${i + 1} URL (YouTube/Vimeo)`} className={inputClass + " flex-1"} />
-                        {ev.url && (
-                          <button type="button" onClick={() => { const updated = arr.filter((_, j) => j !== i); handleChange(field.name, JSON.stringify(updated)); }} className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0">×</button>
-                        )}
-                      </div>
+                      <p className="text-xs font-medium text-muted">Video {i + 1}</p>
+                      <input type="text" value={ev.title || ""} onChange={(e) => updateEv("title", e.target.value)} placeholder="Title (optional)" className={inputClass} />
+                      <input type="url" value={ev.url || ""} onChange={(e) => updateEv("url", e.target.value)} placeholder="YouTube or Vimeo URL" className={inputClass} />
                     </div>
                   );
                 })}
-                <p className="text-xs text-muted">Add up to {field.max || 5} extra videos. Each can have an optional title displayed above it.</p>
+                <p className="text-xs text-muted">Each video can have an optional title shown above it on the page.</p>
               </div>
 
             /* Game Highlights (up to 10 — title + URL) */
