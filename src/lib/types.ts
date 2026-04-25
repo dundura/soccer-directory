@@ -810,6 +810,7 @@ export interface PhotoVideoService extends ProfileFields {
   announcementCta3?: string;
   announcementCtaUrl3?: string;
   aboutAuthor?: string;
+  extraVideos?: { title?: string; url: string }[];
   featured: boolean;
   status?: string;
   userId?: string;

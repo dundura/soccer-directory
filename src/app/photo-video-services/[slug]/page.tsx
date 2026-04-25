@@ -206,13 +206,23 @@ export default async function ServiceDetailPage({ params }: Props) {
             )}
 
             {/* Video */}
-            {service.videoUrl && (
+            {(service.videoUrl || (service.extraVideos && service.extraVideos.length > 0)) && (
               <div className="border-t border-border pt-6 mt-6">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Video</h3>
                   <EditSectionLink ownerId={ownerId} listingType="photovideo" listingId={service.id} />
                 </div>
-                <VideoEmbed url={service.videoUrl} />
+                {service.videoUrl && <VideoEmbed url={service.videoUrl} />}
+                {service.extraVideos && service.extraVideos.length > 0 && (
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    {service.extraVideos.slice(0, 5).map((ev, i) => (
+                      <div key={i}>
+                        {ev.title && <p className="text-sm font-semibold text-primary mb-1.5">{ev.title}</p>}
+                        <VideoEmbed url={ev.url} />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
