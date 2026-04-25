@@ -399,6 +399,8 @@ export interface MarketplaceItem {
   announcementCta?: string;
   announcementCtaUrl?: string;
   sponsors?: Sponsor[];
+  videoUrl?: string;
+  extraVideos?: { title?: string; url: string }[];
   featured: boolean;
   createdAt: string;
 }

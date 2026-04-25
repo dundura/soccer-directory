@@ -7,6 +7,7 @@ import { PhotoGallery } from "@/components/profile-ui";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ReviewSection } from "@/components/review-section";
+import { VideoEmbed } from "@/components/profile-ui";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
@@ -131,6 +132,27 @@ export default async function GearDetailPage({ params }: Props) {
               <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
                 <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-4">About the Author</h2>
                 <InlineEditField ownerId={ownerId} listingType="gear" listingId={item.id} field="aboutAuthor" value={item.aboutAuthor} tag="p" className="prose prose-sm max-w-none text-muted leading-relaxed whitespace-pre-wrap" multiline />
+              </div>
+            )}
+
+            {/* Videos */}
+            {(item.videoUrl || (item.extraVideos && item.extraVideos.length > 0)) && (
+              <div className="bg-white rounded-2xl border border-border p-6 md:p-8 mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-[family-name:var(--font-display)] text-xl font-bold">Videos</h2>
+                  <EditSectionLink ownerId={ownerId} listingType="gear" listingId={item.id} />
+                </div>
+                {item.videoUrl && <VideoEmbed url={item.videoUrl} />}
+                {item.extraVideos && item.extraVideos.length > 0 && (
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    {item.extraVideos.slice(0, 5).map((ev, i) => (
+                      <div key={i}>
+                        {ev.title && <p className="text-sm font-semibold text-primary mb-1.5">{ev.title}</p>}
+                        <VideoEmbed url={ev.url} />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
