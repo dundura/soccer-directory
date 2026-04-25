@@ -208,13 +208,23 @@ export function MobileMenu() {
             >
               Rankings
             </a>
-            <a
-              href="/shop"
-              onClick={() => setOpen(false)}
-              className="text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors block"
-            >
-              Recommendations
-            </a>
+            <div>
+              <button
+                onClick={() => toggleGroup("Recommendations")}
+                className="w-full flex items-center justify-between text-white text-lg font-semibold py-3 px-4 rounded-xl hover:bg-white/10 transition-colors"
+              >
+                Recommendations
+                <svg className={`w-4 h-4 transition-transform ${openGroup === "Recommendations" ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {openGroup === "Recommendations" && (
+                <div className="flex flex-col gap-1 pl-4 mb-2">
+                  <a href="/shop" onClick={() => setOpen(false)} className="text-white/70 text-base font-medium py-2 px-4 rounded-xl hover:bg-white/10 transition-colors">Recommendations</a>
+                  <a href="/gear" onClick={() => setOpen(false)} className="text-white/70 text-base font-medium py-2 px-4 rounded-xl hover:bg-white/10 transition-colors">Equipment</a>
+                </div>
+              )}
+            </div>
             <a
               href="/fundraiser"
               onClick={() => setOpen(false)}

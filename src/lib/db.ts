@@ -736,12 +736,12 @@ function mapTrip(r: Record<string, unknown>): InternationalTrip {
 
 // ── Gear ─────────────────────────────────────────────────────
 export async function getGearItems(): Promise<MarketplaceItem[]> {
-  const rows = await sql`SELECT * FROM marketplace WHERE status = 'approved' AND category = 'Gear' ORDER BY featured DESC, created_at DESC`;
+  const rows = await sql`SELECT * FROM marketplace WHERE status = 'approved' AND category IN ('Gear', 'Equipment') ORDER BY featured DESC, created_at DESC`;
   return rows.map(mapMarketplaceItem);
 }
 
 export async function getGearItemBySlug(slug: string): Promise<MarketplaceItem | null> {
-  const rows = await sql`SELECT * FROM marketplace WHERE slug = ${slug} AND status = 'approved' AND category = 'Gear' LIMIT 1`;
+  const rows = await sql`SELECT * FROM marketplace WHERE slug = ${slug} AND status = 'approved' AND category IN ('Gear', 'Equipment') LIMIT 1`;
   return rows[0] ? mapMarketplaceItem(rows[0]) : null;
 }
 

@@ -134,7 +134,13 @@ function Header() {
               ]}
             />
             <a href="/rankings" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Rankings</a>
-            <a href="/shop" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Recommendations</a>
+            <NavDropdown
+              label="Recommendations"
+              items={[
+                { label: "Recommendations", href: "/shop" },
+                { label: "Equipment", href: "/gear" },
+              ]}
+            />
             <a href="/fundraiser" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Fundraisers</a>
             <NavDropdown
               label="Free"
