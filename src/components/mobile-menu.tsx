@@ -221,7 +221,8 @@ export function MobileMenu() {
               {openGroup === "Recommendations" && (
                 <div className="flex flex-col gap-1 pl-4 mb-2">
                   <a href="/shop" onClick={() => setOpen(false)} className="text-white/70 text-base font-medium py-2 px-4 rounded-xl hover:bg-white/10 transition-colors">Recommendations</a>
-                  <a href="/gear" onClick={() => setOpen(false)} className="text-white/70 text-base font-medium py-2 px-4 rounded-xl hover:bg-white/10 transition-colors">Equipment</a>
+                  <a href="/training-apps" onClick={() => setOpen(false)} className="text-white/70 text-base font-medium py-2 px-4 rounded-xl hover:bg-white/10 transition-colors">Training Apps</a>
+                  <a href="/gear" onClick={() => setOpen(false)} className="text-white/70 text-base font-medium py-2 px-4 rounded-xl hover:bg-white/10 transition-colors">Gear & Equipment</a>
                 </div>
               )}
             </div>

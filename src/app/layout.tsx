@@ -109,7 +109,6 @@ function Header() {
                   items: [
                     { label: "Coaches & Trainers", href: "/trainers", desc: "Private & group training", icon: "🎯" },
                     { label: "Training Apps", href: "/training-apps", desc: "Soccer training apps", icon: "📱" },
-                    { label: "Gear", href: "/gear", desc: "Soccer gear & equipment", icon: "🛡️" },
                     { label: "Books & Authors", href: "/books-and-authors", desc: "Soccer books & authors", icon: "📚" },
                     { label: "Photo & Video Services", href: "/photo-video-services", desc: "Photography & videography", icon: "📸" },
                     { label: "Other Products & Services", href: "/services", desc: "Soccer products & services", icon: "🛒" },
@@ -138,7 +137,8 @@ function Header() {
               label="Recommendations"
               items={[
                 { label: "Recommendations", href: "/shop" },
-                { label: "Equipment", href: "/gear" },
+                { label: "Training Apps", href: "/training-apps" },
+                { label: "Gear & Equipment", href: "/gear" },
               ]}
             />
             <a href="/fundraiser" className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">Fundraisers</a>
