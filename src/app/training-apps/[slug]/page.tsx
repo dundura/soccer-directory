@@ -224,13 +224,20 @@ export default async function TrainingAppDetailPage({ params }: Props) {
             )}
 
             {/* Video */}
-            {app.videoUrl && (
+            {(app.videoUrl || (app.extraVideos && app.extraVideos.length > 0)) && (
               <div className="border-t border-border pt-6 mt-6">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">Video</h3>
                   <EditSectionLink ownerId={ownerId} listingType="trainingapp" listingId={app.id} />
                 </div>
-                <VideoEmbed url={app.videoUrl} />
+                {app.videoUrl && <VideoEmbed url={app.videoUrl} />}
+                {app.extraVideos && app.extraVideos.length > 0 && (
+                  <div className="grid grid-cols-2 gap-3 mt-4">
+                    {app.extraVideos.slice(0, 5).map((url, i) => (
+                      <div key={i}><VideoEmbed url={url} /></div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

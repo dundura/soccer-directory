@@ -1002,6 +1002,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "imageUrl", label: "App Icon / Screenshot", type: "image" },
     { name: "photos", label: "Additional Screenshots (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Demo Video (YouTube/Vimeo)" },
+    { name: "_extraVideos", label: "Extra Videos (up to 5)", type: "heading" },
+    { name: "extraVideos", label: "Extra Videos", type: "extra-videos", max: 5 },
     { name: "_announcement", label: "Special Offers (up to 3)", type: "heading" },
     { name: "announcementHeading", label: "Offer 1 — Heading (default: Special Offer)" },
     { name: "announcementText", label: "Offer 1 — Text", type: "textarea" },
