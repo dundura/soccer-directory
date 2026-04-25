@@ -1606,7 +1606,15 @@ function mapTrainingApp(r: Record<string, unknown>): TrainingApp {
     aboutAuthor: r.about_author as string | undefined,
     appStoreUrl: r.app_store_url as string | undefined,
     googlePlayUrl: r.google_play_url as string | undefined,
-    extraVideos: r.extra_videos ? (typeof r.extra_videos === 'string' ? JSON.parse(r.extra_videos) : r.extra_videos) as string[] : undefined,
+    extraVideos: (() => {
+      if (!r.extra_videos) return undefined;
+      try {
+        const parsed = typeof r.extra_videos === 'string' ? JSON.parse(r.extra_videos) : r.extra_videos;
+        return (parsed as (string | { title?: string; url: string })[]).map(item =>
+          typeof item === 'string' ? { url: item } : item
+        ) as { title?: string; url: string }[];
+      } catch { return undefined; }
+    })(),
     featured: r.featured as boolean, status: r.status as string | undefined,
     userId: r.user_id as string | undefined, createdAt: r.created_at as string,
     updatedAt: r.updated_at as string | undefined,

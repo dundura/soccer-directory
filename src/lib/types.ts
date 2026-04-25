@@ -650,7 +650,7 @@ export interface TrainingApp extends ProfileFields {
   announcementCta3?: string;
   announcementCtaUrl3?: string;
   aboutAuthor?: string;
-  extraVideos?: string[];
+  extraVideos?: { title?: string; url: string }[];
   featured: boolean;
   status?: string;
   userId?: string;

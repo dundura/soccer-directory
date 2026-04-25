@@ -1932,29 +1932,38 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
                 <p className="text-xs text-muted">Add up to 3 staff members. Each shows a photo, name, role, and bio.</p>
               </div>
 
-            /* Extra Videos (up to 6 URLs) */
+            /* Extra Videos (up to N — optional title + URL) */
             ) : field.type === "extra-videos" ? (
-              <div className="space-y-2">
-                {Array.from({ length: Math.min(field.max || 6, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
-                  let arr: string[] = [];
-                  try { arr = JSON.parse(formData[field.name] || "[]"); } catch { /* */ }
-                  const val = arr[i] || "";
-                  const updateVal = (v: string) => {
+              <div className="space-y-3">
+                {Array.from({ length: Math.min(field.max || 5, ((() => { try { return JSON.parse(formData[field.name] || "[]").length; } catch { return 0; } })()) + 1) }).map((_, i) => {
+                  let arr: { title?: string; url: string }[] = [];
+                  try {
+                    const parsed = JSON.parse(formData[field.name] || "[]");
+                    arr = parsed.map((item: string | { title?: string; url: string }) =>
+                      typeof item === "string" ? { url: item } : item
+                    );
+                  } catch { /* */ }
+                  const ev = arr[i] || { title: "", url: "" };
+                  const updateEv = (key: string, val: string) => {
                     const updated = [...arr];
-                    updated[i] = v;
-                    const filtered = updated.filter((s) => s.trim());
+                    if (!updated[i]) updated[i] = { title: "", url: "" };
+                    (updated[i] as Record<string, string>)[key] = val;
+                    const filtered = updated.filter((v) => v.url?.trim());
                     handleChange(field.name, JSON.stringify(filtered));
                   };
                   return (
-                    <div key={i} className="flex gap-2 items-center">
-                      <input type="url" value={val} onChange={(e) => updateVal(e.target.value)} placeholder={`Video ${i + 1} URL (YouTube/Vimeo)`} className={inputClass + " flex-1"} />
-                      {val && (
-                        <button type="button" onClick={() => { const updated = arr.filter((_, j) => j !== i); handleChange(field.name, JSON.stringify(updated)); }} className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0">x</button>
-                      )}
+                    <div key={i} className="space-y-1.5 border border-border rounded-lg p-3 bg-gray-50">
+                      <input type="text" value={ev.title || ""} onChange={(e) => updateEv("title", e.target.value)} placeholder={`Video ${i + 1} title (optional)`} className={inputClass} />
+                      <div className="flex gap-2 items-center">
+                        <input type="url" value={ev.url || ""} onChange={(e) => updateEv("url", e.target.value)} placeholder={`Video ${i + 1} URL (YouTube/Vimeo)`} className={inputClass + " flex-1"} />
+                        {ev.url && (
+                          <button type="button" onClick={() => { const updated = arr.filter((_, j) => j !== i); handleChange(field.name, JSON.stringify(updated)); }} className="px-2 text-red-500 hover:text-red-700 text-lg shrink-0">×</button>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
-                <p className="text-xs text-muted">Add up to 6 extra video URLs. They display in a 2×3 grid below the featured video.</p>
+                <p className="text-xs text-muted">Add up to {field.max || 5} extra videos. Each can have an optional title displayed above it.</p>
               </div>
 
             /* Game Highlights (up to 10 — title + URL) */

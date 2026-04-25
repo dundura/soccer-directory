@@ -232,9 +232,12 @@ export default async function TrainingAppDetailPage({ params }: Props) {
                 </div>
                 {app.videoUrl && <VideoEmbed url={app.videoUrl} />}
                 {app.extraVideos && app.extraVideos.length > 0 && (
-                  <div className="grid grid-cols-2 gap-3 mt-4">
-                    {app.extraVideos.slice(0, 5).map((url, i) => (
-                      <div key={i}><VideoEmbed url={url} /></div>
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    {app.extraVideos.slice(0, 5).map((ev, i) => (
+                      <div key={i}>
+                        {ev.title && <p className="text-sm font-semibold text-primary mb-1.5">{ev.title}</p>}
+                        <VideoEmbed url={ev.url} />
+                      </div>
                     ))}
                   </div>
                 )}
