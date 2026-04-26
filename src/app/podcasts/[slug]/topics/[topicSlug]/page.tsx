@@ -59,7 +59,9 @@ export default async function TopicPage({ params }: Props) {
               {topic.title}
             </h1>
             {topic.description && (
-              <p className="text-primary/70 text-base leading-relaxed mb-4">{topic.description}</p>
+              topic.description.includes("<") ?
+                <div className="text-primary/70 text-base leading-relaxed mb-4 prose prose-base max-w-none [&_a]:text-[#DC373E] [&_a]:underline [&_a]:font-semibold [&_p]:mb-3 [&_p:last-child]:mb-0" dangerouslySetInnerHTML={{ __html: topic.description }} /> :
+                <p className="text-primary/70 text-base leading-relaxed mb-4 whitespace-pre-line">{topic.description}</p>
             )}
             <div className="flex items-center gap-3 text-sm text-muted mb-4">
               <span>{topic.episodes.length} episode{topic.episodes.length !== 1 ? "s" : ""}</span>

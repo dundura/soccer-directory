@@ -151,7 +151,7 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
         <div className="bg-white rounded-xl p-5 border border-border space-y-3">
           <p className="text-sm font-bold text-primary">Edit Topic</p>
           <input type="text" value={topicTitle} onChange={(e) => setTopicTitle(e.target.value)} placeholder="Topic title" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
-          <textarea value={topicDesc} onChange={(e) => setTopicDesc(e.target.value)} placeholder="Description (optional)" rows={3} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent resize-none" />
+          <RichTextEditor content={topicDesc} onChange={setTopicDesc} placeholder="Description (optional)" minHeight="120px" />
           <div>
             <label className="block text-xs font-medium text-muted mb-1">URL Slug</label>
             <input type="text" value={topicSlugEdit} onChange={(e) => setTopicSlugEdit(e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-"))} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm font-mono focus:outline-none focus:border-accent" />
