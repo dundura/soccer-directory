@@ -70,7 +70,7 @@ export default async function PodcastPage({ params }: Props) {
         {/* ── Sidebar ── */}
         <aside className="md:w-72 shrink-0 space-y-5">
           {/* Cover Art */}
-          <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
+          <div className="relative bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
             {sidebarImage ? (
               <ClickableImage src={sidebarImage} alt={podcast.name} className="w-full aspect-square object-cover" style={{ objectPosition: `center ${imgPos}%` }} />
             ) : (
