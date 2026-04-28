@@ -31,7 +31,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/logo.png" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/logo.png" sizes="any" />
         <link rel="manifest" href="/workout-manifest.json" />
         <meta name="theme-color" content="#0F3154" />
         <meta name="mobile-web-app-capable" content="yes" />
