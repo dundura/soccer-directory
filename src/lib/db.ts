@@ -1494,6 +1494,10 @@ function mapSoccerBook(r: Record<string, unknown>): SoccerBook {
   if (r.media_appearances) {
     try { mediaAppearances = typeof r.media_appearances === 'string' ? JSON.parse(r.media_appearances) : r.media_appearances as SoccerBook["mediaAppearances"]; } catch { mediaAppearances = undefined; }
   }
+  let extraVideos: string[] | undefined;
+  if (r.extra_videos) {
+    try { extraVideos = typeof r.extra_videos === 'string' ? JSON.parse(r.extra_videos) : r.extra_videos as string[]; } catch { extraVideos = undefined; }
+  }
   return {
     id: r.id as string, slug: r.slug as string, name: r.name as string,
     author: r.author as string, category: r.category as string,
@@ -1522,6 +1526,7 @@ function mapSoccerBook(r: Record<string, unknown>): SoccerBook {
     link2Url: r.link2_url as string | undefined,
     link3Label: r.link3_label as string | undefined,
     link3Url: r.link3_url as string | undefined,
+    extraVideos,
     featured: r.featured as boolean, status: r.status as string | undefined,
     userId: r.user_id as string | undefined, createdAt: r.created_at as string,
     updatedAt: r.updated_at as string | undefined,
@@ -2033,7 +2038,7 @@ function mapTrainingAppToForm(r: Record<string, unknown>): Record<string, string
   return { name: s(r.name), providerName: s(r.provider_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), appStoreUrl: s(r.app_store_url), googlePlayUrl: s(r.google_play_url), facebook: sm.facebook, instagram: sm.instagram, linkedin: sm.linkedin, twitter: sm.twitter, imageUrl: s(r.image_url), videoUrl: s(r.video_url), photos: s(r.photos), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3), aboutAuthor: s(r.about_author), tagline: s(r.tagline) };
 }
 function mapSoccerBookToForm(r: Record<string, unknown>): Record<string, string> {
-  return { slug: s(r.slug), name: s(r.name), author: s(r.author), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), videoUrl: s(r.video_url), photos: s(r.photos), tagline: s(r.tagline), aboutAuthor: s(r.about_author), authorImage: s(r.author_image), link2Label: s(r.link2_label), link2Url: s(r.link2_url), link3Label: s(r.link3_label), link3Url: s(r.link3_url), mediaAppearances: jsonOrStr(r.media_appearances), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3) };
+  return { slug: s(r.slug), name: s(r.name), author: s(r.author), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), videoUrl: s(r.video_url), extraVideos: jsonOrStr(r.extra_videos), photos: s(r.photos), tagline: s(r.tagline), aboutAuthor: s(r.about_author), authorImage: s(r.author_image), link2Label: s(r.link2_label), link2Url: s(r.link2_url), link3Label: s(r.link3_label), link3Url: s(r.link3_url), mediaAppearances: jsonOrStr(r.media_appearances), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3) };
 }
 function mapPhotoVideoServiceToForm(r: Record<string, unknown>): Record<string, string> {
   return { name: s(r.name), providerName: s(r.provider_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), videoUrl: s(r.video_url), photos: s(r.photos), tagline: s(r.tagline), aboutAuthor: s(r.about_author), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3) };
@@ -2115,7 +2120,7 @@ export async function updateListing(type: string, id: string, data: Record<strin
       rows = await sql`UPDATE services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, tagline=${data.tagline || null}, about_author=${data.aboutAuthor || null}, app_store_url=${data.appStoreUrl || null}, google_play_url=${data.googlePlayUrl || null}, social_media=${sm}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "soccerbook":
-      rows = await sql`UPDATE books SET name=${data.name}, author=${data.author || null}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, tagline=${pf.tagline}, preview_image=${pf.previewImage}, sponsors=${pf.sponsors}, about_author=${data.aboutAuthor || null}, author_image=${data.authorImage || null}, link2_label=${data.link2Label || null}, link2_url=${data.link2Url || null}, link3_label=${data.link3Label || null}, link3_url=${data.link3Url || null}, media_appearances=${data.mediaAppearances || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
+      rows = await sql`UPDATE books SET name=${data.name}, author=${data.author || null}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, tagline=${pf.tagline}, preview_image=${pf.previewImage}, sponsors=${pf.sponsors}, about_author=${data.aboutAuthor || null}, author_image=${data.authorImage || null}, link2_label=${data.link2Label || null}, link2_url=${data.link2Url || null}, link3_label=${data.link3Label || null}, link3_url=${data.link3Url || null}, media_appearances=${data.mediaAppearances || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, extra_videos=${data.extraVideos || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       break;
     case "photovideo":
       rows = await sql`UPDATE photo_video_services SET name=${data.name}, provider_name=${data.providerName}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, tagline=${pf.tagline}, preview_image=${pf.previewImage}, sponsors=${pf.sponsors}, about_author=${data.aboutAuthor || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, extra_videos=${data.extraVideos || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
@@ -3792,6 +3797,120 @@ export async function updatePodcastEpisode(id: string, data: { title?: string; d
 
 export async function deletePodcastEpisode(id: string): Promise<boolean> {
   const rows = await sql`DELETE FROM podcast_episodes WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
+// ── YouTube Channel Topics ──────────────────────────────────────
+
+export interface YoutubeChannelTopic {
+  id: string;
+  channelId: string;
+  title: string;
+  slug?: string;
+  description?: string;
+  previewImage?: string;
+  pinned: boolean;
+  sortOrder: number;
+  videos: YoutubeChannelTopicVideo[];
+}
+
+export interface YoutubeChannelTopicVideo {
+  id: string;
+  topicId: string;
+  title?: string;
+  description?: string;
+  url: string;
+  sortOrder: number;
+}
+
+async function ensureYoutubeChannelTopicsTables() {
+  await sql`CREATE TABLE IF NOT EXISTS youtube_channel_topics (
+    id TEXT PRIMARY KEY,
+    channel_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    slug TEXT,
+    description TEXT,
+    preview_image TEXT,
+    pinned BOOLEAN DEFAULT FALSE,
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+  )`;
+  await sql`CREATE TABLE IF NOT EXISTS youtube_channel_topic_videos (
+    id TEXT PRIMARY KEY,
+    topic_id TEXT NOT NULL,
+    title TEXT,
+    description TEXT,
+    url TEXT NOT NULL,
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  )`;
+}
+
+export async function getYoutubeChannelTopics(channelId: string): Promise<YoutubeChannelTopic[]> {
+  await ensureYoutubeChannelTopicsTables();
+  const topicRows = await sql`SELECT * FROM youtube_channel_topics WHERE channel_id = ${channelId} ORDER BY sort_order ASC, created_at ASC`;
+  const topics: YoutubeChannelTopic[] = [];
+  for (const t of topicRows) {
+    const videoRows = await sql`SELECT * FROM youtube_channel_topic_videos WHERE topic_id = ${t.id} ORDER BY sort_order ASC, created_at ASC`;
+    topics.push({
+      id: t.id as string, channelId: t.channel_id as string, title: t.title as string,
+      slug: t.slug as string | undefined, description: t.description as string | undefined,
+      previewImage: t.preview_image as string | undefined, pinned: !!t.pinned, sortOrder: t.sort_order as number,
+      videos: videoRows.map((v) => ({
+        id: v.id as string, topicId: v.topic_id as string, title: v.title as string | undefined,
+        description: v.description as string | undefined, url: v.url as string, sortOrder: v.sort_order as number,
+      })),
+    });
+  }
+  return topics;
+}
+
+export async function getYoutubeChannelTopicBySlug(channelId: string, topicSlug: string): Promise<YoutubeChannelTopic | null> {
+  await ensureYoutubeChannelTopicsTables();
+  let rows = await sql`SELECT * FROM youtube_channel_topics WHERE channel_id = ${channelId} AND slug = ${topicSlug} LIMIT 1`;
+  if (!rows[0]) rows = await sql`SELECT * FROM youtube_channel_topics WHERE id = ${topicSlug} LIMIT 1`;
+  if (!rows[0]) return null;
+  const t = rows[0];
+  const videoRows = await sql`SELECT * FROM youtube_channel_topic_videos WHERE topic_id = ${t.id} ORDER BY sort_order ASC, created_at ASC`;
+  return {
+    id: t.id as string, channelId: t.channel_id as string, title: t.title as string,
+    slug: t.slug as string | undefined, description: t.description as string | undefined,
+    previewImage: t.preview_image as string | undefined, pinned: !!t.pinned, sortOrder: t.sort_order as number,
+    videos: videoRows.map((v) => ({
+      id: v.id as string, topicId: v.topic_id as string, title: v.title as string | undefined,
+      description: v.description as string | undefined, url: v.url as string, sortOrder: v.sort_order as number,
+    })),
+  };
+}
+
+export async function createYoutubeChannelTopic(channelId: string, title: string, description?: string, previewImage?: string): Promise<string> {
+  await ensureYoutubeChannelTopicsTables();
+  const id = genId();
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  await sql`INSERT INTO youtube_channel_topics (id, channel_id, title, slug, description, preview_image) VALUES (${id}, ${channelId}, ${title}, ${slug}, ${description || null}, ${previewImage || null})`;
+  return id;
+}
+
+export async function updateYoutubeChannelTopic(id: string, data: { title?: string; slug?: string; description?: string; previewImage?: string }): Promise<boolean> {
+  const rows = await sql`UPDATE youtube_channel_topics SET title = COALESCE(${data.title || null}, title), slug = COALESCE(${data.slug || null}, slug), description = ${data.description ?? null}, preview_image = ${data.previewImage ?? null}, updated_at = NOW() WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function deleteYoutubeChannelTopic(id: string): Promise<boolean> {
+  await sql`DELETE FROM youtube_channel_topic_videos WHERE topic_id = ${id}`;
+  const rows = await sql`DELETE FROM youtube_channel_topics WHERE id = ${id} RETURNING id`;
+  return rows.length > 0;
+}
+
+export async function createYoutubeChannelTopicVideo(topicId: string, url: string, title?: string, description?: string): Promise<string> {
+  const id = genId();
+  await sql`INSERT INTO youtube_channel_topic_videos (id, topic_id, url, title, description) VALUES (${id}, ${topicId}, ${url}, ${title || null}, ${description || null})`;
+  return id;
+}
+
+export async function deleteYoutubeChannelTopicVideo(id: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM youtube_channel_topic_videos WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
 

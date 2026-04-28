@@ -776,6 +776,7 @@ export interface SoccerBook extends ProfileFields {
   announcementCta3?: string;
   announcementCtaUrl3?: string;
   aboutAuthor?: string;
+  extraVideos?: string[];
   featured: boolean;
   status?: string;
   userId?: string;

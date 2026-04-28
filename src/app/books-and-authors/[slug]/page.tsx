@@ -249,6 +249,21 @@ export default async function ServiceDetailPage({ params }: Props) {
               </div>
             )}
 
+            {/* Extra Videos — 2-column grid, up to 6 */}
+            {service.extraVideos && service.extraVideos.length > 0 && (
+              <div className="border-t border-border pt-6 mt-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight">More Videos</h3>
+                  <EditSectionLink ownerId={ownerId} listingType="soccerbook" listingId={service.id} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {service.extraVideos.slice(0, 6).map((url, i) => (
+                    <VideoEmbed key={i} url={url} />
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Share */}
             <div className="border-t border-border pt-6 mt-6">
               <h4 className="text-sm font-bold mb-2.5">Share this listing</h4>
