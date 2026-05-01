@@ -253,16 +253,26 @@ export default async function HomePage() {
                   rel="noopener noreferrer"
                   className="block mb-6"
                 >
-                  <div className="flex items-center justify-between gap-4 bg-white/10 border border-white/20 rounded-2xl px-5 py-4 hover:bg-white/20 transition-all">
-                    <div className="flex items-center gap-4 min-w-0">
+                  <div className="flex items-stretch justify-between bg-white/10 border border-white/20 rounded-2xl overflow-hidden hover:bg-white/20 transition-all">
+                    <div className="flex items-center gap-4 min-w-0 px-5 py-4">
                       <span className="text-3xl shrink-0">⚽</span>
                       <div className="min-w-0">
                         <p className="text-white font-bold text-base leading-tight">Book Group Training Near You</p>
                         <p className="text-white/60 text-sm mt-0.5">Train together, split the cost — from $22/player</p>
                       </div>
                     </div>
-                    <div className="shrink-0 bg-[#DC373E] text-white text-sm font-bold px-4 py-2 rounded-xl whitespace-nowrap">
-                      Find Sessions →
+                    <div className="flex items-center px-5 py-4 shrink-0">
+                      <div className="bg-[#DC373E] text-white text-sm font-bold px-4 py-2 rounded-xl whitespace-nowrap">
+                        Find Sessions →
+                      </div>
+                    </div>
+                    <div className="hidden sm:block w-32 shrink-0 overflow-hidden">
+                      <img
+                        src="https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg"
+                        alt="Soccer group training"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 20%' }}
+                      />
                     </div>
                   </div>
                 </a>
