@@ -246,34 +246,26 @@ export default async function HomePage() {
                 {/* Search Bar */}
                 <HeroSearchBar />
 
-                {/* Search Shortcuts */}
-                <div className="flex flex-wrap gap-3 mb-8">
-                  {[
-                    { label: "🏟️ Clubs", href: "/clubs" },
-                    { label: "👥 Teams", href: "/teams" },
-                    { label: "⚽ Futsal", href: "/futsal" },
-                    { label: "🎯 Trainers", href: "/trainers" },
-                    { label: "⛺ Camps", href: "/camps" },
-                    { label: "🤝 Guest Play", href: "/guest-play" },
-                    { label: "🏆 Tournaments", href: "/tournaments" },
-                  ].map((link) => (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      className="px-5 py-3 rounded-xl bg-white/10 border border-white/10 text-white font-medium text-sm hover:bg-white/20 hover:border-white/20 transition-all"
-                    >
-                      {link.label}
-                    </a>
-                  ))}
-                </div>
-
-                {/* Quick Stats */}
-                <div className="flex gap-8 text-white/50 text-sm">
-                  <div><span className="text-white font-bold text-xl">{clubs.length}+</span> Clubs</div>
-                  <div><span className="text-white font-bold text-xl">{teams.length}+</span> Teams</div>
-                  <div><span className="text-white font-bold text-xl">{trainers.length}+</span> Trainers</div>
-                  <div><span className="text-white font-bold text-xl">{camps.length}+</span> Camps</div>
-                </div>
+                {/* Grupup Banner */}
+                <a
+                  href="https://grupup.app/for-parents"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block mb-6"
+                >
+                  <div className="flex items-center justify-between gap-4 bg-white/10 border border-white/20 rounded-2xl px-5 py-4 hover:bg-white/20 transition-all">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <span className="text-3xl shrink-0">⚽</span>
+                      <div className="min-w-0">
+                        <p className="text-white font-bold text-base leading-tight">Book Group Training Near You</p>
+                        <p className="text-white/60 text-sm mt-0.5">Train together, split the cost — from $22/player</p>
+                      </div>
+                    </div>
+                    <div className="shrink-0 bg-[#DC373E] text-white text-sm font-bold px-4 py-2 rounded-xl whitespace-nowrap">
+                      Find Sessions →
+                    </div>
+                  </div>
+                </a>
               </div>
 
               {/* Right Column -- Hero Image + Floating Cards */}
