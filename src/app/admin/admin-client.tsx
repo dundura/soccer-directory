@@ -60,7 +60,7 @@ export default function AdminClient() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const TABS = ["users", "listings", "comments", "crm", "contacts", "todos", "resources", "food", "upload"] as const;
+  const TABS = ["users", "listings", "comments", "crm", "contacts", "todos", "resources", "blogs", "food", "upload"] as const;
   type Tab = typeof TABS[number];
   const [tab, setTab] = useState<Tab>(() => {
     const hash = typeof window !== "undefined" ? window.location.hash.replace("#", "") : "";
@@ -89,6 +89,29 @@ export default function AdminClient() {
   const [heroTagline, setHeroTagline] = useState("");
   const [taglineSaving, setTaglineSaving] = useState(false);
   const [taglineSaved, setTaglineSaved] = useState(false);
+
+  // Blog posts
+  type BlogPost = { id: string; slug: string; title: string; category: string; date: string };
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [blogPostsLoading, setBlogPostsLoading] = useState(false);
+  useEffect(() => {
+    if (tab !== "blogs" || blogPosts.length > 0) return;
+    setBlogPostsLoading(true);
+    fetch("/api/admin/blog-posts").then(r => r.json()).then(d => { setBlogPosts(d.posts || []); }).catch(() => {}).finally(() => setBlogPostsLoading(false));
+  }, [tab]);
+
+  // Blog shared toggle (local tracking, stored in localStorage)
+  const [sharedBlogIds, setSharedBlogIds] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem("admin_shared_blogs") || "[]")); } catch { return new Set(); }
+  });
+  function toggleSharedBlog(id: string) {
+    setSharedBlogIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); } else { next.add(id); }
+      localStorage.setItem("admin_shared_blogs", JSON.stringify([...next]));
+      return next;
+    });
+  }
 
   // Shared toggle (local tracking, stored in localStorage)
   const [sharedIds, setSharedIds] = useState<Set<string>>(() => {
@@ -306,6 +329,12 @@ export default function AdminClient() {
               className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "resources" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
             >
               Resources
+            </button>
+            <button
+              onClick={() => switchTab("blogs")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "blogs" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
+            >
+              Blogs {blogPosts.length > 0 ? `(${blogPosts.length})` : ""}
             </button>
             <button
               onClick={() => switchTab("food")}
@@ -571,6 +600,41 @@ export default function AdminClient() {
           {tab === "contacts" && <AdminContacts />}
           {tab === "todos" && <AdminTodos />}
           {tab === "resources" && <AdminResources />}
+          {tab === "blogs" && (
+            <div>
+              <h2 className="text-lg font-bold text-primary mb-4">Blog Posts</h2>
+              {blogPostsLoading ? (
+                <p className="text-muted text-sm">Loading...</p>
+              ) : blogPosts.length === 0 ? (
+                <p className="text-muted text-sm">No blog posts found.</p>
+              ) : (
+                <>
+                  <p className="text-sm text-muted mb-4">
+                    {blogPosts.filter(p => sharedBlogIds.has(p.id)).length} / {blogPosts.length} shared
+                  </p>
+                  <div className="bg-white rounded-xl border border-border overflow-hidden">
+                    {blogPosts.map((post, i) => (
+                      <div key={post.id} className={`flex items-center gap-3 px-4 py-3 border-b border-border last:border-b-0 ${i % 2 === 0 ? "" : "bg-surface/40"}`}>
+                        <span className="text-xs text-muted w-6 flex-shrink-0 text-right">{i + 1}</span>
+                        <div className="flex-1 min-w-0">
+                          <a href={`/blog/${post.slug}`} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-primary hover:text-accent transition-colors line-clamp-1">
+                            {post.title}
+                          </a>
+                          {post.category && <span className="text-xs text-muted">{post.category}</span>}
+                        </div>
+                        <button
+                          onClick={() => toggleSharedBlog(post.id)}
+                          className={`text-xs px-3 py-1.5 rounded-lg border transition-colors flex-shrink-0 font-semibold ${sharedBlogIds.has(post.id) ? "bg-[#DC373E] text-white border-[#DC373E]" : "border-border text-muted hover:bg-surface"}`}
+                        >
+                          {sharedBlogIds.has(post.id) ? "✓ Shared" : "Share"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
           {tab === "food" && <FoodTracker />}
           {tab === "upload" && <AdminUpload />}
         </div>
