@@ -90,6 +90,19 @@ export default function AdminClient() {
   const [taglineSaving, setTaglineSaving] = useState(false);
   const [taglineSaved, setTaglineSaved] = useState(false);
 
+  // Shared toggle (local tracking, stored in localStorage)
+  const [sharedIds, setSharedIds] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem("admin_shared_listings") || "[]")); } catch { return new Set(); }
+  });
+  function toggleShared(id: string) {
+    setSharedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); } else { next.add(id); }
+      localStorage.setItem("admin_shared_listings", JSON.stringify([...next]));
+      return next;
+    });
+  }
+
   // Edit state
   const [editingListing, setEditingListing] = useState<Listing | null>(null);
   const [editData, setEditData] = useState<Record<string, string> | null>(null);
@@ -487,6 +500,7 @@ export default function AdminClient() {
                                           )}
                                           <button onClick={() => adminAction({ action: "updateFeatured", type: listing.type, id: listing.id, featured: !listing.featured, name: listing.name, slug: listing.slug })} disabled={actionLoading !== null} className="text-xs px-2.5 py-1 rounded-lg border border-border hover:bg-surface transition-colors disabled:opacity-50">{listing.featured ? "Unfeature" : "Feature"}</button>
                                           <button onClick={() => handleEdit(listing)} disabled={editLoading} className="text-xs px-2.5 py-1 rounded-lg bg-accent/10 text-accent-hover border border-accent/20 hover:bg-accent/20 transition-colors disabled:opacity-50">Edit</button>
+                                          <button onClick={() => toggleShared(String(listing.id))} className={`text-xs px-2.5 py-1 rounded-lg border transition-colors ${sharedIds.has(String(listing.id)) ? "bg-[#DC373E] text-white border-[#DC373E]" : "border-border text-muted hover:bg-surface"}`}>Shared</button>
                                         </div>
                                       </td>
                                     </tr>
