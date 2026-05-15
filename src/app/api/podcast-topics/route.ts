@@ -37,6 +37,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   const { action, podcastId, topicId, title, description, embedUrl, embedHtml, slug, previewImage, links } = body;
 
+
   if (!podcastId) return NextResponse.json({ error: "Missing podcastId" }, { status: 400 });
 
   const allowed = await isOwnerOrAdmin(session.user.id, session.user.email ?? undefined, podcastId);
@@ -83,7 +84,7 @@ export async function POST(req: Request) {
     if (action === "createEpisode") {
       if (!topicId) return NextResponse.json({ error: "Missing topicId" }, { status: 400 });
       if (!embedUrl && !embedHtml) return NextResponse.json({ error: "Embed URL or HTML required" }, { status: 400 });
-      const id = await createPodcastEpisode(topicId, { title, description, embedUrl, embedHtml, links });
+      const id = await createPodcastEpisode(topicId, { title, description, slug, previewImage, embedUrl, embedHtml, links });
       return NextResponse.json({ id });
     }
 

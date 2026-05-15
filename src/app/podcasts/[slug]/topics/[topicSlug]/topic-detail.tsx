@@ -40,6 +40,8 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
   const [epEmbedHtml, setEpEmbedHtml] = useState("");
   const [embedMode, setEmbedMode] = useState<"url" | "html">("url");
   const [epLinks, setEpLinks] = useState([{ label: "", url: "" }, { label: "", url: "" }, { label: "", url: "" }]);
+  const [epSlug, setEpSlug] = useState("");
+  const [epImage, setEpImage] = useState("");
   const [saving, setSaving] = useState(false);
 
   // Edit topic
@@ -116,6 +118,7 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
       body: JSON.stringify({
         action: "createEpisode", podcastId, topicId: topic.id,
         title: epTitle || undefined, description: epDesc || undefined,
+        slug: epSlug || undefined, previewImage: epImage || undefined,
         embedUrl: embedMode === "url" ? epEmbedUrl : undefined,
         embedHtml: embedMode === "html" ? epEmbedHtml : undefined,
         links: epLinks.filter(l => l.label.trim() && l.url.trim()),
@@ -200,6 +203,22 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
         <div className="bg-white rounded-xl p-5 border border-border space-y-3">
           <p className="text-sm font-bold text-primary">Add Episode to {topic.title}</p>
           <input type="text" value={epTitle} onChange={(e) => setEpTitle(e.target.value)} placeholder="Episode title (optional)" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
+          <div>
+            <label className="block text-xs font-medium text-muted mb-1">URL Slug</label>
+            <input type="text" value={epSlug} onChange={(e) => setEpSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-"))} placeholder="episode-url-slug (auto-generated if blank)" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm font-mono focus:outline-none focus:border-accent" />
+            {epSlug && <p className="text-xs text-muted mt-1">URL: /podcasts/{podcastSlug}/episodes/{epSlug}</p>}
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-muted mb-1">Preview Image (shown when sharing)</label>
+            {epImage ? (
+              <div className="relative inline-block">
+                <img src={epImage} alt="Preview" className="max-h-[100px] rounded-lg object-cover" />
+                <button type="button" onClick={() => setEpImage("")} className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white text-xs flex items-center justify-center hover:bg-black/80">&#x2715;</button>
+              </div>
+            ) : (
+              <ImageUpload onUploaded={(url) => setEpImage(url)} />
+            )}
+          </div>
           <RichTextEditor content={epDesc} onChange={setEpDesc} placeholder="Description (optional)" minHeight="120px" />
           <div className="flex gap-2 mb-2">
             <button onClick={() => setEmbedMode("url")} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${embedMode === "url" ? "bg-primary text-white" : "bg-white border border-border text-muted"}`}>Paste URL</button>
