@@ -116,13 +116,13 @@ export async function POST(req: Request) {
       if (!ep1Row[0]) return NextResponse.json({ error: "Episode not found" }, { status: 404 });
       const allRows = await sql`SELECT id FROM podcast_episodes WHERE topic_id = ${ep1Row[0].topic_id} ORDER BY COALESCE(sort_order, 999999) ASC, created_at DESC`;
       // Assign consecutive sort_orders (0-based), then swap the two
-      const ids = allRows.map((r: { id: string }) => r.id);
+      const ids = allRows.map((r: Record<string, any>) => r.id as string);
       const orderMap: Record<string, number> = {};
       ids.forEach((id: string, i: number) => { orderMap[id] = i; });
       const o1 = orderMap[episodeId1];
       const o2 = orderMap[episodeId2];
       // Persist full sort_order assignments then swap
-      for (const [id, order] of Object.entries(orderMap)) {
+      for (const [id, order] of Object.entries(orderMap) as [string, number][]) {
         await sql`UPDATE podcast_episodes SET sort_order = ${order} WHERE id = ${id}`;
       }
       await sql`UPDATE podcast_episodes SET sort_order = ${o2} WHERE id = ${episodeId1}`;
