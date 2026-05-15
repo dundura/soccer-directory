@@ -32,6 +32,7 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
   const { data: session } = useSession();
   const isOwner = !!(ownerId && session?.user?.id === ownerId) || (session?.user as any)?.role === "admin";
 
+  const [view, setView] = useState<"full" | "list">("full");
   const [showForm, setShowForm] = useState(false);
   const [epTitle, setEpTitle] = useState("");
   const [epDesc, setEpDesc] = useState("");
@@ -134,18 +135,39 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
     window.location.reload();
   };
 
+  const handleMoveEpisode = async (episodeId: string, direction: "up" | "down") => {
+    const episodes = topic.episodes;
+    const idx = episodes.findIndex(e => e.id === episodeId);
+    if (direction === "up" && idx === 0) return;
+    if (direction === "down" && idx === episodes.length - 1) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    await fetch("/api/podcast-topics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "swapEpisodeOrder", podcastId, episodeId1: episodes[idx].id, episodeId2: episodes[swapIdx].id }),
+    });
+    window.location.reload();
+  };
+
   return (
     <div className="space-y-4">
-      {isOwner && (
-        <div className="flex justify-end gap-2">
-          <button onClick={() => setShowEditTopic(!showEditTopic)} className="px-4 py-2 rounded-lg border border-border text-sm font-semibold text-primary hover:bg-surface transition-colors">
-            Edit Topic
-          </button>
-          <button onClick={() => setShowForm(!showForm)} className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors">
-            + Add Episode
-          </button>
+      {/* Tabs + owner actions */}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex gap-1 bg-surface rounded-lg p-1 border border-border">
+          <button onClick={() => setView("full")} className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === "full" ? "bg-white shadow-sm text-primary" : "text-muted hover:text-primary"}`}>Full</button>
+          <button onClick={() => setView("list")} className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === "list" ? "bg-white shadow-sm text-primary" : "text-muted hover:text-primary"}`}>List</button>
         </div>
-      )}
+        {isOwner && (
+          <div className="flex gap-2">
+            <button onClick={() => setShowEditTopic(!showEditTopic)} className="px-4 py-2 rounded-lg border border-border text-sm font-semibold text-primary hover:bg-surface transition-colors">
+              Edit Topic
+            </button>
+            <button onClick={() => setShowForm(!showForm)} className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors">
+              + Add Episode
+            </button>
+          </div>
+        )}
+      </div>
 
       {isOwner && showEditTopic && (
         <div className="bg-white rounded-xl p-5 border border-border space-y-3">
@@ -210,8 +232,28 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
         <p className="text-muted text-center py-8">No episodes in this topic yet.</p>
       )}
 
-      {topic.episodes.map((ep) => (
-        <div key={ep.id} className="bg-white rounded-xl border border-border p-5 sm:p-6">
+      {/* List view */}
+      {view === "list" && topic.episodes.length > 0 && (
+        <div className="bg-white rounded-xl border border-border overflow-hidden">
+          {topic.episodes.map((ep, idx) => (
+            <div key={ep.id} className="flex items-center gap-3 px-5 py-3 border-b border-border last:border-b-0 hover:bg-surface transition-colors">
+              <span className="text-xs text-muted w-5 flex-shrink-0">{idx + 1}</span>
+              <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="flex-1 text-sm font-semibold text-primary hover:text-accent transition-colors min-w-0 truncate">
+                {ep.title || `Episode ${idx + 1}`}
+              </a>
+              {isOwner && (
+                <div className="flex gap-1 flex-shrink-0">
+                  <button onClick={() => handleMoveEpisode(ep.id, "up")} disabled={idx === 0} className="w-6 h-6 flex items-center justify-center rounded text-muted hover:text-primary disabled:opacity-30 transition-colors text-xs">▲</button>
+                  <button onClick={() => handleMoveEpisode(ep.id, "down")} disabled={idx === topic.episodes.length - 1} className="w-6 h-6 flex items-center justify-center rounded text-muted hover:text-primary disabled:opacity-30 transition-colors text-xs">▼</button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {view === "full" && topic.episodes.map((ep, epIdx) => (
+        <div key={ep.id} className="bg-white rounded-xl border border-border p-5 sm:p-6 relative">
           {editingId === ep.id ? (
             <div className="space-y-3">
               <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Episode title" className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:border-accent" />
@@ -300,7 +342,9 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
                   )}
                 </div>
                 {isOwner && (
-                  <div className="flex gap-3 flex-shrink-0">
+                  <div className="flex gap-3 flex-shrink-0 items-center">
+                    <button onClick={() => handleMoveEpisode(ep.id, "up")} disabled={epIdx === 0} className="text-xs text-muted hover:text-primary disabled:opacity-30 transition-colors">▲</button>
+                    <button onClick={() => handleMoveEpisode(ep.id, "down")} disabled={epIdx === topic.episodes.length - 1} className="text-xs text-muted hover:text-primary disabled:opacity-30 transition-colors">▼</button>
                     <button onClick={() => handleEdit(ep)} className="text-xs text-accent hover:text-accent-hover transition-colors">Edit</button>
                     <button onClick={() => handleDelete(ep.id)} className="text-xs text-muted hover:text-red-500 transition-colors">Delete</button>
                   </div>

@@ -3702,7 +3702,7 @@ export async function getPodcastTopics(podcastId: string): Promise<PodcastTopic[
   const topicRows = await sql`SELECT * FROM podcast_topics WHERE podcast_id = ${podcastId} ORDER BY sort_order ASC, created_at ASC`;
   const topics: PodcastTopic[] = [];
   for (const t of topicRows) {
-    const episodeRows = await sql`SELECT * FROM podcast_episodes WHERE topic_id = ${t.id} ORDER BY sort_order ASC, created_at ASC`;
+    const episodeRows = await sql`SELECT * FROM podcast_episodes WHERE topic_id = ${t.id} ORDER BY COALESCE(sort_order, 999999) ASC, created_at DESC`;
     topics.push({
       id: t.id as string, podcastId: t.podcast_id as string, title: t.title as string,
       slug: t.slug as string | undefined, description: t.description as string | undefined,
@@ -3735,7 +3735,7 @@ export async function getPodcastTopicBySlug(podcastId: string, topicSlug: string
   if (!topicRows[0]) topicRows = await sql`SELECT * FROM podcast_topics WHERE id = ${topicSlug} LIMIT 1`;
   if (!topicRows[0]) return null;
   const t = topicRows[0];
-  const episodeRows = await sql`SELECT * FROM podcast_episodes WHERE topic_id = ${t.id} ORDER BY sort_order ASC, created_at ASC`;
+  const episodeRows = await sql`SELECT * FROM podcast_episodes WHERE topic_id = ${t.id} ORDER BY created_at DESC`;
   return {
     id: t.id as string, podcastId: t.podcast_id as string, title: t.title as string,
     slug: t.slug as string | undefined, description: t.description as string | undefined,

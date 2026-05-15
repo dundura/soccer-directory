@@ -105,6 +105,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true });
     }
 
+    if (action === "swapEpisodeOrder") {
+      const { episodeId1, episodeId2 } = body;
+      if (!episodeId1 || !episodeId2) return NextResponse.json({ error: "Missing episode IDs" }, { status: 400 });
+      const { neon } = await import("@neondatabase/serverless");
+      const sql = neon(process.env.DATABASE_URL!);
+      // Fetch all episodes in this topic to establish full order
+      const ep1Row = await sql`SELECT topic_id FROM podcast_episodes WHERE id = ${episodeId1} LIMIT 1`;
+      if (!ep1Row[0]) return NextResponse.json({ error: "Episode not found" }, { status: 404 });
+      const allRows = await sql`SELECT id FROM podcast_episodes WHERE topic_id = ${ep1Row[0].topic_id} ORDER BY COALESCE(sort_order, 999999) ASC, created_at DESC`;
+      // Assign consecutive sort_orders (0-based), then swap the two
+      const ids = allRows.map((r: { id: string }) => r.id);
+      const orderMap: Record<string, number> = {};
+      ids.forEach((id: string, i: number) => { orderMap[id] = i; });
+      const o1 = orderMap[episodeId1];
+      const o2 = orderMap[episodeId2];
+      // Persist full sort_order assignments then swap
+      for (const [id, order] of Object.entries(orderMap)) {
+        await sql`UPDATE podcast_episodes SET sort_order = ${order} WHERE id = ${id}`;
+      }
+      await sql`UPDATE podcast_episodes SET sort_order = ${o2} WHERE id = ${episodeId1}`;
+      await sql`UPDATE podcast_episodes SET sort_order = ${o1} WHERE id = ${episodeId2}`;
+      return NextResponse.json({ success: true });
+    }
+
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (err) {
     console.error("Podcast topics API error:", err);
