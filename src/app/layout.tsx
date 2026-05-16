@@ -145,7 +145,8 @@ function Header() {
             <NavDropdown
               label="Free"
               items={[
-                { label: "Free Resources", href: "/free" },
+                { label: "🗓️ Free Training Plan", href: "https://www.anytime-soccer.com/free-training-plan" },
+                { label: "Free Resources", href: "https://www.anytime-soccer.com/free-resource-hub" },
                 { label: "Ebooks", href: "/ebooks" },
                 { label: "Free Giveaways", href: "/giveaways" },
               ]}
