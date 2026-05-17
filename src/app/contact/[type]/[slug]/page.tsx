@@ -32,7 +32,7 @@ export default function ContactPage() {
   const type = params.type as string;
   const slug = params.slug as string;
 
-  const [form, setForm] = useState({ senderName: "", senderEmail: "", message: "", website: "" });
+  const [form, setForm] = useState({ senderName: "", senderEmail: "", message: "", videoUrl: "", website: "" });
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
@@ -51,7 +51,7 @@ export default function ContactPage() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, slug, senderName: form.senderName, senderEmail: form.senderEmail, message: form.message, website: form.website, _t: loadedAt, captchaToken }),
+        body: JSON.stringify({ type, slug, senderName: form.senderName, senderEmail: form.senderEmail, message: form.message, videoUrl: form.videoUrl, website: form.website, _t: loadedAt, captchaToken }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
@@ -140,6 +140,20 @@ export default function ContactPage() {
               placeholder="Hi, I'm interested in learning more about..."
             />
           </div>
+
+          {type === "giveaway" && (
+            <div>
+              <label className="block text-sm font-medium mb-1">Video Link <span className="text-muted text-xs">(optional)</span></label>
+              <input
+                type="url"
+                value={form.videoUrl}
+                onChange={(e) => setForm((f) => ({ ...f, videoUrl: e.target.value }))}
+                className={inputClass}
+                placeholder="https://youtube.com/... or https://vimeo.com/..."
+              />
+              <p className="text-xs text-muted mt-1">Share a link to a video of yourself playing — helps us personalize your training plan.</p>
+            </div>
+          )}
 
           {/* Honeypot - hidden from real users */}
           <div className="absolute opacity-0 -z-10" aria-hidden="true">

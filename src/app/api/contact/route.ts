@@ -24,7 +24,7 @@ const TYPE_PATHS: Record<string, string> = {
 
 export async function POST(req: Request) {
   try {
-    const { type, slug, senderName, senderEmail, message, website, _t, captchaToken } = await req.json();
+    const { type, slug, senderName, senderEmail, message, videoUrl, website, _t, captchaToken } = await req.json();
 
     // Honeypot check — bots fill hidden fields
     if (website) {
@@ -70,6 +70,7 @@ export async function POST(req: Request) {
               <tr><td style="padding: 8px 0; color: #666; width: 120px;">Listing</td><td style="padding: 8px 0; font-weight: bold;">${listing.name}</td></tr>
               <tr><td style="padding: 8px 0; color: #666;">From</td><td style="padding: 8px 0; font-weight: bold;">${senderName}</td></tr>
               <tr><td style="padding: 8px 0; color: #666;">Email</td><td style="padding: 8px 0;"><a href="mailto:${senderEmail}">${senderEmail}</a></td></tr>
+              ${videoUrl ? `<tr><td style="padding: 8px 0; color: #666;">Video</td><td style="padding: 8px 0;"><a href="${videoUrl}" style="color: #DC373E;">${videoUrl}</a></td></tr>` : ''}
             </table>
             <div style="background: #f7f7f7; padding: 16px; border-radius: 8px; margin: 16px 0;">
               <p style="color: #333; line-height: 1.6; margin: 0; white-space: pre-wrap;">${message}</p>
