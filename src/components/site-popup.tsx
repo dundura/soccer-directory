@@ -14,7 +14,7 @@ const FREE_EBOOKS = [
   { title: "Player Cards Guide", subtitle: "Stay informed about eligibility requirements and avoid missed tournaments.", href: "https://anytime-soccer.com/everything-you-need-to-know-about-player-cards/", image: "https://media.anytime-soccer.com/wp-content/uploads/2024/11/pro-tips-for-college-showcases-1.png", cta: "Download Free" },
 ];
 
-type Variant = "listing" | "training" | "ebook";
+type Variant = "listing" | "training" | "plan-builder" | "ebook";
 
 export default function SitePopup() {
   const [show, setShow] = useState(false);
@@ -23,12 +23,14 @@ export default function SitePopup() {
 
   useEffect(() => {
     if (sessionStorage.getItem("snm-popup-dismissed")) return;
-    // 10 total options: listing, training, 8 ebooks — equal chance
+    // Equal split: 25% each for listing, training, plan-builder, ebook
     const roll = Math.random();
-    if (roll < 0.1) {
+    if (roll < 0.25) {
       setVariant("listing");
-    } else if (roll < 0.2) {
+    } else if (roll < 0.5) {
       setVariant("training");
+    } else if (roll < 0.75) {
+      setVariant("plan-builder");
     } else {
       setVariant("ebook");
       setEbookIndex(Math.floor(Math.random() * FREE_EBOOKS.length));
@@ -71,8 +73,10 @@ export default function SitePopup() {
               ? ebook.image
               : variant === "training"
               ? "https://d2vm0l3c6tu9qp.cloudfront.net/Anytime-soccer-camp.webp"
+              : variant === "plan-builder"
+              ? "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/uploads/1778974402995-sa4a36.png"
               : "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp"}
-            alt={variant === "ebook" ? ebook.title : variant === "training" ? "Anytime Soccer Training" : "Soccer Near Me"}
+            alt={variant === "ebook" ? ebook.title : variant === "training" ? "Anytime Soccer Training" : variant === "plan-builder" ? "Free Training Plan" : "Soccer Near Me"}
             className="w-full h-full object-cover"
           />
         </div>
@@ -132,6 +136,34 @@ export default function SitePopup() {
                 className="bg-accent hover:bg-accent-hover text-white text-center px-6 py-4 rounded-full font-bold text-base transition-all hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(220,55,62,0.35)] hover:shadow-[0_6px_25px_rgba(220,55,62,0.45)]"
               >
                 Start My Free 7-Day Plan &rarr;
+              </a>
+            </>
+          ) : variant === "plan-builder" ? (
+            <>
+              <p className="text-accent text-xs font-bold uppercase tracking-[2px] mb-2">
+                Free — No Account Needed
+              </p>
+              <p className="text-accent text-sm font-semibold mb-4">
+                Build a personalized plan in 60 seconds!
+              </p>
+              <div className="w-12 h-[3px] bg-accent rounded-full mb-5" />
+              <h2 className="text-2xl md:text-[28px] font-extrabold text-primary leading-tight mb-2">
+                Stop Guessing. Start Training.
+              </h2>
+              <p className="text-muted text-[15px] mb-4">
+                Pick the skill areas your player needs to work on, set the schedule, and get a free PDF plan emailed to you instantly.
+              </p>
+              <p className="text-primary font-bold text-[15px] mb-6">
+                Built from <span className="text-accent">5,000+ follow-along videos</span> used by 50,000+ players worldwide.
+              </p>
+              <a
+                href="https://www.anytime-soccer.com/free-training-plan"
+                onClick={dismiss}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-accent hover:bg-accent-hover text-white text-center px-6 py-4 rounded-full font-bold text-base transition-all hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(220,55,62,0.35)] hover:shadow-[0_6px_25px_rgba(220,55,62,0.45)]"
+              >
+                Build My Free Plan &rarr;
               </a>
             </>
           ) : (

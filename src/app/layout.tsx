@@ -4,7 +4,6 @@ import { NavDropdown } from "@/components/nav-dropdown";
 import { HeaderAuth } from "@/components/header-auth";
 import AuthProvider from "@/components/session-provider";
 import AnnouncementBanner from "@/components/announcement-banner";
-import TrainingPlanPopup from "@/components/training-plan-popup";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -51,7 +50,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
-          <TrainingPlanPopup />
         </AuthProvider>
       </body>
     </html>
