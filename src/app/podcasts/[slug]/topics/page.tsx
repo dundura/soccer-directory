@@ -1,7 +1,8 @@
-import { getPodcastBySlug, getPodcastTopics } from "@/lib/db";
+import { getPodcastBySlug, getPodcastTopics, getListingOwnerIdById } from "@/lib/db";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ShareButtons } from "@/components/profile-ui";
+import { TopicsReorderList } from "./TopicsReorderList";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,10 @@ export default async function AllTopicsPage({ params }: Props) {
   const { slug } = await params;
   const podcast = await getPodcastBySlug(slug);
   if (!podcast) notFound();
-  const topics = await getPodcastTopics(podcast.id);
+  const [topics, ownerId] = await Promise.all([
+    getPodcastTopics(podcast.id),
+    getListingOwnerIdById("podcast", podcast.id),
+  ]);
 
   const pageUrl = `https://www.soccer-near-me.com/podcasts/${slug}/topics`;
 
@@ -52,37 +56,12 @@ export default async function AllTopicsPage({ params }: Props) {
         {topics.length === 0 ? (
           <p className="text-muted text-center py-8">No topics yet.</p>
         ) : (
-          <div className="space-y-3">
-            {topics.map((topic) => (
-              <a
-                key={topic.id}
-                href={`/podcasts/${slug}/topics/${topic.slug || topic.id}`}
-                className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden"
-              >
-                <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
-                {topic.previewImage && (
-                  <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-4">
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-surface">
-                      <img src={topic.previewImage} alt={topic.title} className="w-full h-full object-contain" />
-                    </div>
-                  </div>
-                )}
-                <div className="flex-1 min-w-0 p-4 sm:p-5 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight group-hover:text-accent transition-colors">{topic.title}</h3>
-                    {topic.description && <p className="text-sm text-primary/70 mt-1 line-clamp-2">{topic.description}</p>}
-                    <div className="flex items-center gap-3 mt-2">
-                      <span className="text-xs text-muted">{topic.episodes.length} episode{topic.episodes.length !== 1 ? "s" : ""}</span>
-                      <span className="text-sm font-semibold text-accent group-hover:text-accent-hover transition-colors">View Episodes →</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-center w-12 sm:w-14 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
-                  <span className="text-white text-2xl font-light">&#8250;</span>
-                </div>
-              </a>
-            ))}
-          </div>
+          <TopicsReorderList
+            initialTopics={topics}
+            podcastSlug={slug}
+            podcastId={podcast.id}
+            ownerId={ownerId ?? null}
+          />
         )}
 
         {/* Back link */}
