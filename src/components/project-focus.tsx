@@ -10,6 +10,7 @@ interface Task {
   name: string;
   total_secs: number;
   done: boolean;
+  hidden?: boolean;
   comments?: Comment[];
   commentsLoaded?: boolean;
 }
@@ -43,6 +44,9 @@ export function ProjectFocus() {
 
   const [showNewProject, setShowNewProject] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
+  const [showHiddenProjects, setShowHiddenProjects] = useState<Set<number>>(new Set());
+  const [showHiddenStandalone, setShowHiddenStandalone] = useState(false);
+  const toggleHiddenProject = (id: number) => setShowHiddenProjects(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const [showNewTask, setShowNewTask] = useState(false);
   const [newStandaloneTask, setNewStandaloneTask] = useState("");
   const [standaloneTasks, setStandaloneTasks] = useState<Task[]>([]);
@@ -168,6 +172,16 @@ export function ProjectFocus() {
     const res = await fetch("/api/focus/projects/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ project_id: projectId, name }) }).then(r => r.json());
     if (res.id) setProjects(p => p.map(pr => pr.id === projectId ? { ...pr, tasks: [...pr.tasks, { ...res, comments: [], commentsLoaded: true }] } : pr));
     setNewTaskName(""); setAddingTaskTo(null);
+  };
+
+  const hideTask = (task: Task, hidden: boolean) => {
+    if (hidden && activeTimers[task.id] !== undefined) stopTimer(task);
+    updateTaskInState(task.id, task.project_id, t => ({ ...t, hidden }));
+    fetch("/api/focus/projects/tasks", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: task.id, hidden }),
+    }).catch(() => {});
   };
 
   const resetTask = (task: Task) => {
@@ -324,21 +338,36 @@ export function ProjectFocus() {
                 <button onClick={() => { setShowNewTask(false); setNewStandaloneTask(""); }} style={{ background: "none", border: "none", color: "#6B7D8E", fontSize: 18, cursor: "pointer" }}>×</button>
               </div>
             )}
-            {standaloneTasks.length === 0 ? (
+            {standaloneTasks.filter(t => !t.hidden).length === 0 && standaloneTasks.filter(t => t.hidden).length === 0 ? (
               <div style={{ fontSize: 13, color: "#94a3b8", padding: "8px 0" }}>No tasks yet.</div>
             ) : (
               <div style={{ border: "1px solid #F1F5F9", borderRadius: 8, overflow: "hidden" }}>
-                {standaloneTasks.map(task => (
+                {standaloneTasks.filter(t => !t.hidden).map(task => (
                   <TaskRow key={task.id} task={task} accentColor="#0F3154"
                     isActive={activeTimers[task.id] !== undefined}
                     displaySecs={task.total_secs + (elapsedMap[task.id] ?? 0)}
                     onStart={() => startTimer(task)} onStop={() => stopTimer(task)}
-                    onToggleDone={() => toggleTaskDone(task)} onDelete={() => deleteTask(task)} onReset={() => resetTask(task)}
+                    onToggleDone={() => toggleTaskDone(task)} onDelete={() => deleteTask(task)} onReset={() => resetTask(task)} onHide={() => hideTask(task, true)}
                     onExpandComments={() => loadComments(task)}
                     onAddComment={text => addComment(task, text)}
                     onDeleteComment={cid => deleteComment(task, cid)}
                   />
                 ))}
+                {standaloneTasks.some(t => t.hidden) && (
+                  <div style={{ borderTop: "1px solid #F1F5F9" }}>
+                    <button onClick={() => setShowHiddenStandalone(v => !v)} style={{ width: "100%", padding: "8px 14px", background: "none", border: "none", textAlign: "left", fontSize: 12, color: "#94a3b8", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>
+                      <span>{showHiddenStandalone ? "▼" : "▶"}</span>
+                      Hidden ({standaloneTasks.filter(t => t.hidden).length})
+                    </button>
+                    {showHiddenStandalone && standaloneTasks.filter(t => t.hidden).map(task => (
+                      <div key={task.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", borderTop: "1px solid #F8FAFC", background: "#FAFAFA", opacity: 0.7 }}>
+                        <div style={{ flex: 1, fontSize: 13, color: "#94a3b8", textDecoration: "line-through", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{task.name}</div>
+                        <button onClick={() => hideTask(task, false)} style={{ background: "none", border: "1px solid #E1E8EF", borderRadius: 6, padding: "3px 10px", fontSize: 11, color: "#6B7D8E", cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>Unhide</button>
+                        <button onClick={() => deleteTask(task)} className="pf-del" style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 15, cursor: "pointer", lineHeight: 1, flexShrink: 0 }}>×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -399,20 +428,36 @@ export function ProjectFocus() {
 
                 {!isCollapsed && (
                   <div>
-                    {project.tasks.length === 0 && addingTaskTo !== project.id && (
+                    {project.tasks.filter(t => !t.hidden).length === 0 && addingTaskTo !== project.id && (
                       <div style={{ padding: "16px", fontSize: 13, color: "#94a3b8", textAlign: "center" }}>No subtasks — click + Subtask</div>
                     )}
-                    {project.tasks.map(task => (
+                    {project.tasks.filter(t => !t.hidden).map(task => (
                       <TaskRow key={task.id} task={task} accentColor={project.color}
                         isActive={activeTimers[task.id] !== undefined}
                         displaySecs={taskDisplaySecs(task)}
                         onStart={() => startTimer(task)} onStop={() => stopTimer(task)}
-                        onToggleDone={() => toggleTaskDone(task)} onDelete={() => deleteTask(task)} onReset={() => resetTask(task)}
+                        onToggleDone={() => toggleTaskDone(task)} onDelete={() => deleteTask(task)} onReset={() => resetTask(task)} onHide={() => hideTask(task, true)}
                         onExpandComments={() => loadComments(task)}
                         onAddComment={(text) => addComment(task, text)}
                         onDeleteComment={(cid) => deleteComment(task, cid)}
                       />
                     ))}
+                    {/* Hidden folder */}
+                    {project.tasks.some(t => t.hidden) && (
+                      <div style={{ borderTop: "1px solid #F1F5F9" }}>
+                        <button onClick={() => toggleHiddenProject(project.id)} style={{ width: "100%", padding: "8px 14px", background: "none", border: "none", textAlign: "left", fontSize: 12, color: "#94a3b8", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>
+                          <span>{showHiddenProjects.has(project.id) ? "▼" : "▶"}</span>
+                          Hidden ({project.tasks.filter(t => t.hidden).length})
+                        </button>
+                        {showHiddenProjects.has(project.id) && project.tasks.filter(t => t.hidden).map(task => (
+                          <div key={task.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", borderTop: "1px solid #F8FAFC", background: "#FAFAFA", opacity: 0.7 }}>
+                            <div style={{ flex: 1, fontSize: 13, color: "#94a3b8", textDecoration: "line-through", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{task.name}</div>
+                            <button onClick={() => hideTask(task, false)} style={{ background: "none", border: "1px solid #E1E8EF", borderRadius: 6, padding: "3px 10px", fontSize: 11, color: "#6B7D8E", cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>Unhide</button>
+                            <button onClick={() => deleteTask(task)} className="pf-del" style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 15, cursor: "pointer", lineHeight: 1, flexShrink: 0 }}>×</button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     {addingTaskTo === project.id && (
                       <div style={{ padding: "10px 14px", borderTop: project.tasks.length > 0 ? "1px solid #F1F5F9" : "none", display: "flex", gap: 8 }}>
                         <input ref={newTaskInputRef} value={newTaskName} onChange={e => setNewTaskName(e.target.value)}
@@ -440,9 +485,9 @@ export function ProjectFocus() {
   );
 }
 
-function TaskRow({ task, accentColor, isActive, displaySecs, onStart, onStop, onToggleDone, onDelete, onReset, onExpandComments, onAddComment, onDeleteComment }: {
+function TaskRow({ task, accentColor, isActive, displaySecs, onStart, onStop, onToggleDone, onDelete, onReset, onHide, onExpandComments, onAddComment, onDeleteComment }: {
   task: Task; accentColor: string; isActive: boolean; displaySecs: number;
-  onStart: () => void; onStop: () => void; onToggleDone: () => void; onDelete: () => void; onReset: () => void;
+  onStart: () => void; onStop: () => void; onToggleDone: () => void; onDelete: () => void; onReset: () => void; onHide: () => void;
   onExpandComments: () => void; onAddComment: (t: string) => void; onDeleteComment: (id: number) => void;
 }) {
   const [showComments, setShowComments] = useState(false);
@@ -485,6 +530,7 @@ function TaskRow({ task, accentColor, isActive, displaySecs, onStart, onStop, on
         {displaySecs > 0 && !isActive && (
           <button onClick={onReset} title="Reset timer" style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 11, cursor: "pointer", lineHeight: 1, padding: "0 2px", flexShrink: 0, fontFamily: "inherit" }}>↺</button>
         )}
+        <button onClick={onHide} title="Hide task" className="pf-del" style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 13, cursor: "pointer", lineHeight: 1, padding: "0 2px", transition: "color 0.15s", flexShrink: 0 }}>⊘</button>
         <button onClick={onDelete} className="pf-del" style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "0 2px", transition: "color 0.15s", flexShrink: 0 }}>×</button>
       </div>
 

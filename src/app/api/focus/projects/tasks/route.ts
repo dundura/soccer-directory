@@ -4,15 +4,20 @@ import { neon } from "@neondatabase/serverless";
 
 const sql = neon(process.env.DATABASE_URL!);
 
+async function ensureHiddenColumn() {
+  await sql`ALTER TABLE focus_project_tasks ADD COLUMN IF NOT EXISTS hidden BOOLEAN DEFAULT FALSE`.catch(() => {});
+}
+
 export async function GET(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    await ensureHiddenColumn();
     const { searchParams } = new URL(req.url);
     const standalone = searchParams.get("standalone");
     const rows = standalone
-      ? await sql`SELECT id, project_id, name, total_secs, done FROM focus_project_tasks WHERE user_email = ${session.user.email} AND project_id IS NULL ORDER BY created_at ASC`
-      : await sql`SELECT id, project_id, name, total_secs, done FROM focus_project_tasks WHERE user_email = ${session.user.email} ORDER BY created_at ASC`;
+      ? await sql`SELECT id, project_id, name, total_secs, done, hidden FROM focus_project_tasks WHERE user_email = ${session.user.email} AND project_id IS NULL ORDER BY created_at ASC`
+      : await sql`SELECT id, project_id, name, total_secs, done, hidden FROM focus_project_tasks WHERE user_email = ${session.user.email} ORDER BY created_at ASC`;
     return NextResponse.json(rows);
   } catch {
     return NextResponse.json({ error: "Failed to load" }, { status: 500 });
@@ -27,7 +32,7 @@ export async function POST(req: Request) {
     const rows = await sql`
       INSERT INTO focus_project_tasks (project_id, user_email, name)
       VALUES (${project_id}, ${session.user.email}, ${name})
-      RETURNING id, project_id, name, total_secs, done
+      RETURNING id, project_id, name, total_secs, done, hidden
     `;
     return NextResponse.json(rows[0]);
   } catch {
@@ -39,7 +44,7 @@ export async function PATCH(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const { id, add_secs, done, reset } = await req.json();
+    const { id, add_secs, done, reset, hidden } = await req.json();
     if (reset) {
       await sql`UPDATE focus_project_tasks SET total_secs = 0 WHERE id = ${id} AND user_email = ${session.user.email}`;
     } else if (add_secs !== undefined) {
@@ -47,6 +52,9 @@ export async function PATCH(req: Request) {
     }
     if (done !== undefined) {
       await sql`UPDATE focus_project_tasks SET done = ${done} WHERE id = ${id} AND user_email = ${session.user.email}`;
+    }
+    if (hidden !== undefined) {
+      await sql`UPDATE focus_project_tasks SET hidden = ${hidden} WHERE id = ${id} AND user_email = ${session.user.email}`;
     }
     return NextResponse.json({ success: true });
   } catch {
