@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ListingForm } from "@/components/listing-form";
 import { FoodTracker } from "@/components/food-tracker";
+import { FocusTracker } from "@/components/focus-tracker";
 import { AdminCRM } from "@/components/admin-crm";
 import { AdminTodos } from "@/components/admin-todos";
 import { AdminResources } from "@/components/admin-resources";
@@ -348,6 +349,12 @@ export default function AdminClient() {
             >
               File Upload
             </button>
+            <button
+              onClick={() => switchTab("focus")}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${tab === "focus" ? "bg-primary text-white" : "bg-surface text-muted hover:bg-gray-200"}`}
+            >
+              Focus
+            </button>
           </div>
 
           {/* Users Tab */}
@@ -637,6 +644,7 @@ export default function AdminClient() {
           )}
           {tab === "food" && <FoodTracker />}
           {tab === "upload" && <AdminUpload />}
+          {tab === "focus" && <FocusTracker />}
         </div>
       </div>
     </>
