@@ -61,7 +61,7 @@ export default function AdminClient() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const TABS = ["users", "listings", "comments", "crm", "contacts", "todos", "resources", "blogs", "food", "upload"] as const;
+  const TABS = ["users", "listings", "comments", "crm", "contacts", "todos", "resources", "blogs", "food", "upload", "focus"] as const;
   type Tab = typeof TABS[number];
   const [tab, setTab] = useState<Tab>(() => {
     const hash = typeof window !== "undefined" ? window.location.hash.replace("#", "") : "";
