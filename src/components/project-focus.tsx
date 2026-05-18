@@ -168,27 +168,31 @@ export function ProjectFocus() {
     fetch(`/api/focus/projects/tasks?id=${task.id}`, { method: "DELETE" }).catch(() => {});
   };
 
+  const updateTaskInState = (taskId: number, projectId: number | null, updater: (t: Task) => Task) => {
+    if (projectId !== null) {
+      setProjects(p => p.map(pr => pr.id === projectId
+        ? { ...pr, tasks: pr.tasks.map(t => t.id === taskId ? updater(t) : t) }
+        : pr));
+    } else {
+      setStandaloneTasks(p => p.map(t => t.id === taskId ? updater(t) : t));
+    }
+  };
+
   const loadComments = async (task: Task) => {
     if (task.commentsLoaded) return;
     const rows = await fetch(`/api/focus/projects/tasks/comments?task_id=${task.id}`).then(r => r.json()).catch(() => []);
-    setProjects(p => p.map(pr => pr.id === task.project_id
-      ? { ...pr, tasks: pr.tasks.map(t => t.id === task.id ? { ...t, comments: Array.isArray(rows) ? rows : [], commentsLoaded: true } : t) }
-      : pr));
+    updateTaskInState(task.id, task.project_id, t => ({ ...t, comments: Array.isArray(rows) ? rows : [], commentsLoaded: true }));
   };
 
   const addComment = async (task: Task, text: string) => {
     const res = await fetch("/api/focus/projects/tasks/comments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ task_id: task.id, text }) }).then(r => r.json()).catch(() => null);
     if (res?.id) {
-      setProjects(p => p.map(pr => pr.id === task.project_id
-        ? { ...pr, tasks: pr.tasks.map(t => t.id === task.id ? { ...t, comments: [...(t.comments || []), res] } : t) }
-        : pr));
+      updateTaskInState(task.id, task.project_id, t => ({ ...t, comments: [...(t.comments || []), res] }));
     }
   };
 
   const deleteComment = (task: Task, commentId: number) => {
-    setProjects(p => p.map(pr => pr.id === task.project_id
-      ? { ...pr, tasks: pr.tasks.map(t => t.id === task.id ? { ...t, comments: (t.comments || []).filter(c => c.id !== commentId) } : t) }
-      : pr));
+    updateTaskInState(task.id, task.project_id, t => ({ ...t, comments: (t.comments || []).filter(c => c.id !== commentId) }));
     fetch(`/api/focus/projects/tasks/comments?id=${commentId}`, { method: "DELETE" }).catch(() => {});
   };
 
