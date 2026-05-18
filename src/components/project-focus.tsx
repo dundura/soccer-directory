@@ -59,7 +59,20 @@ export function ProjectFocus() {
       return saved ? JSON.parse(saved) : {};
     } catch { return {}; }
   });
-  const [elapsedMap, setElapsedMap] = useState<Record<number, number>>({});
+  // Initialize elapsedMap immediately from saved timers so display is correct on refresh
+  const [elapsedMap, setElapsedMap] = useState<Record<number, number>>(() => {
+    try {
+      const saved = localStorage.getItem("focus_active_timers");
+      if (!saved) return {};
+      const timers = JSON.parse(saved) as Record<string, number>;
+      const now = Date.now();
+      const map: Record<number, number> = {};
+      for (const [k, v] of Object.entries(timers)) {
+        map[Number(k)] = Math.floor((now - v) / 1000);
+      }
+      return map;
+    } catch { return {}; }
+  });
   const activeTimersRef = useRef<Record<number, number>>({});
   activeTimersRef.current = activeTimers;
 
