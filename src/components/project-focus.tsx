@@ -52,11 +52,21 @@ export function ProjectFocus() {
   const [newTaskName, setNewTaskName] = useState("");
   const standaloneInputRef = useRef<HTMLInputElement>(null);
 
-  // Multiple timers: taskId → startTime (ms)
-  const [activeTimers, setActiveTimers] = useState<Record<number, number>>({});
+  // Multiple timers: taskId → startTime (ms), persisted to localStorage
+  const [activeTimers, setActiveTimers] = useState<Record<number, number>>(() => {
+    try {
+      const saved = localStorage.getItem("focus_active_timers");
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
   const [elapsedMap, setElapsedMap] = useState<Record<number, number>>({});
   const activeTimersRef = useRef<Record<number, number>>({});
   activeTimersRef.current = activeTimers;
+
+  // Persist active timers to localStorage whenever they change
+  useEffect(() => {
+    try { localStorage.setItem("focus_active_timers", JSON.stringify(activeTimers)); } catch { /* ignore */ }
+  }, [activeTimers]);
 
   const newProjectInputRef = useRef<HTMLInputElement>(null);
   const newTaskInputRef = useRef<HTMLInputElement>(null);
