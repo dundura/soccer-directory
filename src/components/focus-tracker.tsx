@@ -72,40 +72,44 @@ export function FocusTracker() {
   const avg = log.length ? Math.round(total / log.length) : 0;
 
   return (
-    <div style={{ fontFamily: "'DM Mono', monospace", maxWidth: 680, margin: "0 auto", padding: "48px 32px 80px", background: "#F5F2EC", minHeight: "100vh" }}>
+    <div style={{ fontFamily: "var(--font-body, 'DM Sans', sans-serif)", maxWidth: 680, margin: "0 auto", padding: "40px 24px 80px" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,100;0,300;0,600;1,100;1,300&display=swap');
-        .focus-pulse { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #C84B2F; margin-right: 6px; animation: fpulse 1.5s infinite; vertical-align: middle; }
+        .focus-pulse { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #DC373E; margin-right: 6px; animation: fpulse 1.5s infinite; vertical-align: middle; }
         @keyframes fpulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.5; transform:scale(0.8); } }
         .focus-log-item { animation: fslide 0.3s ease; }
         @keyframes fslide { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+        .focus-del-btn:hover { color: #DC373E !important; }
+        .focus-start-btn:hover { background: #C42F36 !important; }
+        .focus-done-btn:hover { background: #1A4268 !important; }
+        .focus-clear-btn:hover { color: #DC373E !important; }
       `}</style>
 
       {/* Header */}
-      <div style={{ marginBottom: 64 }}>
-        <div style={{ fontFamily: "'Fraunces', serif", fontWeight: 300, fontSize: 13, letterSpacing: "0.18em", textTransform: "uppercase", color: "#A09A94", marginBottom: 6 }}>Focus</div>
-        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 38, fontWeight: 100, fontStyle: "italic", color: "#1A1714", lineHeight: 1.1 }}>
-          Track what <span style={{ fontStyle: "normal", fontWeight: 600, color: "#C84B2F" }}>matters.</span>
+      <div style={{ marginBottom: 40 }}>
+        <div style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7D8E", marginBottom: 4, fontWeight: 500 }}>Focus</div>
+        <h1 style={{ fontFamily: "var(--font-display, 'Outfit', sans-serif)", fontSize: 32, fontWeight: 700, color: "#0F3154", lineHeight: 1.15 }}>
+          Track what <span style={{ color: "#DC373E" }}>matters.</span>
         </h1>
       </div>
 
       {/* Input */}
-      <div style={{ marginBottom: 40 }}>
-        <label style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#A09A94", marginBottom: 10, display: "block" }}>
+      <div style={{ marginBottom: 32 }}>
+        <label style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#6B7D8E", marginBottom: 8, display: "block", fontWeight: 600 }}>
           What are you working on?
         </label>
-        <div style={{ display: "flex", border: "1px solid rgba(26,23,20,0.12)", borderRadius: 4, overflow: "hidden", background: "#fff" }}>
+        <div style={{ display: "flex", border: "1px solid #E1E8EF", borderRadius: 10, overflow: "hidden", background: "#fff", boxShadow: "0 1px 4px rgba(15,49,84,0.06)" }}>
           <input
             ref={inputRef}
             value={taskInput}
             onChange={e => setTaskInput(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") startTask(); }}
             placeholder="e.g. Write quarterly report..."
-            style={{ flex: 1, border: "none", outline: "none", background: "transparent", padding: "14px 18px", fontFamily: "'DM Mono', monospace", fontSize: 14, color: "#1A1714" }}
+            style={{ flex: 1, border: "none", outline: "none", background: "transparent", padding: "13px 16px", fontFamily: "inherit", fontSize: 14, color: "#0F3154" }}
           />
           <button
             onClick={startTask}
-            style={{ background: "#C84B2F", border: "none", padding: "14px 24px", fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", color: "#fff", cursor: "pointer", whiteSpace: "nowrap" }}
+            className="focus-start-btn"
+            style={{ background: "#DC373E", border: "none", padding: "13px 22px", fontFamily: "inherit", fontSize: 13, fontWeight: 700, color: "#fff", cursor: "pointer", whiteSpace: "nowrap", transition: "background 0.15s" }}
           >
             ▶ Start
           </button>
@@ -114,23 +118,24 @@ export function FocusTracker() {
 
       {/* Active Session */}
       {startTime !== null && (
-        <div style={{ border: "1px solid #C84B2F", borderRadius: 4, background: "#F5E8E4", padding: "24px 28px", marginBottom: 40, position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: "100%", background: "#C84B2F" }} />
+        <div style={{ border: "1px solid #DC373E", borderRadius: 10, background: "#FEF2F2", padding: "20px 24px", marginBottom: 32, position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: "100%", background: "#DC373E" }} />
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <div style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#C84B2F", marginBottom: 6 }}>
+              <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#DC373E", marginBottom: 6, fontWeight: 600 }}>
                 <span className="focus-pulse" />In progress
               </div>
-              <div style={{ fontFamily: "'Fraunces', serif", fontSize: 20, fontWeight: 300, color: "#1A1714", lineHeight: 1.2, maxWidth: 320 }}>{currentTask}</div>
+              <div style={{ fontFamily: "var(--font-display, 'Outfit', sans-serif)", fontSize: 18, fontWeight: 600, color: "#0F3154", lineHeight: 1.3, maxWidth: 320 }}>{currentTask}</div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontFamily: "'Fraunces', serif", fontSize: 40, fontWeight: 100, color: "#1A1714", lineHeight: 1, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" }}>{fmt(elapsed)}</div>
-              <div style={{ fontSize: 10, color: "#C84B2F", letterSpacing: "0.15em", textTransform: "uppercase", marginTop: 2 }}>elapsed</div>
+              <div style={{ fontFamily: "var(--font-display, 'Outfit', sans-serif)", fontSize: 38, fontWeight: 700, color: "#0F3154", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{fmt(elapsed)}</div>
+              <div style={{ fontSize: 11, color: "#DC373E", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 2, fontWeight: 600 }}>elapsed</div>
             </div>
           </div>
           <button
             onClick={finishTask}
-            style={{ marginTop: 20, background: "#1A1714", color: "#fff", border: "none", padding: "10px 22px", fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", cursor: "pointer", borderRadius: 2 }}
+            className="focus-done-btn"
+            style={{ marginTop: 16, background: "#0F3154", color: "#fff", border: "none", padding: "9px 20px", fontFamily: "inherit", fontSize: 13, fontWeight: 700, cursor: "pointer", borderRadius: 8, transition: "background 0.15s" }}
           >
             ✓ Mark complete
           </button>
@@ -139,32 +144,33 @@ export function FocusTracker() {
 
       {/* Log */}
       <div>
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 20, paddingBottom: 12, borderBottom: "1px solid rgba(26,23,20,0.12)" }}>
-          <span style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#A09A94" }}>Completed</span>
-          <button onClick={() => setLog([])} style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "#A09A94", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Mono', monospace" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid #E1E8EF" }}>
+          <span style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#6B7D8E", fontWeight: 700 }}>Completed</span>
+          <button onClick={() => setLog([])} className="focus-clear-btn" style={{ fontSize: 12, color: "#6B7D8E", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", transition: "color 0.15s" }}>
             Clear all
           </button>
         </div>
 
         {log.length === 0 ? (
-          <div style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 100, fontStyle: "italic", color: "#A09A94", textAlign: "center", padding: "48px 0" }}>
+          <div style={{ fontSize: 15, color: "#6B7D8E", textAlign: "center", padding: "48px 0" }}>
             Nothing logged yet — start a task above.
           </div>
         ) : (
           <>
             {log.map((item, i) => (
-              <div key={i} className="focus-log-item" style={{ display: "grid", gridTemplateColumns: "1fr auto auto", gap: 12, padding: "16px 0", borderBottom: "1px solid rgba(26,23,20,0.07)", alignItems: "center" }}>
+              <div key={i} className="focus-log-item" style={{ display: "grid", gridTemplateColumns: "1fr auto auto", gap: 12, padding: "14px 0", borderBottom: "1px solid #E1E8EF", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontFamily: "'Fraunces', serif", fontSize: 16, fontWeight: 300, color: "#1A1714" }}>{item.name}</div>
-                  <div style={{ fontSize: 11, color: "#A09A94", marginTop: 2 }}>{item.ds}</div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "#0F3154" }}>{item.name}</div>
+                  <div style={{ fontSize: 12, color: "#6B7D8E", marginTop: 2 }}>{item.ds}</div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <div style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 100, color: "#2E6B4F" }}>{fmtShort(item.secs)}</div>
-                  <div style={{ fontSize: 10, color: "#A09A94", letterSpacing: "0.05em", marginTop: 2 }}>done at {item.ts}</div>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: "#0F3154" }}>{fmtShort(item.secs)}</div>
+                  <div style={{ fontSize: 11, color: "#6B7D8E", marginTop: 2 }}>done at {item.ts}</div>
                 </div>
                 <button
                   onClick={() => setLog(prev => prev.filter((_, idx) => idx !== i))}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: "#A09A94", fontSize: 16, lineHeight: 1, padding: "2px 4px" }}
+                  className="focus-del-btn"
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7D8E", fontSize: 18, lineHeight: 1, padding: "2px 4px", transition: "color 0.15s" }}
                   title="Delete"
                 >
                   ×
@@ -172,15 +178,15 @@ export function FocusTracker() {
               </div>
             ))}
 
-            <div style={{ marginTop: 32, background: "#EDEAE2", borderRadius: 4, padding: "20px 24px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20, border: "1px solid rgba(26,23,20,0.07)" }}>
+            <div style={{ marginTop: 24, background: "#ECF1F7", borderRadius: 10, padding: "18px 22px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20, border: "1px solid #E1E8EF" }}>
               {[
                 { label: "Total time", val: fmtShort(total) },
                 { label: "Tasks done", val: String(log.length) },
                 { label: "Avg per task", val: fmtShort(avg) },
               ].map(s => (
                 <div key={s.label}>
-                  <div style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "#A09A94", marginBottom: 6 }}>{s.label}</div>
-                  <div style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 100, color: "#1A1714" }}>{s.val}</div>
+                  <div style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "#6B7D8E", marginBottom: 4, fontWeight: 600 }}>{s.label}</div>
+                  <div style={{ fontFamily: "var(--font-display, 'Outfit', sans-serif)", fontSize: 22, fontWeight: 700, color: "#0F3154" }}>{s.val}</div>
                 </div>
               ))}
             </div>
