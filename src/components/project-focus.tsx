@@ -170,6 +170,16 @@ export function ProjectFocus() {
     setNewTaskName(""); setAddingTaskTo(null);
   };
 
+  const resetTask = (task: Task) => {
+    if (activeTimers[task.id] !== undefined) stopTimer(task);
+    updateTaskInState(task.id, task.project_id, t => ({ ...t, total_secs: 0 }));
+    fetch("/api/focus/projects/tasks", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: task.id, reset: true }),
+    }).catch(() => {});
+  };
+
   const toggleTaskDone = (task: Task) => {
     if (activeTimers[task.id] !== undefined) stopTimer(task);
     const done = !task.done;
@@ -323,7 +333,7 @@ export function ProjectFocus() {
                     isActive={activeTimers[task.id] !== undefined}
                     displaySecs={task.total_secs + (elapsedMap[task.id] ?? 0)}
                     onStart={() => startTimer(task)} onStop={() => stopTimer(task)}
-                    onToggleDone={() => toggleTaskDone(task)} onDelete={() => deleteTask(task)}
+                    onToggleDone={() => toggleTaskDone(task)} onDelete={() => deleteTask(task)} onReset={() => resetTask(task)}
                     onExpandComments={() => loadComments(task)}
                     onAddComment={text => addComment(task, text)}
                     onDeleteComment={cid => deleteComment(task, cid)}
@@ -397,7 +407,7 @@ export function ProjectFocus() {
                         isActive={activeTimers[task.id] !== undefined}
                         displaySecs={taskDisplaySecs(task)}
                         onStart={() => startTimer(task)} onStop={() => stopTimer(task)}
-                        onToggleDone={() => toggleTaskDone(task)} onDelete={() => deleteTask(task)}
+                        onToggleDone={() => toggleTaskDone(task)} onDelete={() => deleteTask(task)} onReset={() => resetTask(task)}
                         onExpandComments={() => loadComments(task)}
                         onAddComment={(text) => addComment(task, text)}
                         onDeleteComment={(cid) => deleteComment(task, cid)}
@@ -430,9 +440,9 @@ export function ProjectFocus() {
   );
 }
 
-function TaskRow({ task, accentColor, isActive, displaySecs, onStart, onStop, onToggleDone, onDelete, onExpandComments, onAddComment, onDeleteComment }: {
+function TaskRow({ task, accentColor, isActive, displaySecs, onStart, onStop, onToggleDone, onDelete, onReset, onExpandComments, onAddComment, onDeleteComment }: {
   task: Task; accentColor: string; isActive: boolean; displaySecs: number;
-  onStart: () => void; onStop: () => void; onToggleDone: () => void; onDelete: () => void;
+  onStart: () => void; onStop: () => void; onToggleDone: () => void; onDelete: () => void; onReset: () => void;
   onExpandComments: () => void; onAddComment: (t: string) => void; onDeleteComment: (id: number) => void;
 }) {
   const [showComments, setShowComments] = useState(false);
@@ -472,6 +482,9 @@ function TaskRow({ task, accentColor, isActive, displaySecs, onStart, onStop, on
           ? <button onClick={onStop} style={{ background: "#DC373E", color: "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>■ Stop</button>
           : <button onClick={onStart} disabled={task.done} style={{ background: task.done ? "#F1F5F9" : accentColor, color: task.done ? "#94a3b8" : "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 11, fontWeight: 700, cursor: task.done ? "default" : "pointer", fontFamily: "inherit", flexShrink: 0 }}>▶ Start</button>
         }
+        {displaySecs > 0 && !isActive && (
+          <button onClick={onReset} title="Reset timer" style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 11, cursor: "pointer", lineHeight: 1, padding: "0 2px", flexShrink: 0, fontFamily: "inherit" }}>↺</button>
+        )}
         <button onClick={onDelete} className="pf-del" style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "0 2px", transition: "color 0.15s", flexShrink: 0 }}>×</button>
       </div>
 

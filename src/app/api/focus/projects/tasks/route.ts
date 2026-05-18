@@ -39,19 +39,14 @@ export async function PATCH(req: Request) {
   try {
     const session = await auth();
     if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const { id, add_secs, done } = await req.json();
-    if (add_secs !== undefined) {
-      await sql`
-        UPDATE focus_project_tasks
-        SET total_secs = total_secs + ${add_secs}
-        WHERE id = ${id} AND user_email = ${session.user.email}
-      `;
+    const { id, add_secs, done, reset } = await req.json();
+    if (reset) {
+      await sql`UPDATE focus_project_tasks SET total_secs = 0 WHERE id = ${id} AND user_email = ${session.user.email}`;
+    } else if (add_secs !== undefined) {
+      await sql`UPDATE focus_project_tasks SET total_secs = total_secs + ${add_secs} WHERE id = ${id} AND user_email = ${session.user.email}`;
     }
     if (done !== undefined) {
-      await sql`
-        UPDATE focus_project_tasks SET done = ${done}
-        WHERE id = ${id} AND user_email = ${session.user.email}
-      `;
+      await sql`UPDATE focus_project_tasks SET done = ${done} WHERE id = ${id} AND user_email = ${session.user.email}`;
     }
     return NextResponse.json({ success: true });
   } catch {
