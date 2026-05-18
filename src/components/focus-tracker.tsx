@@ -153,7 +153,7 @@ export function FocusTracker() {
         ) : (
           <>
             {log.map((item, i) => (
-              <div key={i} className="focus-log-item" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, padding: "16px 0", borderBottom: "1px solid rgba(26,23,20,0.07)", alignItems: "center" }}>
+              <div key={i} className="focus-log-item" style={{ display: "grid", gridTemplateColumns: "1fr auto auto", gap: 12, padding: "16px 0", borderBottom: "1px solid rgba(26,23,20,0.07)", alignItems: "center" }}>
                 <div>
                   <div style={{ fontFamily: "'Fraunces', serif", fontSize: 16, fontWeight: 300, color: "#1A1714" }}>{item.name}</div>
                   <div style={{ fontSize: 11, color: "#A09A94", marginTop: 2 }}>{item.ds}</div>
@@ -162,6 +162,13 @@ export function FocusTracker() {
                   <div style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 100, color: "#2E6B4F" }}>{fmtShort(item.secs)}</div>
                   <div style={{ fontSize: 10, color: "#A09A94", letterSpacing: "0.05em", marginTop: 2 }}>done at {item.ts}</div>
                 </div>
+                <button
+                  onClick={() => setLog(prev => prev.filter((_, idx) => idx !== i))}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "#A09A94", fontSize: 16, lineHeight: 1, padding: "2px 4px" }}
+                  title="Delete"
+                >
+                  ×
+                </button>
               </div>
             ))}
 
