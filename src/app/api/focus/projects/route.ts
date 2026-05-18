@@ -11,9 +11,11 @@ async function ensureTables() {
       user_email TEXT NOT NULL,
       name TEXT NOT NULL,
       color TEXT DEFAULT '#0F3154',
+      done BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `;
+  await sql`ALTER TABLE focus_projects ADD COLUMN IF NOT EXISTS done BOOLEAN DEFAULT FALSE`;
   await sql`
     CREATE TABLE IF NOT EXISTS focus_project_tasks (
       id SERIAL PRIMARY KEY,
@@ -33,9 +35,9 @@ export async function GET() {
     if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     await ensureTables();
     const projects = await sql`
-      SELECT id, name, color FROM focus_projects
+      SELECT id, name, color, done FROM focus_projects
       WHERE user_email = ${session.user.email}
-      ORDER BY created_at DESC
+      ORDER BY done ASC, created_at DESC
     `;
     const tasks = await sql`
       SELECT id, project_id, name, total_secs, done FROM focus_project_tasks
@@ -61,11 +63,23 @@ export async function POST(req: Request) {
     const rows = await sql`
       INSERT INTO focus_projects (user_email, name, color)
       VALUES (${session.user.email}, ${name}, ${color || '#0F3154'})
-      RETURNING id, name, color
+      RETURNING id, name, color, done
     `;
     return NextResponse.json({ ...rows[0], tasks: [] });
   } catch {
     return NextResponse.json({ error: "Failed to create" }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { id, done } = await req.json();
+    await sql`UPDATE focus_projects SET done = ${done} WHERE id = ${id} AND user_email = ${session.user.email}`;
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to update" }, { status: 500 });
   }
 }
 

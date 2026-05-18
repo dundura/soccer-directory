@@ -23,9 +23,5 @@ export default function FocusClient() {
     );
   }
 
-  return (
-    <div style={{ background: "#fff", minHeight: "100vh" }}>
-      <ProjectFocus />
-    </div>
-  );
+  return <ProjectFocus />;
 }

@@ -1,40 +1,40 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
+import { TodoList } from "@/components/todo-list";
 
+interface Comment { id: number; text: string; created_at: string; }
 interface Task {
   id: number;
   project_id: number;
   name: string;
   total_secs: number;
   done: boolean;
+  comments?: Comment[];
+  commentsLoaded?: boolean;
 }
-
-interface Project {
-  id: number;
-  name: string;
-  color: string;
-  tasks: Task[];
-}
+interface Project { id: number; name: string; color: string; done: boolean; tasks: Task[]; }
 
 const COLORS = ["#0F3154", "#DC373E", "#16a34a", "#0891b2", "#7c3aed", "#d97706", "#0f766e", "#9333ea"];
 
 function pad(n: number) { return String(n).padStart(2, "0"); }
-function fmt(secs: number) {
-  const h = Math.floor(secs / 3600);
-  const m = Math.floor((secs % 3600) / 60);
-  const s = secs % 60;
-  if (h > 0) return `${h}:${pad(m)}:${pad(s)}`;
-  return `${m}:${pad(s)}`;
+function fmt(s: number) {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
 }
-function fmtShort(secs: number) {
-  const h = Math.floor(secs / 3600);
-  const m = Math.floor((secs % 3600) / 60);
-  const s = secs % 60;
+function fmtShort(s: number) {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
   if (h > 0) return `${h}h ${m}m`;
-  if (m > 0) return `${m}m ${s}s`;
-  return `${s}s`;
+  if (m > 0) return `${m}m ${sec}s`;
+  return `${sec}s`;
 }
+
+const card: React.CSSProperties = {
+  background: "#fff",
+  borderRadius: 14,
+  border: "1px solid #E1E8EF",
+  boxShadow: "0 2px 8px rgba(15,49,84,0.05)",
+};
 
 export function ProjectFocus() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -42,330 +42,430 @@ export function ProjectFocus() {
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set());
 
   const [showNewProject, setShowNewProject] = useState(false);
+  const [showCompleted, setShowCompleted] = useState(false);
+  const [showNewTask, setShowNewTask] = useState(false);
+  const [newStandaloneTask, setNewStandaloneTask] = useState("");
+  const [standaloneTasks, setStandaloneTasks] = useState<Task[]>([]);
   const [newProjectName, setNewProjectName] = useState("");
   const [newProjectColor, setNewProjectColor] = useState(COLORS[0]);
-
   const [addingTaskTo, setAddingTaskTo] = useState<number | null>(null);
   const [newTaskName, setNewTaskName] = useState("");
+  const standaloneInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTaskId, setActiveTaskId] = useState<number | null>(null);
-  const [activeProjectId, setActiveProjectId] = useState<number | null>(null);
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [elapsed, setElapsed] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Multiple timers: taskId → startTime (ms)
+  const [activeTimers, setActiveTimers] = useState<Record<number, number>>({});
+  const [elapsedMap, setElapsedMap] = useState<Record<number, number>>({});
+  const activeTimersRef = useRef<Record<number, number>>({});
+  activeTimersRef.current = activeTimers;
 
   const newProjectInputRef = useRef<HTMLInputElement>(null);
   const newTaskInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch("/api/focus/projects")
-      .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setProjects(data); setLoading(false); })
-      .catch(() => setLoading(false));
+    Promise.all([
+      fetch("/api/focus/projects").then(r => r.json()),
+      fetch("/api/focus/projects/tasks?standalone=1").then(r => r.json()),
+    ]).then(([projs, standalone]) => {
+      if (Array.isArray(projs)) setProjects(projs);
+      if (Array.isArray(standalone)) setStandaloneTasks(standalone);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, []);
 
   useEffect(() => {
-    if (startTime !== null) {
-      intervalRef.current = setInterval(() => setElapsed(Math.floor((Date.now() - startTime) / 1000)), 1000);
-    }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [startTime]);
-
-  const stopTimer = useCallback(async () => {
-    if (startTime === null || activeTaskId === null || activeProjectId === null) return;
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    const secs = Math.floor((Date.now() - startTime) / 1000);
-    const taskId = activeTaskId;
-    const projId = activeProjectId;
-    setActiveTaskId(null);
-    setActiveProjectId(null);
-    setStartTime(null);
-    setElapsed(0);
-    setProjects(prev => prev.map(p => p.id === projId
-      ? { ...p, tasks: p.tasks.map(t => t.id === taskId ? { ...t, total_secs: t.total_secs + secs } : t) }
-      : p));
-    fetch("/api/focus/projects/tasks", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: taskId, add_secs: secs }),
-    }).catch(() => {});
-  }, [startTime, activeTaskId, activeProjectId]);
+    const id = setInterval(() => {
+      const timers = activeTimersRef.current;
+      if (!Object.keys(timers).length) return;
+      const now = Date.now();
+      const up: Record<number, number> = {};
+      for (const [k, v] of Object.entries(timers)) up[Number(k)] = Math.floor((now - v) / 1000);
+      setElapsedMap(up);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const startTimer = (task: Task) => {
-    if (activeTaskId !== null) stopTimer();
-    setActiveTaskId(task.id);
-    setActiveProjectId(task.project_id);
-    setStartTime(Date.now());
-    setElapsed(0);
+    if (task.done) return;
+    setActiveTimers(p => ({ ...p, [task.id]: Date.now() }));
+    setElapsedMap(p => ({ ...p, [task.id]: 0 }));
+  };
+
+  const stopTimer = (task: Task) => {
+    const startMs = activeTimersRef.current[task.id];
+    if (startMs === undefined) return;
+    const secs = Math.floor((Date.now() - startMs) / 1000);
+    setActiveTimers(p => { const n = { ...p }; delete n[task.id]; return n; });
+    setElapsedMap(p => { const n = { ...p }; delete n[task.id]; return n; });
+    if (task.project_id) {
+      setProjects(p => p.map(pr => pr.id === task.project_id
+        ? { ...pr, tasks: pr.tasks.map(t => t.id === task.id ? { ...t, total_secs: t.total_secs + secs } : t) }
+        : pr));
+    } else {
+      setStandaloneTasks(p => p.map(t => t.id === task.id ? { ...t, total_secs: t.total_secs + secs } : t));
+    }
+    fetch("/api/focus/projects/tasks", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: task.id, add_secs: secs }) }).catch(() => {});
+  };
+
+  const addStandaloneTask = async () => {
+    const name = newStandaloneTask.trim(); if (!name) return;
+    const res = await fetch("/api/focus/projects/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ project_id: null, name }) }).then(r => r.json());
+    if (res.id) setStandaloneTasks(p => [...p, { ...res, comments: [], commentsLoaded: true }]);
+    setNewStandaloneTask(""); setShowNewTask(false);
+  };
+
+  const stopAll = () => {
+    const all = [...projects.flatMap(p => p.tasks), ...standaloneTasks];
+    Object.keys(activeTimers).forEach(id => { const t = all.find(x => x.id === Number(id)); if (t) stopTimer(t); });
   };
 
   const createProject = async () => {
-    const name = newProjectName.trim();
-    if (!name) return;
-    const res = await fetch("/api/focus/projects", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, color: newProjectColor }),
-    }).then(r => r.json());
-    if (res.id) {
-      setProjects(prev => [res, ...prev]);
-      setCollapsed(prev => { const n = new Set(prev); n.delete(res.id); return n; });
-    }
-    setNewProjectName("");
-    setNewProjectColor(COLORS[0]);
-    setShowNewProject(false);
+    const name = newProjectName.trim(); if (!name) return;
+    const res = await fetch("/api/focus/projects", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, color: newProjectColor }) }).then(r => r.json());
+    if (res.id) { setProjects(p => [res, ...p]); setCollapsed(p => { const n = new Set(p); n.delete(res.id); return n; }); }
+    setNewProjectName(""); setNewProjectColor(COLORS[0]); setShowNewProject(false);
   };
 
-  const deleteProject = async (id: number) => {
-    if (activeProjectId === id) stopTimer();
-    setProjects(prev => prev.filter(p => p.id !== id));
+  const toggleProjectDone = (id: number) => {
+    const proj = projects.find(p => p.id === id);
+    if (!proj) return;
+    const done = !proj.done;
+    if (done) proj.tasks.forEach(t => { if (activeTimers[t.id] !== undefined) stopTimer(t); });
+    setProjects(p => p.map(pr => pr.id === id ? { ...pr, done } : pr));
+    fetch("/api/focus/projects", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, done }) }).catch(() => {});
+  };
+
+  const deleteProject = (id: number) => {
+    projects.find(p => p.id === id)?.tasks.forEach(t => { if (activeTimers[t.id] !== undefined) stopTimer(t); });
+    setProjects(p => p.filter(x => x.id !== id));
     fetch(`/api/focus/projects?id=${id}`, { method: "DELETE" }).catch(() => {});
   };
 
   const addTask = async (projectId: number) => {
-    const name = newTaskName.trim();
-    if (!name) return;
-    const res = await fetch("/api/focus/projects/tasks", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ project_id: projectId, name }),
-    }).then(r => r.json());
-    if (res.id) setProjects(prev => prev.map(p => p.id === projectId ? { ...p, tasks: [...p.tasks, res] } : p));
-    setNewTaskName("");
-    setAddingTaskTo(null);
+    const name = newTaskName.trim(); if (!name) return;
+    const res = await fetch("/api/focus/projects/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ project_id: projectId, name }) }).then(r => r.json());
+    if (res.id) setProjects(p => p.map(pr => pr.id === projectId ? { ...pr, tasks: [...pr.tasks, { ...res, comments: [], commentsLoaded: true }] } : pr));
+    setNewTaskName(""); setAddingTaskTo(null);
   };
 
   const toggleTaskDone = (task: Task) => {
+    if (activeTimers[task.id] !== undefined) stopTimer(task);
     const done = !task.done;
-    setProjects(prev => prev.map(p => p.id === task.project_id
-      ? { ...p, tasks: p.tasks.map(t => t.id === task.id ? { ...t, done } : t) }
-      : p));
-    fetch("/api/focus/projects/tasks", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: task.id, done }),
-    }).catch(() => {});
+    if (task.project_id) {
+      setProjects(p => p.map(pr => pr.id === task.project_id ? { ...pr, tasks: pr.tasks.map(t => t.id === task.id ? { ...t, done } : t) } : pr));
+    } else {
+      setStandaloneTasks(p => p.map(t => t.id === task.id ? { ...t, done } : t));
+    }
+    fetch("/api/focus/projects/tasks", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: task.id, done }) }).catch(() => {});
   };
 
   const deleteTask = (task: Task) => {
-    if (activeTaskId === task.id) stopTimer();
-    setProjects(prev => prev.map(p => p.id === task.project_id
-      ? { ...p, tasks: p.tasks.filter(t => t.id !== task.id) }
-      : p));
+    if (activeTimers[task.id] !== undefined) stopTimer(task);
+    if (task.project_id) {
+      setProjects(p => p.map(pr => pr.id === task.project_id ? { ...pr, tasks: pr.tasks.filter(t => t.id !== task.id) } : pr));
+    } else {
+      setStandaloneTasks(p => p.filter(t => t.id !== task.id));
+    }
     fetch(`/api/focus/projects/tasks?id=${task.id}`, { method: "DELETE" }).catch(() => {});
   };
 
-  const toggleCollapse = (id: number) => {
-    setCollapsed(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const loadComments = async (task: Task) => {
+    if (task.commentsLoaded) return;
+    const rows = await fetch(`/api/focus/projects/tasks/comments?task_id=${task.id}`).then(r => r.json()).catch(() => []);
+    setProjects(p => p.map(pr => pr.id === task.project_id
+      ? { ...pr, tasks: pr.tasks.map(t => t.id === task.id ? { ...t, comments: Array.isArray(rows) ? rows : [], commentsLoaded: true } : t) }
+      : pr));
   };
 
-  const projectTotal = (p: Project) => {
-    const base = p.tasks.reduce((a, t) => a + t.total_secs, 0);
-    return activeProjectId === p.id ? base + elapsed : base;
+  const addComment = async (task: Task, text: string) => {
+    const res = await fetch("/api/focus/projects/tasks/comments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ task_id: task.id, text }) }).then(r => r.json()).catch(() => null);
+    if (res?.id) {
+      setProjects(p => p.map(pr => pr.id === task.project_id
+        ? { ...pr, tasks: pr.tasks.map(t => t.id === task.id ? { ...t, comments: [...(t.comments || []), res] } : t) }
+        : pr));
+    }
   };
 
-  const taskDisplaySecs = (task: Task) => activeTaskId === task.id ? task.total_secs + elapsed : task.total_secs;
+  const deleteComment = (task: Task, commentId: number) => {
+    setProjects(p => p.map(pr => pr.id === task.project_id
+      ? { ...pr, tasks: pr.tasks.map(t => t.id === task.id ? { ...t, comments: (t.comments || []).filter(c => c.id !== commentId) } : t) }
+      : pr));
+    fetch(`/api/focus/projects/tasks/comments?id=${commentId}`, { method: "DELETE" }).catch(() => {});
+  };
 
-  const activeTask = projects.find(p => p.id === activeProjectId)?.tasks.find(t => t.id === activeTaskId);
-  const activeProject = projects.find(p => p.id === activeProjectId);
+  const toggleCollapse = (id: number) => setCollapsed(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const projectTotal = (pr: Project) => pr.tasks.reduce((a, t) => a + t.total_secs + (elapsedMap[t.id] ?? 0), 0);
+  const taskDisplaySecs = (t: Task) => t.total_secs + (elapsedMap[t.id] ?? 0);
+  const runningCount = Object.keys(activeTimers).length;
 
-  if (loading) return <div style={{ padding: 40, color: "#6B7D8E", fontFamily: "var(--font-body, 'DM Sans', sans-serif)" }}>Loading...</div>;
+  if (loading) return <div style={{ padding: 40, color: "#6B7D8E", fontFamily: "var(--font-body,'DM Sans',sans-serif)" }}>Loading...</div>;
 
   return (
-    <div style={{ fontFamily: "var(--font-body, 'DM Sans', sans-serif)", maxWidth: 820, margin: "0 auto", padding: "32px 20px 80px" }}>
+    <div style={{ fontFamily: "var(--font-body,'DM Sans',sans-serif)", maxWidth: 940, margin: "0 auto", padding: "32px 20px 80px" }}>
       <style>{`
-        .pf-del:hover { color: #DC373E !important; }
-        .pf-start:hover { opacity: 0.85; }
-        .pf-stop:hover { opacity: 0.85; }
-        .pf-project-btn:hover { background: rgba(255,255,255,0.18) !important; }
-        @keyframes fpulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.5; transform:scale(0.8); } }
+        .pf-del:hover{color:#DC373E!important}
+        .pf-pb:hover{background:rgba(255,255,255,0.18)!important}
+        @keyframes fpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
       `}</style>
 
-      {/* Header */}
+      {/* Page header */}
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 28, flexWrap: "wrap", gap: 12 }}>
         <div>
           <div style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7D8E", marginBottom: 4, fontWeight: 500 }}>Focus</div>
-          <h1 style={{ fontFamily: "var(--font-display, 'Outfit', sans-serif)", fontSize: 28, fontWeight: 700, color: "#0F3154", margin: 0 }}>
+          <h1 style={{ fontFamily: "var(--font-display,'Outfit',sans-serif)", fontSize: 28, fontWeight: 700, color: "#0F3154", margin: 0 }}>
             Track what <span style={{ color: "#DC373E" }}>matters.</span>
           </h1>
         </div>
-        <button
-          onClick={() => { setShowNewProject(v => !v); setTimeout(() => newProjectInputRef.current?.focus(), 50); }}
-          style={{ background: "#DC373E", color: "#fff", border: "none", borderRadius: 20, padding: "9px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
-        >
-          + New Project
-        </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          {projects.filter(p => p.done).length > 0 && (
+            <button onClick={() => setShowCompleted(v => !v)}
+              style={{ background: "none", border: "1px solid #E1E8EF", borderRadius: 20, padding: "8px 18px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: "#6B7D8E" }}>
+              {showCompleted ? "Hide" : "Completed"} ({projects.filter(p => p.done).length})
+            </button>
+          )}
+          <button onClick={() => { setShowNewProject(v => !v); setTimeout(() => newProjectInputRef.current?.focus(), 50); }}
+            style={{ background: "#DC373E", color: "#fff", border: "none", borderRadius: 20, padding: "9px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+            + New Project
+          </button>
+        </div>
       </div>
 
-      {/* Active timer banner */}
-      {activeTaskId !== null && (
-        <div style={{ background: "linear-gradient(135deg, #0F3154, #1e4a7a)", borderRadius: 12, padding: "16px 20px", marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "#DC373E", animation: "fpulse 1.5s infinite" }} />
-            <div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
-                {activeProject?.name} · In progress
-              </div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: "#fff" }}>{activeTask?.name}</div>
+      {/* Two-section grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1.6fr)", gap: 20, alignItems: "start" }}>
+
+        {/* LEFT — Current Task */}
+        <div style={{ ...card, padding: "22px 20px", position: "sticky", top: 20 }}>
+          <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "#6B7D8E", fontWeight: 700, marginBottom: 14 }}>Current Task</div>
+          {runningCount === 0 ? (
+            <div style={{ fontSize: 14, color: "#94a3b8", textAlign: "center", padding: "30px 0" }}>
+              No tasks running.<br />
+              <span style={{ fontSize: 12 }}>Hit ▶ Start on any subtask.</span>
             </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{ fontFamily: "var(--font-display, 'Outfit', sans-serif)", fontSize: 30, fontWeight: 700, color: "#fff", fontVariantNumeric: "tabular-nums" }}>
-              {fmt(elapsed)}
-            </div>
-            <button
-              onClick={stopTimer}
-              style={{ background: "#DC373E", border: "none", borderRadius: 8, padding: "8px 16px", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
-            >
-              ■ Stop
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* New project form */}
-      {showNewProject && (
-        <div style={{ background: "#F8FAFC", border: "1px solid #E1E8EF", borderRadius: 12, padding: "18px 20px", marginBottom: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#6B7D8E", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>New Project</div>
-          <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-            <input
-              ref={newProjectInputRef}
-              value={newProjectName}
-              onChange={e => setNewProjectName(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") createProject(); if (e.key === "Escape") setShowNewProject(false); }}
-              placeholder="Project name..."
-              style={{ flex: 1, minWidth: 160, border: "1px solid #E1E8EF", borderRadius: 8, padding: "10px 14px", fontSize: 14, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff" }}
-            />
-            <div style={{ display: "flex", gap: 6 }}>
-              {COLORS.map(c => (
-                <button key={c} onClick={() => setNewProjectColor(c)} style={{ width: 22, height: 22, borderRadius: "50%", background: c, border: newProjectColor === c ? "3px solid #fff" : "3px solid transparent", outline: newProjectColor === c ? `2px solid ${c}` : "none", cursor: "pointer", flexShrink: 0 }} />
-              ))}
-            </div>
-            <button onClick={createProject} style={{ background: "#0F3154", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
-              Create
-            </button>
-            <button onClick={() => setShowNewProject(false)} style={{ background: "none", border: "none", color: "#6B7D8E", fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "4px 6px" }}>×</button>
-          </div>
-        </div>
-      )}
-
-      {/* Empty state */}
-      {projects.length === 0 && (
-        <div style={{ textAlign: "center", padding: "60px 20px", color: "#94a3b8", fontSize: 15 }}>
-          No projects yet — click <strong style={{ color: "#DC373E" }}>+ New Project</strong> to get started.
-        </div>
-      )}
-
-      {/* Project list */}
-      {projects.map(project => {
-        const total = projectTotal(project);
-        const isCollapsed = collapsed.has(project.id);
-        const doneCount = project.tasks.filter(t => t.done).length;
-
-        return (
-          <div key={project.id} style={{ marginBottom: 16, borderRadius: 14, overflow: "hidden", border: "1px solid #E1E8EF", boxShadow: "0 2px 8px rgba(15,49,84,0.05)" }}>
-            {/* Project header */}
-            <div style={{ background: project.color, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-              <button onClick={() => toggleCollapse(project.id)} style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", cursor: "pointer", flex: 1, textAlign: "left", padding: 0 }}>
-                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.65)", display: "inline-block", transform: isCollapsed ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 0.15s" }}>▼</span>
-                <span style={{ fontFamily: "var(--font-display, 'Outfit', sans-serif)", fontSize: 16, fontWeight: 700, color: "#fff" }}>{project.name}</span>
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.65)" }}>
-                  {total > 0 ? fmtShort(total) : ""}
-                  {project.tasks.length > 0 ? ` · ${doneCount}/${project.tasks.length} done` : "· no subtasks"}
-                </span>
-              </button>
-              <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                <button
-                  onClick={() => {
-                    setAddingTaskTo(project.id);
-                    setCollapsed(prev => { const n = new Set(prev); n.delete(project.id); return n; });
-                    setTimeout(() => newTaskInputRef.current?.focus(), 50);
-                  }}
-                  className="pf-project-btn"
-                  style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: 6, padding: "5px 12px", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "background 0.15s" }}
-                >
-                  + Subtask
-                </button>
-                <button onClick={() => deleteProject(project.id)} className="pf-del" style={{ background: "none", border: "none", color: "rgba(255,255,255,0.5)", fontSize: 18, cursor: "pointer", lineHeight: 1, padding: "2px 6px", transition: "color 0.15s" }}>×</button>
-              </div>
-            </div>
-
-            {/* Subtasks */}
-            {!isCollapsed && (
-              <div style={{ background: "#fff" }}>
-                {project.tasks.length === 0 && addingTaskTo !== project.id && (
-                  <div style={{ padding: "18px 20px", fontSize: 13, color: "#94a3b8", textAlign: "center" }}>
-                    No subtasks yet — click <strong>+ Subtask</strong> to add one
+          ) : (
+            <>
+              {[...projects.flatMap(p => p.tasks), ...standaloneTasks].filter(t => activeTimers[t.id] !== undefined).map(t => (
+                <div key={t.id} style={{ marginBottom: 12, padding: "14px 16px", background: "linear-gradient(135deg,#0F3154,#1e4a7a)", borderRadius: 12 }}>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>
+                    <span style={{ display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: "#DC373E", marginRight: 6, animation: "fpulse 1.5s infinite", verticalAlign: "middle" }} />
+                    {projects.find(p => p.id === t.project_id)?.name ?? "Task"}
                   </div>
-                )}
-                {project.tasks.map(task => (
-                  <TaskRow
-                    key={task.id}
-                    task={task}
-                    accentColor={project.color}
-                    isActive={activeTaskId === task.id}
-                    displaySecs={taskDisplaySecs(task)}
-                    onStart={() => startTimer(task)}
-                    onStop={stopTimer}
-                    onToggleDone={() => toggleTaskDone(task)}
-                    onDelete={() => deleteTask(task)}
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "#fff", marginBottom: 10 }}>{t.name}</div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ fontFamily: "var(--font-display,'Outfit',sans-serif)", fontSize: 32, fontWeight: 700, color: "#fff", fontVariantNumeric: "tabular-nums" }}>
+                      {fmt(elapsedMap[t.id] ?? 0)}
+                    </div>
+                    <button onClick={() => stopTimer(t)} style={{ background: "#DC373E", border: "none", borderRadius: 8, padding: "7px 14px", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>■ Stop</button>
+                  </div>
+                </div>
+              ))}
+              {runningCount > 1 && (
+                <button onClick={stopAll} style={{ width: "100%", marginTop: 4, background: "#F1F5F9", border: "none", borderRadius: 8, padding: "8px", fontSize: 12, fontWeight: 700, color: "#6B7D8E", cursor: "pointer", fontFamily: "inherit" }}>
+                  ■ Stop All ({runningCount})
+                </button>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* RIGHT — Tasks + Projects */}
+        <div>
+          {/* Standalone tasks */}
+          <div style={{ ...card, padding: "16px 18px", marginBottom: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "#6B7D8E", fontWeight: 700 }}>Tasks</div>
+              <button onClick={() => { setShowNewTask(v => !v); setTimeout(() => standaloneInputRef.current?.focus(), 50); }}
+                style={{ fontSize: 12, color: "#DC373E", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: 600 }}>
+                + Add Task
+              </button>
+            </div>
+            {showNewTask && (
+              <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                <input ref={standaloneInputRef} value={newStandaloneTask} onChange={e => setNewStandaloneTask(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") addStandaloneTask(); if (e.key === "Escape") { setShowNewTask(false); setNewStandaloneTask(""); } }}
+                  placeholder="Task name..."
+                  style={{ flex: 1, border: "1px solid #E1E8EF", borderRadius: 8, padding: "8px 12px", fontSize: 13, fontFamily: "inherit", color: "#0F3154", outline: "none" }} />
+                <button onClick={addStandaloneTask} style={{ background: "#0F3154", color: "#fff", border: "none", borderRadius: 8, padding: "8px 12px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Add</button>
+                <button onClick={() => { setShowNewTask(false); setNewStandaloneTask(""); }} style={{ background: "none", border: "none", color: "#6B7D8E", fontSize: 18, cursor: "pointer" }}>×</button>
+              </div>
+            )}
+            {standaloneTasks.length === 0 ? (
+              <div style={{ fontSize: 13, color: "#94a3b8", padding: "8px 0" }}>No tasks yet.</div>
+            ) : (
+              <div style={{ border: "1px solid #F1F5F9", borderRadius: 8, overflow: "hidden" }}>
+                {standaloneTasks.map(task => (
+                  <TaskRow key={task.id} task={task} accentColor="#0F3154"
+                    isActive={activeTimers[task.id] !== undefined}
+                    displaySecs={task.total_secs + (elapsedMap[task.id] ?? 0)}
+                    onStart={() => startTimer(task)} onStop={() => stopTimer(task)}
+                    onToggleDone={() => toggleTaskDone(task)} onDelete={() => deleteTask(task)}
+                    onExpandComments={() => loadComments(task)}
+                    onAddComment={text => addComment(task, text)}
+                    onDeleteComment={cid => deleteComment(task, cid)}
                   />
                 ))}
-                {addingTaskTo === project.id && (
-                  <div style={{ padding: "10px 16px", borderTop: project.tasks.length > 0 ? "1px solid #F1F5F9" : "none", display: "flex", gap: 8 }}>
-                    <input
-                      ref={newTaskInputRef}
-                      value={newTaskName}
-                      onChange={e => setNewTaskName(e.target.value)}
-                      onKeyDown={e => { if (e.key === "Enter") addTask(project.id); if (e.key === "Escape") { setAddingTaskTo(null); setNewTaskName(""); } }}
-                      placeholder="Subtask name..."
-                      style={{ flex: 1, border: "1px solid #E1E8EF", borderRadius: 8, padding: "9px 12px", fontSize: 13, fontFamily: "inherit", color: "#0F3154", outline: "none" }}
-                    />
-                    <button onClick={() => addTask(project.id)} style={{ background: project.color, color: "#fff", border: "none", borderRadius: 8, padding: "9px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Add</button>
-                    <button onClick={() => { setAddingTaskTo(null); setNewTaskName(""); }} style={{ background: "none", border: "none", color: "#6B7D8E", fontSize: 19, cursor: "pointer", lineHeight: 1 }}>×</button>
-                  </div>
-                )}
               </div>
             )}
           </div>
-        );
-      })}
+
+          {/* New project form */}
+          {showNewProject && (
+            <div style={{ ...card, padding: "18px 20px", marginBottom: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#6B7D8E", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>New Project</div>
+              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                <input ref={newProjectInputRef} value={newProjectName} onChange={e => setNewProjectName(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") createProject(); if (e.key === "Escape") setShowNewProject(false); }}
+                  placeholder="Project name..."
+                  style={{ flex: 1, minWidth: 140, border: "1px solid #E1E8EF", borderRadius: 8, padding: "10px 14px", fontSize: 14, fontFamily: "inherit", color: "#0F3154", outline: "none" }} />
+                <div style={{ display: "flex", gap: 5 }}>
+                  {COLORS.map(c => <button key={c} onClick={() => setNewProjectColor(c)} style={{ width: 20, height: 20, borderRadius: "50%", background: c, border: newProjectColor === c ? "3px solid #fff" : "3px solid transparent", outline: newProjectColor === c ? `2px solid ${c}` : "none", cursor: "pointer" }} />)}
+                </div>
+                <button onClick={createProject} style={{ background: "#0F3154", color: "#fff", border: "none", borderRadius: 8, padding: "10px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Create</button>
+                <button onClick={() => setShowNewProject(false)} style={{ background: "none", border: "none", color: "#6B7D8E", fontSize: 20, cursor: "pointer" }}>×</button>
+              </div>
+            </div>
+          )}
+
+          {projects.length === 0 && (
+            <div style={{ ...card, padding: "48px 20px", textAlign: "center", color: "#94a3b8", fontSize: 14 }}>
+              No projects yet — click <strong style={{ color: "#DC373E" }}>+ New Project</strong>
+            </div>
+          )}
+
+          {[...projects.filter(p => !p.done), ...(showCompleted ? projects.filter(p => p.done) : [])].map(project => {
+            const total = projectTotal(project);
+            const isCollapsed = collapsed.has(project.id);
+            const doneCount = project.tasks.filter(t => t.done).length;
+            return (
+              <div key={project.id} style={{ ...card, marginBottom: 14, overflow: "hidden", opacity: project.done ? 0.65 : 1 }}>
+                <div style={{ background: project.done ? "#94a3b8" : project.color, padding: "13px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: 0 }}>
+                    <input type="checkbox" checked={project.done} onChange={() => toggleProjectDone(project.id)}
+                      style={{ width: 15, height: 15, flexShrink: 0, cursor: "pointer", accentColor: "#fff" }} title={project.done ? "Mark active" : "Mark complete"} />
+                    <button onClick={() => toggleCollapse(project.id)} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", flex: 1, textAlign: "left", padding: 0, minWidth: 0 }}>
+                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", display: "inline-block", transform: isCollapsed ? "rotate(-90deg)" : "rotate(0deg)", transition: "transform 0.15s", flexShrink: 0 }}>▼</span>
+                      <span style={{ fontFamily: "var(--font-display,'Outfit',sans-serif)", fontSize: 15, fontWeight: 700, color: "#fff", textDecoration: project.done ? "line-through" : "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{project.name}</span>
+                      <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", flexShrink: 0 }}>
+                        {total > 0 ? fmtShort(total) + "  ·  " : ""}{doneCount}/{project.tasks.length} done
+                      </span>
+                    </button>
+                  </div>
+                  <div style={{ display: "flex", gap: 5, flexShrink: 0 }}>
+                    {!project.done && (
+                      <button onClick={() => { setAddingTaskTo(project.id); setCollapsed(p => { const n = new Set(p); n.delete(project.id); return n; }); setTimeout(() => newTaskInputRef.current?.focus(), 50); }}
+                        className="pf-pb"
+                        style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: 6, padding: "4px 10px", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "background 0.15s" }}>
+                        + Subtask
+                      </button>
+                    )}
+                    <button onClick={() => deleteProject(project.id)} className="pf-del" style={{ background: "none", border: "none", color: "rgba(255,255,255,0.45)", fontSize: 17, cursor: "pointer", lineHeight: 1, padding: "2px 5px", transition: "color 0.15s" }}>×</button>
+                  </div>
+                </div>
+
+                {!isCollapsed && (
+                  <div>
+                    {project.tasks.length === 0 && addingTaskTo !== project.id && (
+                      <div style={{ padding: "16px", fontSize: 13, color: "#94a3b8", textAlign: "center" }}>No subtasks — click + Subtask</div>
+                    )}
+                    {project.tasks.map(task => (
+                      <TaskRow key={task.id} task={task} accentColor={project.color}
+                        isActive={activeTimers[task.id] !== undefined}
+                        displaySecs={taskDisplaySecs(task)}
+                        onStart={() => startTimer(task)} onStop={() => stopTimer(task)}
+                        onToggleDone={() => toggleTaskDone(task)} onDelete={() => deleteTask(task)}
+                        onExpandComments={() => loadComments(task)}
+                        onAddComment={(text) => addComment(task, text)}
+                        onDeleteComment={(cid) => deleteComment(task, cid)}
+                      />
+                    ))}
+                    {addingTaskTo === project.id && (
+                      <div style={{ padding: "10px 14px", borderTop: project.tasks.length > 0 ? "1px solid #F1F5F9" : "none", display: "flex", gap: 8 }}>
+                        <input ref={newTaskInputRef} value={newTaskName} onChange={e => setNewTaskName(e.target.value)}
+                          onKeyDown={e => { if (e.key === "Enter") addTask(project.id); if (e.key === "Escape") { setAddingTaskTo(null); setNewTaskName(""); } }}
+                          placeholder="Subtask name..."
+                          style={{ flex: 1, border: "1px solid #E1E8EF", borderRadius: 8, padding: "8px 12px", fontSize: 13, fontFamily: "inherit", color: "#0F3154", outline: "none" }} />
+                        <button onClick={() => addTask(project.id)} style={{ background: project.color, color: "#fff", border: "none", borderRadius: 8, padding: "8px 12px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Add</button>
+                        <button onClick={() => { setAddingTaskTo(null); setNewTaskName(""); }} style={{ background: "none", border: "none", color: "#6B7D8E", fontSize: 18, cursor: "pointer" }}>×</button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          {/* Big Rocks */}
+          <div style={{ ...card, padding: "22px 20px", marginTop: 14 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "#6B7D8E", fontWeight: 700, marginBottom: 4 }}>Big Rocks</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 16 }}>Important goals you want to keep in mind</div>
+            <TodoList storageKey="bigrocks" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-function TaskRow({ task, accentColor, isActive, displaySecs, onStart, onStop, onToggleDone, onDelete }: {
-  task: Task;
-  accentColor: string;
-  isActive: boolean;
-  displaySecs: number;
-  onStart: () => void;
-  onStop: () => void;
-  onToggleDone: () => void;
-  onDelete: () => void;
+function TaskRow({ task, accentColor, isActive, displaySecs, onStart, onStop, onToggleDone, onDelete, onExpandComments, onAddComment, onDeleteComment }: {
+  task: Task; accentColor: string; isActive: boolean; displaySecs: number;
+  onStart: () => void; onStop: () => void; onToggleDone: () => void; onDelete: () => void;
+  onExpandComments: () => void; onAddComment: (t: string) => void; onDeleteComment: (id: number) => void;
 }) {
+  const [showComments, setShowComments] = useState(false);
+  const [commentInput, setCommentInput] = useState("");
+  const commentInputRef = useRef<HTMLInputElement>(null);
+
+  const toggleComments = () => {
+    const next = !showComments;
+    setShowComments(next);
+    if (next) { onExpandComments(); setTimeout(() => commentInputRef.current?.focus(), 80); }
+  };
+
+  const submit = () => {
+    const text = commentInput.trim();
+    if (!text) return;
+    onAddComment(text);
+    setCommentInput("");
+  };
+
   return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 10, padding: "12px 16px",
-      borderBottom: "1px solid #F1F5F9",
-      background: isActive ? "#FEFAFC" : "#fff",
-    }}>
-      <input type="checkbox" checked={task.done} onChange={onToggleDone} style={{ accentColor, width: 15, height: 15, flexShrink: 0, cursor: "pointer" }} />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 500, color: task.done ? "#94a3b8" : "#0F3154", textDecoration: task.done ? "line-through" : "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {isActive && <span style={{ display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: "#DC373E", marginRight: 7, animation: "fpulse 1.5s infinite", verticalAlign: "middle" }} />}
-          {task.name}
+    <div style={{ borderBottom: "1px solid #F1F5F9" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "11px 14px", background: isActive ? "#F8FAFF" : "#fff" }}>
+        <input type="checkbox" checked={task.done} onChange={onToggleDone} style={{ accentColor, width: 14, height: 14, flexShrink: 0, cursor: "pointer" }} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 500, color: task.done ? "#94a3b8" : "#0F3154", textDecoration: task.done ? "line-through" : "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {isActive && <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "#DC373E", marginRight: 6, animation: "fpulse 1.5s infinite", verticalAlign: "middle" }} />}
+            {task.name}
+          </div>
         </div>
+        <button onClick={toggleComments} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: showComments ? "#0F3154" : "#94a3b8", padding: "2px 6px", fontFamily: "inherit" }} title="Notes">
+          💬 {task.comments && task.comments.length > 0 ? task.comments.length : ""}
+        </button>
+        <div style={{ fontSize: 12, fontWeight: 600, color: isActive ? accentColor : "#6B7D8E", fontVariantNumeric: "tabular-nums", minWidth: 40, textAlign: "right", flexShrink: 0 }}>
+          {displaySecs > 0 ? fmt(displaySecs) : "0:00"}
+        </div>
+        {isActive
+          ? <button onClick={onStop} style={{ background: "#DC373E", color: "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>■ Stop</button>
+          : <button onClick={onStart} disabled={task.done} style={{ background: task.done ? "#F1F5F9" : accentColor, color: task.done ? "#94a3b8" : "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 11, fontWeight: 700, cursor: task.done ? "default" : "pointer", fontFamily: "inherit", flexShrink: 0 }}>▶ Start</button>
+        }
+        <button onClick={onDelete} className="pf-del" style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "0 2px", transition: "color 0.15s", flexShrink: 0 }}>×</button>
       </div>
-      <div style={{ fontSize: 13, fontWeight: 600, color: isActive ? accentColor : "#6B7D8E", fontVariantNumeric: "tabular-nums", minWidth: 44, textAlign: "right", flexShrink: 0 }}>
-        {displaySecs > 0 ? fmt(displaySecs) : "0:00"}
-      </div>
-      {isActive ? (
-        <button onClick={onStop} style={{ background: "#DC373E", color: "#fff", border: "none", borderRadius: 6, padding: "5px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>■ Stop</button>
-      ) : (
-        <button onClick={onStart} disabled={task.done} style={{ background: task.done ? "#F1F5F9" : accentColor, color: task.done ? "#94a3b8" : "#fff", border: "none", borderRadius: 6, padding: "5px 12px", fontSize: 12, fontWeight: 700, cursor: task.done ? "default" : "pointer", fontFamily: "inherit", flexShrink: 0 }}>▶ Start</button>
+
+      {showComments && (
+        <div style={{ padding: "8px 14px 12px 36px", background: "#FAFBFC", borderTop: "1px solid #F1F5F9" }}>
+          {(task.comments || []).map(c => (
+            <div key={c.id} style={{ display: "flex", alignItems: "flex-start", gap: 6, marginBottom: 6 }}>
+              <span style={{ fontSize: 11, color: "#94a3b8", marginTop: 2, flexShrink: 0 }}>·</span>
+              <span style={{ fontSize: 13, color: "#374151", flex: 1, lineHeight: 1.45 }}>{c.text}</span>
+              <button onClick={() => onDeleteComment(c.id)} className="pf-del" style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 14, cursor: "pointer", lineHeight: 1, padding: 0, flexShrink: 0, transition: "color 0.15s" }}>×</button>
+            </div>
+          ))}
+          <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+            <input ref={commentInputRef} value={commentInput} onChange={e => setCommentInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") submit(); if (e.key === "Escape") setShowComments(false); }}
+              placeholder="Add a note..."
+              style={{ flex: 1, border: "1px solid #E1E8EF", borderRadius: 7, padding: "7px 10px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff" }} />
+            <button onClick={submit} style={{ background: "#0F3154", color: "#fff", border: "none", borderRadius: 7, padding: "7px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Add</button>
+          </div>
+        </div>
       )}
-      <button onClick={onDelete} className="pf-del" style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 18, cursor: "pointer", lineHeight: 1, padding: "0 3px", transition: "color 0.15s", flexShrink: 0 }}>×</button>
     </div>
   );
 }
