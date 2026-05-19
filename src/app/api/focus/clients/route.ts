@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/auth-options";
+import { auth } from "@/lib/auth";
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -24,7 +23,7 @@ async function ensureTables() {
 }
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await ensureTables();
   const clients = await sql`SELECT * FROM focus_clients ORDER BY created_at DESC`;
@@ -38,7 +37,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await ensureTables();
   const { name, email, phone, status, notes } = await req.json();
@@ -51,7 +50,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id, name, email, phone, status, notes } = await req.json();
   await sql`UPDATE focus_clients SET name=${name}, email=${email||null}, phone=${phone||null}, status=${status||"Active"}, notes=${notes||null} WHERE id=${id}`;
@@ -59,7 +58,7 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await req.json();
   await sql`DELETE FROM focus_clients WHERE id=${id}`;
