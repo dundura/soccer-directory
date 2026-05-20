@@ -122,6 +122,7 @@ type FieldDef = {
   type?: string;
   options?: string[];
   max?: number;
+  editOnly?: boolean;
 };
 
 const FIELDS: Record<ListingType, FieldDef[]> = {
@@ -181,6 +182,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "fundraiserSlug", label: "Fundraiser URL Slug (links Donate button to /fundraiser/your-slug)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-club-name)", editOnly: true },
   ],
   team: [
     { name: "name", label: "Team Name", required: true },
@@ -241,6 +244,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "fundraiserSlug", label: "Fundraiser URL Slug (links Donate button to /fundraiser/your-slug)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-team-name)", editOnly: true },
   ],
   trainer: [
     { name: "name", label: "Your Name", required: true },
@@ -272,6 +277,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-trainer-name)", editOnly: true },
   ],
   recruiter: [
     { name: "name", label: "Advisor Name", required: true },
@@ -302,6 +309,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-recruiter-name)", editOnly: true },
   ],
   camp: [
     { name: "name", label: "Camp Name", required: true },
@@ -349,6 +358,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "announcementCtaUrl3", label: "Announcement 3 — Button Link URL" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-camp-name)", editOnly: true },
   ],
   guest: [
     { name: "teamName", label: "Team Name", required: true },
@@ -378,6 +389,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-team-name)", editOnly: true },
   ],
   tournament: [
     { name: "name", label: "Tournament Name", required: true },
@@ -410,6 +423,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-tournament-name)", editOnly: true },
   ],
   futsal: [
     { name: "name", label: "Team Name", required: true },
@@ -443,6 +458,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-futsal-team)", editOnly: true },
   ],
   trip: [
     { name: "tripName", label: "Trip Name", required: true },
@@ -478,6 +495,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
     { name: "_staff", label: "Meet Our Staff (up to 3)", type: "heading" },
     { name: "staffMembers", label: "Staff Members", type: "staff-members", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-trip-name)", editOnly: true },
   ],
   marketplace: [
     { name: "name", label: "Item Name", required: true },
@@ -505,6 +524,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "announcementCta", label: "Offer Button Text (e.g. Shop Now →)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-item-name)", editOnly: true },
   ],
   equipment: [
     { name: "name", label: "Item Name", required: true },
@@ -531,6 +552,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "announcementCta", label: "Offer Button Text (e.g. Shop Now →)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-item-name)", editOnly: true },
   ],
   gear: [
     { name: "name", label: "Item Name", required: true },
@@ -558,6 +581,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "announcementCta", label: "Offer Button Text (e.g. Shop Now →)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-item-name)", editOnly: true },
   ],
   books: [
     { name: "name", label: "Item Name", required: true },
@@ -576,6 +601,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-book-title)", editOnly: true },
   ],
   showcase: [
     { name: "name", label: "Showcase Name", required: true },
@@ -606,6 +633,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-showcase-name)", editOnly: true },
   ],
   player: [
     { name: "playerName", label: "Player Name", required: true },
@@ -636,6 +665,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "teamPhoto", label: "Player Photo", type: "image" },
     { name: "_highlights", label: "Highlight Videos", type: "heading" },
     { name: "highlightVideos", label: "Highlight Videos (up to 5 — shown on profile and highlight reels page)", type: "highlight-videos", max: 5 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-player-name)", editOnly: true },
   ],
   podcast: [
     { name: "name", label: "Podcast Name", required: true },
@@ -673,6 +704,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl3", label: "Episode Video 3 (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-podcast-name)", editOnly: true },
   ],
   blog: [
     { name: "name", label: "Blog Name", required: true },
@@ -709,6 +742,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl3", label: "Video 3 (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-blog-name)", editOnly: true },
   ],
   youtube: [
     { name: "name", label: "Channel Name", required: true },
@@ -745,6 +780,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl3", label: "Video 3 (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-channel-name)", editOnly: true },
   ],
   fbgroup: [
     { name: "name", label: "Group Name", required: true },
@@ -770,6 +807,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-group-name)", editOnly: true },
   ],
   instagrampage: [
     { name: "name", label: "Page Name", required: true },
@@ -790,6 +829,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Featured Video (YouTube/Vimeo/Instagram)" },
     { name: "videoUrl2", label: "Video 2" },
     { name: "videoUrl3", label: "Video 3" },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-page-name)", editOnly: true },
   ],
   tiktokpage: [
     { name: "name", label: "Page Name", required: true },
@@ -810,6 +851,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Featured Video (YouTube/Vimeo/TikTok)" },
     { name: "videoUrl2", label: "Video 2" },
     { name: "videoUrl3", label: "Video 3" },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-page-name)", editOnly: true },
   ],
   service: [
     { name: "name", label: "Product / Service Name", required: true },
@@ -852,6 +895,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "announcementCtaUrl3", label: "Offer 3 — Button Link URL" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-service-name)", editOnly: true },
   ],
   soccerbook: [
     { name: "name", label: "Book Title", required: true },
@@ -883,6 +928,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "extraVideos", label: "Extra Videos", type: "extra-videos", max: 6 },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-book-title)", editOnly: true },
   ],
   photovideo: [
     { name: "name", label: "Business Name", required: true },
@@ -905,6 +952,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "photos", label: "Portfolio Photos (up to 5)", type: "photos", max: 5 },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-service-name)", editOnly: true },
   ],
   tryout: [
     { name: "name", label: "Tryout Name", required: true },
@@ -955,6 +1004,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "announcementCtaUrl3", label: "Announcement 3 — Button URL" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-tryout-name)", editOnly: true },
   ],
   specialevent: [
     { name: "name", label: "Event Name", required: true },
@@ -989,6 +1040,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-event-name)", editOnly: true },
   ],
   trainingapp: [
     { name: "name", label: "App Name", required: true },
@@ -1035,6 +1088,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "announcementCtaUrl3", label: "Offer 3 — Button Link URL" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-app-name)", editOnly: true },
   ],
   ebook: [
     { name: "name", label: "Ebook Title", required: true },
@@ -1053,6 +1108,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-ebook-title)", editOnly: true },
   ],
   giveaway: [
     { name: "name", label: "Giveaway Name", required: true },
@@ -1071,6 +1128,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-giveaway-name)", editOnly: true },
   ],
   fundraiser: [
     { name: "_howitworks", label: "How it works: Donations are processed securely via Stripe. Proceeds are sent to the fundraiser creator, less a 10% platform fee. Donors can contribute between $5 and $500 per donation.", type: "warning" },
@@ -1129,6 +1188,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-team-name)", editOnly: true },
   ],
   consultant: [
     { name: "name", label: "Your Name", required: true },
@@ -1160,6 +1221,8 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "videoUrl", label: "Video URL (YouTube/Vimeo)" },
     { name: "_sponsors", label: "Sponsors (up to 3)", type: "heading" },
     { name: "sponsors", label: "Sponsors", type: "sponsors", max: 3 },
+    { name: "_urlslug", label: "URL Slug", type: "heading", editOnly: true },
+    { name: "slug", label: "URL Slug (e.g. my-consultant-name)", editOnly: true },
   ],
 };
 
@@ -1404,9 +1467,10 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
   const [openSections, setOpenSections] = useState<Set<number>>(new Set());
 
   const baseFields = FIELDS[type];
-  const fields = type === "player"
+  const allFields = type === "player"
     ? baseFields
     : [baseFields[0], { name: "tagline", label: "Tagline (short subtitle shown on listing page)" } as FieldDef, ...baseFields.slice(1)];
+  const fields = isEdit ? allFields : allFields.filter((f) => !f.editOnly);
 
   function handleChange(name: string, value: string) {
     setFormData((prev) => ({ ...prev, [name]: value }));
