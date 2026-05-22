@@ -53,6 +53,7 @@ export function PostEditableContent({
   slug,
   imageUrl,
   videoUrl,
+  videoPosition: initialVideoPosition,
   ctaUrl,
   ctaLabel,
   ogImageUrl,
@@ -68,6 +69,7 @@ export function PostEditableContent({
   slug: string;
   imageUrl?: string;
   videoUrl?: string;
+  videoPosition?: 'above' | 'below';
   ctaUrl?: string;
   ctaLabel?: string;
   ogImageUrl?: string;
@@ -96,6 +98,18 @@ export function PostEditableContent({
   const [ctaLabelValue, setCtaLabelValue] = useState(ctaLabel || "");
   const [ogImageValue, setOgImageValue] = useState(ogImageUrl || "");
   const [mediaSaving, setMediaSaving] = useState(false);
+
+  const [videoPosition, setVideoPosition] = useState<'above' | 'below'>(initialVideoPosition || 'below');
+
+  async function toggleVideoPosition() {
+    const newPos = videoPosition === 'above' ? 'below' : 'above';
+    setVideoPosition(newPos);
+    await fetch("/api/listing-posts", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: postId, action: "video_position", videoPosition: newPos }),
+    });
+  }
 
   const [editingSlug, setEditingSlug] = useState(false);
   const [slugValue, setSlugValue] = useState(slug);
@@ -194,6 +208,18 @@ export function PostEditableContent({
         </div>
       )}
 
+      {/* Video — above text */}
+      {videoUrl && !editingMedia && videoPosition === 'above' && (
+        <div className="px-4 pb-4">
+          <VideoEmbed url={videoUrl} />
+          {canEdit && (
+            <button onClick={toggleVideoPosition} className="mt-2 text-xs font-semibold text-accent hover:text-accent-hover transition-colors flex items-center gap-1">
+              ↓ Move video below text
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Title + Body */}
       <div className={blogLayout ? "" : "px-6 pb-4"}>
         {editingBody ? (
@@ -238,9 +264,14 @@ export function PostEditableContent({
         )}
       </div>
 
-      {/* Video */}
-      {videoUrl && !editingMedia && (
+      {/* Video — below text */}
+      {videoUrl && !editingMedia && videoPosition === 'below' && (
         <div className="px-4 pb-4">
+          {canEdit && (
+            <button onClick={toggleVideoPosition} className="mb-2 text-xs font-semibold text-accent hover:text-accent-hover transition-colors flex items-center gap-1">
+              ↑ Move video above text
+            </button>
+          )}
           <VideoEmbed url={videoUrl} />
         </div>
       )}

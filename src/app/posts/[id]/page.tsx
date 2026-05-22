@@ -214,6 +214,7 @@ export default async function PostPage({ params }: Props) {
               slug={post.slug || post.id}
               imageUrl={post.imageUrl}
               videoUrl={post.videoUrl}
+              videoPosition={post.videoPosition}
               ctaUrl={post.ctaUrl}
               ctaLabel={post.ctaLabel}
               ogImageUrl={post.ogImageUrl}

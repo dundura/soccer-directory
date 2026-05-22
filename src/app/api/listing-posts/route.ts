@@ -118,7 +118,7 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { id, action, body, slug, imageUrl, videoUrl, ctaUrl, ctaLabel, ctaUrl2, ctaLabel2, ctaUrl3, ctaLabel3, ogImageUrl, title } = await req.json();
+    const { id, action, body, slug, imageUrl, videoUrl, ctaUrl, ctaLabel, ctaUrl2, ctaLabel2, ctaUrl3, ctaLabel3, ogImageUrl, title, videoPosition } = await req.json();
 
     // Check if user is listing owner (allows editing any post on their listing)
     let isListingOwner = false;
@@ -131,6 +131,15 @@ export async function PATCH(req: Request) {
       }
     }
     const canUseAdmin = isAdmin(session) || isListingOwner;
+
+    if (action === "video_position" && (videoPosition === "above" || videoPosition === "below")) {
+      const { updateListingPostVideoPosition, updateListingPostVideoPositionAdmin } = await import("@/lib/db");
+      const ok = canUseAdmin
+        ? await updateListingPostVideoPositionAdmin(id, videoPosition)
+        : await updateListingPostVideoPosition(id, session.user.id, videoPosition);
+      if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return NextResponse.json({ success: true });
+    }
 
     if (action === "toggle_hidden") {
       if (canUseAdmin) {
