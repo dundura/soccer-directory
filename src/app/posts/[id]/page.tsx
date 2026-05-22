@@ -42,7 +42,7 @@ function stripHtml(html: string): string {
 function getVideoThumbnail(url?: string): string | null {
   if (!url) return null;
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
-  if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+  if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
   return null;
 }
 
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const plainBody = stripHtml(post.body);
   const title = post.title || (listingName ? `${listingName} — ${plainBody.slice(0, 60) || "Update"}` : plainBody.slice(0, 60) || "Post");
   const description = post.title ? `${post.title} — ${plainBody.slice(0, 120)}` : plainBody.slice(0, 160);
-  const ogImage = post.ogImageUrl || post.imageUrl || getVideoThumbnail(post.videoUrl) || "https://www.soccer-near-me.com/og-image.png";
+  const ogImage = post.ogImageUrl || getVideoThumbnail(post.videoUrl) || post.imageUrl || "https://www.soccer-near-me.com/og-image.png";
   const canonical = post.slug ? `/posts/${post.slug}` : `/posts/${post.id}`;
   const finalImage = ogImage;
 
