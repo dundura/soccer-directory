@@ -229,7 +229,7 @@ export default async function HomePage() {
         <div className="relative bg-primary rounded-[20px] overflow-hidden max-w-7xl mx-auto">
           {/* Decorative grid */}
           <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "40px 40px" }} />
-          <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
+          <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8 md:py-24">
             <div className="flex items-center gap-12">
               {/* Left Column -- Text Content */}
               <div className="flex-1 min-w-0">
@@ -262,7 +262,7 @@ export default async function HomePage() {
                           <p className="text-white/60 text-sm mt-0.5">Train together, split the cost — from $22/player</p>
                         </div>
                       </div>
-                      <div className="shrink-0">
+                      <div className="shrink-0 flex sm:block justify-center">
                         <div className="bg-[#DC373E] text-white text-sm font-bold px-4 py-2 rounded-xl whitespace-nowrap inline-block">
                           Find Sessions →
                         </div>
