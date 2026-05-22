@@ -16,6 +16,7 @@ export function CreatePostForm() {
   const listingSlug = searchParams.get("slug") || "";
   const listingName = searchParams.get("name") || "";
 
+  const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
@@ -60,6 +61,7 @@ export function CreatePostForm() {
           type: listingType,
           id: listingId,
           slug: listingSlug,
+          title: title.trim() || undefined,
           body: body.trim(),
           imageUrl: imageUrl || undefined,
           videoUrl: videoUrl || undefined,
@@ -109,6 +111,18 @@ export function CreatePostForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-5">
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-bold text-primary mb-1.5">Title <span className="font-normal text-muted">(optional)</span></label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Episode title, announcement, etc."
+                className="w-full text-sm px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+              />
+            </div>
+
             {/* Body - Rich Text Editor */}
             <div>
               <label className="block text-sm font-bold text-primary mb-1.5">Post Content</label>
