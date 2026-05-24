@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 
-interface Activity { id: number; client_id: number; text: string; notes: string; due_date: string; completed: boolean; created_at: string; }
+interface Activity { id: number; client_id: number; text: string; notes: string; due_date: string; completed: boolean; completed_at: string | null; created_at: string; }
 interface Client {
   id: number; name: string; email: string; phone: string;
   status: string; team: string; notes: string; activities: Activity[];
@@ -134,8 +134,11 @@ export function ActiveClients() {
   };
 
   const toggleComplete = async (clientId: number, actId: number, current: boolean) => {
+    const nowIso = new Date().toISOString();
     setClients(p => p.map(c => c.id === clientId
-      ? { ...c, activities: c.activities.map(a => a.id === actId ? { ...a, completed: !current } : a) }
+      ? { ...c, activities: c.activities.map(a => a.id === actId
+          ? { ...a, completed: !current, completed_at: !current ? nowIso : null }
+          : a) }
       : c));
     await fetch("/api/focus/clients/activities", {
       method: "PATCH", headers: { "Content-Type": "application/json" },
@@ -297,7 +300,7 @@ export function ActiveClients() {
 
                             {/* Column sub-headers */}
                             <div style={{ display: "grid", gridTemplateColumns: "24px 1fr 1fr 110px 28px", padding: "5px 14px 4px 54px", borderBottom: "1px solid #F1F5F9" }}>
-                              {["", "Item", "Notes", "Date", ""].map((h, hi) => (
+                              {["", "Item", "Notes", filter === "completed" ? "Completed" : "Due Date", ""].map((h, hi) => (
                                 <div key={hi} style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.07em", padding: "0 6px" }}>{h}</div>
                               ))}
                             </div>
@@ -334,9 +337,15 @@ export function ActiveClients() {
                                   <div style={{ padding: "4px 6px", opacity: act.completed ? 0.45 : 1 }}>
                                     <EditableCell value={act.notes || ""} onSave={v => updateActivity(client.id, act.id, "notes", v)} placeholder="Notes" />
                                   </div>
-                                  {/* Date */}
+                                  {/* Date — show completed_at on Completed tab, due_date on Open tab */}
                                   <div style={{ padding: "4px 6px", opacity: act.completed ? 0.45 : 1 }}>
-                                    <EditableCell value={act.due_date ? act.due_date.slice(0, 10) : ""} onSave={v => updateActivity(client.id, act.id, "due_date", v)} placeholder="Date" type="date" />
+                                    {filter === "completed" && act.completed_at ? (
+                                      <div style={{ fontSize: 12, color: "#16a34a", fontWeight: 600, padding: "4px 0" }}>
+                                        {new Date(act.completed_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                                      </div>
+                                    ) : (
+                                      <EditableCell value={act.due_date ? act.due_date.slice(0, 10) : ""} onSave={v => updateActivity(client.id, act.id, "due_date", v)} placeholder="Date" type="date" />
+                                    )}
                                   </div>
                                   {/* Delete */}
                                   <div style={{ padding: "0 4px", textAlign: "right" }}>

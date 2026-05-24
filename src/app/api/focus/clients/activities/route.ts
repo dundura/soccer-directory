@@ -8,6 +8,7 @@ async function ensureColumns() {
   await sql`ALTER TABLE focus_client_activities ADD COLUMN IF NOT EXISTS notes TEXT`;
   await sql`ALTER TABLE focus_client_activities ADD COLUMN IF NOT EXISTS due_date DATE`;
   await sql`ALTER TABLE focus_client_activities ADD COLUMN IF NOT EXISTS completed BOOLEAN DEFAULT FALSE`;
+  await sql`ALTER TABLE focus_client_activities ADD COLUMN IF NOT EXISTS completed_at TIMESTAMPTZ`;
 }
 
 export async function POST(req: NextRequest) {
@@ -29,7 +30,7 @@ export async function PATCH(req: NextRequest) {
   await ensureColumns();
   const { id, text, notes, due_date, completed } = await req.json();
   if (completed !== undefined && text === undefined) {
-    await sql`UPDATE focus_client_activities SET completed=${completed} WHERE id=${id}`;
+    await sql`UPDATE focus_client_activities SET completed=${completed}, completed_at=${completed ? new Date().toISOString() : null} WHERE id=${id}`;
   } else {
     await sql`UPDATE focus_client_activities SET text=${text}, notes=${notes||null}, due_date=${due_date||null} WHERE id=${id}`;
   }
