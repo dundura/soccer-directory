@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 
-interface Activity { id: number; client_id: number; text: string; created_at: string; }
+interface Activity { id: number; client_id: number; text: string; notes: string; due_date: string; created_at: string; }
 interface Client {
   id: number; name: string; email: string; phone: string;
   status: string; team: string; notes: string; activities: Activity[];
@@ -50,7 +50,7 @@ export function ActiveClients() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
-  const [newActivity, setNewActivity] = useState<Record<number, string>>({});
+  const [newActivity, setNewActivity] = useState<Record<number, { text: string; notes: string; due_date: string }>>({});
   const [showAdd, setShowAdd] = useState(false);
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
@@ -98,17 +98,32 @@ export function ActiveClients() {
     await fetch("/api/focus/clients", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
   };
 
+  const getNewAct = (clientId: number) => newActivity[clientId] || { text: "", notes: "", due_date: "" };
+
   const addActivity = async (clientId: number) => {
-    const text = (newActivity[clientId] || "").trim();
-    if (!text) return;
+    const act = getNewAct(clientId);
+    if (!act.text.trim()) return;
     const res = await fetch("/api/focus/clients/activities", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ client_id: clientId, text }),
+      body: JSON.stringify({ client_id: clientId, text: act.text.trim(), notes: act.notes, due_date: act.due_date }),
     }).then(r => r.json());
     if (res.id) {
       setClients(p => p.map(c => c.id === clientId ? { ...c, activities: [...c.activities, res] } : c));
-      setNewActivity(p => ({ ...p, [clientId]: "" }));
+      setNewActivity(p => ({ ...p, [clientId]: { text: "", notes: "", due_date: "" } }));
     }
+  };
+
+  const updateActivity = async (clientId: number, actId: number, field: string, value: string) => {
+    setClients(p => p.map(c => c.id === clientId
+      ? { ...c, activities: c.activities.map(a => a.id === actId ? { ...a, [field]: value } : a) }
+      : c));
+    const act = clients.find(c => c.id === clientId)?.activities.find(a => a.id === actId);
+    if (!act) return;
+    const updated = { ...act, [field]: value };
+    await fetch("/api/focus/clients/activities", {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: actId, text: updated.text, notes: updated.notes, due_date: updated.due_date }),
+    });
   };
 
   const deleteActivity = async (clientId: number, actId: number) => {
@@ -218,35 +233,74 @@ export function ActiveClients() {
                     {/* Expanded activity lines */}
                     {expanded.has(client.id) && (
                       <tr key={`${client.id}-activities`}>
-                        <td colSpan={8} style={{ padding: "0", borderTop: "1px solid #F1F5F9", background: "#F8FAFC" }}>
-                          <div style={{ padding: "10px 14px 12px 54px" }}>
+                        <td colSpan={8} style={{ padding: 0, borderTop: "1px solid #F1F5F9", background: "#F8FAFC" }}>
+                          {/* Sub-header */}
+                          <div style={{ display: "grid", gridTemplateColumns: "24px 1fr 1fr 110px 28px", gap: 0, padding: "6px 14px 4px 54px", borderBottom: "1px solid #F1F5F9" }}>
+                            {["", "Item", "Notes", "Date", ""].map((h, i) => (
+                              <div key={i} style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.07em", padding: "0 6px" }}>{h}</div>
+                            ))}
+                          </div>
+                          <div style={{ padding: "4px 14px 10px 54px" }}>
                             {client.activities.length === 0 && (
-                              <div style={{ fontSize: 12, color: "#CBD5E1", marginBottom: 8, fontStyle: "italic" }}>No action items yet.</div>
+                              <div style={{ fontSize: 12, color: "#CBD5E1", padding: "8px 6px", fontStyle: "italic" }}>No action items yet.</div>
                             )}
                             {client.activities.map(act => (
-                              <div key={act.id} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, padding: "4px 0" }}>
-                                <span style={{ width: 16, height: 16, borderRadius: 4, border: "1.5px solid #CBD5E1", flexShrink: 0, display: "inline-block", background: "#fff" }} />
-                                <span style={{ fontSize: 13, color: "#374151", flex: 1, lineHeight: 1.4 }}>{act.text}</span>
-                                <span style={{ fontSize: 11, color: "#CBD5E1", flexShrink: 0 }}>
-                                  {new Date(act.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                                </span>
-                                <button onClick={() => deleteActivity(client.id, act.id)}
-                                  style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 14, cursor: "pointer", lineHeight: 1, padding: "0 2px", flexShrink: 0 }}>×</button>
+                              <div key={act.id} style={{ display: "grid", gridTemplateColumns: "24px 1fr 1fr 110px 28px", gap: 0, alignItems: "center", borderBottom: "1px solid #F1F5F9", minHeight: 34 }}>
+                                {/* Checkbox */}
+                                <div style={{ padding: "0 6px" }}>
+                                  <span style={{ width: 15, height: 15, borderRadius: 3, border: "1.5px solid #CBD5E1", display: "inline-block", background: "#fff", flexShrink: 0 }} />
+                                </div>
+                                {/* Item */}
+                                <div style={{ padding: "4px 6px" }}>
+                                  <EditableCell value={act.text} onSave={v => updateActivity(client.id, act.id, "text", v)} placeholder="Item" />
+                                </div>
+                                {/* Notes */}
+                                <div style={{ padding: "4px 6px" }}>
+                                  <EditableCell value={act.notes || ""} onSave={v => updateActivity(client.id, act.id, "notes", v)} placeholder="Notes" />
+                                </div>
+                                {/* Date */}
+                                <div style={{ padding: "4px 6px" }}>
+                                  <EditableCell value={act.due_date ? act.due_date.slice(0, 10) : ""} onSave={v => updateActivity(client.id, act.id, "due_date", v)} placeholder="Date" type="date" />
+                                </div>
+                                {/* Delete */}
+                                <div style={{ padding: "0 4px", textAlign: "right" }}>
+                                  <button onClick={() => deleteActivity(client.id, act.id)}
+                                    style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 14, cursor: "pointer", lineHeight: 1, padding: "2px" }}>×</button>
+                                </div>
                               </div>
                             ))}
-                            {/* Add activity input */}
-                            <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                              <input
-                                value={newActivity[client.id] || ""}
-                                onChange={e => setNewActivity(p => ({ ...p, [client.id]: e.target.value }))}
-                                onKeyDown={e => { if (e.key === "Enter") addActivity(client.id); }}
-                                placeholder="Add action item..."
-                                style={{ flex: 1, border: "1px solid #E1E8EF", borderRadius: 7, padding: "6px 10px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff" }}
-                              />
-                              <button onClick={() => addActivity(client.id)}
-                                style={{ background: "#0F3154", color: "#fff", border: "none", borderRadius: 7, padding: "6px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
-                                Add
-                              </button>
+                            {/* Add row */}
+                            <div style={{ display: "grid", gridTemplateColumns: "24px 1fr 1fr 110px 28px", gap: 0, alignItems: "center", paddingTop: 8 }}>
+                              <div />
+                              <div style={{ padding: "0 4px" }}>
+                                <input
+                                  value={getNewAct(client.id).text}
+                                  onChange={e => setNewActivity(p => ({ ...p, [client.id]: { ...getNewAct(client.id), text: e.target.value } }))}
+                                  onKeyDown={e => { if (e.key === "Enter") addActivity(client.id); }}
+                                  placeholder="Item..."
+                                  style={{ width: "100%", border: "1px solid #E1E8EF", borderRadius: 6, padding: "5px 8px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff", boxSizing: "border-box" }}
+                                />
+                              </div>
+                              <div style={{ padding: "0 4px" }}>
+                                <input
+                                  value={getNewAct(client.id).notes}
+                                  onChange={e => setNewActivity(p => ({ ...p, [client.id]: { ...getNewAct(client.id), notes: e.target.value } }))}
+                                  placeholder="Notes..."
+                                  style={{ width: "100%", border: "1px solid #E1E8EF", borderRadius: 6, padding: "5px 8px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff", boxSizing: "border-box" }}
+                                />
+                              </div>
+                              <div style={{ padding: "0 4px" }}>
+                                <input
+                                  type="date"
+                                  value={getNewAct(client.id).due_date}
+                                  onChange={e => setNewActivity(p => ({ ...p, [client.id]: { ...getNewAct(client.id), due_date: e.target.value } }))}
+                                  style={{ width: "100%", border: "1px solid #E1E8EF", borderRadius: 6, padding: "5px 8px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff", boxSizing: "border-box" }}
+                                />
+                              </div>
+                              <div style={{ padding: "0 4px" }}>
+                                <button onClick={() => addActivity(client.id)}
+                                  style={{ background: "#0F3154", color: "#fff", border: "none", borderRadius: 6, padding: "5px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>+</button>
+                              </div>
                             </div>
                           </div>
                         </td>
