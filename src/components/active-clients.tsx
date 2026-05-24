@@ -9,10 +9,11 @@ interface Client {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  Won: "#16a34a", Lead: "#0891b2", Proposal: "#d97706",
-  "Demo Conducted": "#ea580c", Churned: "#94a3b8", Paused: "#7c3aed",
+  Lead: "#0891b2", Proposal: "#d97706", "Demo Conducted": "#ea580c",
+  "Demo Completed": "#f59e0b", "Waiting on Roster": "#8b5cf6",
+  Won: "#16a34a", Paused: "#7c3aed", Churned: "#94a3b8",
 };
-const STATUSES = ["Lead", "Proposal", "Demo Conducted", "Won", "Paused", "Churned"];
+const STATUSES = ["Lead", "Proposal", "Demo Conducted", "Demo Completed", "Waiting on Roster", "Won", "Paused", "Churned"];
 
 const card: React.CSSProperties = {
   background: "#fff", borderRadius: 14, border: "1px solid #E1E8EF",
