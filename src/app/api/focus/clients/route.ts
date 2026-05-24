@@ -16,6 +16,7 @@ async function ensureTables() {
     created_at TIMESTAMPTZ DEFAULT NOW()
   )`;
   await sql`ALTER TABLE focus_clients ADD COLUMN IF NOT EXISTS team TEXT`;
+  await sql`ALTER TABLE focus_clients ADD COLUMN IF NOT EXISTS contact_date DATE`;
   await sql`CREATE TABLE IF NOT EXISTS focus_client_activities (
     id SERIAL PRIMARY KEY,
     client_id INTEGER REFERENCES focus_clients(id) ON DELETE CASCADE,
@@ -42,11 +43,11 @@ export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await ensureTables();
-  const { name, email, phone, status, team, notes } = await req.json();
+  const { name, email, phone, status, team, notes, contact_date } = await req.json();
   if (!name?.trim()) return NextResponse.json({ error: "Name required" }, { status: 400 });
   const rows = await sql`
-    INSERT INTO focus_clients (name, email, phone, status, team, notes)
-    VALUES (${name.trim()}, ${email || null}, ${phone || null}, ${status || "Lead"}, ${team || null}, ${notes || null})
+    INSERT INTO focus_clients (name, email, phone, status, team, notes, contact_date)
+    VALUES (${name.trim()}, ${email || null}, ${phone || null}, ${status || "Lead"}, ${team || null}, ${notes || null}, ${contact_date || null})
     RETURNING *`;
   return NextResponse.json({ ...rows[0], activities: [] });
 }
@@ -54,8 +55,8 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { id, name, email, phone, status, team, notes } = await req.json();
-  await sql`UPDATE focus_clients SET name=${name}, email=${email||null}, phone=${phone||null}, status=${status||"Lead"}, team=${team||null}, notes=${notes||null} WHERE id=${id}`;
+  const { id, name, email, phone, status, team, notes, contact_date } = await req.json();
+  await sql`UPDATE focus_clients SET name=${name}, email=${email||null}, phone=${phone||null}, status=${status||"Lead"}, team=${team||null}, notes=${notes||null}, contact_date=${contact_date||null} WHERE id=${id}`;
   return NextResponse.json({ success: true });
 }
 

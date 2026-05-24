@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 interface Activity { id: number; client_id: number; text: string; notes: string; due_date: string; completed: boolean; completed_at: string | null; created_at: string; }
 interface Client {
   id: number; name: string; email: string; phone: string;
-  status: string; team: string; notes: string; activities: Activity[];
+  status: string; team: string; notes: string; contact_date: string; activities: Activity[];
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -125,7 +125,7 @@ export function ActiveClients() {
     setClients(p => p.map(c => c.id === id ? { ...c, [field]: value } : c));
     await fetch("/api/focus/clients", {
       method: "PATCH", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, name: updated.name, email: updated.email, phone: updated.phone, status: updated.status, team: updated.team, notes: updated.notes }),
+      body: JSON.stringify({ id, name: updated.name, email: updated.email, phone: updated.phone, status: updated.status, team: updated.team, notes: updated.notes, contact_date: updated.contact_date || null }),
     });
   };
 
@@ -206,7 +206,7 @@ export function ActiveClients() {
   const canDrag = !q; // disable drag when searching
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 20px" }}>
+    <div style={{ maxWidth: 1320, margin: "0 auto", padding: "28px 20px" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 12, flexWrap: "wrap" }}>
         <div>
@@ -386,6 +386,7 @@ export function ActiveClients() {
                   <th style={th}>Team</th>
                   <th style={th}>Status</th>
                   <th style={th}>Notes</th>
+                  <th style={{ ...th, whiteSpace: "nowrap" }}>Contact Date</th>
                   <th style={{ ...th, width: 32 }} />
                 </tr>
               </thead>
@@ -472,6 +473,9 @@ export function ActiveClients() {
                       <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 160 }}>
                         <EditableCell value={client.notes || ""} onSave={v => updateClient(client.id, "notes", v)} placeholder="Notes" />
                       </td>
+                      <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 130 }}>
+                        <EditableCell value={client.contact_date ? client.contact_date.slice(0, 10) : ""} onSave={v => updateClient(client.id, "contact_date", v)} placeholder="Date" type="date" />
+                      </td>
                       <td style={{ padding: "8px 14px", verticalAlign: "middle", textAlign: "right" }}>
                         <button onClick={() => deleteClient(client.id)}
                           style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "2px 4px" }}>×</button>
@@ -491,7 +495,7 @@ export function ActiveClients() {
                   );
                   return (
                     <tr key={`${client.id}-activities`}>
-                      <td colSpan={9} style={{ padding: 0, borderTop: "1px solid #F1F5F9", background: "#F8FAFC" }}>
+                      <td colSpan={10} style={{ padding: 0, borderTop: "1px solid #F1F5F9", background: "#F8FAFC" }}>
 
                         {/* Open / Completed tabs */}
                         <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "8px 14px 0 60px", borderBottom: "1px solid #F1F5F9" }}>
