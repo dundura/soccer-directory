@@ -10,9 +10,9 @@ interface Client {
 
 const STATUS_COLORS: Record<string, string> = {
   Won: "#16a34a", Lead: "#0891b2", Proposal: "#d97706",
-  Churned: "#94a3b8", Paused: "#7c3aed",
+  "Demo Conducted": "#ea580c", Churned: "#94a3b8", Paused: "#7c3aed",
 };
-const STATUSES = ["Lead", "Won", "Proposal", "Paused", "Churned"];
+const STATUSES = ["Lead", "Proposal", "Demo Conducted", "Won", "Paused", "Churned"];
 
 const card: React.CSSProperties = {
   background: "#fff", borderRadius: 14, border: "1px solid #E1E8EF",
@@ -47,6 +47,26 @@ function EditableCell({ value, onSave, placeholder, type = "text" }: {
   );
 }
 
+// localStorage helpers for client order
+function loadOrderedClients(data: Client[]): Client[] {
+  try {
+    const saved = localStorage.getItem("focus_client_order");
+    if (!saved) return data;
+    const order: number[] = JSON.parse(saved);
+    return [...data].sort((a, b) => {
+      const ai = order.indexOf(a.id);
+      const bi = order.indexOf(b.id);
+      if (ai === -1 && bi === -1) return 0;
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    });
+  } catch { return data; }
+}
+function saveClientOrder(ordered: Client[]) {
+  try { localStorage.setItem("focus_client_order", JSON.stringify(ordered.map(c => c.id))); } catch {}
+}
+
 export function ActiveClients() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +74,14 @@ export function ActiveClients() {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [actFilter, setActFilter] = useState<Record<number, "open" | "completed">>({});
   const [search, setSearch] = useState("");
-  const [dragOver, setDragOver] = useState<string | null>(null);
+
+  // Pipeline drag state
+  const [pipelineDragOver, setPipelineDragOver] = useState<string | null>(null);
+
+  // List row drag state
+  const [listDragSrc, setListDragSrc] = useState<number | null>(null);
+  const [listDragOver, setListDragOver] = useState<number | null>(null);
+
   const [newActivity, setNewActivity] = useState<Record<number, { text: string; notes: string; due_date: string }>>({});
   const [showAdd, setShowAdd] = useState(false);
   const [newName, setNewName] = useState("");
@@ -66,7 +93,7 @@ export function ActiveClients() {
 
   useEffect(() => {
     fetch("/api/focus/clients").then(r => r.json()).then(data => {
-      if (Array.isArray(data)) setClients(data);
+      if (Array.isArray(data)) setClients(loadOrderedClients(data));
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
@@ -105,6 +132,16 @@ export function ActiveClients() {
     if (!confirm("Delete this client?")) return;
     setClients(p => p.filter(c => c.id !== id));
     await fetch("/api/focus/clients", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+  };
+
+  // Reorder clients in list view
+  const moveClient = (fromIdx: number, toIdx: number) => {
+    if (fromIdx === toIdx) return;
+    const next = [...clients];
+    const [removed] = next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, removed);
+    setClients(next);
+    saveClientOrder(next);
   };
 
   const getNewAct = (clientId: number) => newActivity[clientId] || { text: "", notes: "", due_date: "" };
@@ -164,6 +201,8 @@ export function ActiveClients() {
         c.notes?.toLowerCase().includes(q)
       )
     : clients;
+
+  const canDrag = !q; // disable drag when searching
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 20px" }}>
@@ -227,24 +266,24 @@ export function ActiveClients() {
       {/* ── PIPELINE VIEW ── */}
       {view === "pipeline" && (
         <div style={{ overflowX: "auto", paddingBottom: 12 }}>
-          <div style={{ display: "flex", gap: 14, minWidth: STATUSES.length * 220, alignItems: "flex-start" }}>
+          <div style={{ display: "flex", gap: 14, minWidth: STATUSES.length * 200, alignItems: "flex-start" }}>
             {STATUSES.map(status => {
               const col = visibleClients.filter(c => (c.status || "Lead") === status);
               const color = STATUS_COLORS[status] || "#94a3b8";
-              const isDragTarget = dragOver === status;
+              const isDragTarget = pipelineDragOver === status;
               return (
                 <div key={status}
-                  onDragOver={e => { e.preventDefault(); setDragOver(status); }}
-                  onDragLeave={() => setDragOver(null)}
+                  onDragOver={e => { e.preventDefault(); setPipelineDragOver(status); }}
+                  onDragLeave={() => setPipelineDragOver(null)}
                   onDrop={e => {
                     e.preventDefault();
-                    setDragOver(null);
+                    setPipelineDragOver(null);
                     const id = Number(e.dataTransfer.getData("clientId"));
                     if (!id) return;
                     updateClient(id, "status", status);
                   }}
                   style={{
-                    flex: "0 0 220px", background: isDragTarget ? color + "12" : "#F8FAFC",
+                    flex: "0 0 200px", background: isDragTarget ? color + "12" : "#F8FAFC",
                     borderRadius: 14, border: isDragTarget ? `2px solid ${color}` : "2px solid #E1E8EF",
                     transition: "border 0.15s, background 0.15s", minHeight: 120,
                   }}>
@@ -252,7 +291,7 @@ export function ActiveClients() {
                   <div style={{ padding: "12px 14px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                       <span style={{ width: 10, height: 10, borderRadius: "50%", background: color, display: "inline-block" }} />
-                      <span style={{ fontSize: 12, fontWeight: 800, color: "#0F3154", textTransform: "uppercase", letterSpacing: "0.07em" }}>{status}</span>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: "#0F3154", textTransform: "uppercase", letterSpacing: "0.07em" }}>{status}</span>
                     </div>
                     <span style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", background: "#E1E8EF", borderRadius: 10, padding: "1px 8px" }}>{col.length}</span>
                   </div>
@@ -278,21 +317,16 @@ export function ActiveClients() {
                           onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(15,49,84,0.12)")}
                           onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 1px 4px rgba(15,49,84,0.06)")}
                         >
-                          {/* Name */}
                           <div style={{ fontSize: 13, fontWeight: 700, color: "#0F3154", marginBottom: 3, lineHeight: 1.3 }}>{client.name}</div>
-                          {/* Team */}
                           {client.team && (
                             <div style={{ fontSize: 11, color: "#0891b2", fontWeight: 600, marginBottom: 6 }}>{client.team}</div>
                           )}
-                          {/* Email */}
                           {client.email && (
                             <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{client.email}</div>
                           )}
-                          {/* Notes */}
                           {client.notes && (
                             <div style={{ fontSize: 11, color: "#64748b", marginBottom: 8, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{client.notes}</div>
                           )}
-                          {/* Action items badge */}
                           {(openItems > 0 || doneItems > 0) && (
                             <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
                               {openItems > 0 && (
@@ -307,7 +341,6 @@ export function ActiveClients() {
                               )}
                             </div>
                           )}
-                          {/* Move status pills */}
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 10, borderTop: "1px solid #F1F5F9", paddingTop: 8 }}>
                             {STATUSES.filter(s => s !== status).map(s => (
                               <button key={s} onClick={() => updateClient(client.id, "status", s)}
@@ -340,9 +373,11 @@ export function ActiveClients() {
       ) : view === "list" && (
         <div style={{ ...card, overflow: "hidden" }}>
           <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 640 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 660 }}>
               <thead>
                 <tr style={{ background: "#F8FAFC" }}>
+                  {/* drag handle col */}
+                  <th style={{ ...th, width: 24, padding: "10px 4px 10px 12px" }} />
                   <th style={{ ...th, width: 32 }} />
                   <th style={th}>Name</th>
                   <th style={th}>Email</th>
@@ -361,164 +396,210 @@ export function ActiveClients() {
                   const visibleActs = client.activities.filter(a =>
                     filter === "open" ? !a.completed : a.completed
                   );
+
+                  const isDragTarget = listDragOver === i && listDragSrc !== i;
+                  const isDragSrc = listDragSrc === i;
+
                   return (
-                    <>
-                      <tr key={client.id} style={{ borderTop: i === 0 ? "none" : "1px solid #F1F5F9", background: expanded.has(client.id) ? "#F8FAFF" : "white" }}>
-                        {/* Expand toggle */}
-                        <td style={{ padding: "0 6px 0 14px", verticalAlign: "middle" }}>
-                          <button onClick={() => toggleExpand(client.id)}
-                            style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: 11, padding: "10px 4px", lineHeight: 1 }}>
-                            {expanded.has(client.id) ? "▼" : "▶"}
-                          </button>
-                        </td>
-                        <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 120 }}>
-                          <EditableCell value={client.name} onSave={v => updateClient(client.id, "name", v)} placeholder="Name" />
-                        </td>
-                        <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 160 }}>
-                          <EditableCell value={client.email || ""} onSave={v => updateClient(client.id, "email", v)} placeholder="Email" type="email" />
-                        </td>
-                        <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 120 }}>
-                          <EditableCell value={client.phone || ""} onSave={v => updateClient(client.id, "phone", v)} placeholder="Phone" type="tel" />
-                        </td>
-                        <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 120 }}>
-                          <EditableCell value={client.team || ""} onSave={v => updateClient(client.id, "team", v)} placeholder="Team" />
-                        </td>
-                        <td style={{ padding: "8px 14px", verticalAlign: "middle" }}>
-                          <select value={client.status || "Lead"}
-                            onChange={e => updateClient(client.id, "status", e.target.value)}
-                            style={{ border: "none", borderRadius: 20, padding: "3px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", outline: "none", background: (STATUS_COLORS[client.status] || "#94a3b8") + "18", color: STATUS_COLORS[client.status] || "#94a3b8" }}>
-                            {STATUSES.map(s => <option key={s}>{s}</option>)}
-                          </select>
-                        </td>
-                        <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 160 }}>
-                          <EditableCell value={client.notes || ""} onSave={v => updateClient(client.id, "notes", v)} placeholder="Notes" />
-                        </td>
-                        <td style={{ padding: "8px 14px", verticalAlign: "middle", textAlign: "right" }}>
-                          <button onClick={() => deleteClient(client.id)}
-                            style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "2px 4px" }}>×</button>
-                        </td>
-                      </tr>
+                    <tr
+                      key={client.id}
+                      draggable={canDrag}
+                      onDragStart={e => {
+                        setListDragSrc(i);
+                        e.dataTransfer.effectAllowed = "move";
+                      }}
+                      onDragOver={e => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = "move";
+                        if (listDragOver !== i) setListDragOver(i);
+                      }}
+                      onDragLeave={() => setListDragOver(null)}
+                      onDrop={e => {
+                        e.preventDefault();
+                        if (listDragSrc !== null) moveClient(listDragSrc, i);
+                        setListDragSrc(null);
+                        setListDragOver(null);
+                      }}
+                      onDragEnd={() => { setListDragSrc(null); setListDragOver(null); }}
+                      style={{
+                        borderTop: isDragTarget
+                          ? "2px solid #0891b2"
+                          : i === 0 ? "none" : "1px solid #F1F5F9",
+                        background: isDragSrc ? "#F0F9FF" : expanded.has(client.id) ? "#F8FAFF" : "white",
+                        opacity: isDragSrc ? 0.5 : 1,
+                        transition: "opacity 0.1s, background 0.1s",
+                      }}
+                    >
+                      {/* Drag handle */}
+                      <td style={{ padding: "0 4px 0 12px", verticalAlign: "middle", lineHeight: 1 }}>
+                        <span
+                          title={canDrag ? "Drag to reorder" : ""}
+                          style={{
+                            display: "block", textAlign: "center",
+                            fontSize: 15, color: canDrag ? "#CBD5E1" : "transparent",
+                            cursor: canDrag ? "grab" : "default",
+                            userSelect: "none", lineHeight: 1,
+                          }}
+                        >⠿</span>
+                      </td>
+                      {/* Expand toggle */}
+                      <td style={{ padding: "0 6px 0 4px", verticalAlign: "middle" }}>
+                        <button onClick={() => toggleExpand(client.id)}
+                          style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: 11, padding: "10px 4px", lineHeight: 1 }}>
+                          {expanded.has(client.id) ? "▼" : "▶"}
+                        </button>
+                      </td>
+                      <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 120 }}>
+                        <EditableCell value={client.name} onSave={v => updateClient(client.id, "name", v)} placeholder="Name" />
+                      </td>
+                      <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 160 }}>
+                        <EditableCell value={client.email || ""} onSave={v => updateClient(client.id, "email", v)} placeholder="Email" type="email" />
+                      </td>
+                      <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 120 }}>
+                        <EditableCell value={client.phone || ""} onSave={v => updateClient(client.id, "phone", v)} placeholder="Phone" type="tel" />
+                      </td>
+                      <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 120 }}>
+                        <EditableCell value={client.team || ""} onSave={v => updateClient(client.id, "team", v)} placeholder="Team" />
+                      </td>
+                      <td style={{ padding: "8px 14px", verticalAlign: "middle" }}>
+                        <select value={client.status || "Lead"}
+                          onChange={e => updateClient(client.id, "status", e.target.value)}
+                          style={{ border: "none", borderRadius: 20, padding: "3px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", outline: "none", background: (STATUS_COLORS[client.status] || "#94a3b8") + "18", color: STATUS_COLORS[client.status] || "#94a3b8" }}>
+                          {STATUSES.map(s => <option key={s}>{s}</option>)}
+                        </select>
+                      </td>
+                      <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 160 }}>
+                        <EditableCell value={client.notes || ""} onSave={v => updateClient(client.id, "notes", v)} placeholder="Notes" />
+                      </td>
+                      <td style={{ padding: "8px 14px", verticalAlign: "middle", textAlign: "right" }}>
+                        <button onClick={() => deleteClient(client.id)}
+                          style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "2px 4px" }}>×</button>
+                      </td>
+                    </tr>
+                  );
+                })}
 
-                      {/* Expanded action items */}
-                      {expanded.has(client.id) && (
-                        <tr key={`${client.id}-activities`}>
-                          <td colSpan={8} style={{ padding: 0, borderTop: "1px solid #F1F5F9", background: "#F8FAFC" }}>
+                {/* Expanded activity rows — separate pass so they don't interfere with drag indices */}
+                {visibleClients.map((client) => {
+                  if (!expanded.has(client.id)) return null;
+                  const filter = getFilter(client.id);
+                  const openCount = client.activities.filter(a => !a.completed).length;
+                  const doneCount = client.activities.filter(a => a.completed).length;
+                  const visibleActs = client.activities.filter(a =>
+                    filter === "open" ? !a.completed : a.completed
+                  );
+                  return (
+                    <tr key={`${client.id}-activities`}>
+                      <td colSpan={9} style={{ padding: 0, borderTop: "1px solid #F1F5F9", background: "#F8FAFC" }}>
 
-                            {/* Open / Completed tabs */}
-                            <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "8px 14px 0 54px", borderBottom: "1px solid #F1F5F9" }}>
-                              {(["open", "completed"] as const).map(f => (
-                                <button key={f} onClick={() => setFilter(client.id, f)}
-                                  style={{
-                                    background: filter === f ? "#0F3154" : "none",
-                                    color: filter === f ? "#fff" : "#94a3b8",
-                                    border: "none", borderRadius: "6px 6px 0 0",
-                                    padding: "5px 14px", fontSize: 11, fontWeight: 700,
-                                    cursor: "pointer", fontFamily: "inherit",
-                                    textTransform: "capitalize", letterSpacing: "0.04em",
-                                    marginBottom: -1,
+                        {/* Open / Completed tabs */}
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "8px 14px 0 60px", borderBottom: "1px solid #F1F5F9" }}>
+                          {(["open", "completed"] as const).map(f => (
+                            <button key={f} onClick={() => setFilter(client.id, f)}
+                              style={{
+                                background: filter === f ? "#0F3154" : "none",
+                                color: filter === f ? "#fff" : "#94a3b8",
+                                border: "none", borderRadius: "6px 6px 0 0",
+                                padding: "5px 14px", fontSize: 11, fontWeight: 700,
+                                cursor: "pointer", fontFamily: "inherit",
+                                textTransform: "capitalize", letterSpacing: "0.04em",
+                                marginBottom: -1,
+                              }}>
+                              {f === "open" ? `Open${openCount > 0 ? ` (${openCount})` : ""}` : `Completed${doneCount > 0 ? ` (${doneCount})` : ""}`}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Column sub-headers */}
+                        <div style={{ display: "grid", gridTemplateColumns: "24px 1fr 1fr 110px 28px", padding: "5px 14px 4px 60px", borderBottom: "1px solid #F1F5F9" }}>
+                          {["", "Item", "Notes", filter === "completed" ? "Completed" : "Due Date", ""].map((h, hi) => (
+                            <div key={hi} style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.07em", padding: "0 6px" }}>{h}</div>
+                          ))}
+                        </div>
+
+                        {/* Rows */}
+                        <div style={{ padding: "4px 14px 10px 60px" }}>
+                          {visibleActs.length === 0 && (
+                            <div style={{ fontSize: 12, color: "#CBD5E1", padding: "8px 6px", fontStyle: "italic" }}>
+                              {filter === "open" ? "No open action items." : "No completed items yet."}
+                            </div>
+                          )}
+                          {visibleActs.map(act => (
+                            <div key={act.id} style={{ display: "grid", gridTemplateColumns: "24px 1fr 1fr 110px 28px", alignItems: "center", borderBottom: "1px solid #F1F5F9", minHeight: 34 }}>
+                              <div style={{ padding: "0 6px" }}>
+                                <button onClick={() => toggleComplete(client.id, act.id, act.completed)}
+                                  style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
+                                  <span style={{
+                                    width: 15, height: 15, borderRadius: 3,
+                                    border: act.completed ? "none" : "1.5px solid #CBD5E1",
+                                    display: "inline-flex", alignItems: "center", justifyContent: "center",
+                                    background: act.completed ? "#16a34a" : "#fff", flexShrink: 0,
+                                    transition: "background 0.15s",
                                   }}>
-                                  {f === "open" ? `Open${openCount > 0 ? ` (${openCount})` : ""}` : `Completed${doneCount > 0 ? ` (${doneCount})` : ""}`}
+                                    {act.completed && <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                  </span>
                                 </button>
-                              ))}
+                              </div>
+                              <div style={{ padding: "4px 6px", opacity: act.completed ? 0.45 : 1 }}>
+                                <EditableCell value={act.text} onSave={v => updateActivity(client.id, act.id, "text", v)} placeholder="Item" />
+                              </div>
+                              <div style={{ padding: "4px 6px", opacity: act.completed ? 0.45 : 1 }}>
+                                <EditableCell value={act.notes || ""} onSave={v => updateActivity(client.id, act.id, "notes", v)} placeholder="Notes" />
+                              </div>
+                              <div style={{ padding: "4px 6px", opacity: act.completed ? 0.45 : 1 }}>
+                                {filter === "completed" && act.completed_at ? (
+                                  <div style={{ fontSize: 12, color: "#16a34a", fontWeight: 600, padding: "4px 0" }}>
+                                    {new Date(act.completed_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                                  </div>
+                                ) : (
+                                  <EditableCell value={act.due_date ? act.due_date.slice(0, 10) : ""} onSave={v => updateActivity(client.id, act.id, "due_date", v)} placeholder="Date" type="date" />
+                                )}
+                              </div>
+                              <div style={{ padding: "0 4px", textAlign: "right" }}>
+                                <button onClick={() => deleteActivity(client.id, act.id)}
+                                  style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 14, cursor: "pointer", lineHeight: 1, padding: "2px" }}>×</button>
+                              </div>
                             </div>
+                          ))}
 
-                            {/* Column sub-headers */}
-                            <div style={{ display: "grid", gridTemplateColumns: "24px 1fr 1fr 110px 28px", padding: "5px 14px 4px 54px", borderBottom: "1px solid #F1F5F9" }}>
-                              {["", "Item", "Notes", filter === "completed" ? "Completed" : "Due Date", ""].map((h, hi) => (
-                                <div key={hi} style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.07em", padding: "0 6px" }}>{h}</div>
-                              ))}
+                          {/* Add row — only on Open tab */}
+                          {filter === "open" && (
+                            <div style={{ display: "grid", gridTemplateColumns: "24px 1fr 1fr 110px 28px", alignItems: "center", paddingTop: 8 }}>
+                              <div />
+                              <div style={{ padding: "0 4px" }}>
+                                <input
+                                  value={getNewAct(client.id).text}
+                                  onChange={e => setNewActivity(p => ({ ...p, [client.id]: { ...getNewAct(client.id), text: e.target.value } }))}
+                                  onKeyDown={e => { if (e.key === "Enter") addActivity(client.id); }}
+                                  placeholder="Item..."
+                                  style={{ width: "100%", border: "1px solid #E1E8EF", borderRadius: 6, padding: "5px 8px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff", boxSizing: "border-box" }}
+                                />
+                              </div>
+                              <div style={{ padding: "0 4px" }}>
+                                <input
+                                  value={getNewAct(client.id).notes}
+                                  onChange={e => setNewActivity(p => ({ ...p, [client.id]: { ...getNewAct(client.id), notes: e.target.value } }))}
+                                  placeholder="Notes..."
+                                  style={{ width: "100%", border: "1px solid #E1E8EF", borderRadius: 6, padding: "5px 8px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff", boxSizing: "border-box" }}
+                                />
+                              </div>
+                              <div style={{ padding: "0 4px" }}>
+                                <input
+                                  type="date"
+                                  value={getNewAct(client.id).due_date}
+                                  onChange={e => setNewActivity(p => ({ ...p, [client.id]: { ...getNewAct(client.id), due_date: e.target.value } }))}
+                                  style={{ width: "100%", border: "1px solid #E1E8EF", borderRadius: 6, padding: "5px 8px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff", boxSizing: "border-box" }}
+                                />
+                              </div>
+                              <div style={{ padding: "0 4px" }}>
+                                <button onClick={() => addActivity(client.id)}
+                                  style={{ background: "#0F3154", color: "#fff", border: "none", borderRadius: 6, padding: "5px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>+</button>
+                              </div>
                             </div>
-
-                            {/* Rows */}
-                            <div style={{ padding: "4px 14px 10px 54px" }}>
-                              {visibleActs.length === 0 && (
-                                <div style={{ fontSize: 12, color: "#CBD5E1", padding: "8px 6px", fontStyle: "italic" }}>
-                                  {filter === "open" ? "No open action items." : "No completed items yet."}
-                                </div>
-                              )}
-                              {visibleActs.map(act => (
-                                <div key={act.id} style={{ display: "grid", gridTemplateColumns: "24px 1fr 1fr 110px 28px", alignItems: "center", borderBottom: "1px solid #F1F5F9", minHeight: 34 }}>
-                                  {/* Checkbox */}
-                                  <div style={{ padding: "0 6px" }}>
-                                    <button onClick={() => toggleComplete(client.id, act.id, act.completed)}
-                                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
-                                      <span style={{
-                                        width: 15, height: 15, borderRadius: 3,
-                                        border: act.completed ? "none" : "1.5px solid #CBD5E1",
-                                        display: "inline-flex", alignItems: "center", justifyContent: "center",
-                                        background: act.completed ? "#16a34a" : "#fff", flexShrink: 0,
-                                        transition: "background 0.15s",
-                                      }}>
-                                        {act.completed && <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                                      </span>
-                                    </button>
-                                  </div>
-                                  {/* Item */}
-                                  <div style={{ padding: "4px 6px", opacity: act.completed ? 0.45 : 1 }}>
-                                    <EditableCell value={act.text} onSave={v => updateActivity(client.id, act.id, "text", v)} placeholder="Item" />
-                                  </div>
-                                  {/* Notes */}
-                                  <div style={{ padding: "4px 6px", opacity: act.completed ? 0.45 : 1 }}>
-                                    <EditableCell value={act.notes || ""} onSave={v => updateActivity(client.id, act.id, "notes", v)} placeholder="Notes" />
-                                  </div>
-                                  {/* Date — show completed_at on Completed tab, due_date on Open tab */}
-                                  <div style={{ padding: "4px 6px", opacity: act.completed ? 0.45 : 1 }}>
-                                    {filter === "completed" && act.completed_at ? (
-                                      <div style={{ fontSize: 12, color: "#16a34a", fontWeight: 600, padding: "4px 0" }}>
-                                        {new Date(act.completed_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                                      </div>
-                                    ) : (
-                                      <EditableCell value={act.due_date ? act.due_date.slice(0, 10) : ""} onSave={v => updateActivity(client.id, act.id, "due_date", v)} placeholder="Date" type="date" />
-                                    )}
-                                  </div>
-                                  {/* Delete */}
-                                  <div style={{ padding: "0 4px", textAlign: "right" }}>
-                                    <button onClick={() => deleteActivity(client.id, act.id)}
-                                      style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 14, cursor: "pointer", lineHeight: 1, padding: "2px" }}>×</button>
-                                  </div>
-                                </div>
-                              ))}
-
-                              {/* Add row — only on Open tab */}
-                              {filter === "open" && (
-                                <div style={{ display: "grid", gridTemplateColumns: "24px 1fr 1fr 110px 28px", alignItems: "center", paddingTop: 8 }}>
-                                  <div />
-                                  <div style={{ padding: "0 4px" }}>
-                                    <input
-                                      value={getNewAct(client.id).text}
-                                      onChange={e => setNewActivity(p => ({ ...p, [client.id]: { ...getNewAct(client.id), text: e.target.value } }))}
-                                      onKeyDown={e => { if (e.key === "Enter") addActivity(client.id); }}
-                                      placeholder="Item..."
-                                      style={{ width: "100%", border: "1px solid #E1E8EF", borderRadius: 6, padding: "5px 8px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff", boxSizing: "border-box" }}
-                                    />
-                                  </div>
-                                  <div style={{ padding: "0 4px" }}>
-                                    <input
-                                      value={getNewAct(client.id).notes}
-                                      onChange={e => setNewActivity(p => ({ ...p, [client.id]: { ...getNewAct(client.id), notes: e.target.value } }))}
-                                      placeholder="Notes..."
-                                      style={{ width: "100%", border: "1px solid #E1E8EF", borderRadius: 6, padding: "5px 8px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff", boxSizing: "border-box" }}
-                                    />
-                                  </div>
-                                  <div style={{ padding: "0 4px" }}>
-                                    <input
-                                      type="date"
-                                      value={getNewAct(client.id).due_date}
-                                      onChange={e => setNewActivity(p => ({ ...p, [client.id]: { ...getNewAct(client.id), due_date: e.target.value } }))}
-                                      style={{ width: "100%", border: "1px solid #E1E8EF", borderRadius: 6, padding: "5px 8px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff", boxSizing: "border-box" }}
-                                    />
-                                  </div>
-                                  <div style={{ padding: "0 4px" }}>
-                                    <button onClick={() => addActivity(client.id)}
-                                      style={{ background: "#0F3154", color: "#fff", border: "none", borderRadius: 6, padding: "5px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>+</button>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
                   );
                 })}
               </tbody>
