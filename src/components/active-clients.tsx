@@ -5,14 +5,14 @@ import { useState, useEffect, useRef } from "react";
 interface Activity { id: number; client_id: number; text: string; created_at: string; }
 interface Client {
   id: number; name: string; email: string; phone: string;
-  status: string; notes: string; activities: Activity[];
+  status: string; team: string; notes: string; activities: Activity[];
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  Active: "#16a34a", Lead: "#0891b2", Proposal: "#d97706",
+  Won: "#16a34a", Lead: "#0891b2", Proposal: "#d97706",
   Churned: "#94a3b8", Paused: "#7c3aed",
 };
-const STATUSES = ["Lead", "Active", "Proposal", "Paused", "Churned"];
+const STATUSES = ["Lead", "Won", "Proposal", "Paused", "Churned"];
 
 const card: React.CSSProperties = {
   background: "#fff", borderRadius: 14, border: "1px solid #E1E8EF",
@@ -56,6 +56,7 @@ export function ActiveClients() {
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [newStatus, setNewStatus] = useState("Lead");
+  const [newTeam, setNewTeam] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -72,11 +73,11 @@ export function ActiveClients() {
     if (!newName.trim()) return;
     const res = await fetch("/api/focus/clients", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newName.trim(), email: newEmail, phone: newPhone, status: newStatus }),
+      body: JSON.stringify({ name: newName.trim(), email: newEmail, phone: newPhone, status: newStatus, team: newTeam }),
     }).then(r => r.json());
     if (res.id) {
       setClients(p => [res, ...p]);
-      setNewName(""); setNewEmail(""); setNewPhone(""); setNewStatus("Lead"); setShowAdd(false);
+      setNewName(""); setNewEmail(""); setNewPhone(""); setNewStatus("Lead"); setNewTeam(""); setShowAdd(false);
     }
   };
 
@@ -87,7 +88,7 @@ export function ActiveClients() {
     setClients(p => p.map(c => c.id === id ? { ...c, [field]: value } : c));
     await fetch("/api/focus/clients", {
       method: "PATCH", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, name: updated.name, email: updated.email, phone: updated.phone, status: updated.status, notes: updated.notes }),
+      body: JSON.stringify({ id, name: updated.name, email: updated.email, phone: updated.phone, status: updated.status, team: updated.team, notes: updated.notes }),
     });
   };
 
@@ -143,6 +144,8 @@ export function ActiveClients() {
               style={{ flex: "1 1 160px", border: "1px solid #E1E8EF", borderRadius: 8, padding: "9px 13px", fontSize: 13, fontFamily: "inherit", color: "#0F3154", outline: "none" }} />
             <input value={newPhone} onChange={e => setNewPhone(e.target.value)} placeholder="Phone"
               style={{ flex: "1 1 120px", border: "1px solid #E1E8EF", borderRadius: 8, padding: "9px 13px", fontSize: 13, fontFamily: "inherit", color: "#0F3154", outline: "none" }} />
+            <input value={newTeam} onChange={e => setNewTeam(e.target.value)} placeholder="Team"
+              style={{ flex: "1 1 120px", border: "1px solid #E1E8EF", borderRadius: 8, padding: "9px 13px", fontSize: 13, fontFamily: "inherit", color: "#0F3154", outline: "none" }} />
             <select value={newStatus} onChange={e => setNewStatus(e.target.value)}
               style={{ border: "1px solid #E1E8EF", borderRadius: 8, padding: "9px 13px", fontSize: 13, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff" }}>
               {STATUSES.map(s => <option key={s}>{s}</option>)}
@@ -167,6 +170,7 @@ export function ActiveClients() {
                   <th style={th}>Name</th>
                   <th style={th}>Email</th>
                   <th style={th}>Phone</th>
+                  <th style={th}>Team</th>
                   <th style={th}>Status</th>
                   <th style={th}>Notes</th>
                   <th style={{ ...th, width: 32 }} />
@@ -192,8 +196,11 @@ export function ActiveClients() {
                       <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 120 }}>
                         <EditableCell value={client.phone || ""} onSave={v => updateClient(client.id, "phone", v)} placeholder="Phone" type="tel" />
                       </td>
+                      <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 120 }}>
+                        <EditableCell value={client.team || ""} onSave={v => updateClient(client.id, "team", v)} placeholder="Team" />
+                      </td>
                       <td style={{ padding: "8px 14px", verticalAlign: "middle" }}>
-                        <select value={client.status || "Active"}
+                        <select value={client.status || "Lead"}
                           onChange={e => updateClient(client.id, "status", e.target.value)}
                           style={{ border: "none", borderRadius: 20, padding: "3px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", outline: "none", background: (STATUS_COLORS[client.status] || "#94a3b8") + "18", color: STATUS_COLORS[client.status] || "#94a3b8" }}>
                           {STATUSES.map(s => <option key={s}>{s}</option>)}
@@ -211,7 +218,7 @@ export function ActiveClients() {
                     {/* Expanded activity lines */}
                     {expanded.has(client.id) && (
                       <tr key={`${client.id}-activities`}>
-                        <td colSpan={7} style={{ padding: "0 0 0 48px", borderTop: "1px solid #F1F5F9", background: "#FAFBFC" }}>
+                        <td colSpan={8} style={{ padding: "0 0 0 48px", borderTop: "1px solid #F1F5F9", background: "#FAFBFC" }}>
                           <div style={{ padding: "10px 14px 12px 0" }}>
                             {client.activities.length === 0 && (
                               <div style={{ fontSize: 12, color: "#CBD5E1", marginBottom: 8, fontStyle: "italic" }}>No activity yet.</div>
