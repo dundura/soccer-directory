@@ -218,16 +218,16 @@ export function ActiveClients() {
                     {/* Expanded activity lines */}
                     {expanded.has(client.id) && (
                       <tr key={`${client.id}-activities`}>
-                        <td colSpan={8} style={{ padding: "0 0 0 48px", borderTop: "1px solid #F1F5F9", background: "#FAFBFC" }}>
-                          <div style={{ padding: "10px 14px 12px 0" }}>
+                        <td colSpan={8} style={{ padding: "0", borderTop: "1px solid #F1F5F9", background: "#F8FAFC" }}>
+                          <div style={{ padding: "10px 14px 12px 54px" }}>
                             {client.activities.length === 0 && (
-                              <div style={{ fontSize: 12, color: "#CBD5E1", marginBottom: 8, fontStyle: "italic" }}>No activity yet.</div>
+                              <div style={{ fontSize: 12, color: "#CBD5E1", marginBottom: 8, fontStyle: "italic" }}>No action items yet.</div>
                             )}
                             {client.activities.map(act => (
-                              <div key={act.id} style={{ display: "flex", alignItems: "flex-start", gap: 6, marginBottom: 5 }}>
-                                <span style={{ fontSize: 11, color: "#94a3b8", marginTop: 3, flexShrink: 0 }}>·</span>
-                                <span style={{ fontSize: 13, color: "#374151", flex: 1, lineHeight: 1.45 }}>{act.text}</span>
-                                <span style={{ fontSize: 11, color: "#CBD5E1", flexShrink: 0, marginTop: 2 }}>
+                              <div key={act.id} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, padding: "4px 0" }}>
+                                <span style={{ width: 16, height: 16, borderRadius: 4, border: "1.5px solid #CBD5E1", flexShrink: 0, display: "inline-block", background: "#fff" }} />
+                                <span style={{ fontSize: 13, color: "#374151", flex: 1, lineHeight: 1.4 }}>{act.text}</span>
+                                <span style={{ fontSize: 11, color: "#CBD5E1", flexShrink: 0 }}>
                                   {new Date(act.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                                 </span>
                                 <button onClick={() => deleteActivity(client.id, act.id)}
@@ -240,7 +240,7 @@ export function ActiveClients() {
                                 value={newActivity[client.id] || ""}
                                 onChange={e => setNewActivity(p => ({ ...p, [client.id]: e.target.value }))}
                                 onKeyDown={e => { if (e.key === "Enter") addActivity(client.id); }}
-                                placeholder="Add a note..."
+                                placeholder="Add action item..."
                                 style={{ flex: 1, border: "1px solid #E1E8EF", borderRadius: 7, padding: "6px 10px", fontSize: 12, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff" }}
                               />
                               <button onClick={() => addActivity(client.id)}
