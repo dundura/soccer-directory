@@ -50,9 +50,11 @@ function EditableCell({ value, onSave, placeholder, type = "text" }: {
 export function ActiveClients() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<"list" | "pipeline">("list");
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [actFilter, setActFilter] = useState<Record<number, "open" | "completed">>({});
   const [search, setSearch] = useState("");
+  const [dragOver, setDragOver] = useState<string | null>(null);
   const [newActivity, setNewActivity] = useState<Record<number, { text: string; notes: string; due_date: string }>>({});
   const [showAdd, setShowAdd] = useState(false);
   const [newName, setNewName] = useState("");
@@ -178,6 +180,19 @@ export function ActiveClients() {
             placeholder="Search clients..."
             style={{ border: "1px solid #E1E8EF", borderRadius: 20, padding: "8px 16px", fontSize: 13, fontFamily: "inherit", color: "#0F3154", outline: "none", background: "#fff", width: 200 }}
           />
+          {/* List / Pipeline toggle */}
+          <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 10, padding: 3, gap: 2 }}>
+            {(["list", "pipeline"] as const).map(v => (
+              <button key={v} onClick={() => setView(v)} style={{
+                background: view === v ? "#fff" : "none",
+                color: view === v ? "#0F3154" : "#94a3b8",
+                border: "none", borderRadius: 7, padding: "5px 14px",
+                fontSize: 12, fontWeight: 700, cursor: "pointer",
+                fontFamily: "inherit", boxShadow: view === v ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                transition: "all 0.15s", textTransform: "capitalize",
+              }}>{v === "list" ? "☰ List" : "⬛ Pipeline"}</button>
+            ))}
+          </div>
           <button onClick={() => { setShowAdd(v => !v); setTimeout(() => nameRef.current?.focus(), 50); }}
             style={{ background: "#DC373E", color: "#fff", border: "none", borderRadius: 20, padding: "9px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
             + Add Client
@@ -209,11 +224,120 @@ export function ActiveClients() {
         </div>
       )}
 
-      {visibleClients.length === 0 ? (
+      {/* ── PIPELINE VIEW ── */}
+      {view === "pipeline" && (
+        <div style={{ overflowX: "auto", paddingBottom: 12 }}>
+          <div style={{ display: "flex", gap: 14, minWidth: STATUSES.length * 220, alignItems: "flex-start" }}>
+            {STATUSES.map(status => {
+              const col = visibleClients.filter(c => (c.status || "Lead") === status);
+              const color = STATUS_COLORS[status] || "#94a3b8";
+              const isDragTarget = dragOver === status;
+              return (
+                <div key={status}
+                  onDragOver={e => { e.preventDefault(); setDragOver(status); }}
+                  onDragLeave={() => setDragOver(null)}
+                  onDrop={e => {
+                    e.preventDefault();
+                    setDragOver(null);
+                    const id = Number(e.dataTransfer.getData("clientId"));
+                    if (!id) return;
+                    updateClient(id, "status", status);
+                  }}
+                  style={{
+                    flex: "0 0 220px", background: isDragTarget ? color + "12" : "#F8FAFC",
+                    borderRadius: 14, border: isDragTarget ? `2px solid ${color}` : "2px solid #E1E8EF",
+                    transition: "border 0.15s, background 0.15s", minHeight: 120,
+                  }}>
+                  {/* Column header */}
+                  <div style={{ padding: "12px 14px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                      <span style={{ width: 10, height: 10, borderRadius: "50%", background: color, display: "inline-block" }} />
+                      <span style={{ fontSize: 12, fontWeight: 800, color: "#0F3154", textTransform: "uppercase", letterSpacing: "0.07em" }}>{status}</span>
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", background: "#E1E8EF", borderRadius: 10, padding: "1px 8px" }}>{col.length}</span>
+                  </div>
+
+                  {/* Cards */}
+                  <div style={{ padding: "0 10px 10px" }}>
+                    {col.length === 0 && (
+                      <div style={{ fontSize: 12, color: "#CBD5E1", textAlign: "center", padding: "20px 0", fontStyle: "italic" }}>Drop here</div>
+                    )}
+                    {col.map(client => {
+                      const openItems = client.activities.filter(a => !a.completed).length;
+                      const doneItems = client.activities.filter(a => a.completed).length;
+                      return (
+                        <div key={client.id}
+                          draggable
+                          onDragStart={e => { e.dataTransfer.setData("clientId", String(client.id)); }}
+                          style={{
+                            background: "#fff", borderRadius: 10, border: "1px solid #E1E8EF",
+                            padding: "12px 13px", marginBottom: 8, cursor: "grab",
+                            boxShadow: "0 1px 4px rgba(15,49,84,0.06)",
+                            transition: "box-shadow 0.15s",
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(15,49,84,0.12)")}
+                          onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 1px 4px rgba(15,49,84,0.06)")}
+                        >
+                          {/* Name */}
+                          <div style={{ fontSize: 13, fontWeight: 700, color: "#0F3154", marginBottom: 3, lineHeight: 1.3 }}>{client.name}</div>
+                          {/* Team */}
+                          {client.team && (
+                            <div style={{ fontSize: 11, color: "#0891b2", fontWeight: 600, marginBottom: 6 }}>{client.team}</div>
+                          )}
+                          {/* Email */}
+                          {client.email && (
+                            <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{client.email}</div>
+                          )}
+                          {/* Notes */}
+                          {client.notes && (
+                            <div style={{ fontSize: 11, color: "#64748b", marginBottom: 8, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{client.notes}</div>
+                          )}
+                          {/* Action items badge */}
+                          {(openItems > 0 || doneItems > 0) && (
+                            <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
+                              {openItems > 0 && (
+                                <span style={{ fontSize: 10, fontWeight: 700, color: "#d97706", background: "#fef3c7", borderRadius: 6, padding: "2px 7px" }}>
+                                  {openItems} open
+                                </span>
+                              )}
+                              {doneItems > 0 && (
+                                <span style={{ fontSize: 10, fontWeight: 700, color: "#16a34a", background: "#dcfce7", borderRadius: 6, padding: "2px 7px" }}>
+                                  {doneItems} done
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          {/* Move status pills */}
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 10, borderTop: "1px solid #F1F5F9", paddingTop: 8 }}>
+                            {STATUSES.filter(s => s !== status).map(s => (
+                              <button key={s} onClick={() => updateClient(client.id, "status", s)}
+                                style={{
+                                  fontSize: 10, fontWeight: 700, color: STATUS_COLORS[s] || "#94a3b8",
+                                  background: (STATUS_COLORS[s] || "#94a3b8") + "15",
+                                  border: "none", borderRadius: 6, padding: "2px 8px",
+                                  cursor: "pointer", fontFamily: "inherit",
+                                }}>
+                                → {s}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── LIST VIEW ── */}
+      {view === "list" && visibleClients.length === 0 ? (
         <div style={{ ...card, padding: "48px 20px", textAlign: "center", color: "#94a3b8", fontSize: 14 }}>
           {q ? "No clients match your search." : <>No clients yet — click <strong style={{ color: "#DC373E" }}>+ Add Client</strong></>}
         </div>
-      ) : (
+      ) : view === "list" && (
         <div style={{ ...card, overflow: "hidden" }}>
           <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 640 }}>
