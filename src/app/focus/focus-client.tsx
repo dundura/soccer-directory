@@ -5,8 +5,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ProjectFocus } from "@/components/project-focus";
 import { ActiveClients } from "@/components/active-clients";
+import { BlogCalendar } from "@/components/blog-calendar";
 
-type Tab = "projects" | "clients";
+type Tab = "projects" | "clients" | "blog";
 
 export default function FocusClient() {
   const { status } = useSession();
@@ -15,7 +16,7 @@ export default function FocusClient() {
 
   useEffect(() => {
     const saved = sessionStorage.getItem("focusMainTab") as Tab | null;
-    if (saved === "projects" || saved === "clients") setTabState(saved);
+    if (saved === "projects" || saved === "clients" || saved === "blog") setTabState(saved);
   }, []);
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export default function FocusClient() {
       {/* Tab bar */}
       <div style={{ borderBottom: "2px solid #E1E8EF" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px", display: "flex", gap: 0 }}>
-          {(["projects", "clients"] as Tab[]).map(t => (
+          {(["projects", "clients", "blog"] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
               padding: "14px 24px", fontSize: 14, fontWeight: tab === t ? 700 : 500,
               color: tab === t ? "#0F3154" : "#94a3b8",
@@ -47,13 +48,13 @@ export default function FocusClient() {
               borderBottom: tab === t ? "2px solid #0F3154" : "2px solid transparent",
               marginBottom: -2, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
             }}>
-              {t === "projects" ? "Projects" : "Active Clients"}
+              {t === "projects" ? "Projects" : t === "clients" ? "Active Clients" : "Blog Calendar"}
             </button>
           ))}
         </div>
       </div>
 
-      {tab === "projects" ? <ProjectFocus /> : <ActiveClients />}
+      {tab === "projects" ? <ProjectFocus /> : tab === "clients" ? <ActiveClients /> : <BlogCalendar />}
     </div>
   );
 }
