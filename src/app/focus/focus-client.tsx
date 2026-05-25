@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ProjectFocus } from "@/components/project-focus";
 import { ActiveClients } from "@/components/active-clients";
-import { BlogCalendar } from "@/components/blog-calendar";
+import { MarketingHub } from "@/components/marketing-hub";
 
 type Tab = "projects" | "clients" | "blog";
 
@@ -48,13 +48,13 @@ export default function FocusClient() {
               borderBottom: tab === t ? "2px solid #0F3154" : "2px solid transparent",
               marginBottom: -2, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
             }}>
-              {t === "projects" ? "Projects" : t === "clients" ? "Active Clients" : "Blog Calendar"}
+              {t === "projects" ? "Projects" : t === "clients" ? "Active Clients" : "Marketing"}
             </button>
           ))}
         </div>
       </div>
 
-      {tab === "projects" ? <ProjectFocus /> : tab === "clients" ? <ActiveClients /> : <BlogCalendar />}
+      {tab === "projects" ? <ProjectFocus /> : tab === "clients" ? <ActiveClients /> : <MarketingHub />}
     </div>
   );
 }
