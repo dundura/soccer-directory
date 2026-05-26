@@ -488,7 +488,7 @@ function TaskRow({ task, accentColor, isActive, displaySecs, goalMins, onSetGoal
 
   return (
     <div style={{ borderBottom: "1px solid #F1F5F9" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "11px 14px", background: isActive ? "#F8FAFF" : "#fff" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "11px 14px", background: isActive ? "#F8FAFF" : "#fff" }}>
         <input type="checkbox" checked={task.done} onChange={onToggleDone} style={{ accentColor, width: 14, height: 14, flexShrink: 0, cursor: "pointer" }} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 500, color: task.done ? "#94a3b8" : "#0F3154", textDecoration: task.done ? "line-through" : "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -496,7 +496,7 @@ function TaskRow({ task, accentColor, isActive, displaySecs, goalMins, onSetGoal
             {task.name}
           </div>
         </div>
-        <button onClick={toggleComments} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: showComments ? "#0F3154" : "#94a3b8", padding: "2px 6px", fontFamily: "inherit" }} title="Notes">
+        <button onClick={toggleComments} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: showComments ? "#0F3154" : "#94a3b8", padding: "2px 12px", fontFamily: "inherit" }} title="Notes">
           💬 {task.comments && task.comments.length > 0 ? task.comments.length : ""}
         </button>
         <div style={{ fontSize: 12, fontWeight: 600, color: isActive ? accentColor : "#6B7D8E", fontVariantNumeric: "tabular-nums", minWidth: 40, textAlign: "right", flexShrink: 0 }}>
