@@ -292,70 +292,8 @@ export function ProjectFocus() {
         </div>
       </div>
 
-      {/* Two-section grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1.6fr)", gap: 20, alignItems: "start" }}>
-
-        {/* LEFT — Current Task */}
-        <div style={{ ...card, padding: "22px 20px", position: "sticky", top: 20 }}>
-          <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "#6B7D8E", fontWeight: 700, marginBottom: 14 }}>Current Task</div>
-          {runningCount === 0 ? (
-            <div style={{ fontSize: 14, color: "#94a3b8", textAlign: "center", padding: "30px 0" }}>
-              No tasks running.<br />
-              <span style={{ fontSize: 12 }}>Hit ▶ Start on any subtask.</span>
-            </div>
-          ) : (
-            <>
-              {[...projects.flatMap(p => p.tasks), ...standaloneTasks].filter(t => activeTimers[t.id] !== undefined).map(t => {
-                const elapsed = elapsedMap[t.id] ?? 0;
-                const gm = goalMins[t.id] ?? 0;
-                const goalSecs = gm * 60;
-                const remaining = goalSecs - elapsed;
-                const pct = goalSecs > 0 ? Math.min((elapsed / goalSecs) * 100, 100) : 0;
-                const isOver = goalSecs > 0 && remaining < 0;
-                return (
-                  <div key={t.id} style={{ marginBottom: 12, padding: "14px 16px", background: "linear-gradient(135deg,#0F3154,#1e4a7a)", borderRadius: 12 }}>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>
-                      <span style={{ display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: "#DC373E", marginRight: 6, animation: "fpulse 1.5s infinite", verticalAlign: "middle" }} />
-                      {projects.find(p => p.id === t.project_id)?.name ?? "Task"}
-                    </div>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: "#fff", marginBottom: 10 }}>{t.name}</div>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: goalSecs > 0 ? 10 : 0 }}>
-                      <div>
-                        <div style={{ fontFamily: "var(--font-display,'Outfit',sans-serif)", fontSize: 32, fontWeight: 700, color: "#fff", fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>
-                          {fmt(elapsed)}
-                        </div>
-                        {goalSecs > 0 && (
-                          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 3 }}>
-                            goal: {fmtShort(goalSecs)}
-                          </div>
-                        )}
-                      </div>
-                      <button onClick={() => stopTimer(t)} style={{ background: "#DC373E", border: "none", borderRadius: 8, padding: "7px 14px", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>■ Stop</button>
-                    </div>
-                    {goalSecs > 0 && (
-                      <>
-                        <div style={{ height: 4, background: "rgba(255,255,255,0.15)", borderRadius: 2, marginBottom: 6, overflow: "hidden" }}>
-                          <div style={{ height: "100%", width: `${pct}%`, background: isOver ? "#DC373E" : "#22c55e", borderRadius: 2, transition: "width 0.5s linear" }} />
-                        </div>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: isOver ? "#fca5a5" : "#86efac" }}>
-                          {isOver ? `${fmt(Math.abs(remaining))} over goal` : `${fmt(remaining)} remaining`}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
-              {runningCount > 1 && (
-                <button onClick={stopAll} style={{ width: "100%", marginTop: 4, background: "#F1F5F9", border: "none", borderRadius: 8, padding: "8px", fontSize: 12, fontWeight: 700, color: "#6B7D8E", cursor: "pointer", fontFamily: "inherit" }}>
-                  ■ Stop All ({runningCount})
-                </button>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* RIGHT — Tasks + Projects */}
-        <div>
+      {/* Tasks + Projects */}
+      <div>
           {/* Standalone tasks */}
           <div style={{ ...card, padding: "16px 18px", marginBottom: 14 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
@@ -521,7 +459,6 @@ export function ProjectFocus() {
             <TodoList storageKey="bigrocks" />
           </div>
         </div>
-      </div>
     </div>
   );
 }
@@ -576,12 +513,23 @@ function TaskRow({ task, accentColor, isActive, displaySecs, goalMins, onSetGoal
             style={{
               width: 38, border: "1px solid #E1E8EF", borderRadius: 6,
               padding: "3px 5px", fontSize: 11, color: goalMins ? accentColor : "#94a3b8",
-              fontFamily: "inherit", outline: "none", background: isActive ? "#F0F9FF" : "#fff",
+              fontFamily: "inherit", outline: "none", background: "#fff",
               textAlign: "center", fontWeight: goalMins ? 700 : 400,
             }}
           />
           <span style={{ fontSize: 10, color: "#94a3b8" }}>m</span>
         </div>
+        {/* Remaining time — always visible when goal is set */}
+        {goalMins > 0 && (() => {
+          const goalSecs = goalMins * 60;
+          const remaining = goalSecs - displaySecs;
+          const isOver = remaining < 0;
+          return (
+            <div style={{ fontSize: 11, fontWeight: 700, color: isOver ? "#DC373E" : "#16a34a", flexShrink: 0, minWidth: 44, textAlign: "right" }}>
+              {isOver ? `+${fmt(Math.abs(remaining))}` : fmt(remaining)}
+            </div>
+          );
+        })()}
         {isActive
           ? <button onClick={onStop} style={{ background: "#DC373E", color: "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>■ Stop</button>
           : <button onClick={onStart} disabled={task.done} style={{ background: task.done ? "#F1F5F9" : accentColor, color: task.done ? "#94a3b8" : "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 11, fontWeight: 700, cursor: task.done ? "default" : "pointer", fontFamily: "inherit", flexShrink: 0 }}>▶ Start</button>
