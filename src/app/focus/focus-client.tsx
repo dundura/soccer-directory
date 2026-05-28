@@ -10,6 +10,7 @@ import { NewsletterHub } from "@/components/newsletter-hub";
 
 type Tab = "projects" | "clients" | "blog" | "newsletter";
 
+const TAB_ORDER: Tab[] = ["projects", "clients", "blog", "newsletter"];
 const TAB_LABELS: Record<Tab, string> = {
   projects:   "Projects",
   clients:    "Active Clients",
@@ -24,7 +25,7 @@ export default function FocusClient() {
 
   useEffect(() => {
     const saved = sessionStorage.getItem("focusMainTab") as Tab | null;
-    if (saved && saved in TAB_LABELS) setTabState(saved);
+    if (saved && TAB_ORDER.includes(saved)) setTabState(saved);
   }, []);
 
   useEffect(() => {
@@ -48,7 +49,7 @@ export default function FocusClient() {
       {/* Tab bar */}
       <div style={{ borderBottom: "2px solid #E1E8EF" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px", display: "flex", gap: 0 }}>
-          {(Object.keys(TAB_LABELS) as Tab[]).map(t => (
+          {TAB_ORDER.map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
               padding: "14px 24px", fontSize: 14, fontWeight: tab === t ? 700 : 500,
               color: tab === t ? "#0F3154" : "#94a3b8",
