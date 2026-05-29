@@ -45,6 +45,7 @@ const navGroups: NavGroup[] = [
         label: "Training & Services",
         links: [
           { label: "Coaches & Trainers", href: "/trainers" },
+          { label: "Training Apps", href: "/training-apps" },
           { label: "Books & Authors", href: "/books-and-authors" },
           { label: "Photo & Video Services", href: "/photo-video-services" },
           { label: "Other Products & Services", href: "/services" },
