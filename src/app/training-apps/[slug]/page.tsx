@@ -251,9 +251,9 @@ export default async function TrainingAppDetailPage({ params }: Props) {
             {/* Events */}
             <ListingEventsSection listingType="trainingapp" listingId={app.id} listingSlug={slug} ownerId={ownerId} />
 
-            <FeaturedArticles />
-
             <ListingPostsSidebar listingType="trainingapp" listingId={app.id} slug={slug} ownerId={ownerId} />
+
+            <FeaturedArticles />
 
             {/* Share */}
             <div className="border-t border-border pt-6 mt-6">
