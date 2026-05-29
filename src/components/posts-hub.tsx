@@ -218,6 +218,228 @@ export function PostsHub() {
           </table>
         </div>
       )}
+
+      {/* ── Podcast Section ── */}
+      <PodcastSection />
+    </div>
+  );
+}
+
+// ── Podcast links table ───────────────────────────────────────────────────────
+
+interface PodcastEpisode {
+  id: number;
+  title: string;
+  url?: string;
+  notes?: string;
+  status: string;
+  created_at: string;
+}
+
+const PODCAST_STATUS_COLOR: Record<string, { bg: string; color: string }> = {
+  Draft:     { bg: "#F1F5F9", color: "#64748b" },
+  Scheduled: { bg: "#FEF3C7", color: "#92400e" },
+  Published: { bg: "#F0FDF4", color: "#15803d" },
+};
+
+function PodcastSection() {
+  const [episodes, setEpisodes]     = useState<PodcastEpisode[]>([]);
+  const [loading, setLoading]       = useState(true);
+  const [showForm, setShowForm]     = useState(false);
+  const [newTitle, setNewTitle]     = useState("");
+  const [newUrl, setNewUrl]         = useState("");
+  const [creating, setCreating]     = useState(false);
+  const [editingId, setEditingId]   = useState<number | null>(null);
+  const [editTitle, setEditTitle]   = useState("");
+  const [editUrl, setEditUrl]       = useState("");
+  const [editNotes, setEditNotes]   = useState("");
+  const [editStatus, setEditStatus] = useState("Draft");
+  const [saving, setSaving]         = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const data = await apiFetch("/api/focus/podcast");
+    setEpisodes(Array.isArray(data) ? data : []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const createEpisode = async () => {
+    if (!newTitle.trim()) return;
+    setCreating(true);
+    const created = await apiFetch("/api/focus/podcast", "POST", { title: newTitle.trim(), url: newUrl.trim() || undefined });
+    setEpisodes(prev => [created, ...prev]);
+    setNewTitle(""); setNewUrl(""); setShowForm(false); setCreating(false);
+  };
+
+  const startEdit = (ep: PodcastEpisode) => {
+    setEditingId(ep.id);
+    setEditTitle(ep.title);
+    setEditUrl(ep.url || "");
+    setEditNotes(ep.notes || "");
+    setEditStatus(ep.status);
+  };
+
+  const saveEdit = async (id: number) => {
+    setSaving(true);
+    await apiFetch("/api/focus/podcast", "PATCH", { id, title: editTitle, url: editUrl || undefined, notes: editNotes || undefined, status: editStatus });
+    setEpisodes(prev => prev.map(e => e.id === id ? { ...e, title: editTitle, url: editUrl || undefined, notes: editNotes || undefined, status: editStatus } : e));
+    setEditingId(null); setSaving(false);
+  };
+
+  const deleteEpisode = async (id: number) => {
+    if (!confirm("Delete this episode?")) return;
+    await apiFetch("/api/focus/podcast", "DELETE", { id });
+    setEpisodes(prev => prev.filter(e => e.id !== id));
+  };
+
+  const wireEmail = async (ep: PodcastEpisode) => {
+    // Create a newsletter draft pre-filled with the episode title + link
+    const title = `Podcast: ${ep.title}`;
+    const created = await apiFetch("/api/focus/newsletters", "POST", { title, subject: ep.title, status: "Draft" });
+    if (created?.id) {
+      // Add a link entry with the episode URL
+      if (ep.url) {
+        await apiFetch("/api/focus/newsletters/entries", "POST", {
+          newsletter_id: created.id, type: "cta", content: `Listen Now | ${ep.url}`, sort_order: 0,
+        });
+      }
+      // Switch to newsletter tab so they can see it
+      sessionStorage.setItem("focusMainTab", "newsletter");
+      window.location.reload();
+    }
+  };
+
+  return (
+    <div style={{ marginTop: 40 }}>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
+        <div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#0F3154", fontFamily: "var(--font-display,'Outfit',sans-serif)" }}>🎙️ Podcast</div>
+          <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 2 }}>{episodes.length} episode{episodes.length !== 1 ? "s" : ""}</div>
+        </div>
+        <button onClick={() => setShowForm(v => !v)} style={{ ...btn("#0F3154", "#fff", { fontSize: 12, padding: "8px 16px" }) }}>
+          {showForm ? "Cancel" : "+ New Episode"}
+        </button>
+      </div>
+
+      {/* Create form */}
+      {showForm && (
+        <div style={{ ...card, padding: 16, marginBottom: 16 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <input
+              autoFocus value={newTitle} onChange={e => setNewTitle(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && createEpisode()}
+              placeholder="Episode title…"
+              style={{ border: "1px solid #E1E8EF", borderRadius: 8, padding: "9px 12px", fontSize: 14, fontWeight: 600, color: "#0F3154", outline: "none" }}
+            />
+            <input
+              value={newUrl} onChange={e => setNewUrl(e.target.value)}
+              placeholder="Episode URL (optional)"
+              style={{ border: "1px solid #E1E8EF", borderRadius: 8, padding: "9px 12px", fontSize: 13, color: "#334155", outline: "none" }}
+            />
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button onClick={createEpisode} disabled={creating || !newTitle.trim()}
+                style={{ ...btn("#0F3154", "#fff"), opacity: (creating || !newTitle.trim()) ? 0.5 : 1 }}>
+                {creating ? "Creating…" : "Create"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Table */}
+      {loading ? (
+        <div style={{ fontSize: 13, color: "#94a3b8", padding: 20 }}>Loading…</div>
+      ) : episodes.length === 0 ? (
+        <div style={{ ...card, padding: 32, textAlign: "center", color: "#94a3b8", fontSize: 13 }}>
+          No episodes yet — add your first one above.
+        </div>
+      ) : (
+        <div style={{ ...card, overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "#F8FAFC" }}>
+                <th style={th()}>Episode</th>
+                <th style={th()}>Status</th>
+                <th style={th()}>Date</th>
+                <th style={th()}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {episodes.map(ep => (
+                <tr key={ep.id} style={{ borderTop: "1px solid #F1F5F9" }}>
+                  {editingId === ep.id ? (
+                    // Inline edit row
+                    <td colSpan={4} style={{ padding: "12px 14px" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        <input value={editTitle} onChange={e => setEditTitle(e.target.value)}
+                          style={{ border: "1px solid #E1E8EF", borderRadius: 8, padding: "7px 10px", fontSize: 13, fontWeight: 700, color: "#0F3154", outline: "none" }} />
+                        <input value={editUrl} onChange={e => setEditUrl(e.target.value)}
+                          placeholder="Episode URL"
+                          style={{ border: "1px solid #E1E8EF", borderRadius: 8, padding: "7px 10px", fontSize: 13, color: "#334155", outline: "none" }} />
+                        <textarea value={editNotes} onChange={e => setEditNotes(e.target.value)}
+                          placeholder="Notes…" rows={2}
+                          style={{ border: "1px solid #E1E8EF", borderRadius: 8, padding: "7px 10px", fontSize: 12, color: "#334155", resize: "vertical", outline: "none", fontFamily: "inherit" }} />
+                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                          <select value={editStatus} onChange={e => setEditStatus(e.target.value)}
+                            style={{ border: "1px solid #E1E8EF", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer" }}>
+                            {["Draft", "Scheduled", "Published"].map(s => <option key={s}>{s}</option>)}
+                          </select>
+                          <button onClick={() => saveEdit(ep.id)} disabled={saving}
+                            style={{ ...btn("#0F3154", "#fff", { fontSize: 12, padding: "6px 14px" }), opacity: saving ? 0.6 : 1 }}>
+                            {saving ? "Saving…" : "Save"}
+                          </button>
+                          <button onClick={() => setEditingId(null)}
+                            style={{ ...btn("#F1F5F9", "#64748b", { fontSize: 12, padding: "6px 14px" }) }}>Cancel</button>
+                        </div>
+                      </div>
+                    </td>
+                  ) : (
+                    <>
+                      <td style={{ ...td(), maxWidth: 320, cursor: "pointer" }} onClick={() => startEdit(ep)}>
+                        <div style={{ fontWeight: 700, fontSize: 13, color: "#0F3154", marginBottom: ep.url || ep.notes ? 3 : 0 }}>{ep.title}</div>
+                        {ep.url && (
+                          <a href={ep.url} target="_blank" rel="noopener"
+                            onClick={e => e.stopPropagation()}
+                            style={{ fontSize: 11, color: "#DC373E", textDecoration: "none", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 280 }}>
+                            {ep.url}
+                          </a>
+                        )}
+                        {ep.notes && <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>{ep.notes}</div>}
+                      </td>
+                      <td style={td()}>
+                        <span style={{
+                          fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 10,
+                          background: PODCAST_STATUS_COLOR[ep.status]?.bg || "#F1F5F9",
+                          color: PODCAST_STATUS_COLOR[ep.status]?.color || "#64748b",
+                        }}>{ep.status}</span>
+                      </td>
+                      <td style={{ ...td(), color: "#94a3b8", whiteSpace: "nowrap", fontSize: 12 }}>
+                        {new Date(ep.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      </td>
+                      <td style={td()}>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <button onClick={() => wireEmail(ep)}
+                            title="Create newsletter draft for this episode"
+                            style={{ ...btn("#EFF6FF", "#1d4ed8", { padding: "4px 9px", fontSize: 11 }) }}>
+                            ✉️ Email
+                          </button>
+                          <button onClick={() => startEdit(ep)}
+                            style={{ ...btn("#F1F5F9", "#64748b", { padding: "4px 9px", fontSize: 11 }) }}>Edit</button>
+                          <button onClick={() => deleteEpisode(ep.id)}
+                            style={{ ...btn("#FEF2F2", "#dc2626", { padding: "4px 8px", fontSize: 11 }) }}>Delete</button>
+                        </div>
+                      </td>
+                    </>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
