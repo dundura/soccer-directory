@@ -11,6 +11,7 @@ interface Post {
   ogImageUrl?: string;
   videoUrl?: string;
   hidden: boolean;
+  posted: boolean;
   createdAt: string;
   listingType: string;
   listingId: string;
@@ -59,6 +60,7 @@ export function PostsHub() {
   const [loading, setLoading]       = useState(true);
   const [filterType, setFilterType] = useState("");
   const [filterText, setFilterText] = useState("");
+  const [postTab, setPostTab]       = useState<"active" | "posted">("active");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -80,19 +82,28 @@ export function PostsHub() {
     setPosts(prev => prev.map(p => p.id === postId ? { ...p, hidden: !p.hidden } : p));
   };
 
+  const handleTogglePosted = async (postId: string) => {
+    await apiFetch("/api/listing-posts", "PATCH", { id: postId, action: "toggle_posted" });
+    setPosts(prev => prev.map(p => p.id === postId ? { ...p, posted: !p.posted } : p));
+  };
+
   // Unique listing types for filter
   const listingTypes = Array.from(new Set(posts.map(p => p.listingType))).sort();
 
-  const filtered = posts.filter(p => {
+  const tabPosts = posts.filter(p => postTab === "posted" ? p.posted : !p.posted);
+  const filtered = tabPosts.filter(p => {
     const typeMatch = !filterType || p.listingType === filterType;
     const textMatch = !filterText || (p.title || p.body).toLowerCase().includes(filterText.toLowerCase());
     return typeMatch && textMatch;
   });
 
+  const activeCount = posts.filter(p => !p.posted).length;
+  const postedCount = posts.filter(p => p.posted).length;
+
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 20px" }}>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
         <div>
           <div style={{ fontSize: 20, fontWeight: 800, color: "#0F3154", fontFamily: "var(--font-display,'Outfit',sans-serif)", marginBottom: 4 }}>Our Posts</div>
           <div style={{ fontSize: 13, color: "#94a3b8" }}>{posts.length} post{posts.length !== 1 ? "s" : ""} across all listings</div>
@@ -103,6 +114,21 @@ export function PostsHub() {
         >
           + New Post
         </a>
+      </div>
+
+      {/* Active / Posted tabs */}
+      <div style={{ display: "flex", gap: 0, borderBottom: "2px solid #E1E8EF", marginBottom: 16 }}>
+        {(["active", "posted"] as const).map(t => (
+          <button key={t} onClick={() => setPostTab(t)} style={{
+            padding: "8px 20px", fontSize: 13, fontWeight: postTab === t ? 700 : 500,
+            color: postTab === t ? "#0F3154" : "#94a3b8",
+            background: "none", border: "none",
+            borderBottom: postTab === t ? "2px solid #0F3154" : "2px solid transparent",
+            marginBottom: -2, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+          }}>
+            {t === "active" ? `Active (${activeCount})` : `Posted (${postedCount})`}
+          </button>
+        ))}
       </div>
 
       {/* Filters */}
@@ -129,7 +155,7 @@ export function PostsHub() {
             style={{ ...btn("#F1F5F9", "#64748b", { fontSize: 11 }) }}>Clear</button>
         )}
         <span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 4 }}>
-          {filtered.length} of {posts.length} shown
+          {filtered.length} of {tabPosts.length} shown
         </span>
       </div>
 
@@ -138,8 +164,8 @@ export function PostsHub() {
         <div style={{ fontSize: 13, color: "#94a3b8", textAlign: "center", padding: 40 }}>Loading…</div>
       ) : filtered.length === 0 ? (
         <div style={{ ...card, padding: 40, textAlign: "center", color: "#94a3b8", fontSize: 13 }}>
-          {posts.length === 0
-            ? "No posts yet — create your first one above."
+          {tabPosts.length === 0
+            ? postTab === "posted" ? "No posted posts yet." : "No active posts."
             : "No posts match your filter."}
         </div>
       ) : (
@@ -197,6 +223,13 @@ export function PostsHub() {
                     <td style={{ ...td() }}>
                       <div style={{ display: "flex", gap: 6 }}>
                         <button
+                          onClick={() => handleTogglePosted(post.id)}
+                          title={post.posted ? "Move back to Active" : "Mark as Posted"}
+                          style={{ ...btn(post.posted ? "#F0FDF4" : "#F1F5F9", post.posted ? "#15803d" : "#64748b", { padding: "4px 9px", fontSize: 11 }) }}
+                        >
+                          {post.posted ? "✓ Posted" : "Posted"}
+                        </button>
+                        <button
                           onClick={() => handleToggleHidden(post.id)}
                           title={post.hidden ? "Show" : "Hide"}
                           style={{ ...btn("#F1F5F9", "#64748b", { padding: "4px 9px", fontSize: 11 }) }}
@@ -219,8 +252,6 @@ export function PostsHub() {
         </div>
       )}
 
-      {/* ── Podcast Section ── */}
-      <PodcastSection />
     </div>
   );
 }
@@ -242,7 +273,7 @@ const PODCAST_STATUS_COLOR: Record<string, { bg: string; color: string }> = {
   Published: { bg: "#F0FDF4", color: "#15803d" },
 };
 
-function PodcastSection() {
+export function PodcastSection() {
   const [episodes, setEpisodes]     = useState<PodcastEpisode[]>([]);
   const [loading, setLoading]       = useState(true);
   const [showForm, setShowForm]     = useState(false);

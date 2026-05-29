@@ -3425,6 +3425,7 @@ export interface ListingPost {
   ogImageUrl?: string;
   videoPosition?: 'above' | 'below';
   hidden: boolean;
+  posted: boolean;
   createdAt: string;
 }
 
@@ -3449,6 +3450,7 @@ function mapListingPost(r: Record<string, unknown>): ListingPost {
     ogImageUrl: r.og_image_url as string | undefined,
     videoPosition: (r.video_position as string | undefined) === 'above' ? 'above' : 'below',
     hidden: r.hidden as boolean,
+    posted: !!(r.posted as boolean),
     createdAt: r.created_at as string,
   };
 }
@@ -3492,6 +3494,7 @@ export async function createListingPost(listingType: string, listingId: string, 
 }
 
 export async function getAllListingPosts(limit = 200): Promise<ListingPost[]> {
+  await sql`ALTER TABLE listing_posts ADD COLUMN IF NOT EXISTS posted BOOLEAN DEFAULT FALSE`;
   const rows = await sql`SELECT p.*, u.name as user_name FROM listing_posts p JOIN users u ON u.id = p.user_id ORDER BY p.created_at DESC LIMIT ${limit}`;
   return rows.map(mapListingPost);
 }

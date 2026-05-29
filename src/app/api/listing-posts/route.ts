@@ -141,6 +141,15 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ success: true });
     }
 
+    if (action === "toggle_posted") {
+      if (!isAdmin(session)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      const { neon } = await import("@neondatabase/serverless");
+      const sql = neon(process.env.DATABASE_URL!);
+      await sql`ALTER TABLE listing_posts ADD COLUMN IF NOT EXISTS posted BOOLEAN DEFAULT FALSE`;
+      await sql`UPDATE listing_posts SET posted = NOT COALESCE(posted, false) WHERE id = ${id}`;
+      return NextResponse.json({ success: true });
+    }
+
     if (action === "toggle_hidden") {
       if (canUseAdmin) {
         const { toggleListingPostHiddenAdmin } = await import("@/lib/db");

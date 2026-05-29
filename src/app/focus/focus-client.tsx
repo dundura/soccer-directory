@@ -7,17 +7,18 @@ import { ProjectFocus } from "@/components/project-focus";
 import { ActiveClients } from "@/components/active-clients";
 import { MarketingHub } from "@/components/marketing-hub";
 import { NewsletterHub } from "@/components/newsletter-hub";
-import { PostsHub } from "@/components/posts-hub";
+import { PostsHub, PodcastSection } from "@/components/posts-hub";
 
-type Tab = "projects" | "clients" | "blog" | "newsletter" | "posts";
+type Tab = "projects" | "clients" | "blog" | "newsletter" | "posts" | "podcast";
 
-const TAB_ORDER: Tab[] = ["projects", "clients", "blog", "newsletter", "posts"];
+const TAB_ORDER: Tab[] = ["projects", "clients", "blog", "newsletter", "posts", "podcast"];
 const TAB_LABELS: Record<Tab, string> = {
   projects:   "Projects",
   clients:    "Active Clients",
   blog:       "Marketing",
   newsletter: "Email Newsletter",
   posts:      "Our Posts",
+  podcast:    "Podcast",
 };
 
 export default function FocusClient() {
@@ -70,6 +71,11 @@ export default function FocusClient() {
       {tab === "blog"       && <MarketingHub />}
       {tab === "newsletter" && <NewsletterHub />}
       {tab === "posts"      && <PostsHub />}
+      {tab === "podcast"    && (
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 20px" }}>
+          <PodcastSection />
+        </div>
+      )}
     </div>
   );
 }
