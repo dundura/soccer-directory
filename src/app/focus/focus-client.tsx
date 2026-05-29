@@ -7,15 +7,17 @@ import { ProjectFocus } from "@/components/project-focus";
 import { ActiveClients } from "@/components/active-clients";
 import { MarketingHub } from "@/components/marketing-hub";
 import { NewsletterHub } from "@/components/newsletter-hub";
+import { PostsHub } from "@/components/posts-hub";
 
-type Tab = "projects" | "clients" | "blog" | "newsletter";
+type Tab = "projects" | "clients" | "blog" | "newsletter" | "posts";
 
-const TAB_ORDER: Tab[] = ["projects", "clients", "blog", "newsletter"];
+const TAB_ORDER: Tab[] = ["projects", "clients", "blog", "newsletter", "posts"];
 const TAB_LABELS: Record<Tab, string> = {
   projects:   "Projects",
   clients:    "Active Clients",
   blog:       "Marketing",
   newsletter: "Email Newsletter",
+  posts:      "Our Posts",
 };
 
 export default function FocusClient() {
@@ -67,6 +69,7 @@ export default function FocusClient() {
       {tab === "clients"    && <ActiveClients />}
       {tab === "blog"       && <MarketingHub />}
       {tab === "newsletter" && <NewsletterHub />}
+      {tab === "posts"      && <PostsHub />}
     </div>
   );
 }

@@ -3491,6 +3491,11 @@ export async function createListingPost(listingType: string, listingId: string, 
   return { id, slug };
 }
 
+export async function getAllListingPosts(limit = 200): Promise<ListingPost[]> {
+  const rows = await sql`SELECT p.*, u.name as user_name FROM listing_posts p JOIN users u ON u.id = p.user_id ORDER BY p.created_at DESC LIMIT ${limit}`;
+  return rows.map(mapListingPost);
+}
+
 export async function updateListingPostBody(id: string, userId: string, body: string, title?: string): Promise<boolean> {
   const rows = await sql`UPDATE listing_posts SET body = ${body}, title = ${title || null} WHERE id = ${id} AND user_id = ${userId} RETURNING id`;
   return rows.length > 0;
