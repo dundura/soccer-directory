@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export function ManageListingButton({ ownerId, listingType, listingId, listingSlug }: { ownerId: string | null; listingType?: string; listingId?: string; listingSlug?: string }) {
+export function ManageListingButton({ ownerId, ownerEmail, listingType, listingId, listingSlug }: { ownerId: string | null; ownerEmail?: string | null; listingType?: string; listingId?: string; listingSlug?: string }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [archiving, setArchiving] = useState(false);
@@ -34,6 +34,8 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
   if (!session?.user?.id) return null;
 
   const isOwner = session.user.id === ownerId;
+  const sessionEmail = (session.user as { email?: string }).email?.toLowerCase() ?? "";
+  const isOwnerByEmail = !!(ownerEmail && sessionEmail && sessionEmail === ownerEmail.toLowerCase());
   const isAdmin = (session.user as { role?: string }).role === "admin";
 
   async function handleToggleFeatured() {
@@ -50,7 +52,7 @@ export function ManageListingButton({ ownerId, listingType, listingId, listingSl
     setFeatureLoading(false);
   }
 
-  if (!isOwner && !isAdmin) return null;
+  if (!isOwner && !isOwnerByEmail && !isAdmin) return null;
 
   const editHref = listingType && listingId
     ? `/dashboard?editType=${listingType}&editId=${listingId}`

@@ -1,4 +1,4 @@
-import { getPodcastBySlug, getPodcastSlugs, getListingOwner } from "@/lib/db";
+import { getPodcastBySlug, getPodcastSlugs, getListingOwner, getUserById } from "@/lib/db";
 import { fetchRssEpisodes } from "@/lib/rss";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -47,6 +47,8 @@ export default async function PodcastPage({ params }: Props) {
   if (!podcast) notFound();
 
   const ownerId = await getListingOwner("podcast", slug);
+  const ownerUser = ownerId ? await getUserById(ownerId) : null;
+  const ownerEmail = ownerUser?.email ?? null;
   const rssEpisodes = podcast.rssFeedUrl ? await fetchRssEpisodes(podcast.rssFeedUrl, 10) : [];
 
   const imgPos = podcast.imagePosition ?? 50;
@@ -133,7 +135,7 @@ export default async function PodcastPage({ params }: Props) {
             Contact Host
           </a>
 
-          {ownerId && <ManageListingButton listingType="podcast" listingId={podcast.id} ownerId={ownerId} />}
+          {ownerId && <ManageListingButton listingType="podcast" listingId={podcast.id} ownerId={ownerId} ownerEmail={ownerEmail} />}
 
           {/* Topics - desktop sidebar shortcut */}
           <div className="hidden md:block">
