@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getListingPosts, createListingPost, deleteListingPost, toggleListingPostHidden, getListingOwner, getListingNameById, getListingPostById } from "@/lib/db";
+import { getListingPosts, createListingPost, deleteListingPost, toggleListingPostHidden, getListingOwner, getListingOwnerIdById, getListingNameById, getListingPostById } from "@/lib/db";
 import { notifyNewPost } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
@@ -54,8 +54,12 @@ export async function POST(req: Request) {
     }
 
     if (!isAdmin(session)) {
-      const ownerId = await getListingOwner(type, slug);
-      if (ownerId !== session.user.id) {
+      const sessionUserId = session.user.id;
+      // Check by slug first, then fall back to checking by listing id
+      const ownerBySlug = await getListingOwner(type, slug);
+      const ownerById = ownerBySlug ?? await getListingOwnerIdById(type, id);
+      console.log(`[listing-posts POST] type=${type} slug=${slug} id=${id} ownerBySlug=${ownerBySlug} ownerById=${ownerById} sessionUserId=${sessionUserId}`);
+      if (ownerById !== sessionUserId) {
         return NextResponse.json({ error: "Not authorized" }, { status: 403 });
       }
     }
