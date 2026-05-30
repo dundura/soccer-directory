@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getListingPosts, createListingPost, deleteListingPost, toggleListingPostHidden, getListingOwner, getListingOwnerIdById, getListingNameById, getListingPostById } from "@/lib/db";
+import { getListingPosts, createListingPost, deleteListingPost, toggleListingPostHidden, getListingOwner, getListingOwnerIdById, getListingNameById, getListingPostById, getUserById } from "@/lib/db";
 import { notifyNewPost } from "@/lib/notifications";
 
 export const dynamic = "force-dynamic";
@@ -55,11 +55,19 @@ export async function POST(req: Request) {
 
     if (!isAdmin(session)) {
       const sessionUserId = session.user.id;
+      const sessionEmail = (session.user as { email?: string }).email?.toLowerCase() ?? "";
       // Check by slug first, then fall back to checking by listing id
       const ownerBySlug = await getListingOwner(type, slug);
       const ownerById = ownerBySlug ?? await getListingOwnerIdById(type, id);
-      console.log(`[listing-posts POST] type=${type} slug=${slug} id=${id} ownerBySlug=${ownerBySlug} ownerById=${ownerById} sessionUserId=${sessionUserId}`);
-      if (ownerById !== sessionUserId) {
+      // Primary check: user_id match
+      let authorized = !!(ownerById && ownerById === sessionUserId);
+      // Fallback: if IDs don't match, compare emails (handles NextAuth session ID discrepancies)
+      if (!authorized && sessionEmail && ownerById) {
+        const ownerUser = await getUserById(ownerById);
+        authorized = !!(ownerUser && ownerUser.email.toLowerCase() === sessionEmail);
+      }
+      console.log(`[listing-posts POST] type=${type} slug=${slug} ownerById=${ownerById} sessionUserId=${sessionUserId} sessionEmail=${sessionEmail} authorized=${authorized}`);
+      if (!authorized) {
         return NextResponse.json({ error: "Not authorized" }, { status: 403 });
       }
     }

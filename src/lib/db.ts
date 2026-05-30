@@ -931,6 +931,13 @@ export async function getUserByEmail(email: string): Promise<DbUser | null> {
   return { id: r.id as string, email: r.email as string, name: r.name as string, passwordHash: r.password_hash as string, role: r.role as string };
 }
 
+export async function getUserById(id: string): Promise<DbUser | null> {
+  const rows = await sql`SELECT * FROM users WHERE id = ${id} LIMIT 1`;
+  if (!rows[0]) return null;
+  const r = rows[0];
+  return { id: r.id as string, email: r.email as string, name: r.name as string, passwordHash: r.password_hash as string, role: r.role as string };
+}
+
 export async function createUser(id: string, email: string, name: string, passwordHash: string): Promise<void> {
   await sql`INSERT INTO users (id, email, name, password_hash, role) VALUES (${id}, ${email.toLowerCase()}, ${name}, ${passwordHash}, 'user')`;
 }
