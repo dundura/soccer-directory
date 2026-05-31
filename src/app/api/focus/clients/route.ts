@@ -29,6 +29,7 @@ export async function GET() {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await ensureTables();
+  await sql`ALTER TABLE focus_clients ADD COLUMN IF NOT EXISTS group_id INTEGER`;
   const clients = await sql`SELECT * FROM focus_clients ORDER BY created_at DESC`;
   const activities = await sql`SELECT * FROM focus_client_activities ORDER BY created_at ASC`;
   const map: Record<number, typeof activities> = {};
@@ -55,8 +56,13 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { id, name, email, phone, status, team, notes, contact_date } = await req.json();
-  await sql`UPDATE focus_clients SET name=${name}, email=${email||null}, phone=${phone||null}, status=${status||"Lead"}, team=${team||null}, notes=${notes||null}, contact_date=${contact_date||null} WHERE id=${id}`;
+  const { id, name, email, phone, status, team, notes, contact_date, group_id } = await req.json();
+  if (group_id !== undefined && name === undefined) {
+    // Group assignment only
+    await sql`UPDATE focus_clients SET group_id=${group_id} WHERE id=${id}`;
+  } else {
+    await sql`UPDATE focus_clients SET name=${name}, email=${email||null}, phone=${phone||null}, status=${status||"Lead"}, team=${team||null}, notes=${notes||null}, contact_date=${contact_date||null} WHERE id=${id}`;
+  }
   return NextResponse.json({ success: true });
 }
 

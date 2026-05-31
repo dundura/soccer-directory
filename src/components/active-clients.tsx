@@ -6,7 +6,9 @@ interface Activity { id: number; client_id: number; text: string; notes: string;
 interface Client {
   id: number; name: string; email: string; phone: string;
   status: string; team: string; notes: string; contact_date: string; activities: Activity[];
+  group_id: number | null;
 }
+interface Group { id: number; name: string; sort_order: number; collapsed: boolean; }
 
 const STATUS_COLORS: Record<string, string> = {
   Lead: "#0891b2", Proposal: "#d97706", "Trying to Book Demo": "#c026d3",
@@ -78,6 +80,14 @@ export function ActiveClients() {
   const [actFilter, setActFilter] = useState<Record<number, "open" | "completed">>({});
   const [search, setSearch] = useState("");
 
+  // Groups
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<number>>(new Set());
+  const [newGroupName, setNewGroupName] = useState("");
+  const [addingGroup, setAddingGroup] = useState(false);
+  const [editingGroupId, setEditingGroupId] = useState<number | null>(null);
+  const [editingGroupName, setEditingGroupName] = useState("");
+
   // Pipeline drag state
   const [pipelineDragOver, setPipelineDragOver] = useState<string | null>(null);
 
@@ -95,11 +105,52 @@ export function ActiveClients() {
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch("/api/focus/clients").then(r => r.json()).then(data => {
+    Promise.all([
+      fetch("/api/focus/clients").then(r => r.json()),
+      fetch("/api/focus/clients/groups").then(r => r.json()),
+    ]).then(([data, grps]) => {
       if (Array.isArray(data)) setClients(loadOrderedClients(data));
+      if (Array.isArray(grps)) {
+        setGroups(grps);
+        const collapsed = new Set(grps.filter((g: Group) => g.collapsed).map((g: Group) => g.id));
+        setCollapsedGroups(collapsed);
+      }
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
+
+  const createGroup = async () => {
+    if (!newGroupName.trim()) return;
+    const res = await fetch("/api/focus/clients/groups", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newGroupName.trim() }),
+    }).then(r => r.json());
+    if (res.id) { setGroups(p => [...p, res]); setNewGroupName(""); setAddingGroup(false); }
+  };
+
+  const renameGroup = async (id: number, name: string) => {
+    setGroups(p => p.map(g => g.id === id ? { ...g, name } : g));
+    setEditingGroupId(null);
+    await fetch("/api/focus/clients/groups", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, name }) });
+  };
+
+  const deleteGroup = async (id: number) => {
+    if (!confirm("Delete this group? Clients will become ungrouped.")) return;
+    setGroups(p => p.filter(g => g.id !== id));
+    setClients(p => p.map(c => c.group_id === id ? { ...c, group_id: null } : c));
+    await fetch(`/api/focus/clients/groups?id=${id}`, { method: "DELETE" });
+  };
+
+  const toggleGroupCollapse = async (id: number) => {
+    const nowCollapsed = !collapsedGroups.has(id);
+    setCollapsedGroups(prev => { const n = new Set(prev); nowCollapsed ? n.add(id) : n.delete(id); return n; });
+    await fetch("/api/focus/clients/groups", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, collapsed: nowCollapsed }) });
+  };
+
+  const assignGroup = async (clientId: number, groupId: number | null) => {
+    setClients(p => p.map(c => c.id === clientId ? { ...c, group_id: groupId } : c));
+    await fetch("/api/focus/clients", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: clientId, group_id: groupId }) });
+  };
 
   const toggleExpand = (id: number) =>
     setExpanded(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
@@ -369,31 +420,96 @@ export function ActiveClients() {
       )}
 
       {/* ── LIST VIEW ── */}
-      {view === "list" && visibleClients.length === 0 ? (
-        <div style={{ ...card, padding: "48px 20px", textAlign: "center", color: "#94a3b8", fontSize: 14 }}>
-          {q ? "No clients match your search." : <>No clients yet — click <strong style={{ color: "#DC373E" }}>+ Add Client</strong></>}
-        </div>
-      ) : view === "list" && (
-        <div style={{ ...card, overflow: "hidden" }}>
-          <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 660 }}>
-              <thead>
-                <tr style={{ background: "#F8FAFC" }}>
-                  {/* drag handle col */}
-                  <th style={{ ...th, width: 24, padding: "10px 4px 10px 12px" }} />
-                  <th style={{ ...th, width: 32 }} />
-                  <th style={th}>Name</th>
-                  <th style={th}>Email</th>
-                  <th style={th}>Phone</th>
-                  <th style={th}>Team</th>
-                  <th style={th}>Status</th>
-                  <th style={th}>Notes</th>
-                  <th style={{ ...th, whiteSpace: "nowrap" }}>Contact Date</th>
-                  <th style={{ ...th, width: 32 }} />
-                </tr>
-              </thead>
-              <tbody>
-                {visibleClients.map((client, i) => {
+      {view === "list" && (
+        <div>
+          {/* Group management bar */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+            {addingGroup ? (
+              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                <input
+                  autoFocus
+                  value={newGroupName}
+                  onChange={e => setNewGroupName(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") createGroup(); if (e.key === "Escape") { setAddingGroup(false); setNewGroupName(""); } }}
+                  placeholder="Group name..."
+                  style={{ padding: "6px 12px", border: "1.5px solid #0F3154", borderRadius: 8, fontSize: 13, fontFamily: "inherit", outline: "none", color: "#0F3154" }}
+                />
+                <button onClick={createGroup} style={{ padding: "6px 14px", background: "#0F3154", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Create</button>
+                <button onClick={() => { setAddingGroup(false); setNewGroupName(""); }} style={{ padding: "6px 10px", background: "none", border: "none", color: "#94a3b8", fontSize: 18, cursor: "pointer" }}>✕</button>
+              </div>
+            ) : (
+              <button onClick={() => setAddingGroup(true)} style={{ padding: "6px 14px", background: "#f1f5f9", color: "#64748b", border: "1px solid #e2e8f0", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                ＋ New Group
+              </button>
+            )}
+          </div>
+
+          {visibleClients.length === 0 ? (
+            <div style={{ ...card, padding: "48px 20px", textAlign: "center", color: "#94a3b8", fontSize: 14 }}>
+              {q ? "No clients match your search." : <>No clients yet — click <strong style={{ color: "#DC373E" }}>+ Add Client</strong></>}
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {/* Render each group, then ungrouped */}
+              {[...groups, { id: 0, name: "Ungrouped", sort_order: 9999, collapsed: false }].map(group => {
+                const groupClients = visibleClients.filter(c =>
+                  group.id === 0 ? !c.group_id : c.group_id === group.id
+                );
+                if (groupClients.length === 0 && group.id === 0) return null;
+                const isCollapsed = group.id === 0 ? false : collapsedGroups.has(group.id);
+                const isUngrouped = group.id === 0;
+
+                return (
+                  <div key={group.id} style={{ ...card, overflow: "hidden" }}>
+                    {/* Group header */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: isUngrouped ? "#f8fafc" : "#f0f4ff", borderBottom: isCollapsed ? "none" : "1px solid #E1E8EF", cursor: isUngrouped ? "default" : "pointer" }}
+                      onClick={() => !isUngrouped && toggleGroupCollapse(group.id)}>
+                      {!isUngrouped && <span style={{ fontSize: 12, color: "#64748b", width: 14, flexShrink: 0 }}>{isCollapsed ? "▶" : "▼"}</span>}
+                      {editingGroupId === group.id ? (
+                        <input
+                          autoFocus
+                          value={editingGroupName}
+                          onChange={e => setEditingGroupName(e.target.value)}
+                          onBlur={() => renameGroup(group.id, editingGroupName)}
+                          onKeyDown={e => { if (e.key === "Enter") renameGroup(group.id, editingGroupName); if (e.key === "Escape") setEditingGroupId(null); }}
+                          onClick={e => e.stopPropagation()}
+                          style={{ fontSize: 13, fontWeight: 700, border: "1.5px solid #0F3154", borderRadius: 6, padding: "2px 8px", fontFamily: "inherit", outline: "none", color: "#0F3154" }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: 13, fontWeight: 700, color: isUngrouped ? "#94a3b8" : "#0F3154" }}>{group.name}</span>
+                      )}
+                      <span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 4 }}>({groupClients.length})</span>
+                      <div style={{ marginLeft: "auto", display: "flex", gap: 6 }} onClick={e => e.stopPropagation()}>
+                        {!isUngrouped && (
+                          <>
+                            <button onClick={() => { setEditingGroupId(group.id); setEditingGroupName(group.name); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: 12, padding: "2px 4px" }} title="Rename">✏️</button>
+                            <button onClick={() => deleteGroup(group.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#DC373E", fontSize: 12, padding: "2px 4px" }} title="Delete group">🗑</button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Clients table */}
+                    {!isCollapsed && (
+                    <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 660 }}>
+                        <thead>
+                          <tr style={{ background: "#F8FAFC" }}>
+                            <th style={{ ...th, width: 24, padding: "10px 4px 10px 12px" }} />
+                            <th style={{ ...th, width: 32 }} />
+                            <th style={th}>Name</th>
+                            <th style={th}>Email</th>
+                            <th style={th}>Phone</th>
+                            <th style={th}>Team</th>
+                            <th style={th}>Status</th>
+                            <th style={th}>Notes</th>
+                            <th style={{ ...th, whiteSpace: "nowrap" }}>Contact Date</th>
+                            <th style={{ ...th, width: 80 }}>Group</th>
+                            <th style={{ ...th, width: 32 }} />
+                          </tr>
+                        </thead>
+                        <tbody>
+                {groupClients.map((client, i) => {
                   const filter = getFilter(client.id);
                   const openCount = client.activities.filter(a => !a.completed).length;
                   const doneCount = client.activities.filter(a => a.completed).length;
@@ -478,6 +594,17 @@ export function ActiveClients() {
                         <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 130 }}>
                           <EditableCell value={client.contact_date ? client.contact_date.slice(0, 10) : ""} onSave={v => updateClient(client.id, "contact_date", v)} placeholder="Date" type="date" />
                         </td>
+                        <td style={{ padding: "8px 8px", verticalAlign: "middle" }}>
+                          <select
+                            value={client.group_id ?? ""}
+                            onChange={e => assignGroup(client.id, e.target.value ? parseInt(e.target.value) : null)}
+                            style={{ fontSize: 11, border: "1px solid #E1E8EF", borderRadius: 6, padding: "3px 6px", color: "#64748b", background: "#fff", cursor: "pointer", fontFamily: "inherit", maxWidth: 90 }}
+                            title="Assign to group"
+                          >
+                            <option value="">No group</option>
+                            {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+                          </select>
+                        </td>
                         <td style={{ padding: "8px 14px", verticalAlign: "middle", textAlign: "right" }}>
                           <button onClick={() => deleteClient(client.id)}
                             style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "2px 4px" }}>×</button>
@@ -487,7 +614,7 @@ export function ActiveClients() {
                       {/* Expanded action items — renders inline directly below this client row */}
                       {expanded.has(client.id) && (
                         <tr>
-                          <td colSpan={10} style={{ padding: 0, borderTop: "1px solid #F1F5F9", background: "#F8FAFC" }}>
+                          <td colSpan={11} style={{ padding: 0, borderTop: "1px solid #F1F5F9", background: "#F8FAFC" }}>
 
                             {/* Open / Completed tabs */}
                             <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "8px 14px 0 60px", borderBottom: "1px solid #F1F5F9" }}>
@@ -601,9 +728,15 @@ export function ActiveClients() {
                     </React.Fragment>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
+                        </tbody>
+                      </table>
+                    </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>
