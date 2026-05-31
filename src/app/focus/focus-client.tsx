@@ -8,11 +8,13 @@ import { ActiveClients } from "@/components/active-clients";
 import { MarketingHub } from "@/components/marketing-hub";
 import { NewsletterHub } from "@/components/newsletter-hub";
 import { PostsHub, PodcastSection } from "@/components/posts-hub";
+import { DailyPlaybook } from "@/components/daily-playbook";
 
-type Tab = "projects" | "clients" | "blog" | "newsletter" | "posts" | "podcast";
+type Tab = "playbook" | "projects" | "clients" | "blog" | "newsletter" | "posts" | "podcast";
 
-const TAB_ORDER: Tab[] = ["projects", "clients", "blog", "newsletter", "posts", "podcast"];
+const TAB_ORDER: Tab[] = ["playbook", "projects", "clients", "blog", "newsletter", "posts", "podcast"];
 const TAB_LABELS: Record<Tab, string> = {
+  playbook:   "Daily Playbook",
   projects:   "Projects",
   clients:    "Active Clients",
   blog:       "Marketing",
@@ -24,7 +26,7 @@ const TAB_LABELS: Record<Tab, string> = {
 export default function FocusClient() {
   const { status } = useSession();
   const router = useRouter();
-  const [tab, setTabState] = useState<Tab>("projects");
+  const [tab, setTabState] = useState<Tab>("playbook");
 
   useEffect(() => {
     const saved = sessionStorage.getItem("focusMainTab") as Tab | null;
@@ -66,6 +68,7 @@ export default function FocusClient() {
         </div>
       </div>
 
+      {tab === "playbook"   && <DailyPlaybook />}
       {tab === "projects"   && <ProjectFocus />}
       {tab === "clients"    && <ActiveClients />}
       {tab === "blog"       && <MarketingHub />}
