@@ -147,6 +147,20 @@ export function ActiveClients() {
     await fetch("/api/focus/clients/groups", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, collapsed: nowCollapsed }) });
   };
 
+  const moveGroup = async (id: number, direction: "up" | "down") => {
+    const idx = groups.findIndex(g => g.id === id);
+    if (direction === "up" && idx === 0) return;
+    if (direction === "down" && idx === groups.length - 1) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    const reordered = [...groups];
+    [reordered[idx], reordered[swapIdx]] = [reordered[swapIdx], reordered[idx]];
+    const updated = reordered.map((g, i) => ({ ...g, sort_order: i + 1 }));
+    setGroups(updated);
+    await Promise.all(updated.map(g =>
+      fetch("/api/focus/clients/groups", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: g.id, sort_order: g.sort_order }) })
+    ));
+  };
+
   const assignGroup = async (clientId: number, groupId: number | null) => {
     setClients(p => p.map(c => c.id === clientId ? { ...c, group_id: groupId } : c));
     await fetch("/api/focus/clients", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: clientId, group_id: groupId }) });
@@ -482,8 +496,10 @@ export function ActiveClients() {
                       <div style={{ marginLeft: "auto", display: "flex", gap: 6 }} onClick={e => e.stopPropagation()}>
                         {!isUngrouped && (
                           <>
-                            <button onClick={() => { setEditingGroupId(group.id); setEditingGroupName(group.name); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: 12, padding: "2px 4px" }} title="Rename">✏️</button>
-                            <button onClick={() => deleteGroup(group.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#DC373E", fontSize: 12, padding: "2px 4px" }} title="Delete group">🗑</button>
+                            <button onClick={e => { e.stopPropagation(); moveGroup(group.id, "up"); }} disabled={groups.indexOf(group) === 0} style={{ background: "none", border: "none", cursor: groups.indexOf(group) === 0 ? "not-allowed" : "pointer", color: groups.indexOf(group) === 0 ? "#e2e8f0" : "#94a3b8", fontSize: 11, padding: "2px 3px" }} title="Move up">▲</button>
+                            <button onClick={e => { e.stopPropagation(); moveGroup(group.id, "down"); }} disabled={groups.indexOf(group) === groups.length - 1} style={{ background: "none", border: "none", cursor: groups.indexOf(group) === groups.length - 1 ? "not-allowed" : "pointer", color: groups.indexOf(group) === groups.length - 1 ? "#e2e8f0" : "#94a3b8", fontSize: 11, padding: "2px 3px" }} title="Move down">▼</button>
+                            <button onClick={e => { e.stopPropagation(); setEditingGroupId(group.id); setEditingGroupName(group.name); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: 12, padding: "2px 4px" }} title="Rename">✏️</button>
+                            <button onClick={e => { e.stopPropagation(); deleteGroup(group.id); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#DC373E", fontSize: 12, padding: "2px 4px" }} title="Delete group">🗑</button>
                           </>
                         )}
                       </div>

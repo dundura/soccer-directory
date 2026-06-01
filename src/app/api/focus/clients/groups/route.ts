@@ -46,12 +46,15 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { id, name, collapsed } = await req.json();
+  const { id, name, collapsed, sort_order } = await req.json();
   if (name !== undefined) {
     await sql`UPDATE focus_client_groups SET name=${name} WHERE id=${id} AND user_email=${session.user.email}`;
   }
   if (collapsed !== undefined) {
     await sql`UPDATE focus_client_groups SET collapsed=${collapsed} WHERE id=${id} AND user_email=${session.user.email}`;
+  }
+  if (sort_order !== undefined) {
+    await sql`UPDATE focus_client_groups SET sort_order=${sort_order} WHERE id=${id} AND user_email=${session.user.email}`;
   }
   return NextResponse.json({ success: true });
 }
