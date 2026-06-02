@@ -31,14 +31,14 @@ async function ensureTables() {
   )`;
   await sql`ALTER TABLE focus_newsletter_entries ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'paragraph'`;
   await sql`ALTER TABLE focus_newsletter_entries ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0`;
+  await sql`ALTER TABLE focus_newsletters ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0`;
 }
 
 export async function GET() {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await ensureTables();
-  const newsletters = await sql`SELECT * FROM focus_newsletters ORDER BY
-    CASE WHEN sequence IS NULL THEN 1 ELSE 0 END, sequence ASC, created_at DESC`;
+  const newsletters = await sql`SELECT * FROM focus_newsletters ORDER BY sort_order ASC, created_at DESC`;
   const entries = await sql`SELECT * FROM focus_newsletter_entries ORDER BY newsletter_id, sort_order, id`;
   const map: Record<number, typeof entries> = {};
   for (const e of entries) {
@@ -64,16 +64,20 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { id, title, subject, preview_text, status, sequence, notes } = await req.json();
-  await sql`UPDATE focus_newsletters SET
-    title=${title ?? null},
-    subject=${subject || null},
-    preview_text=${preview_text || null},
-    status=${status || "Draft"},
-    sequence=${sequence ?? null},
-    notes=${notes ?? null},
-    updated_at=NOW()
-    WHERE id=${id}`;
+  const { id, title, subject, preview_text, status, sequence, notes, sort_order } = await req.json();
+  if (sort_order !== undefined && title === undefined) {
+    await sql`UPDATE focus_newsletters SET sort_order=${sort_order} WHERE id=${id}`;
+  } else {
+    await sql`UPDATE focus_newsletters SET
+      title=${title ?? null},
+      subject=${subject || null},
+      preview_text=${preview_text || null},
+      status=${status || "Draft"},
+      sequence=${sequence ?? null},
+      notes=${notes ?? null},
+      updated_at=NOW()
+      WHERE id=${id}`;
+  }
   return NextResponse.json({ success: true });
 }
 

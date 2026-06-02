@@ -22,6 +22,7 @@ interface Newsletter {
   status: NLStatus;
   sequence: number | null;
   notes: string | null;
+  sort_order: number;
   created_at: string;
   entries: Entry[];
 }
@@ -357,6 +358,20 @@ export function NewsletterHub() {
     setNewsletters(prev => prev.filter(n => n.id !== id));
   };
 
+  const moveNewsletter = async (id: number, direction: "up" | "down") => {
+    const idx = newsletters.findIndex(n => n.id === id);
+    if (direction === "up" && idx === 0) return;
+    if (direction === "down" && idx === newsletters.length - 1) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    const reordered = [...newsletters];
+    [reordered[idx], reordered[swapIdx]] = [reordered[swapIdx], reordered[idx]];
+    const updated = reordered.map((n, i) => ({ ...n, sort_order: i }));
+    setNewsletters(updated);
+    await Promise.all(updated.map(n =>
+      apiFetch("/api/focus/newsletters", "PATCH", { id: n.id, sort_order: n.sort_order })
+    ));
+  };
+
   const onSaved = useCallback((updated: Newsletter) => {
     setNewsletters(prev => prev.map(n => n.id === updated.id ? updated : n));
     setEditing(updated);
@@ -456,8 +471,19 @@ export function NewsletterHub() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map(n => (
+              {filtered.map((n, idx) => (
                 <tr key={n.id}>
+                  {/* Reorder ▲▼ — only when no filter applied */}
+                  <td style={{ ...td(), width: 48, whiteSpace: "nowrap" }} onClick={e => e.stopPropagation()}>
+                    {!filterSeq && !filterStatus ? (
+                      <span style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                        <button onClick={() => moveNewsletter(n.id, "up")} disabled={idx === 0}
+                          style={{ background: "none", border: "none", cursor: idx === 0 ? "default" : "pointer", color: idx === 0 ? "#e2e8f0" : "#94a3b8", fontSize: 10, padding: "1px 4px", lineHeight: 1 }}>▲</button>
+                        <button onClick={() => moveNewsletter(n.id, "down")} disabled={idx === filtered.length - 1}
+                          style={{ background: "none", border: "none", cursor: idx === filtered.length - 1 ? "default" : "pointer", color: idx === filtered.length - 1 ? "#e2e8f0" : "#94a3b8", fontSize: 10, padding: "1px 4px", lineHeight: 1 }}>▼</button>
+                      </span>
+                    ) : null}
+                  </td>
                   {/* Seq — inline edit, no row click */}
                   <td style={td()} onClick={e => e.stopPropagation()}>
                     <SequenceCell nl={n} onUpdate={updateNL} />
