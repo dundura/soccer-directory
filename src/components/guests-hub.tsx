@@ -9,24 +9,18 @@ interface Booking {
   guestName: string;
   notes: string;
   links: GuestLink[];
-  status: "upcoming" | "completed" | "cancelled";
+  status: string;
 }
 
 const STORAGE_KEY = "snm_guest_bookings";
 
-const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
-  upcoming:  { bg: "#eff6ff", color: "#1d4ed8" },
-  completed: { bg: "#f0fdf4", color: "#16a34a" },
-  cancelled: { bg: "#fef2f2", color: "#dc2626" },
-};
-
-const EMPTY_FORM = { guestName: "", notes: "", links: [{ label: "", url: "" }, { label: "", url: "" }] as GuestLink[], status: "upcoming" as Booking["status"] };
+const EMPTY_FORM = { guestName: "", notes: "", links: [{ label: "", url: "" }, { label: "", url: "" }] as GuestLink[], status: "" };
 
 export function GuestsHub() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | "upcoming" | "completed" | "cancelled">("all");
+  const [filter, setFilter] = useState("all");
   const [form, setForm] = useState(EMPTY_FORM);
   const [notesModal, setNotesModal] = useState<Booking | null>(null);
 
@@ -65,8 +59,8 @@ export function GuestsHub() {
 
   const deleteBooking = (id: string) => save(bookings.filter(b => b.id !== id));
 
-  const filtered = filter === "all" ? bookings : bookings.filter(b => b.status === filter);
-  const upcomingCount = bookings.filter(b => b.status === "upcoming").length;
+  const filtered = filter === "all" ? bookings : bookings.filter(b => b.status.toLowerCase().includes(filter.toLowerCase()));
+  const upcomingCount = bookings.filter(b => b.status.toLowerCase() === "upcoming").length;
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 20px", fontFamily: "var(--font-body, 'DM Sans', sans-serif)" }}>
@@ -85,17 +79,17 @@ export function GuestsHub() {
         </button>
       </div>
 
-      {/* Filters */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
-        {(["all", "upcoming", "completed", "cancelled"] as const).map(f => (
-          <button key={f} onClick={() => setFilter(f)}
-            style={{ padding: "6px 14px", borderRadius: 20, border: "1.5px solid", borderColor: filter === f ? "#0F3154" : "#E1E8EF", background: filter === f ? "#0F3154" : "#fff", color: filter === f ? "#fff" : "#64748b", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-            {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}
-          </button>
-        ))}
+      {/* Filter by status */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 20, alignItems: "center" }}>
+        <input value={filter === "all" ? "" : filter} onChange={e => setFilter(e.target.value || "all")}
+          placeholder="Filter by status…"
+          style={{ border: "1px solid #E1E8EF", borderRadius: 8, padding: "6px 10px", fontSize: 12, color: "#334155", outline: "none", width: 180 }} />
+        {filter !== "all" && (
+          <button onClick={() => setFilter("all")} style={{ background: "none", border: "none", fontSize: 12, color: "#94a3b8", cursor: "pointer" }}>Clear</button>
+        )}
       </div>
 
-      {/* Bookings list */}
+      {/* Bookings table */}
       {filtered.length === 0 ? (
         <div style={{ textAlign: "center", padding: "60px 20px", color: "#94a3b8" }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>🎙️</div>
@@ -103,46 +97,63 @@ export function GuestsHub() {
           <p style={{ fontSize: 13, margin: "6px 0 0" }}>Add your upcoming podcast guests here.</p>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {filtered.map(b => {
-            const sc = STATUS_COLORS[b.status];
-            return (
-              <div key={b.id} style={{ background: "#fff", border: "1px solid #E1E8EF", borderRadius: 12, padding: "16px 20px", display: "flex", alignItems: "flex-start", gap: 16 }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: "#0F3154" }}>{b.guestName}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 12, background: sc.bg, color: sc.color }}>
-                      {b.status.charAt(0).toUpperCase() + b.status.slice(1)}
-                    </span>
-                  </div>
-                  <div style={{ display: "flex", gap: 10, marginTop: 6, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ background: "#fff", border: "1px solid #E1E8EF", borderRadius: 12, overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "#F8FAFC" }}>
+                <th style={th()}>Guest</th>
+                <th style={th()}>Status</th>
+                <th style={th()}>Notes</th>
+                <th style={th()}>Links</th>
+                <th style={th()}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map(b => (
+                <tr key={b.id} style={{ borderTop: "1px solid #F1F5F9" }}>
+                  <td style={{ ...td(), fontWeight: 700, color: "#0F3154", fontSize: 14 }}>{b.guestName}</td>
+                  <td style={td()}>
+                    <input
+                      value={b.status}
+                      onChange={e => save(bookings.map(x => x.id === b.id ? { ...x, status: e.target.value } : x))}
+                      placeholder="e.g. Upcoming"
+                      style={{ border: "1px solid #E1E8EF", borderRadius: 7, padding: "4px 8px", fontSize: 12, fontWeight: 600, color: "#334155", outline: "none", width: 110, fontFamily: "inherit" }}
+                    />
+                  </td>
+                  <td style={td()}>
                     {b.notes && (
                       <button onClick={() => setNotesModal(b)}
-                        style={{ background: "none", border: "none", padding: 0, fontSize: 12, color: "#1d4ed8", cursor: "pointer", fontWeight: 600, textDecoration: "underline", fontFamily: "inherit" }}>
+                        style={{ background: "none", border: "none", padding: 0, fontSize: 12, color: "#1d4ed8", cursor: "pointer", fontWeight: 600, textDecoration: "underline", fontFamily: "inherit", whiteSpace: "nowrap" }}>
                         📝 Notes
                       </button>
                     )}
-                    {(b.links || []).filter(l => l.url).map((l, i) => (
-                      <a key={i} href={l.url} target="_blank" rel="noopener noreferrer"
-                        style={{ fontSize: 12, color: "#DC373E", fontWeight: 600, textDecoration: "none" }}>
-                        {l.label || "Link"} ↗
-                      </a>
-                    ))}
-                  </div>
-                </div>
-                <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                  <button onClick={() => openEdit(b)}
-                    style={{ padding: "5px 12px", border: "1px solid #E1E8EF", borderRadius: 6, background: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", color: "#0F3154" }}>
-                    Edit
-                  </button>
-                  <button onClick={() => deleteBooking(b.id)}
-                    style={{ padding: "5px 10px", border: "none", borderRadius: 6, background: "#fef2f2", fontSize: 12, fontWeight: 600, cursor: "pointer", color: "#dc2626" }}>
-                    ×
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+                  </td>
+                  <td style={{ ...td(), maxWidth: 220 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                      {(b.links || []).filter(l => l.url).map((l, i) => (
+                        <a key={i} href={l.url} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize: 12, color: "#DC373E", fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
+                          {l.label || "Link"} ↗
+                        </a>
+                      ))}
+                    </div>
+                  </td>
+                  <td style={td()}>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button onClick={() => openEdit(b)}
+                        style={{ padding: "4px 10px", border: "1px solid #E1E8EF", borderRadius: 6, background: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", color: "#0F3154" }}>
+                        Edit
+                      </button>
+                      <button onClick={() => deleteBooking(b.id)}
+                        style={{ padding: "4px 8px", border: "none", borderRadius: 6, background: "#fef2f2", fontSize: 12, fontWeight: 600, cursor: "pointer", color: "#dc2626" }}>
+                        ×
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -205,12 +216,9 @@ export function GuestsHub() {
               </div>
               <div>
                 <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>Status</label>
-                <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as Booking["status"] }))}
-                  style={{ width: "100%", padding: "9px 12px", border: "1.5px solid #E1E8EF", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box" }}>
-                  <option value="upcoming">Upcoming</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
+                <input value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+                  placeholder="e.g. Upcoming, Pitched, Confirmed…"
+                  style={{ width: "100%", padding: "9px 12px", border: "1.5px solid #E1E8EF", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box" }} />
               </div>
             </div>
             <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
@@ -228,4 +236,11 @@ export function GuestsHub() {
       )}
     </div>
   );
+}
+
+function th(): React.CSSProperties {
+  return { padding: "9px 14px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: "1px solid #E1E8EF", whiteSpace: "nowrap" };
+}
+function td(): React.CSSProperties {
+  return { padding: "11px 14px", verticalAlign: "middle", fontSize: 13, color: "#334155" };
 }
