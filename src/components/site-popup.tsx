@@ -61,7 +61,7 @@ export default function SitePopup() {
   const ebook = FREE_EBOOKS[ebookIndex];
 
   // Full-image popups for training, plan-builder, and ebook
-  if (variant === "training" || variant === "plan-builder" || variant === "ebook") {
+  if (variant !== "listing") {
     const v = variant === "ebook"
       ? { image: ebook.image, alt: ebook.title, href: ebook.href }
       : IMAGE_VARIANTS[variant];
@@ -90,7 +90,7 @@ export default function SitePopup() {
     );
   }
 
-  // Text-based popups for listing and ebook
+  // Text-based popup for listing only
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -112,70 +112,39 @@ export default function SitePopup() {
 
         <div className="hidden md:flex md:w-[40%] items-center justify-center overflow-hidden bg-gray-50">
           <img
-            src={variant === "ebook"
-              ? ebook.image
-              : "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp"}
-            alt={variant === "ebook" ? ebook.title : "Soccer Near Me"}
+            src="https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp"
+            alt="Soccer Near Me"
             className="w-full h-full object-contain"
           />
         </div>
 
         <div className="w-full md:w-[55%] p-8 md:p-10 flex flex-col justify-center">
-          {variant === "ebook" ? (
-            <>
-              <p className="text-accent text-xs font-bold uppercase tracking-[2px] mb-2">
-                Free Ebook
-              </p>
-              <p className="text-accent text-sm font-semibold mb-4">
-                Download Now — No Cost, No Catch!
-              </p>
-              <div className="w-12 h-[3px] bg-accent rounded-full mb-5" />
-              <h2 className="text-2xl md:text-[28px] font-extrabold text-primary leading-tight mb-2">
-                {ebook.title}
-              </h2>
-              <p className="text-muted text-[15px] mb-6">
-                {ebook.subtitle}
-              </p>
-              <a
-                href={ebook.href}
-                onClick={dismiss}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-accent hover:bg-accent-hover text-white text-center px-6 py-4 rounded-full font-bold text-base transition-all hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(220,55,62,0.35)] hover:shadow-[0_6px_25px_rgba(220,55,62,0.45)]"
-              >
-                {ebook.cta} &rarr;
-              </a>
-            </>
-          ) : (
-            <>
-              <p className="text-accent text-xs font-bold uppercase tracking-[2px] mb-2">
-                Free Listing
-              </p>
-              <p className="text-accent text-sm font-semibold mb-4">
-                Get Found by Players & Families in Your Area!
-              </p>
-              <div className="w-12 h-[3px] bg-accent rounded-full mb-5" />
-              <h2 className="text-2xl md:text-[28px] font-extrabold text-primary leading-tight mb-2">
-                List Your Club, Team, or Camp for Free.
-              </h2>
-              <p className="text-muted text-[15px] mb-4">
-                Thousands of players and parents search Soccer Near Me every month to find local soccer opportunities.
-              </p>
-              <p className="text-primary font-bold text-[15px] mb-1">
-                Get <span className="text-accent">more visibility</span> for your program today.
-              </p>
-              <p className="text-muted text-sm mb-6">
-                It takes less than 2 minutes. No cost. No catch.
-              </p>
-              <Link
-                href="/dashboard"
-                onClick={dismiss}
-                className="bg-accent hover:bg-accent-hover text-white text-center px-6 py-4 rounded-full font-bold text-base transition-all hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(220,55,62,0.35)] hover:shadow-[0_6px_25px_rgba(220,55,62,0.45)]"
-              >
-                List My Program for Free &rarr;
-              </Link>
-            </>
-          )}
+          <p className="text-accent text-xs font-bold uppercase tracking-[2px] mb-2">
+            Free Listing
+          </p>
+          <p className="text-accent text-sm font-semibold mb-4">
+            Get Found by Players & Families in Your Area!
+          </p>
+          <div className="w-12 h-[3px] bg-accent rounded-full mb-5" />
+          <h2 className="text-2xl md:text-[28px] font-extrabold text-primary leading-tight mb-2">
+            List Your Club, Team, or Camp for Free.
+          </h2>
+          <p className="text-muted text-[15px] mb-4">
+            Thousands of players and parents search Soccer Near Me every month to find local soccer opportunities.
+          </p>
+          <p className="text-primary font-bold text-[15px] mb-1">
+            Get <span className="text-accent">more visibility</span> for your program today.
+          </p>
+          <p className="text-muted text-sm mb-6">
+            It takes less than 2 minutes. No cost. No catch.
+          </p>
+          <Link
+            href="/dashboard"
+            onClick={dismiss}
+            className="bg-accent hover:bg-accent-hover text-white text-center px-6 py-4 rounded-full font-bold text-base transition-all hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(220,55,62,0.35)] hover:shadow-[0_6px_25px_rgba(220,55,62,0.45)]"
+          >
+            List My Program for Free &rarr;
+          </Link>
         </div>
       </div>
     </div>
