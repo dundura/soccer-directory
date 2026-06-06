@@ -72,9 +72,9 @@ export default function SitePopup() {
             src={variant === "ebook"
               ? ebook.image
               : variant === "training"
-              ? "https://d2vm0l3c6tu9qp.cloudfront.net/Anytime-soccer-camp.webp"
+              ? "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/uploads/1780777965295-ngesx2.png"
               : variant === "plan-builder"
-              ? "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/uploads/1778974402995-sa4a36.png"
+              ? "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/uploads/1780778473127-vnm6a6.png"
               : "https://media.anytime-soccer.com/wp-content/uploads/2026/02/news_soccer08_16-9-ratio.webp"}
             alt={variant === "ebook" ? ebook.title : variant === "training" ? "Anytime Soccer Training" : variant === "plan-builder" ? "Free Training Plan" : "Soccer Near Me"}
             className="w-full h-full object-contain"
