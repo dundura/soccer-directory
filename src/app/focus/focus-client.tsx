@@ -9,16 +9,13 @@ import { MarketingHub } from "@/components/marketing-hub";
 import { NewsletterHub } from "@/components/newsletter-hub";
 import { PostsHub } from "@/components/posts-hub";
 import { DailyPlaybook } from "@/components/daily-playbook";
-import { GuestsHub } from "@/components/guests-hub";
+type Tab = "playbook" | "projects" | "clients" | "blog" | "newsletter" | "posts";
 
-type Tab = "playbook" | "projects" | "clients" | "guests" | "blog" | "newsletter" | "posts";
-
-const TAB_ORDER: Tab[] = ["playbook", "projects", "clients", "guests", "blog", "newsletter", "posts"];
+const TAB_ORDER: Tab[] = ["playbook", "projects", "clients", "blog", "newsletter", "posts"];
 const TAB_LABELS: Record<Tab, string> = {
   playbook:   "Daily Playbook",
   projects:   "Projects",
   clients:    "Active Clients",
-  guests:     "Guests",
   blog:       "Marketing",
   newsletter: "Email Newsletter",
   posts:      "Our Posts",
@@ -72,7 +69,6 @@ export default function FocusClient() {
       {tab === "playbook"   && <DailyPlaybook />}
       {tab === "projects"   && <ProjectFocus />}
       {tab === "clients"    && <ActiveClients />}
-      {tab === "guests"     && <GuestsHub />}
       {tab === "blog"       && <MarketingHub />}
       {tab === "newsletter" && <NewsletterHub />}
       {tab === "posts"      && <PostsHub />}
