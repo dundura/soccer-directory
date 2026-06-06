@@ -8,6 +8,7 @@ import { InlineEditField } from "@/components/inline-edit";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ContactPodcastForm } from "./contact-form";
+import { EpisodesList } from "./episodes-list";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
@@ -269,28 +270,7 @@ export default async function PodcastPage({ params }: Props) {
                 <h2 className="font-[family-name:var(--font-display)] text-xl sm:text-2xl font-extrabold text-primary uppercase tracking-tight">Recent Episodes</h2>
                 <EditSectionLink ownerId={ownerId} listingType="podcast" listingId={podcast.id} />
               </div>
-              <div className="space-y-3">
-                {rssEpisodes.map((ep, i) => (
-                  <a
-                    key={i}
-                    href={ep.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-start gap-3 p-3 rounded-xl border border-border hover:bg-surface transition-colors group"
-                  >
-                    <span className="shrink-0 w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center text-sm font-bold">{i + 1}</span>
-                    <div className="flex-1 min-w-0">
-                      <span className="block font-semibold text-sm text-primary group-hover:text-accent-hover transition-colors">{ep.title}</span>
-                      {ep.description && <span className="block text-xs text-muted mt-0.5 line-clamp-2">{ep.description}</span>}
-                      <span className="block text-xs text-muted mt-1">
-                        {ep.pubDate && new Date(ep.pubDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                        {ep.duration && <> &middot; {ep.duration}</>}
-                      </span>
-                    </div>
-                    <span className="shrink-0 text-muted text-xs ml-auto">↗</span>
-                  </a>
-                ))}
-              </div>
+              <EpisodesList episodes={rssEpisodes} />
             </div>
           )}
 
