@@ -61,6 +61,7 @@ export function PostsHub() {
   const [filterType, setFilterType] = useState("");
   const [filterText, setFilterText] = useState("");
   const [postTab, setPostTab]       = useState<"active" | "posted">("active");
+  const [mainTab, setMainTab]       = useState<"posts" | "podcast">("posts");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -102,6 +103,24 @@ export function PostsHub() {
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 20px" }}>
+      {/* Sub-tab bar: Posts / Podcast */}
+      <div style={{ display: "flex", gap: 0, borderBottom: "2px solid #E1E8EF", marginBottom: 24 }}>
+        {(["posts", "podcast"] as const).map(t => (
+          <button key={t} onClick={() => setMainTab(t)} style={{
+            padding: "10px 22px", fontSize: 14, fontWeight: mainTab === t ? 700 : 500,
+            color: mainTab === t ? "#0F3154" : "#94a3b8",
+            background: "none", border: "none",
+            borderBottom: mainTab === t ? "2px solid #0F3154" : "2px solid transparent",
+            marginBottom: -2, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+          }}>
+            {t === "posts" ? "Posts" : "🎙️ Podcast"}
+          </button>
+        ))}
+      </div>
+
+      {mainTab === "podcast" && <PodcastSection />}
+
+      {mainTab === "posts" && <>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
         <div>
@@ -251,6 +270,7 @@ export function PostsHub() {
           </table>
         </div>
       )}
+      </>}
 
     </div>
   );
@@ -343,7 +363,7 @@ export function PodcastSection() {
   };
 
   return (
-    <div style={{ marginTop: 40 }}>
+    <div>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
         <div>
