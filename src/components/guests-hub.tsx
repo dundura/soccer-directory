@@ -9,18 +9,25 @@ interface Booking {
   guestName: string;
   notes: string;
   links: GuestLink[];
-  status: string;
+  status: "upcoming" | "completed" | "cancelled";
+  update: string;
 }
 
 const STORAGE_KEY = "snm_guest_bookings";
 
-const EMPTY_FORM = { guestName: "", notes: "", links: [{ label: "", url: "" }, { label: "", url: "" }] as GuestLink[], status: "" };
+const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
+  upcoming:  { bg: "#eff6ff", color: "#1d4ed8" },
+  completed: { bg: "#f0fdf4", color: "#16a34a" },
+  cancelled: { bg: "#fef2f2", color: "#dc2626" },
+};
+
+const EMPTY_FORM = { guestName: "", notes: "", links: [{ label: "", url: "" }, { label: "", url: "" }] as GuestLink[], status: "upcoming" as Booking["status"], update: "" };
 
 export function GuestsHub() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState<"all" | "upcoming" | "completed" | "cancelled">("all");
   const [form, setForm] = useState(EMPTY_FORM);
   const [notesModal, setNotesModal] = useState<Booking | null>(null);
 
@@ -41,7 +48,7 @@ export function GuestsHub() {
   const openEdit = (b: Booking) => {
     const links = [...(b.links || [])];
     while (links.length < 2) links.push({ label: "", url: "" });
-    setForm({ guestName: b.guestName, notes: b.notes, links, status: b.status });
+    setForm({ guestName: b.guestName, notes: b.notes, links, status: b.status, update: b.update || "" });
     setEditId(b.id);
     setShowForm(true);
   };
@@ -50,17 +57,17 @@ export function GuestsHub() {
     if (!form.guestName.trim()) return;
     const cleanLinks = form.links.filter(l => l.url.trim());
     if (editId) {
-      save(bookings.map(b => b.id === editId ? { ...b, ...form, links: cleanLinks } : b));
+      save(bookings.map(b => b.id === editId ? { ...b, ...form, links: cleanLinks, update: form.update } : b));
     } else {
-      save([{ id: Date.now().toString(), ...form, links: cleanLinks }, ...bookings]);
+      save([{ id: Date.now().toString(), ...form, links: cleanLinks, update: form.update }, ...bookings]);
     }
     setShowForm(false);
   };
 
   const deleteBooking = (id: string) => save(bookings.filter(b => b.id !== id));
 
-  const filtered = filter === "all" ? bookings : bookings.filter(b => b.status.toLowerCase().includes(filter.toLowerCase()));
-  const upcomingCount = bookings.filter(b => b.status.toLowerCase() === "upcoming").length;
+  const filtered = filter === "all" ? bookings : bookings.filter(b => b.status === filter);
+  const upcomingCount = bookings.filter(b => b.status === "upcoming").length;
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 20px", fontFamily: "var(--font-body, 'DM Sans', sans-serif)" }}>
@@ -79,14 +86,14 @@ export function GuestsHub() {
         </button>
       </div>
 
-      {/* Filter by status */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 20, alignItems: "center" }}>
-        <input value={filter === "all" ? "" : filter} onChange={e => setFilter(e.target.value || "all")}
-          placeholder="Filter by status…"
-          style={{ border: "1px solid #E1E8EF", borderRadius: 8, padding: "6px 10px", fontSize: 12, color: "#334155", outline: "none", width: 180 }} />
-        {filter !== "all" && (
-          <button onClick={() => setFilter("all")} style={{ background: "none", border: "none", fontSize: 12, color: "#94a3b8", cursor: "pointer" }}>Clear</button>
-        )}
+      {/* Filters */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
+        {(["all", "upcoming", "completed", "cancelled"] as const).map(f => (
+          <button key={f} onClick={() => setFilter(f)}
+            style={{ padding: "6px 14px", borderRadius: 20, border: "1.5px solid", borderColor: filter === f ? "#0F3154" : "#E1E8EF", background: filter === f ? "#0F3154" : "#fff", color: filter === f ? "#fff" : "#64748b", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+            {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
       </div>
 
       {/* Bookings table */}
@@ -105,6 +112,7 @@ export function GuestsHub() {
                 <th style={th()}>Status</th>
                 <th style={th()}>Notes</th>
                 <th style={th()}>Links</th>
+                <th style={th()}>Update</th>
                 <th style={th()}></th>
               </tr>
             </thead>
@@ -113,12 +121,15 @@ export function GuestsHub() {
                 <tr key={b.id} style={{ borderTop: "1px solid #F1F5F9" }}>
                   <td style={{ ...td(), fontWeight: 700, color: "#0F3154", fontSize: 14 }}>{b.guestName}</td>
                   <td style={td()}>
-                    <input
+                    <select
                       value={b.status}
-                      onChange={e => save(bookings.map(x => x.id === b.id ? { ...x, status: e.target.value } : x))}
-                      placeholder="e.g. Upcoming"
-                      style={{ border: "1px solid #E1E8EF", borderRadius: 7, padding: "4px 8px", fontSize: 12, fontWeight: 600, color: "#334155", outline: "none", width: 110, fontFamily: "inherit" }}
-                    />
+                      onChange={e => save(bookings.map(x => x.id === b.id ? { ...x, status: e.target.value as Booking["status"] } : x))}
+                      style={{ border: "1px solid #E1E8EF", borderRadius: 7, padding: "4px 8px", fontSize: 12, fontWeight: 700, cursor: "pointer", background: STATUS_COLORS[b.status]?.bg || "#F1F5F9", color: STATUS_COLORS[b.status]?.color || "#64748b", outline: "none" }}
+                    >
+                      <option value="upcoming">Upcoming</option>
+                      <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
                   </td>
                   <td style={td()}>
                     {b.notes && (
@@ -137,6 +148,14 @@ export function GuestsHub() {
                         </a>
                       ))}
                     </div>
+                  </td>
+                  <td style={{ ...td(), maxWidth: 200 }}>
+                    <input
+                      value={b.update || ""}
+                      onChange={e => save(bookings.map(x => x.id === b.id ? { ...x, update: e.target.value } : x))}
+                      placeholder="Notes on progress…"
+                      style={{ border: "1px solid #E1E8EF", borderRadius: 7, padding: "4px 8px", fontSize: 12, color: "#334155", outline: "none", width: "100%", fontFamily: "inherit", boxSizing: "border-box" }}
+                    />
                   </td>
                   <td style={td()}>
                     <div style={{ display: "flex", gap: 6 }}>
@@ -216,9 +235,12 @@ export function GuestsHub() {
               </div>
               <div>
                 <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>Status</label>
-                <input value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
-                  placeholder="e.g. Upcoming, Pitched, Confirmed…"
-                  style={{ width: "100%", padding: "9px 12px", border: "1.5px solid #E1E8EF", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+                <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as Booking["status"] }))}
+                  style={{ width: "100%", padding: "9px 12px", border: "1.5px solid #E1E8EF", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box" }}>
+                  <option value="upcoming">Upcoming</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
               </div>
             </div>
             <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
