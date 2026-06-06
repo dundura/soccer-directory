@@ -8,7 +8,7 @@ const FREE_EBOOKS = [
   { title: "Must-Have Guide to In-Home Training", subtitle: "Everything you need to know to start training at home effectively.", href: "https://anytime-soccer.com/must-have-guide-for-serious-soccer-parents/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/home/bg-1.png", cta: "Get the Guide" },
   { title: "20 Questions for Every Club", subtitle: "Essential questions to ask before joining any youth soccer club.", href: "https://anytime-soccer.com/20-questions-every-parent-should-ask/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/ebook/ebook-1.png", cta: "Download Free" },
   { title: "Become a Rec Coach SuperHero", subtitle: "Transform your rec coaching with practical tips and strategies.", href: "https://anytime-soccer.com/become-a-rec-coach-superhero/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/ebook/ebook-2.png", cta: "Get the Playbook" },
-  { title: "Everything About Guest Playing", subtitle: "Navigate guest playing opportunities like a pro.", href: "https://anytime-soccer.com/everything-you-need-to-know-about-guest-playing/", image: "https://media.anytime-soccer.com/wp-content/themes/anytime/images/ebook/ebook-3.png", cta: "Download Free" },
+  { title: "Everything About Guest Playing", subtitle: "Navigate guest playing opportunities like a pro.", href: "https://anytime-soccer.com/everything-you-need-to-know-about-guest-playing/", image: "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/uploads/1780779110397-5yoxm9.png", cta: "Download Free" },
   { title: "Monopoly: Issues Facing US Youth Soccer", subtitle: "A candid look at what's holding back American soccer.", href: "https://anytime-soccer.com/monopoly-addressing-issues-facing-youth-soccer-ebook/", image: "https://media.anytime-soccer.com/wp-content/uploads/2024/07/us_soccer-768x596.png", cta: "Read Free Ebook" },
   { title: "The Parent Trainer's Playbook", subtitle: "20 unconventional tips for raising a competitive soccer player.", href: "https://anytime-soccer.com/the-parent-trainers-playbook/", image: "https://media.anytime-soccer.com/wp-content/uploads/2024/08/the-playbook-20-unconventional-tips-for-raising-a-compeitive-soccer-player-thus-far-1024x789.png", cta: "Get the Playbook" },
   { title: "Player Cards Guide", subtitle: "Stay informed about eligibility requirements and avoid missed tournaments.", href: "https://anytime-soccer.com/everything-you-need-to-know-about-player-cards/", image: "https://media.anytime-soccer.com/wp-content/uploads/2024/11/pro-tips-for-college-showcases-1.png", cta: "Download Free" },
@@ -60,9 +60,11 @@ export default function SitePopup() {
 
   const ebook = FREE_EBOOKS[ebookIndex];
 
-  // Full-image popups for training and plan-builder
-  if (variant === "training" || variant === "plan-builder") {
-    const v = IMAGE_VARIANTS[variant];
+  // Full-image popups for training, plan-builder, and ebook
+  if (variant === "training" || variant === "plan-builder" || variant === "ebook") {
+    const v = variant === "ebook"
+      ? { image: ebook.image, alt: ebook.title, href: ebook.href }
+      : IMAGE_VARIANTS[variant];
     return (
       <div
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
