@@ -7,7 +7,9 @@ import { ImageUpload } from "./image-upload";
 
 const RichTextEditor = lazy(() => import("./rich-text-editor").then((m) => ({ default: m.RichTextEditor })));
 
-const VIDEO_REGEX = /youtube\.com|youtu\.be|vimeo\.com|tiktok\.com|open\.spotify\.com|instagram\.com\/(?:p|reel)/;
+// Spotify deliberately excluded: a Spotify link in the CTA Button field stays
+// a plain button — use the "Video or Embedded URL" field for an inline player
+const VIDEO_REGEX = /youtube\.com|youtu\.be|vimeo\.com|tiktok\.com|instagram\.com\/(?:p|reel)/;
 
 function CtaVideoEmbed({ ctaUrl, videoUrl }: { ctaUrl: string; videoUrl?: string }) {
   if (videoUrl || !VIDEO_REGEX.test(ctaUrl)) return null;
@@ -313,12 +315,12 @@ export function PostEditableContent({
               )}
             </div>
             <div>
-              <label className="block text-xs font-bold text-primary mb-1">Video URL</label>
+              <label className="block text-xs font-bold text-primary mb-1">Video or Embedded URL</label>
               <input
                 type="url"
                 value={videoValue}
                 onChange={(e) => setVideoValue(e.target.value)}
-                placeholder="YouTube, Shorts, Vimeo, or Instagram link"
+                placeholder="YouTube, Vimeo, Instagram, TikTok, or Spotify link"
                 className="w-full text-xs px-3 py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
               />
             </div>

@@ -155,7 +155,7 @@ export function CreatePostForm() {
 
             {/* Video */}
             <div>
-              <label className="block text-sm font-bold text-primary mb-1.5">Video / Podcast Embed</label>
+              <label className="block text-sm font-bold text-primary mb-1.5">Video or Embedded URL</label>
               <input
                 type="url"
                 value={videoUrl}
