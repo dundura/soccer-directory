@@ -154,8 +154,30 @@ export default async function PostPage({ params }: Props) {
     return html;
   }
 
+  // Turn Spotify links (episodes, shows, tracks, playlists, albums) into embedded players.
+  // Handles both bare URLs and URLs already wrapped in <a> tags.
+  function embedSpotify(html: string): string {
+    const spotifyEmbed = (type: string, id: string) => {
+      const height = type === "episode" || type === "track" ? 152 : 352;
+      return `<iframe src="https://open.spotify.com/embed/${type}/${id}" width="100%" height="${height}" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px;margin:16px 0;"></iframe>`;
+    };
+    const urlPattern = /https?:\/\/open\.spotify\.com\/(episode|show|track|playlist|album)\/([A-Za-z0-9]+)(?:\?[^\s"'<>]*)?/;
+    // 1. Anchor tags pointing at Spotify
+    let out = html.replace(
+      new RegExp(`<a[^>]+href=["']${urlPattern.source}["'][^>]*>.*?<\\/a>`, "gi"),
+      (_m, type, id) => spotifyEmbed(type, id)
+    );
+    // 2. Bare URLs in text (not inside a tag attribute)
+    out = out.replace(
+      new RegExp(`(?<!["'=>/])${urlPattern.source}`, "g"),
+      (_m, type, id) => spotifyEmbed(type, id)
+    );
+    return out;
+  }
+
   let enrichedBody = ensureParagraphs(post.body);
   enrichedBody = splitLongParagraphs(enrichedBody);
+  enrichedBody = embedSpotify(enrichedBody);
 
   // ── Episode-style post layout ──
   return (
