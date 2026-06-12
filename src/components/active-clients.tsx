@@ -390,10 +390,8 @@ export function ActiveClients() {
                             <button
                               onClick={e => { e.stopPropagation(); deleteClient(client.id); }}
                               title="Delete client"
-                              style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 15, cursor: "pointer", lineHeight: 1, padding: "0 2px", flexShrink: 0 }}
-                              onMouseEnter={e => (e.currentTarget.style.color = "#DC373E")}
-                              onMouseLeave={e => (e.currentTarget.style.color = "#CBD5E1")}
-                            >×</button>
+                              style={{ background: "#FEE2E2", border: "none", borderRadius: 6, color: "#DC373E", fontSize: 11, fontWeight: 700, cursor: "pointer", lineHeight: 1, padding: "4px 6px", flexShrink: 0 }}
+                            >🗑</button>
                           </div>
                           {client.team && (
                             <div style={{ fontSize: 11, color: "#0891b2", fontWeight: 600, marginBottom: 6 }}>{client.team}</div>
@@ -633,9 +631,7 @@ export function ActiveClients() {
                         <td style={{ padding: "8px 14px", verticalAlign: "middle", textAlign: "right" }}>
                           <button onClick={() => deleteClient(client.id)}
                             title="Delete client"
-                            onMouseEnter={e => (e.currentTarget.style.color = "#DC373E")}
-                            onMouseLeave={e => (e.currentTarget.style.color = "#94a3b8")}
-                            style={{ background: "none", border: "none", color: "#94a3b8", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "2px 4px" }}>×</button>
+                            style={{ background: "#FEE2E2", border: "none", borderRadius: 6, color: "#DC373E", fontSize: 13, fontWeight: 700, cursor: "pointer", lineHeight: 1, padding: "5px 8px" }}>🗑</button>
                         </td>
                       </tr>
 
