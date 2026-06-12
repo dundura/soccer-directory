@@ -385,7 +385,16 @@ export function ActiveClients() {
                           onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(15,49,84,0.12)")}
                           onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 1px 4px rgba(15,49,84,0.06)")}
                         >
-                          <div style={{ fontSize: 13, fontWeight: 700, color: "#0F3154", marginBottom: 3, lineHeight: 1.3 }}>{client.name}</div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 6, marginBottom: 3 }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "#0F3154", lineHeight: 1.3 }}>{client.name}</div>
+                            <button
+                              onClick={e => { e.stopPropagation(); deleteClient(client.id); }}
+                              title="Delete client"
+                              style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 15, cursor: "pointer", lineHeight: 1, padding: "0 2px", flexShrink: 0 }}
+                              onMouseEnter={e => (e.currentTarget.style.color = "#DC373E")}
+                              onMouseLeave={e => (e.currentTarget.style.color = "#CBD5E1")}
+                            >×</button>
+                          </div>
                           {client.team && (
                             <div style={{ fontSize: 11, color: "#0891b2", fontWeight: 600, marginBottom: 6 }}>{client.team}</div>
                           )}
@@ -623,7 +632,10 @@ export function ActiveClients() {
                         </td>
                         <td style={{ padding: "8px 14px", verticalAlign: "middle", textAlign: "right" }}>
                           <button onClick={() => deleteClient(client.id)}
-                            style={{ background: "none", border: "none", color: "#CBD5E1", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "2px 4px" }}>×</button>
+                            title="Delete client"
+                            onMouseEnter={e => (e.currentTarget.style.color = "#DC373E")}
+                            onMouseLeave={e => (e.currentTarget.style.color = "#94a3b8")}
+                            style={{ background: "none", border: "none", color: "#94a3b8", fontSize: 16, cursor: "pointer", lineHeight: 1, padding: "2px 4px" }}>×</button>
                         </td>
                       </tr>
 
