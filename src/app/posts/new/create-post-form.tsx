@@ -155,15 +155,15 @@ export function CreatePostForm() {
 
             {/* Video */}
             <div>
-              <label className="block text-sm font-bold text-primary mb-1.5">Video / Social Embed</label>
+              <label className="block text-sm font-bold text-primary mb-1.5">Video / Podcast Embed</label>
               <input
                 type="url"
                 value={videoUrl}
                 onChange={(e) => setVideoUrl(e.target.value)}
-                placeholder="YouTube, YouTube Shorts, Vimeo, Instagram, or TikTok link"
+                placeholder="YouTube, Vimeo, Instagram, TikTok, or Spotify link"
                 className="w-full text-sm px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
               />
-              <p className="text-xs text-muted mt-1.5">Supports YouTube, YouTube Shorts, Vimeo, Instagram posts/reels, and TikTok</p>
+              <p className="text-xs text-muted mt-1.5">Paste a link and it embeds automatically — YouTube, YouTube Shorts, Vimeo, Instagram posts/reels, TikTok, and Spotify (episodes, shows, playlists) 🎧</p>
             </div>
 
             {/* Social Media Preview Image */}

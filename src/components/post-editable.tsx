@@ -7,7 +7,7 @@ import { ImageUpload } from "./image-upload";
 
 const RichTextEditor = lazy(() => import("./rich-text-editor").then((m) => ({ default: m.RichTextEditor })));
 
-const VIDEO_REGEX = /youtube\.com|youtu\.be|vimeo\.com|tiktok\.com|instagram\.com\/(?:p|reel)/;
+const VIDEO_REGEX = /youtube\.com|youtu\.be|vimeo\.com|tiktok\.com|open\.spotify\.com|instagram\.com\/(?:p|reel)/;
 
 function CtaVideoEmbed({ ctaUrl, videoUrl }: { ctaUrl: string; videoUrl?: string }) {
   if (videoUrl || !VIDEO_REGEX.test(ctaUrl)) return null;

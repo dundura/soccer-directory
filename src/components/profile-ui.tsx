@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 
 // ── Video Embed ──────────────────────────────────────────────
 
-function getEmbedUrl(url: string): { src: string; type: "video" | "youtube" | "vimeo" | "instagram" | "tiktok" } | null {
+function getEmbedUrl(url: string): { src: string; type: "video" | "youtube" | "vimeo" | "instagram" | "tiktok" | "spotify" } | null {
   // YouTube (regular, shorts, embeds, youtu.be)
   let match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
   if (match) return { src: `https://www.youtube.com/embed/${match[1]}?autoplay=1&mute=1&loop=1&playlist=${match[1]}&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`, type: "youtube" };
@@ -19,6 +19,9 @@ function getEmbedUrl(url: string): { src: string; type: "video" | "youtube" | "v
   // Instagram post/reel
   match = url.match(/instagram\.com\/(?:p|reel|reels)\/([\w-]+)/);
   if (match) return { src: `https://www.instagram.com/p/${match[1]}/embed`, type: "instagram" };
+  // Spotify episode/show/track/playlist/album
+  match = url.match(/open\.spotify\.com\/(episode|show|track|playlist|album)\/([A-Za-z0-9]+)/);
+  if (match) return { src: `https://open.spotify.com/embed/${match[1]}/${match[2]}`, type: "spotify" };
   return null;
 }
 
@@ -71,6 +74,20 @@ export function VideoEmbed({ url }: { url: string }) {
     setMuted(next);
   }
 
+  if (embed.type === "spotify") {
+    const compact = /\/embed\/(episode|track)\//.test(embed.src);
+    return (
+      <div style={{ borderRadius: 12, overflow: "hidden" }}>
+        <iframe
+          src={embed.src}
+          className="w-full border-0"
+          style={{ height: compact ? 152 : 352 }}
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        />
+      </div>
+    );
+  }
   if (embed.type === "instagram") {
     return (
       <div className="rounded-xl overflow-hidden border border-border" style={{ maxWidth: 540 }}>
