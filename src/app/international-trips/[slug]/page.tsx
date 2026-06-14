@@ -78,7 +78,9 @@ export default async function TripDetailPage({ params }: Props) {
           <div className="space-y-6">
             <div className="bg-white rounded-2xl border border-border overflow-hidden">
               {trip.teamPhoto && (
-                <img src={trip.teamPhoto} alt={trip.tripName} className="w-full h-48 object-cover" />
+                <div className="bg-surface flex items-center justify-center overflow-hidden" style={{ maxHeight: 220 }}>
+                  <img src={trip.teamPhoto} alt={trip.tripName} className="w-full object-contain" style={{ maxHeight: 220 }} />
+                </div>
               )}
               <div className="p-6">
                 {trip.logo && (

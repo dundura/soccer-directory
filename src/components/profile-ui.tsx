@@ -123,17 +123,16 @@ export function VideoEmbed({ url }: { url: string }) {
 
 export function PhotoGallery({ photos, imagePosition }: { photos: string[]; imagePosition?: number }) {
   if (!photos.length) return null;
-  const pos = imagePosition ?? 50;
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {photos.map((url, i) => (
-        <img
-          key={i}
-          src={url}
-          alt={`Photo ${i + 1}`}
-          className="w-full aspect-[4/3] object-cover rounded-xl border border-border"
-          style={{ objectPosition: `center ${pos}%` }}
-        />
+        <div key={i} className="aspect-[4/3] bg-surface rounded-xl border border-border overflow-hidden flex items-center justify-center">
+          <img
+            src={url}
+            alt={`Photo ${i + 1}`}
+            className="max-w-full max-h-full object-contain"
+          />
+        </div>
       ))}
     </div>
   );
