@@ -6,6 +6,9 @@ import { verifyCaptcha } from "@/lib/captcha";
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const NOTIFY_EMAIL = "neil@anytime-soccer.com";
 
+const BLOCKED_DOMAINS = ["soccerclubhq.com"];
+const BLOCKED_EMAILS: string[] = [];
+
 const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
   guest: "Guest Play Opportunity", tournament: "Tournament", futsal: "Futsal Team",
@@ -29,6 +32,14 @@ export async function POST(req: Request) {
     // Honeypot check — bots fill hidden fields
     if (website) {
       return NextResponse.json({ success: true }); // silently discard
+    }
+
+    // Blocked senders
+    if (senderEmail) {
+      const domain = senderEmail.split("@")[1]?.toLowerCase();
+      if (BLOCKED_EMAILS.includes(senderEmail.toLowerCase()) || BLOCKED_DOMAINS.includes(domain)) {
+        return NextResponse.json({ success: true }); // silently discard
+      }
     }
 
     // Time-based check — reject if submitted in under 3 seconds

@@ -4,12 +4,20 @@ import { Resend } from "resend";
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const NOTIFY_EMAIL = "neil@anytime-soccer.com";
 
+const BLOCKED_DOMAINS = ["soccerclubhq.com"];
+const BLOCKED_EMAILS: string[] = [];
+
 export async function POST(req: Request) {
   try {
     const { name, email, subject, message } = await req.json();
 
     if (!name || !email || !subject || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const domain = email.split("@")[1]?.toLowerCase();
+    if (BLOCKED_EMAILS.includes(email.toLowerCase()) || BLOCKED_DOMAINS.includes(domain)) {
+      return NextResponse.json({ success: true }); // silently discard
     }
 
     if (resend) {
