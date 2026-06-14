@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     description: "The #1 directory for youth soccer. Find clubs, teams, private trainers, camps, and guest player opportunities near you.",
     images: ["https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/uploads/1774543421478-69mfuk.png"],
   },
+  verification: {
+    google: "x81LGGZFw2fYxi9m7wUWT4jam4lgxU2jvE8tHdtFk0Q",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
