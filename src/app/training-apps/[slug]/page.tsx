@@ -63,6 +63,7 @@ export default async function TrainingAppDetailPage({ params }: Props) {
 
   const pageUrl = `https://www.soccer-near-me.com/training-apps/${slug}`;
   const image = app.imageUrl || DEFAULT_IMAGE;
+  const ytIdApp = app.videoUrl ? (app.videoUrl.match(/(?:youtube\.com\/(?:embed\/|watch\?v=)|youtu\.be\/)([^?&\s]+)/) || [])[1] : null;
   let photos: string[] = [];
   if (app.photos && app.photos.length > 0) {
     photos = app.photos;
@@ -70,6 +71,20 @@ export default async function TrainingAppDetailPage({ params }: Props) {
 
   return (
     <>
+      {ytIdApp && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+            "name": `${app.name} | Soccer Training App`,
+            "description": `Watch demo videos for ${app.name}, a soccer training app listed on Soccer Near Me.`,
+            "thumbnailUrl": `https://img.youtube.com/vi/${ytIdApp}/maxresdefault.jpg`,
+            "embedUrl": `https://www.youtube.com/embed/${ytIdApp}`,
+            "uploadDate": "2024-01-01",
+          }) }}
+        />
+      )}
       {/* Breadcrumb */}
       <div className="max-w-4xl mx-auto px-6 py-3.5 text-sm text-muted flex items-center justify-between">
         <div>

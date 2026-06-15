@@ -180,8 +180,24 @@ export default async function CampDetailPage({ params }: Props) {
     </>
   );
 
+  const ytIdCamp = videoUrl ? (videoUrl.match(/(?:youtube\.com\/(?:embed\/|watch\?v=)|youtu\.be\/)([^?&\s]+)/) || [])[1] : null;
+
   return (
     <>
+      {ytIdCamp && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+            "name": `${camp.name} | Soccer Camp`,
+            "description": `Watch videos from ${camp.name}, a soccer camp listed on Soccer Near Me.`,
+            "thumbnailUrl": `https://img.youtube.com/vi/${ytIdCamp}/maxresdefault.jpg`,
+            "embedUrl": `https://www.youtube.com/embed/${ytIdCamp}`,
+            "uploadDate": "2024-01-01",
+          }) }}
+        />
+      )}
       {/* Breadcrumb */}
       <div className="max-w-[1100px] mx-auto px-6 py-3.5 text-sm text-muted flex items-center justify-between">
         <div>

@@ -90,8 +90,24 @@ export default async function ClubDetailPage({ params }: Props) {
     (club.practiceSchedule || []).map((d) => d.trim().slice(0, 3).toLowerCase())
   );
 
+  const ytIdClub = videoUrl ? (videoUrl.match(/(?:youtube\.com\/(?:embed\/|watch\?v=)|youtu\.be\/)([^?&\s]+)/) || [])[1] : null;
+
   return (
     <>
+      {ytIdClub && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+            "name": `${club.name} | Youth Soccer Club`,
+            "description": `Watch videos from ${club.name}, a youth soccer club in ${club.city}, ${club.state}.`,
+            "thumbnailUrl": `https://img.youtube.com/vi/${ytIdClub}/maxresdefault.jpg`,
+            "embedUrl": `https://www.youtube.com/embed/${ytIdClub}`,
+            "uploadDate": "2024-01-01",
+          }) }}
+        />
+      )}
       {/* Breadcrumb */}
       <div className="max-w-[1100px] mx-auto px-6 py-3.5 text-sm text-muted flex items-center justify-between">
         <div>

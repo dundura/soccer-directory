@@ -3,6 +3,9 @@ import type { MetadataRoute } from "next";
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: { userAgent: "*", allow: "/" },
-    sitemap: "https://www.soccer-near-me.com/sitemap.xml",
+    sitemap: [
+      "https://www.soccer-near-me.com/sitemap.xml",
+      "https://www.soccer-near-me.com/sitemap-video.xml",
+    ],
   };
 }

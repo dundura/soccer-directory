@@ -168,8 +168,24 @@ export default async function TrainerDetailPage({ params }: Props) {
     </>
   );
 
+  const ytIdTrainer = videoUrl ? (videoUrl.match(/(?:youtube\.com\/(?:embed\/|watch\?v=)|youtu\.be\/)([^?&\s]+)/) || [])[1] : null;
+
   return (
     <>
+      {ytIdTrainer && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+            "name": `${trainer.name} | Soccer Trainer`,
+            "description": `Watch training videos from ${trainer.name}, a private soccer trainer on Soccer Near Me.`,
+            "thumbnailUrl": `https://img.youtube.com/vi/${ytIdTrainer}/maxresdefault.jpg`,
+            "embedUrl": `https://www.youtube.com/embed/${ytIdTrainer}`,
+            "uploadDate": "2024-01-01",
+          }) }}
+        />
+      )}
       {/* Breadcrumb */}
       <div className="max-w-[1100px] mx-auto px-6 py-3.5 text-sm text-muted flex items-center justify-between">
         <div>
