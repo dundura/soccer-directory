@@ -4,7 +4,6 @@ import { NavDropdown } from "@/components/nav-dropdown";
 import { HeaderAuth } from "@/components/header-auth";
 import AuthProvider from "@/components/session-provider";
 import AnnouncementBanner from "@/components/announcement-banner";
-import WorldCupTickerBanner from "@/components/world-cup-ticker-banner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -51,7 +50,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-surface antialiased">
         <AuthProvider>
           <AnnouncementBanner />
-          <WorldCupTickerBanner />
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
