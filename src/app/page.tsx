@@ -7,7 +7,6 @@ import {
 import { getNewsArticles, getLatestPodcastEpisode, type NewsArticle } from "@/lib/news";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
-import { RotatingText } from "@/components/rotating-text";
 import SitePopup from "@/components/site-popup";
 import { SectionCarousel } from "@/components/section-carousel";
 import { ExpandableCategories } from "@/components/expandable-categories";
@@ -229,88 +228,33 @@ export default async function HomePage() {
         <div className="relative bg-primary rounded-[20px] overflow-hidden max-w-7xl mx-auto">
           {/* Decorative grid */}
           <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "40px 40px" }} />
-          <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8 md:py-24">
+          <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8 md:py-16">
             <div className="flex items-center gap-12">
               {/* Left Column -- Text Content */}
               <div className="flex-1 min-w-0">
-                <p className="text-accent font-semibold text-sm uppercase tracking-wider mb-4">
-                  Welcome to Soccer Near Me
-                </p>
                 <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-                  Find the perfect youth soccer<RotatingText /> near you
+                  Find the perfect youth soccer team near you
                 </h1>
-                <p className="text-white/70 text-lg md:text-xl mb-8 max-w-2xl">
-                  Search our directory of verified clubs, teams, private trainers, camps, and guest player opportunities. All in one place.
-                </p>
 
                 {/* Search Bar */}
                 <HeroSearchBar />
 
-                {/* Grupup Banner */}
                 <a
-                  href="https://grupup.app/for-parents"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block mb-6"
+                  href="/dashboard"
+                  className="inline-block px-8 py-4 rounded-xl bg-accent text-white font-semibold text-base hover:bg-accent-hover transition-colors"
                 >
-                  <div className="flex items-stretch bg-white/10 border border-white/20 rounded-2xl overflow-hidden hover:bg-white/20 transition-all">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between flex-1 min-w-0 px-5 py-4 gap-3">
-                      <div className="flex items-center gap-4 min-w-0">
-                        <span className="text-3xl shrink-0">⚽</span>
-                        <div className="min-w-0">
-                          <p className="text-white font-bold text-base leading-tight">Book Group Training Near You</p>
-                          <p className="text-white/60 text-sm mt-0.5">Train together, split the cost — from $22/player</p>
-                        </div>
-                      </div>
-                      <div className="shrink-0 flex sm:block justify-center">
-                        <div className="bg-[#DC373E] text-white text-sm font-bold px-4 py-2 rounded-xl whitespace-nowrap inline-block">
-                          Find Sessions →
-                        </div>
-                      </div>
-                    </div>
-                    <div className="hidden sm:block w-32 shrink-0 overflow-hidden">
-                      <img
-                        src="https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg"
-                        alt="Soccer group training"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 20%' }}
-                      />
-                    </div>
-                  </div>
+                  Get Listed →
                 </a>
               </div>
 
-              {/* Right Column -- Hero Image + Floating Cards */}
-              <div className="hidden lg:block relative w-[420px] shrink-0">
-                <div className="relative">
-                  <img
-                    src="/hero-soccer.webp"
-                    alt="Youth soccer players training"
-                    className="w-full h-[480px] object-cover rounded-2xl"
-                  />
-
-                  {/* Floating Card 1 -- top-left */}
-                  <div className="absolute -top-4 -left-8 bg-white rounded-xl shadow-xl p-4 w-52 animate-float">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-primary">Charlotte FC 2012</span>
-                      <span className="text-[10px] font-semibold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full">2012</span>
-                    </div>
-                    <span className="inline-block text-[10px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full mr-1">Boys</span>
-                    <span className="inline-block text-[10px] font-semibold bg-red-50 text-[#DC373E] px-2 py-0.5 rounded-full">Recruiting</span>
-                    <p className="text-xs text-muted mt-2">Charlotte, NC</p>
-                  </div>
-
-                  {/* Floating Card 2 -- bottom-right */}
-                  <div className="absolute -bottom-4 -right-6 bg-white rounded-xl shadow-xl p-4 w-52 animate-float-alt">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-primary">NC Fusion ECNL</span>
-                      <span className="text-[10px] font-semibold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded-full">2011</span>
-                    </div>
-                    <span className="inline-block text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full mr-1">Girls</span>
-                    <span className="inline-block text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">ECNL</span>
-                    <p className="text-xs text-muted mt-2">Greensboro, NC</p>
-                  </div>
-                </div>
+              {/* Right Column -- Hero Image */}
+              <div className="hidden lg:block shrink-0">
+                <img
+                  src="/hero-soccer.webp"
+                  alt="Youth soccer players training"
+                  className="object-cover"
+                  style={{ width: 380, height: 280, borderRadius: 12 }}
+                />
               </div>
             </div>
           </div>
