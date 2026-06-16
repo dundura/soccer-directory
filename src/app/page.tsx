@@ -7,6 +7,7 @@ import {
 import { getNewsArticles, getLatestPodcastEpisode, type NewsArticle } from "@/lib/news";
 import { ListingCard, Badge, AnytimeInlineCTA } from "@/components/ui";
 import { HeroSearchBar } from "@/components/hero-search";
+import { RotatingText } from "@/components/rotating-text";
 import SitePopup from "@/components/site-popup";
 import { SectionCarousel } from "@/components/section-carousel";
 import { ExpandableCategories } from "@/components/expandable-categories";
@@ -233,7 +234,7 @@ export default async function HomePage() {
               {/* Left Column -- Text Content */}
               <div className="flex-1 min-w-0">
                 <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-                  Find the perfect youth soccer team near you
+                  Find the perfect youth soccer<RotatingText /> near you
                 </h1>
 
                 {/* Search Bar */}
