@@ -30,6 +30,42 @@ const th: React.CSSProperties = {
   borderBottom: "1px solid #E1E8EF", whiteSpace: "nowrap",
 };
 
+function NotesCell({ value, onSave }: { value: string; onSave: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [val, setVal] = useState(value);
+  const ref = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => { setVal(value); }, [value]);
+  useEffect(() => { if (open) ref.current?.focus(); }, [open]);
+  const commit = () => { setOpen(false); if (val !== value) onSave(val); };
+  const preview = value ? (value.length > 22 ? value.slice(0, 22) + "…" : value) : null;
+  return (
+    <>
+      <button onClick={() => setOpen(true)}
+        style={{ background: "none", border: "none", padding: "2px 0", cursor: "pointer", fontSize: 12, color: value ? "#0891b2" : "#CBD5E1", textAlign: "left", fontFamily: "inherit", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>
+        {preview ?? "+ Add note"}
+      </button>
+      {open && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.25)" }}
+          onClick={commit}>
+          <div style={{ background: "#fff", borderRadius: 12, padding: 20, minWidth: 300, maxWidth: 420, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", display: "flex", flexDirection: "column", gap: 10 }}
+            onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#0F3154" }}>Notes</div>
+            <textarea ref={ref} value={val} onChange={e => setVal(e.target.value)}
+              rows={5}
+              style={{ width: "100%", border: "1px solid #e2e8f0", borderRadius: 8, padding: "8px 10px", fontSize: 13, fontFamily: "inherit", resize: "vertical", outline: "none", boxSizing: "border-box" }} />
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+              <button onClick={() => { setVal(value); setOpen(false); }}
+                style={{ padding: "6px 16px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#fff", fontSize: 13, cursor: "pointer", color: "#64748b" }}>Cancel</button>
+              <button onClick={commit}
+                style={{ padding: "6px 16px", borderRadius: 8, border: "none", background: "#0891b2", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 function EditableCell({ value, onSave, placeholder, type = "text" }: {
   value: string; onSave: (v: string) => void; placeholder?: string; type?: string;
 }) {
@@ -611,8 +647,8 @@ export function ActiveClients() {
                             {STATUSES.map(s => <option key={s}>{s}</option>)}
                           </select>
                         </td>
-                        <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 160 }}>
-                          <EditableCell value={client.notes || ""} onSave={v => updateClient(client.id, "notes", v)} placeholder="Notes" />
+                        <td style={{ padding: "8px 14px", verticalAlign: "middle", maxWidth: 160 }}>
+                          <NotesCell value={client.notes || ""} onSave={v => updateClient(client.id, "notes", v)} />
                         </td>
                         <td style={{ padding: "8px 14px", verticalAlign: "middle", minWidth: 130 }}>
                           <EditableCell value={client.contact_date ? client.contact_date.slice(0, 10) : ""} onSave={v => updateClient(client.id, "contact_date", v)} placeholder="Date" type="date" />
