@@ -250,7 +250,7 @@ export function MobileMenu() {
               </button>
             )}
             <a
-              href="/dashboard"
+              href="/get-listed"
               onClick={() => setOpen(false)}
               className="mt-2 text-center py-3 px-4 rounded-xl bg-accent text-white text-lg font-semibold hover:bg-accent-hover transition-colors"
             >

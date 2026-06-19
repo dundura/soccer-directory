@@ -241,7 +241,7 @@ export default async function HomePage() {
                 <HeroSearchBar />
 
                 <a
-                  href="/dashboard"
+                  href="/get-listed"
                   className="inline-block px-8 py-4 rounded-xl bg-accent text-white font-semibold text-base hover:bg-accent-hover transition-colors"
                 >
                   Get Listed →

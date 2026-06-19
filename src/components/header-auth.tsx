@@ -55,7 +55,7 @@ export function HeaderAuth() {
         </a>
       )}
       <a
-        href="/dashboard"
+        href="/get-listed"
         className="hidden md:inline-flex items-center px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors"
       >
         Get Listed
