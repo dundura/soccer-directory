@@ -5,6 +5,13 @@ export const metadata: Metadata = {
   title: "How to Create Your Listing | Soccer Near Me",
   description:
     "Create a free listing on Soccer Near Me and get found by families in your area. Learn how to set up your profile and start getting contact requests today.",
+  openGraph: {
+    images: ["https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/uploads/1781901254593-pqngza.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/uploads/1781901254593-pqngza.png"],
+  },
 };
 
 const STEPS = [
