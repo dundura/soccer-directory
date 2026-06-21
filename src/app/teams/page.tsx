@@ -3,7 +3,7 @@ import { getTeams } from "@/lib/db";
 import { TeamFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Youth Soccer Teams | Soccer Near Me",

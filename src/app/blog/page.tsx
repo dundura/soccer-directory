@@ -3,7 +3,7 @@ import { getBlogPosts } from "@/lib/db";
 import { BlogHub } from "./blog-client";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Soccer Blog | Tips, Guides & News for Soccer Parents | Soccer Near Me",

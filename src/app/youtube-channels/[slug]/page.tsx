@@ -12,7 +12,7 @@ import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
 

@@ -12,7 +12,7 @@ import SitePopup from "@/components/site-popup";
 import { SectionCarousel } from "@/components/section-carousel";
 import { ExpandableCategories } from "@/components/expandable-categories";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 /* ── Helpers ──────────────────────────────────────────────── */
 

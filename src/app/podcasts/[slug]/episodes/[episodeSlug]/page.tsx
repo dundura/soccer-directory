@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { ClickableImage } from "@/components/clickable-image";
 import { EpisodeLayout } from "./EpisodeLayout";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 function getVideoThumbnail(url?: string): string | null {
   if (!url) return null;

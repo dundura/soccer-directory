@@ -12,7 +12,7 @@ import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingEventsSection } from "@/components/listing-events-section";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
 

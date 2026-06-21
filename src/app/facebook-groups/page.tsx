@@ -2,7 +2,7 @@ import { getFacebookGroups } from "@/lib/db";
 import { FacebookGroupFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Soccer Facebook Groups | Soccer Near Me",

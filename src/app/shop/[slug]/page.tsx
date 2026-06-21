@@ -14,7 +14,7 @@ import { HeroImage } from "@/components/hero-image";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { ListingEventsSection } from "@/components/listing-events-section";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
 

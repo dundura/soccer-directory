@@ -7,7 +7,7 @@ import { ClickableImage } from "@/components/clickable-image";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { PostDeleteButton } from "./post-delete";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ id: string }> };
 

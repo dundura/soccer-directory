@@ -3,7 +3,7 @@ import { getTrainers } from "@/lib/db";
 import { TrainerFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Private Soccer Trainers & Coaches | Soccer Near Me",

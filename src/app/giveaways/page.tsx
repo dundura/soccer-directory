@@ -3,7 +3,7 @@ import { getGiveaways } from "@/lib/db";
 import { GiveawayFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Free Giveaways | Soccer Near Me",

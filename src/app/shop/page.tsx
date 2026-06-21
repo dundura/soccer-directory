@@ -3,7 +3,7 @@ import { getMarketplaceItems } from "@/lib/db";
 import { ShopFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Recommendations | Soccer Near Me",

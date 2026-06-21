@@ -5,7 +5,7 @@ import { ShareButtons, VideoEmbed } from "@/components/profile-ui";
 import { ClickableImage } from "@/components/clickable-image";
 import { MediaAppearanceDetail } from "./detail";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string; appearanceSlug: string }> };
 

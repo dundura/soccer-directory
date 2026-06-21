@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/ui";
 import { ScrimmageFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Find Scrimmages | Soccer Near Me",

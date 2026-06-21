@@ -2,7 +2,7 @@ import { getInternationalTrips } from "@/lib/db";
 import { PageHeader, ListingCard, AnytimeInlineCTA } from "@/components/ui";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "International Soccer Trips | Soccer Near Me",

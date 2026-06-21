@@ -3,7 +3,7 @@ import { getCamps } from "@/lib/db";
 import { CampFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Soccer Camps & Clinics | Soccer Near Me",

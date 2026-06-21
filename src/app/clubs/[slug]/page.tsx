@@ -16,7 +16,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 function normalizeUrl(url?: string) { return url ? (url.startsWith("http") ? url : `https://${url}`) : undefined; }
 const DEFAULT_SIDEBAR_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/01/idf.webp";

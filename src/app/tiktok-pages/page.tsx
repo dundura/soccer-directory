@@ -2,7 +2,7 @@ import { getTikTokPages } from "@/lib/db";
 import { TikTokPageFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Soccer TikTok Pages | Soccer Near Me",

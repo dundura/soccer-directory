@@ -16,7 +16,7 @@ import { ClickableImage } from "@/components/clickable-image";
 import { PodcastTopicsSection } from "@/components/podcast-topics";
 import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
 

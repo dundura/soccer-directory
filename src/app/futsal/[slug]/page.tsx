@@ -14,7 +14,7 @@ import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 const DEFAULT_SIDEBAR_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/futsal.png";
 const DEFAULT_HERO_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/futsal-scaled.jpg";

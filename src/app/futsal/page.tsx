@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/ui";
 import { FutsalFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Futsal Teams | Soccer Near Me",

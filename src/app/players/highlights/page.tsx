@@ -5,7 +5,7 @@ import { PlayerAvatar } from "@/components/player-avatar";
 import type { Metadata } from "next";
 import type { HighlightVideo } from "@/lib/types";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Player Highlights | Soccer Near Me",

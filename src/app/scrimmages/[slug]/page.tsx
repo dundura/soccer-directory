@@ -12,7 +12,7 @@ import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 const DEFAULT_HERO_PHOTO = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ecln_boys.jpg";
 const DEFAULT_LOGO = "https://media.anytime-soccer.com/wp-content/uploads/2026/02/ast_logo_shield_only_blue.png";

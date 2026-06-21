@@ -3,7 +3,7 @@ import { getApprovedClubReviews } from "@/lib/db";
 import { ClubReviewFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Soccer Club Reviews | Soccer Near Me",

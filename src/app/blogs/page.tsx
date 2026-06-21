@@ -2,7 +2,7 @@ import { getBlogs, getBlogPosts, getMemberArticles } from "@/lib/db";
 import { BlogFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Soccer Blogs | Soccer Near Me",

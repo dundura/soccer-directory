@@ -3,7 +3,7 @@ import { getPhotoVideoServices } from "@/lib/db";
 import { PhotoVideoFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Photo & Video Services | Soccer Near Me",

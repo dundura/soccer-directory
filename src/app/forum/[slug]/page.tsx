@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { AnytimeInlineCTA } from "@/components/ui";
 import { ForumComments } from "./forum-comments";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
 

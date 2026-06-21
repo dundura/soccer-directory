@@ -3,7 +3,7 @@ import { getGearItems } from "@/lib/db";
 import { GearFilters } from "./filters";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Soccer Gear | Soccer Near Me",

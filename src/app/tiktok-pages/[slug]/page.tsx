@@ -12,7 +12,7 @@ import { AnytimeInlineCTA } from "@/components/ui";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 const DEFAULT_SIDEBAR_PHOTO = "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/1772852025436-kdk49t.jpg";
 const DEFAULT_HERO_PHOTO = "https://d2vm0l3c6tu9qp.cloudfront.net/soccer-directory/1772852080922-k37zwx.png";

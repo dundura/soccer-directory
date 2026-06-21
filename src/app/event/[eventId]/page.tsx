@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { ShareButtons } from "@/components/profile-ui";
 import { EventEdit } from "./event-edit";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers", camp: "camps", tournament: "tournaments",
