@@ -4,6 +4,7 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { PhotoGrid } from "@/components/photo-grid";
@@ -378,7 +379,8 @@ export default async function TryoutDetailPage({ params }: Props) {
             )}
 
             <div className="order-10 lg:order-none lg:col-start-2">
-              <AnytimeInlineCTA />
+              <InternalLinkBlock type="tryout" />
+            <AnytimeInlineCTA />
             </div>
         </div>
       </div>

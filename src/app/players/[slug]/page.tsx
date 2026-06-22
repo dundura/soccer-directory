@@ -322,7 +322,8 @@ export default async function PlayerDetailPage({ params }: Props) {
 
       {/* CTA Banner */}
       <div className="max-w-[1100px] mx-auto px-6 py-8">
-        <AnytimeInlineCTA />
+        <InternalLinkBlock type="player" />
+            <AnytimeInlineCTA />
       </div>
     </>
   );

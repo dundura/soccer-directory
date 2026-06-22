@@ -11,6 +11,7 @@ import { ContactPodcastForm } from "./contact-form";
 import { EpisodesList } from "./episodes-list";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ClickableImage } from "@/components/clickable-image";
 import { PodcastTopicsSection } from "@/components/podcast-topics";
@@ -327,7 +328,8 @@ export default async function PodcastPage({ params }: Props) {
           )}
 
           {/* Recommended Resource CTA */}
-          <AnytimeInlineCTA />
+          <InternalLinkBlock type="podcast" />
+            <AnytimeInlineCTA />
         </div>
       </div>
     </div>

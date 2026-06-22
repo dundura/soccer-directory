@@ -8,6 +8,7 @@ import { PhotoGrid } from "@/components/photo-grid";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -285,7 +286,8 @@ export default async function TrainingAppDetailPage({ params }: Props) {
           </div>
         )}
 
-        <div className="mt-8"><AnytimeInlineCTA /></div>
+        <div className="mt-8"><InternalLinkBlock type="training-app" />
+            <AnytimeInlineCTA /></div>
       </div>
     </>
   );

@@ -9,6 +9,7 @@ import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
@@ -355,6 +356,7 @@ export default async function RecruiterDetailPage({ params }: Props) {
               </div>
             )}
 
+            <InternalLinkBlock type="consultant" />
             <AnytimeInlineCTA />
 
           </main>

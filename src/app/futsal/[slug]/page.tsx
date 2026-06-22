@@ -3,6 +3,7 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { PhotoGrid } from "@/components/photo-grid";
 import { ClickableImage } from "@/components/clickable-image";
@@ -313,6 +314,7 @@ export default async function FutsalDetailPage({ params }: Props) {
             {/* Reviews */}
             <ReviewSection listingType="futsal" listingId={team.id} />
 
+            <InternalLinkBlock type="futsal" />
             <AnytimeInlineCTA />
 
           </main>

@@ -3,6 +3,7 @@ import { ManageListingButton, EditSectionLink } from "@/components/manage-listin
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
@@ -236,6 +237,7 @@ export default async function ScrimmageDetailPage({ params }: Props) {
             {/* Reviews */}
             <ReviewSection listingType="scrimmage" listingId={s.id} />
 
+            <InternalLinkBlock type="scrimmage" />
             <AnytimeInlineCTA />
 
           </main>

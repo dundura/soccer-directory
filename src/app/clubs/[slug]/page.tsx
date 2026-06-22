@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getClubBySlug, getClubSlugs, getTeamsByClubId, getListingOwner } from "@/lib/db";
 import { ListingCard, AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
@@ -486,6 +487,7 @@ export default async function ClubDetailPage({ params }: Props) {
 
           {/* ====== CTA Banner ====== */}
           <div className="order-9 lg:order-none lg:col-start-2">
+            <InternalLinkBlock type="club" />
             <AnytimeInlineCTA />
           </div>
 

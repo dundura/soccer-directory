@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getTeamBySlug, getTeamSlugs, getClubById, getListingOwner, getSimilarTeams } from "@/lib/db";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
@@ -504,6 +505,7 @@ export default async function TeamDetailPage({ params }: Props) {
           )}
 
           <div className="order-9 lg:order-none lg:col-start-2">
+            <InternalLinkBlock type="team" />
             <AnytimeInlineCTA />
           </div>
 

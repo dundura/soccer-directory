@@ -9,6 +9,7 @@ import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ContactYoutubeForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
@@ -296,7 +297,8 @@ export default async function YoutubeChannelPage({ params }: Props) {
           )}
 
           {/* CTA */}
-          <AnytimeInlineCTA />
+          <InternalLinkBlock type="youtube-channel" />
+            <AnytimeInlineCTA />
         </div>
       </div>
     </div>

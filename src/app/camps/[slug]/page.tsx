@@ -6,6 +6,7 @@ import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
 import { ReviewSection } from "@/components/review-section";
 import { HeroImage } from "@/components/hero-image";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { FeaturedArticles } from "@/components/featured-articles";
 import { PhotoGrid } from "@/components/photo-grid";
 import { ClickableImage } from "@/components/clickable-image";
@@ -358,6 +359,7 @@ export default async function CampDetailPage({ params }: Props) {
               </div>
             )}
 
+            <InternalLinkBlock type="camp" />
             <AnytimeInlineCTA />
 
           </main>
