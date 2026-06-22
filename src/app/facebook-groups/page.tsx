@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getFacebookGroups } from "@/lib/db";
 import { FacebookGroupFilters } from "./filters";
 import type { Metadata } from "next";
@@ -11,5 +12,5 @@ export const metadata: Metadata = {
 
 export default async function FacebookGroupsPage() {
   const groups = await getFacebookGroups();
-  return <FacebookGroupFilters groups={groups} />;
+  return <Suspense><FacebookGroupFilters groups={groups} /></Suspense>;
 }

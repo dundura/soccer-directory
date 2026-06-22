@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getPlayerProfiles } from "@/lib/db";
 import { PlayerFilters } from "./filters";
 import type { Metadata } from "next";
@@ -11,5 +12,5 @@ export const metadata: Metadata = {
 
 export default async function PlayersPage() {
   const players = await getPlayerProfiles();
-  return <PlayerFilters players={players} />;
+  return <Suspense><PlayerFilters players={players} /></Suspense>;
 }

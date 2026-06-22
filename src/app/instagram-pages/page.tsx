@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getInstagramPages } from "@/lib/db";
 import { InstagramPageFilters } from "./filters";
 import type { Metadata } from "next";
@@ -11,5 +12,5 @@ export const metadata: Metadata = {
 
 export default async function InstagramPagesPage() {
   const pages = await getInstagramPages();
-  return <InstagramPageFilters pages={pages} />;
+  return <Suspense><InstagramPageFilters pages={pages} /></Suspense>;
 }

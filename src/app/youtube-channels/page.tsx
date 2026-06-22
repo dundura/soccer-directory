@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getYoutubeChannels } from "@/lib/db";
 import { YoutubeChannelFilters } from "./filters";
 import type { Metadata } from "next";
@@ -11,5 +12,5 @@ export const metadata: Metadata = {
 
 export default async function YoutubeChannelsPage() {
   const channels = await getYoutubeChannels();
-  return <YoutubeChannelFilters channels={channels} />;
+  return <Suspense><YoutubeChannelFilters channels={channels} /></Suspense>;
 }

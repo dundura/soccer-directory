@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getBlogs, getBlogPosts, getMemberArticles } from "@/lib/db";
 import { BlogFilters } from "./filters";
 import type { Metadata } from "next";
@@ -33,5 +34,5 @@ export default async function BlogsPage() {
     coverImage: p.ogImageUrl || p.imageUrl || undefined,
     type: "post" as const,
   }));
-  return <BlogFilters blogs={blogs} blogPosts={recentPosts} userPosts={userPosts} />;
+  return <Suspense><BlogFilters blogs={blogs} blogPosts={recentPosts} userPosts={userPosts} /></Suspense>;
 }

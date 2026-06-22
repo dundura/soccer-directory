@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getTikTokPages } from "@/lib/db";
 import { TikTokPageFilters } from "./filters";
 import type { Metadata } from "next";
@@ -11,5 +12,5 @@ export const metadata: Metadata = {
 
 export default async function TikTokPagesPage() {
   const pages = await getTikTokPages();
-  return <TikTokPageFilters pages={pages} />;
+  return <Suspense><TikTokPageFilters pages={pages} /></Suspense>;
 }

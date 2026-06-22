@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getPodcasts } from "@/lib/db";
 import { PodcastFilters } from "./filters";
 import type { Metadata } from "next";
@@ -11,5 +12,5 @@ export const metadata: Metadata = {
 
 export default async function PodcastsPage() {
   const podcasts = await getPodcasts();
-  return <PodcastFilters podcasts={podcasts} />;
+  return <Suspense><PodcastFilters podcasts={podcasts} /></Suspense>;
 }
