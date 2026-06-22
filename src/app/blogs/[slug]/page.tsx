@@ -10,6 +10,7 @@ import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ContactBlogForm } from "./contact-form";
 import { ReviewSection } from "@/components/review-section";
 import { AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
 
@@ -312,6 +313,9 @@ export default async function BlogPage({ params }: Props) {
               <SponsorsSection sponsors={blog.sponsors} />
             </div>
           )}
+
+          {/* Internal links to directory pages */}
+          <InternalLinkBlock category={blog.category} />
 
           {/* Recommended Resource CTA */}
           <AnytimeInlineCTA />

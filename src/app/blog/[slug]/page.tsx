@@ -1,5 +1,6 @@
 import { getBlogPostBySlug, getBlogPostSlugs, getBlogPosts } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -62,6 +63,9 @@ export default async function BlogDetailPage({ params }: Props) {
               </div>
             )}
           </div>
+
+          {/* Internal links to directory pages */}
+          <InternalLinkBlock category={post.category} />
 
           {/* Anytime CTA at end of article */}
           <AnytimeInlineCTA />
