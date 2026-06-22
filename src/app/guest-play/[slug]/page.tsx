@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getGuestBySlug, getGuestSlugs, getListingOwner } from "@/lib/db";
 import { Badge, AnytimeInlineCTA } from "@/components/ui";
+import { InternalLinkBlock } from "@/components/internal-link-block";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, PhotoGallery, SocialLinks } from "@/components/profile-ui";
