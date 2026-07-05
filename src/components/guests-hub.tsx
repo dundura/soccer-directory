@@ -7,6 +7,8 @@ interface GuestLink { label: string; url: string; }
 interface Booking {
   id: string;
   guestName: string;
+  email?: string;
+  phone?: string;
   notes: string;
   links: GuestLink[];
   status: "upcoming" | "completed" | "cancelled";
@@ -21,7 +23,7 @@ const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   cancelled: { bg: "#fef2f2", color: "#dc2626" },
 };
 
-const EMPTY_FORM = { guestName: "", notes: "", links: [{ label: "", url: "" }, { label: "", url: "" }] as GuestLink[], status: "upcoming" as Booking["status"], update: "" };
+const EMPTY_FORM = { guestName: "", email: "", phone: "", notes: "", links: [{ label: "", url: "" }, { label: "", url: "" }] as GuestLink[], status: "upcoming" as Booking["status"], update: "" };
 
 export function GuestsHub() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -48,7 +50,7 @@ export function GuestsHub() {
   const openEdit = (b: Booking) => {
     const links = [...(b.links || [])];
     while (links.length < 2) links.push({ label: "", url: "" });
-    setForm({ guestName: b.guestName, notes: b.notes, links, status: b.status, update: b.update || "" });
+    setForm({ guestName: b.guestName, email: b.email || "", phone: b.phone || "", notes: b.notes, links, status: b.status, update: b.update || "" });
     setEditId(b.id);
     setShowForm(true);
   };
@@ -109,6 +111,8 @@ export function GuestsHub() {
             <thead>
               <tr style={{ background: "#F8FAFC" }}>
                 <th style={th()}>Guest</th>
+                <th style={th()}>Email</th>
+                <th style={th()}>Phone</th>
                 <th style={th()}>Status</th>
                 <th style={th()}>Notes</th>
                 <th style={th()}>Links</th>
@@ -120,6 +124,20 @@ export function GuestsHub() {
               {filtered.map(b => (
                 <tr key={b.id} style={{ borderTop: "1px solid #F1F5F9" }}>
                   <td style={{ ...td(), fontWeight: 700, color: "#0F3154", fontSize: 14 }}>{b.guestName}</td>
+                  <td style={td()}>
+                    {b.email && (
+                      <a href={`mailto:${b.email}`} style={{ fontSize: 12, color: "#1d4ed8", fontWeight: 600, textDecoration: "none" }}>
+                        {b.email}
+                      </a>
+                    )}
+                  </td>
+                  <td style={{ ...td(), whiteSpace: "nowrap" }}>
+                    {b.phone && (
+                      <a href={`tel:${b.phone}`} style={{ fontSize: 12, color: "#334155", fontWeight: 600, textDecoration: "none" }}>
+                        {b.phone}
+                      </a>
+                    )}
+                  </td>
                   <td style={td()}>
                     <select
                       value={b.status}
@@ -204,6 +222,20 @@ export function GuestsHub() {
                 <input value={form.guestName} onChange={e => setForm(f => ({ ...f, guestName: e.target.value }))}
                   placeholder="e.g. Derek Messulam"
                   style={{ width: "100%", padding: "9px 12px", border: "1.5px solid #E1E8EF", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+              </div>
+              <div style={{ display: "flex", gap: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>Email</label>
+                  <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                    placeholder="guest@email.com"
+                    style={{ width: "100%", padding: "9px 12px", border: "1.5px solid #E1E8EF", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>Phone</label>
+                  <input type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                    placeholder="(555) 123-4567"
+                    style={{ width: "100%", padding: "9px 12px", border: "1.5px solid #E1E8EF", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+                </div>
               </div>
               <div>
                 <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 4 }}>Notes</label>
