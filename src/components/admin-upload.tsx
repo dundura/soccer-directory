@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 
 interface UploadedFile {
+  id: number;
   name: string;
   label: string;
   cdnUrl: string;
@@ -11,22 +12,26 @@ interface UploadedFile {
   hidden: boolean;
 }
 
-const STORAGE_KEY = "snm_admin_uploads";
-
-function loadFiles(): UploadedFile[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch {
-    return [];
-  }
+interface UploadRow {
+  id: number;
+  name: string;
+  label: string | null;
+  cdn_url: string;
+  size: string | null;
+  hidden: boolean;
+  created_at: string;
 }
 
-function saveFiles(files: UploadedFile[]) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(files));
-  } catch { /* storage full */ }
+function fromRow(r: UploadRow): UploadedFile {
+  return {
+    id: r.id,
+    name: r.name,
+    label: r.label || "",
+    cdnUrl: r.cdn_url,
+    size: r.size || "",
+    timestamp: new Date(r.created_at).getTime(),
+    hidden: r.hidden,
+  };
 }
 
 export function AdminUpload() {
@@ -40,18 +45,12 @@ export function AdminUpload() {
   const [editingLabel, setEditingLabel] = useState<number | null>(null);
   const [editingValue, setEditingValue] = useState("");
 
-  // Load from localStorage on mount
+  // Load from the database on mount
   useEffect(() => {
-    setFiles(loadFiles());
-  }, []);
-
-  // Save to localStorage whenever files change
-  const updateFiles = useCallback((updater: (prev: UploadedFile[]) => UploadedFile[]) => {
-    setFiles((prev) => {
-      const next = updater(prev);
-      saveFiles(next);
-      return next;
-    });
+    fetch("/api/admin/uploads")
+      .then((res) => res.json())
+      .then((rows: UploadRow[]) => setFiles(Array.isArray(rows) ? rows.map(fromRow) : []))
+      .catch(() => {});
   }, []);
 
   const formatSize = (bytes: number) => {
@@ -85,23 +84,25 @@ export function AdminUpload() {
 
       if (!putRes.ok) throw new Error("Failed to upload file to S3");
 
-      updateFiles((prev) => [
-        {
+      const saveRes = await fetch("/api/admin/uploads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           name: file.name,
-          label: "",
           cdnUrl: data.cdnUrl,
           size: formatSize(file.size),
-          timestamp: Date.now(),
-          hidden: false,
-        },
-        ...prev,
-      ]);
+        }),
+      });
+      const row: UploadRow = await saveRes.json();
+      if (!saveRes.ok) throw new Error("Failed to save upload record");
+
+      setFiles((prev) => [fromRow(row), ...prev]);
     } catch (err: unknown) {
       setError((err as Error).message || "Upload failed");
     } finally {
       setUploading(false);
     }
-  }, [folder, updateFiles]);
+  }, [folder]);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -125,17 +126,33 @@ export function AdminUpload() {
     setTimeout(() => setCopied(null), 2000);
   };
 
-  const handleRenameLabel = (timestamp: number, label: string) => {
-    updateFiles((prev) => prev.map((f) => f.timestamp === timestamp ? { ...f, label } : f));
+  const handleRenameLabel = (id: number, label: string) => {
+    setFiles((prev) => prev.map((f) => f.id === id ? { ...f, label } : f));
     setEditingLabel(null);
+    fetch("/api/admin/uploads", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, label }),
+    }).catch(() => {});
   };
 
-  const handleToggleHidden = (timestamp: number) => {
-    updateFiles((prev) => prev.map((f) => f.timestamp === timestamp ? { ...f, hidden: !f.hidden } : f));
+  const handleToggleHidden = (id: number) => {
+    const next = !files.find((f) => f.id === id)?.hidden;
+    setFiles((prev) => prev.map((f) => f.id === id ? { ...f, hidden: next } : f));
+    fetch("/api/admin/uploads", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, hidden: next }),
+    }).catch(() => {});
   };
 
-  const handleDelete = (timestamp: number) => {
-    updateFiles((prev) => prev.filter((f) => f.timestamp !== timestamp));
+  const handleDelete = (id: number) => {
+    setFiles((prev) => prev.filter((f) => f.id !== id));
+    fetch("/api/admin/uploads", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
   };
 
   const visibleFiles = files.filter((f) => !f.hidden);
@@ -214,20 +231,20 @@ export function AdminUpload() {
           <div className="space-y-3">
             {visibleFiles.map((f) => (
               <div
-                key={f.timestamp}
+                key={f.id}
                 className="bg-white border border-border rounded-xl p-4"
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     {/* Editable label */}
-                    {editingLabel === f.timestamp ? (
+                    {editingLabel === f.id ? (
                       <input
                         autoFocus
                         value={editingValue}
                         onChange={(e) => setEditingValue(e.target.value)}
-                        onBlur={() => handleRenameLabel(f.timestamp, editingValue)}
+                        onBlur={() => handleRenameLabel(f.id, editingValue)}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter") handleRenameLabel(f.timestamp, editingValue);
+                          if (e.key === "Enter") handleRenameLabel(f.id, editingValue);
                           if (e.key === "Escape") setEditingLabel(null);
                         }}
                         className="w-full text-sm font-semibold px-2 py-1 border border-accent rounded-lg focus:outline-none"
@@ -237,7 +254,7 @@ export function AdminUpload() {
                       <div className="flex items-center gap-2">
                         <p
                           className="font-semibold text-primary text-sm cursor-pointer hover:text-accent transition-colors"
-                          onClick={() => { setEditingLabel(f.timestamp); setEditingValue(f.label || ""); }}
+                          onClick={() => { setEditingLabel(f.id); setEditingValue(f.label || ""); }}
                           title="Click to name this file"
                         >
                           {f.label || <span className="text-muted italic">Click to add a name...</span>}
@@ -269,14 +286,14 @@ export function AdminUpload() {
                       Open
                     </a>
                     <button
-                      onClick={() => handleToggleHidden(f.timestamp)}
+                      onClick={() => handleToggleHidden(f.id)}
                       className="px-3 py-1.5 bg-surface text-muted rounded-lg text-xs font-semibold hover:bg-gray-200 transition-colors"
                       title="Hide from view"
                     >
                       Hide
                     </button>
                     <button
-                      onClick={() => handleDelete(f.timestamp)}
+                      onClick={() => handleDelete(f.id)}
                       className="px-3 py-1.5 bg-red-50 text-[#DC373E] rounded-lg text-xs font-semibold hover:bg-red-100 transition-colors"
                       title="Remove from list (file stays on CDN)"
                     >
@@ -303,7 +320,7 @@ export function AdminUpload() {
             <div className="space-y-2 mt-3">
               {hiddenFiles.map((f) => (
                 <div
-                  key={f.timestamp}
+                  key={f.id}
                   className="bg-surface border border-border rounded-xl p-3 flex items-center justify-between gap-4 opacity-60"
                 >
                   <div className="min-w-0 flex-1">
@@ -318,13 +335,13 @@ export function AdminUpload() {
                       Copy
                     </button>
                     <button
-                      onClick={() => handleToggleHidden(f.timestamp)}
+                      onClick={() => handleToggleHidden(f.id)}
                       className="px-3 py-1.5 bg-accent/10 text-accent-hover rounded-lg text-xs font-semibold hover:bg-accent/20 transition-colors"
                     >
                       Show
                     </button>
                     <button
-                      onClick={() => handleDelete(f.timestamp)}
+                      onClick={() => handleDelete(f.id)}
                       className="px-3 py-1.5 bg-red-50 text-[#DC373E] rounded-lg text-xs font-semibold hover:bg-red-100 transition-colors"
                     >
                       Remove

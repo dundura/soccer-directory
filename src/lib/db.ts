@@ -3645,6 +3645,26 @@ export async function deleteAdminTodo(id: number) {
   await sql`DELETE FROM admin_todos WHERE id = ${id}`;
 }
 
+// ── Admin Uploads ────────────────────────────────────────────
+export async function getAdminUploads() {
+  return await sql`SELECT * FROM admin_uploads ORDER BY created_at DESC`;
+}
+export async function addAdminUpload(name: string, cdnUrl: string, size: string) {
+  const rows = await sql`INSERT INTO admin_uploads (name, cdn_url, size) VALUES (${name}, ${cdnUrl}, ${size}) RETURNING *`;
+  return rows[0];
+}
+export async function updateAdminUpload(id: number, data: { label?: string; hidden?: boolean }) {
+  if (data.label !== undefined) {
+    await sql`UPDATE admin_uploads SET label = ${data.label} WHERE id = ${id}`;
+  }
+  if (data.hidden !== undefined) {
+    await sql`UPDATE admin_uploads SET hidden = ${data.hidden} WHERE id = ${id}`;
+  }
+}
+export async function deleteAdminUpload(id: number) {
+  await sql`DELETE FROM admin_uploads WHERE id = ${id}`;
+}
+
 // ── Admin Resources ──────────────────────────────────────────
 export async function getAdminResources() {
   return await sql`SELECT * FROM admin_resources ORDER BY created_at DESC`;
