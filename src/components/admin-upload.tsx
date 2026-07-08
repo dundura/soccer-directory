@@ -22,6 +22,13 @@ interface UploadRow {
   created_at: string;
 }
 
+const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "gif", "webp", "svg", "avif", "bmp"];
+
+function isImage(name: string) {
+  const ext = name.split(".").pop()?.toLowerCase() || "";
+  return IMAGE_EXTENSIONS.includes(ext);
+}
+
 function fromRow(r: UploadRow): UploadedFile {
   return {
     id: r.id,
@@ -235,6 +242,14 @@ export function AdminUpload() {
                 className="bg-white border border-border rounded-xl p-4"
               >
                 <div className="flex items-center justify-between gap-4">
+                  {isImage(f.name) && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={f.cdnUrl}
+                      alt={f.label || f.name}
+                      className="w-12 h-12 rounded-lg object-cover shrink-0 border border-border"
+                    />
+                  )}
                   <div className="min-w-0 flex-1">
                     {/* Editable label */}
                     {editingLabel === f.id ? (
@@ -323,6 +338,14 @@ export function AdminUpload() {
                   key={f.id}
                   className="bg-surface border border-border rounded-xl p-3 flex items-center justify-between gap-4 opacity-60"
                 >
+                  {isImage(f.name) && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={f.cdnUrl}
+                      alt={f.label || f.name}
+                      className="w-10 h-10 rounded-lg object-cover shrink-0 border border-border"
+                    />
+                  )}
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-primary truncate">{f.label || f.name}</p>
                     <p className="text-xs text-muted truncate font-mono">{f.cdnUrl}</p>
