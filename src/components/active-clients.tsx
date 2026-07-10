@@ -14,10 +14,11 @@ const STATUS_COLORS: Record<string, string> = {
   Lead: "#0891b2", Proposal: "#d97706", "Trying to Book Demo": "#c026d3",
   "Demo Booked": "#0d9488", "Demo Conducted": "#ea580c",
   "Demo Completed": "#f59e0b", "Waiting on Roster": "#8b5cf6",
+  "Self-Onboarding": "#059669",
   "Invoice Sent": "#2563eb",
   Won: "#16a34a", Paused: "#7c3aed", Churned: "#94a3b8",
 };
-const STATUSES = ["Lead", "Proposal", "Trying to Book Demo", "Demo Booked", "Demo Conducted", "Demo Completed", "Waiting on Roster", "Invoice Sent", "Won", "Paused", "Churned"];
+const STATUSES = ["Lead", "Proposal", "Trying to Book Demo", "Demo Booked", "Demo Conducted", "Demo Completed", "Waiting on Roster", "Self-Onboarding", "Invoice Sent", "Won", "Paused", "Churned"];
 
 const card: React.CSSProperties = {
   background: "#fff", borderRadius: 14, border: "1px solid #E1E8EF",
