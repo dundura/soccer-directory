@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePersistedState } from "@/hooks/usePersistedState";
 import { BlogCalendar } from "@/components/blog-calendar";
 import type {
   ActionStatus, Action12Row, MilestoneTrackerRow,
@@ -128,16 +129,11 @@ function DailyPlaybook() {
 }
 
 function ActionPlan12() {
-  const [statuses, setStatuses] = useState<Record<number, ActionStatus>>({});
-  useEffect(() => {
-    try { const s = localStorage.getItem("mkt_plan12_status"); if (s) setStatuses(JSON.parse(s)); } catch {}
-  }, []);
+  const [statuses, setStatuses] = usePersistedState<Record<number, ActionStatus>>("mkt_plan12_status", {});
   const cycleStatus = (id: number) => {
     const cur = statuses[id] ?? "Not Started";
     const next = STATUS_OPTIONS[(STATUS_OPTIONS.indexOf(cur) + 1) % STATUS_OPTIONS.length];
-    const n = { ...statuses, [id]: next };
-    setStatuses(n);
-    try { localStorage.setItem("mkt_plan12_status", JSON.stringify(n)); } catch {}
+    setStatuses({ ...statuses, [id]: next });
   };
 
   const phases = ["Phase 1: Foundation", "Phase 2: Scale", "Phase 3: Optimize"];
@@ -200,22 +196,10 @@ function ActionPlan12() {
 }
 
 function MilestoneTrackerView() {
-  const [subsActual, setSubsActual]   = useState<Record<number, string>>({});
-  const [revActual,  setRevActual]    = useState<Record<number, string>>({});
-  useEffect(() => {
-    try {
-      const sa = localStorage.getItem("mkt_tracker_subs"); if (sa) setSubsActual(JSON.parse(sa));
-      const ra = localStorage.getItem("mkt_tracker_rev");  if (ra) setRevActual(JSON.parse(ra));
-    } catch {}
-  }, []);
-  const saveSubs = (mo: number, v: string) => {
-    const n = { ...subsActual, [mo]: v }; setSubsActual(n);
-    try { localStorage.setItem("mkt_tracker_subs", JSON.stringify(n)); } catch {}
-  };
-  const saveRev = (mo: number, v: string) => {
-    const n = { ...revActual, [mo]: v }; setRevActual(n);
-    try { localStorage.setItem("mkt_tracker_rev", JSON.stringify(n)); } catch {}
-  };
+  const [subsActual, setSubsActual] = usePersistedState<Record<number, string>>("mkt_tracker_subs", {});
+  const [revActual,  setRevActual]  = usePersistedState<Record<number, string>>("mkt_tracker_rev", {});
+  const saveSubs = (mo: number, v: string) => setSubsActual({ ...subsActual, [mo]: v });
+  const saveRev  = (mo: number, v: string) => setRevActual({ ...revActual, [mo]: v });
 
   return (
     <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 20px" }}>
@@ -361,15 +345,11 @@ function AnnualCalendarView() {
 }
 
 function RoadmapView() {
-  const [statuses, setStatuses] = useState<Record<number, ActionStatus>>({});
-  useEffect(() => {
-    try { const s = localStorage.getItem("mkt_roadmap_status"); if (s) setStatuses(JSON.parse(s)); } catch {}
-  }, []);
+  const [statuses, setStatuses] = usePersistedState<Record<number, ActionStatus>>("mkt_roadmap_status", {});
   const cycleStatus = (id: number) => {
     const cur = statuses[id] ?? "Not Started";
     const next = STATUS_OPTIONS[(STATUS_OPTIONS.indexOf(cur) + 1) % STATUS_OPTIONS.length];
-    const n = { ...statuses, [id]: next }; setStatuses(n);
-    try { localStorage.setItem("mkt_roadmap_status", JSON.stringify(n)); } catch {}
+    setStatuses({ ...statuses, [id]: next });
   };
   const TIER_COLOR: Record<string, string> = {
     "Tier 1: Quick Wins": "#0891b2", "Tier 2: Growth": "#7c3aed",
@@ -472,14 +452,8 @@ function MilestonesView() {
 }
 
 function WeeklyTasksView() {
-  const [done, setDone] = useState<Record<number, boolean>>({});
-  useEffect(() => {
-    try { const s = localStorage.getItem("mkt_weekly_done"); if (s) setDone(JSON.parse(s)); } catch {}
-  }, []);
-  const toggleDone = (week: number) => {
-    const n = { ...done, [week]: !done[week] }; setDone(n);
-    try { localStorage.setItem("mkt_weekly_done", JSON.stringify(n)); } catch {}
-  };
+  const [done, setDone] = usePersistedState<Record<number, boolean>>("mkt_weekly_done", {});
+  const toggleDone = (week: number) => setDone({ ...done, [week]: !done[week] });
   const doneCount = Object.values(done).filter(Boolean).length;
 
   return (

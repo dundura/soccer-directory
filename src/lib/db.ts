@@ -3708,6 +3708,19 @@ export async function deleteGuestBooking(id: number) {
   await sql`DELETE FROM guest_bookings WHERE id = ${id}`;
 }
 
+// ── App Local State (generic key→JSON store, replaces localStorage for admin data) ──
+export async function getAppLocalState(key: string) {
+  const rows = await sql`SELECT value FROM app_local_state WHERE storage_key = ${key}`;
+  return rows[0]?.value ?? null;
+}
+export async function setAppLocalState(key: string, value: unknown) {
+  await sql`
+    INSERT INTO app_local_state (storage_key, value, updated_at)
+    VALUES (${key}, ${JSON.stringify(value)}, now())
+    ON CONFLICT (storage_key) DO UPDATE SET value = ${JSON.stringify(value)}, updated_at = now()
+  `;
+}
+
 // ── Admin Resources ──────────────────────────────────────────
 export async function getAdminResources() {
   return await sql`SELECT * FROM admin_resources ORDER BY created_at DESC`;

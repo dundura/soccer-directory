@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { usePersistedState } from "@/hooks/usePersistedState";
 import { TodoList } from "@/components/todo-list";
 
 interface Comment { id: number; text: string; created_at: string; }
@@ -56,46 +57,19 @@ export function ProjectFocus() {
   const [newTaskName, setNewTaskName] = useState("");
   const standaloneInputRef = useRef<HTMLInputElement>(null);
 
-  // Goal times: taskId → goal minutes, persisted to localStorage
-  const [goalMins, setGoalMinsState] = useState<Record<number, number>>(() => {
-    try { return JSON.parse(localStorage.getItem("focus_goal_mins") || "{}"); } catch { return {}; }
-  });
+  // Goal times: taskId → goal minutes, persisted to the database
+  const [goalMins, setGoalMinsState] = usePersistedState<Record<number, number>>("focus_goal_mins", {});
   const setGoalMins = (taskId: number, mins: number) => {
-    setGoalMinsState(p => {
-      const n = mins > 0 ? { ...p, [taskId]: mins } : (({ [taskId]: _, ...rest }) => rest)(p);
-      try { localStorage.setItem("focus_goal_mins", JSON.stringify(n)); } catch {}
-      return n;
-    });
+    setGoalMinsState(p => (mins > 0 ? { ...p, [taskId]: mins } : (({ [taskId]: _, ...rest }) => rest)(p)));
   };
 
-  // Multiple timers: taskId → startTime (ms), persisted to localStorage
-  const [activeTimers, setActiveTimers] = useState<Record<number, number>>(() => {
-    try {
-      const saved = localStorage.getItem("focus_active_timers");
-      return saved ? JSON.parse(saved) : {};
-    } catch { return {}; }
-  });
-  // Initialize elapsedMap immediately from saved timers so display is correct on refresh
-  const [elapsedMap, setElapsedMap] = useState<Record<number, number>>(() => {
-    try {
-      const saved = localStorage.getItem("focus_active_timers");
-      if (!saved) return {};
-      const timers = JSON.parse(saved) as Record<string, number>;
-      const now = Date.now();
-      const map: Record<number, number> = {};
-      for (const [k, v] of Object.entries(timers)) {
-        map[Number(k)] = Math.floor((now - v) / 1000);
-      }
-      return map;
-    } catch { return {}; }
-  });
+  // Multiple timers: taskId → startTime (ms), persisted to the database.
+  // elapsedMap catches up to the persisted value within 1s via the ticking
+  // interval below (activeTimersRef mirrors activeTimers on every render).
+  const [activeTimers, setActiveTimers] = usePersistedState<Record<number, number>>("focus_active_timers", {});
+  const [elapsedMap, setElapsedMap] = useState<Record<number, number>>({});
   const activeTimersRef = useRef<Record<number, number>>({});
   activeTimersRef.current = activeTimers;
-
-  // Persist active timers to localStorage whenever they change
-  useEffect(() => {
-    try { localStorage.setItem("focus_active_timers", JSON.stringify(activeTimers)); } catch { /* ignore */ }
-  }, [activeTimers]);
 
   const newProjectInputRef = useRef<HTMLInputElement>(null);
   const newTaskInputRef = useRef<HTMLInputElement>(null);

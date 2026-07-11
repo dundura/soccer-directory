@@ -89,24 +89,24 @@ function EditableCell({ value, onSave, placeholder, type = "text" }: {
   );
 }
 
-// localStorage helpers for client order
-function loadOrderedClients(data: Client[]): Client[] {
-  try {
-    const saved = localStorage.getItem("focus_client_order");
-    if (!saved) return data;
-    const order: number[] = JSON.parse(saved);
-    return [...data].sort((a, b) => {
-      const ai = order.indexOf(a.id);
-      const bi = order.indexOf(b.id);
-      if (ai === -1 && bi === -1) return 0;
-      if (ai === -1) return 1;
-      if (bi === -1) return -1;
-      return ai - bi;
-    });
-  } catch { return data; }
+// Persisted (database-backed) client display order
+function applyClientOrder(data: Client[], order: number[]): Client[] {
+  if (!order.length) return data;
+  return [...data].sort((a, b) => {
+    const ai = order.indexOf(a.id);
+    const bi = order.indexOf(b.id);
+    if (ai === -1 && bi === -1) return 0;
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
 }
 function saveClientOrder(ordered: Client[]) {
-  try { localStorage.setItem("focus_client_order", JSON.stringify(ordered.map(c => c.id))); } catch {}
+  fetch("/api/focus/app-state", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key: "focus_client_order", value: ordered.map(c => c.id) }),
+  }).catch(() => {});
 }
 
 export function ActiveClients() {
@@ -145,8 +145,10 @@ export function ActiveClients() {
     Promise.all([
       fetch("/api/focus/clients").then(r => r.json()),
       fetch("/api/focus/clients/groups").then(r => r.json()),
-    ]).then(([data, grps]) => {
-      if (Array.isArray(data)) setClients(loadOrderedClients(data));
+      fetch("/api/focus/app-state?key=focus_client_order").then(r => r.json()),
+    ]).then(([data, grps, orderRes]) => {
+      const order: number[] = Array.isArray(orderRes?.value) ? orderRes.value : [];
+      if (Array.isArray(data)) setClients(applyClientOrder(data, order));
       if (Array.isArray(grps)) {
         setGroups(grps);
         const collapsed = new Set(grps.filter((g: Group) => g.collapsed).map((g: Group) => g.id));

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePersistedState } from "@/hooks/usePersistedState";
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ListingForm } from "@/components/listing-form";
@@ -101,30 +102,22 @@ export default function AdminClient() {
     fetch("/api/admin/blog-posts").then(r => r.json()).then(d => { setBlogPosts(d.posts || []); }).catch(() => {}).finally(() => setBlogPostsLoading(false));
   }, [tab]);
 
-  // Blog shared toggle (local tracking, stored in localStorage)
-  const [sharedBlogIds, setSharedBlogIds] = useState<Set<string>>(() => {
-    try { return new Set(JSON.parse(localStorage.getItem("admin_shared_blogs") || "[]")); } catch { return new Set(); }
-  });
+  // Blog shared toggle (persisted to the database)
+  const [sharedBlogIdsArr, setSharedBlogIdsArr] = usePersistedState<string[]>("admin_shared_blogs", []);
+  const sharedBlogIds = new Set(sharedBlogIdsArr);
   function toggleSharedBlog(id: string) {
-    setSharedBlogIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); } else { next.add(id); }
-      localStorage.setItem("admin_shared_blogs", JSON.stringify([...next]));
-      return next;
-    });
+    const next = new Set(sharedBlogIdsArr);
+    if (next.has(id)) { next.delete(id); } else { next.add(id); }
+    setSharedBlogIdsArr([...next]);
   }
 
-  // Shared toggle (local tracking, stored in localStorage)
-  const [sharedIds, setSharedIds] = useState<Set<string>>(() => {
-    try { return new Set(JSON.parse(localStorage.getItem("admin_shared_listings") || "[]")); } catch { return new Set(); }
-  });
+  // Shared toggle (persisted to the database)
+  const [sharedIdsArr, setSharedIdsArr] = usePersistedState<string[]>("admin_shared_listings", []);
+  const sharedIds = new Set(sharedIdsArr);
   function toggleShared(id: string) {
-    setSharedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); } else { next.add(id); }
-      localStorage.setItem("admin_shared_listings", JSON.stringify([...next]));
-      return next;
-    });
+    const next = new Set(sharedIdsArr);
+    if (next.has(id)) { next.delete(id); } else { next.add(id); }
+    setSharedIdsArr([...next]);
   }
 
   // Edit state

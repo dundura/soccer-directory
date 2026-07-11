@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { usePersistedState } from "@/hooks/usePersistedState";
 
 interface Post {
   week: number;
@@ -167,36 +168,21 @@ const ALL_PILLARS = [
 
 const ALL_TYPES = ["Deep Dive", "Quick Win", "Story-Based", "Lead Magnet", "Seasonal/Timely"];
 
+const DEFAULT_DONE: Record<number, boolean> = (() => {
+  const init: Record<number, boolean> = {};
+  INITIALLY_DONE.forEach(w => { init[w] = true; });
+  return init;
+})();
+
 export function BlogCalendar() {
-  const [links, setLinks] = useState<Record<number, string>>({});
-  const [done, setDone]   = useState<Record<number, boolean>>(() => {
-    const init: Record<number, boolean> = {};
-    INITIALLY_DONE.forEach(w => { init[w] = true; });
-    return init;
-  });
+  const [links, setLinks] = usePersistedState<Record<number, string>>("focus_blog_links_v3", {});
+  const [done, setDone]   = usePersistedState<Record<number, boolean>>("focus_blog_done_v2", DEFAULT_DONE);
   const [filterPillar, setFilterPillar] = useState<string>("All");
   const [filterType,   setFilterType]   = useState<string>("All");
 
-  useEffect(() => {
-    try {
-      const savedLinks = localStorage.getItem("focus_blog_links_v3");
-      if (savedLinks) setLinks(JSON.parse(savedLinks));
-      const savedDone = localStorage.getItem("focus_blog_done_v2");
-      if (savedDone) setDone(prev => ({ ...prev, ...JSON.parse(savedDone) }));
-    } catch {}
-  }, []);
+  const saveLink = (week: number, url: string) => setLinks({ ...links, [week]: url });
 
-  const saveLink = (week: number, url: string) => {
-    const next = { ...links, [week]: url };
-    setLinks(next);
-    try { localStorage.setItem("focus_blog_links_v3", JSON.stringify(next)); } catch {}
-  };
-
-  const toggleDone = (week: number) => {
-    const next = { ...done, [week]: !done[week] };
-    setDone(next);
-    try { localStorage.setItem("focus_blog_done_v2", JSON.stringify(next)); } catch {}
-  };
+  const toggleDone = (week: number) => setDone({ ...done, [week]: !done[week] });
 
   const doneCount = Object.values(done).filter(Boolean).length;
 
