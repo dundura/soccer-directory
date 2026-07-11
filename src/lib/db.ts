@@ -3665,6 +3665,49 @@ export async function deleteAdminUpload(id: number) {
   await sql`DELETE FROM admin_uploads WHERE id = ${id}`;
 }
 
+// ── Guest Bookings ───────────────────────────────────────────
+export async function getGuestBookings() {
+  return await sql`SELECT * FROM guest_bookings ORDER BY created_at DESC`;
+}
+export async function addGuestBooking(data: {
+  guestName: string; email: string; phone: string; notes: string;
+  links: { label: string; url: string }[]; status: string; update: string;
+}) {
+  const rows = await sql`
+    INSERT INTO guest_bookings (guest_name, email, phone, notes, links, status, update_note)
+    VALUES (${data.guestName}, ${data.email}, ${data.phone}, ${data.notes}, ${JSON.stringify(data.links)}, ${data.status}, ${data.update})
+    RETURNING *
+  `;
+  return rows[0];
+}
+export async function updateGuestBooking(id: number, data: Partial<{
+  guestName: string; email: string; phone: string; notes: string;
+  links: { label: string; url: string }[]; status: string; update: string;
+}>) {
+  const existing = await sql`SELECT * FROM guest_bookings WHERE id = ${id}`;
+  if (!existing[0]) return null;
+  const merged = {
+    guest_name: data.guestName ?? existing[0].guest_name,
+    email: data.email ?? existing[0].email,
+    phone: data.phone ?? existing[0].phone,
+    notes: data.notes ?? existing[0].notes,
+    links: data.links ? JSON.stringify(data.links) : JSON.stringify(existing[0].links),
+    status: data.status ?? existing[0].status,
+    update_note: data.update ?? existing[0].update_note,
+  };
+  const rows = await sql`
+    UPDATE guest_bookings SET
+      guest_name = ${merged.guest_name}, email = ${merged.email}, phone = ${merged.phone},
+      notes = ${merged.notes}, links = ${merged.links}, status = ${merged.status}, update_note = ${merged.update_note}
+    WHERE id = ${id}
+    RETURNING *
+  `;
+  return rows[0];
+}
+export async function deleteGuestBooking(id: number) {
+  await sql`DELETE FROM guest_bookings WHERE id = ${id}`;
+}
+
 // ── Admin Resources ──────────────────────────────────────────
 export async function getAdminResources() {
   return await sql`SELECT * FROM admin_resources ORDER BY created_at DESC`;

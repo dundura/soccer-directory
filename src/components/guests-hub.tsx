@@ -15,7 +15,29 @@ interface Booking {
   update: string;
 }
 
-const STORAGE_KEY = "snm_guest_bookings";
+interface BookingRow {
+  id: number;
+  guest_name: string;
+  email: string | null;
+  phone: string | null;
+  notes: string | null;
+  links: GuestLink[] | null;
+  status: string;
+  update_note: string | null;
+}
+
+function fromRow(r: BookingRow): Booking {
+  return {
+    id: String(r.id),
+    guestName: r.guest_name,
+    email: r.email || "",
+    phone: r.phone || "",
+    notes: r.notes || "",
+    links: r.links || [],
+    status: (r.status as Booking["status"]) || "upcoming",
+    update: r.update_note || "",
+  };
+}
 
 const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   upcoming:  { bg: "#eff6ff", color: "#1d4ed8" },
@@ -34,16 +56,11 @@ export function GuestsHub() {
   const [notesModal, setNotesModal] = useState<Booking | null>(null);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setBookings(JSON.parse(saved));
-    } catch {}
+    fetch("/api/focus/guests")
+      .then((res) => res.json())
+      .then((rows: BookingRow[]) => setBookings(Array.isArray(rows) ? rows.map(fromRow) : []))
+      .catch(() => {});
   }, []);
-
-  const save = (updated: Booking[]) => {
-    setBookings(updated);
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); } catch {}
-  };
 
   const openAdd = () => { setForm(EMPTY_FORM); setEditId(null); setShowForm(true); };
 
@@ -55,18 +72,47 @@ export function GuestsHub() {
     setShowForm(true);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.guestName.trim()) return;
     const cleanLinks = form.links.filter(l => l.url.trim());
     if (editId) {
-      save(bookings.map(b => b.id === editId ? { ...b, ...form, links: cleanLinks, update: form.update } : b));
+      setBookings(prev => prev.map(b => b.id === editId ? { ...b, ...form, links: cleanLinks } : b));
+      fetch("/api/focus/guests", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: Number(editId), ...form, links: cleanLinks }),
+      }).catch(() => {});
     } else {
-      save([{ id: Date.now().toString(), ...form, links: cleanLinks, update: form.update }, ...bookings]);
+      try {
+        const res = await fetch("/api/focus/guests", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...form, links: cleanLinks }),
+        });
+        const row: BookingRow = await res.json();
+        setBookings(prev => [fromRow(row), ...prev]);
+      } catch {}
     }
     setShowForm(false);
   };
 
-  const deleteBooking = (id: string) => save(bookings.filter(b => b.id !== id));
+  const deleteBooking = (id: string) => {
+    setBookings(prev => prev.filter(b => b.id !== id));
+    fetch("/api/focus/guests", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: Number(id) }),
+    }).catch(() => {});
+  };
+
+  const patchBooking = (id: string, data: Partial<Booking>) => {
+    setBookings(prev => prev.map(x => x.id === id ? { ...x, ...data } : x));
+    fetch("/api/focus/guests", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: Number(id), ...data }),
+    }).catch(() => {});
+  };
 
   const filtered = filter === "all" ? bookings : bookings.filter(b => b.status === filter);
   const upcomingCount = bookings.filter(b => b.status === "upcoming").length;
@@ -141,7 +187,7 @@ export function GuestsHub() {
                   <td style={td()}>
                     <select
                       value={b.status}
-                      onChange={e => save(bookings.map(x => x.id === b.id ? { ...x, status: e.target.value as Booking["status"] } : x))}
+                      onChange={e => patchBooking(b.id, { status: e.target.value as Booking["status"] })}
                       style={{ border: "1px solid #E1E8EF", borderRadius: 7, padding: "4px 8px", fontSize: 12, fontWeight: 700, cursor: "pointer", background: STATUS_COLORS[b.status]?.bg || "#F1F5F9", color: STATUS_COLORS[b.status]?.color || "#64748b", outline: "none" }}
                     >
                       <option value="upcoming">Upcoming</option>
@@ -170,7 +216,8 @@ export function GuestsHub() {
                   <td style={{ ...td(), maxWidth: 200 }}>
                     <input
                       value={b.update || ""}
-                      onChange={e => save(bookings.map(x => x.id === b.id ? { ...x, update: e.target.value } : x))}
+                      onChange={e => setBookings(prev => prev.map(x => x.id === b.id ? { ...x, update: e.target.value } : x))}
+                      onBlur={e => patchBooking(b.id, { update: e.target.value })}
                       placeholder="Notes on progress…"
                       style={{ border: "1px solid #E1E8EF", borderRadius: 7, padding: "4px 8px", fontSize: 12, color: "#334155", outline: "none", width: "100%", fontFamily: "inherit", boxSizing: "border-box" }}
                     />
