@@ -24,6 +24,8 @@ export function AffirmationTracker() {
   const [loading, setLoading] = useState(true);
   const [newDay, setNewDay] = useState(todayISO());
   const [busy, setBusy] = useState(false);
+  // Which day is open for ticking. Everything else stays collapsed in history.
+  const [openDay, setOpenDay] = useState<string | null>(null);
 
   const load = async () => {
     try {
@@ -33,6 +35,7 @@ export function AffirmationTracker() {
         setItems(data.items);
         setDays(data.days || []);
         setSummary(data.summary || { tracked: 0, average: 0, perfect: 0 });
+        setOpenDay((cur) => cur || todayISO());
       }
     } finally {
       setLoading(false);
@@ -49,6 +52,7 @@ export function AffirmationTracker() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ day: newDay }),
       });
+      setOpenDay(newDay);
       await load();
     } finally { setBusy(false); }
   };
@@ -166,7 +170,34 @@ export function AffirmationTracker() {
         </div>
       )}
 
-      {days.map((d) => (
+      {days.length > 0 && (
+        <div style={{ ...card, padding: "6px 8px", marginBottom: 18 }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: "0.13em", textTransform: "uppercase", color: "#6B7D8E", padding: "10px 10px 8px" }}>
+            History
+          </div>
+          {days.map((d) => (
+            <button
+              key={`h-${d.day}`}
+              type="button"
+              onClick={() => setOpenDay(openDay === d.day ? null : d.day)}
+              style={{
+                display: "flex", alignItems: "center", gap: 12, width: "100%",
+                padding: "10px 12px", border: "none", borderRadius: 9, cursor: "pointer",
+                background: openDay === d.day ? "#F1F5F9" : "transparent",
+                fontFamily: "inherit", textAlign: "left",
+              }}
+            >
+              <span style={{ fontSize: 13.5, fontWeight: 700, color: "#0F3154", minWidth: 108 }}>{pretty(d.day)}</span>
+              <span style={{ flex: 1, height: 6, background: "#EEF2F7", borderRadius: 6, overflow: "hidden" }}>
+                <span style={{ display: "block", width: `${Math.max(d.percent, 2)}%`, height: "100%", background: tone(d.percent).bar, borderRadius: 6 }} />
+              </span>
+              <span style={{ fontSize: 12.5, fontWeight: 800, color: tone(d.percent).fg, minWidth: 42, textAlign: "right" }}>{d.percent}%</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {days.filter((d) => d.day === openDay).map((d) => (
         <div key={d.day} style={{ ...card, padding: 18, marginBottom: 14 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ fontSize: 15.5, fontWeight: 800, color: "#0F3154" }}>{pretty(d.day)}</div>

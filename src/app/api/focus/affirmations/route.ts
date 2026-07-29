@@ -42,6 +42,16 @@ async function ensureTable() {
       UNIQUE (user_email, day, item_idx)
     )
   `;
+  await sql`
+    CREATE OR REPLACE VIEW focus_affirmation_daily AS
+      SELECT user_email,
+             day,
+             COUNT(*) FILTER (WHERE done) AS completed,
+             COUNT(*) AS total,
+             ROUND(100.0 * COUNT(*) FILTER (WHERE done) / NULLIF(COUNT(*), 0)) AS percent
+      FROM focus_affirmations
+      GROUP BY user_email, day
+  `;
 }
 
 /** GET — every day this user has started, newest first, with its ticks. */
