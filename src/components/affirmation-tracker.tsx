@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 type Day = { day: string; done: boolean[]; complete: number; percent: number };
-type Summary = { tracked: number; average: number; perfect: number };
+type Summary = { tracked: number; average: number; perfect: number; streak: number; best: number };
 
 const todayISO = () => {
   const d = new Date();
@@ -20,7 +20,7 @@ const pretty = (iso: string) => {
 export function AffirmationTracker() {
   const [items, setItems] = useState<string[]>([]);
   const [days, setDays] = useState<Day[]>([]);
-  const [summary, setSummary] = useState<Summary>({ tracked: 0, average: 0, perfect: 0 });
+  const [summary, setSummary] = useState<Summary>({ tracked: 0, average: 0, perfect: 0, streak: 0, best: 0 });
   const [loading, setLoading] = useState(true);
   const [newDay, setNewDay] = useState(todayISO());
   const [busy, setBusy] = useState(false);
@@ -34,7 +34,7 @@ export function AffirmationTracker() {
       if (data && data.items) {
         setItems(data.items);
         setDays(data.days || []);
-        setSummary(data.summary || { tracked: 0, average: 0, perfect: 0 });
+        setSummary(data.summary || { tracked: 0, average: 0, perfect: 0, streak: 0, best: 0 });
         setOpenDay((cur) => cur || todayISO());
       }
     } finally {
@@ -131,6 +131,29 @@ export function AffirmationTracker() {
             background: today && today.percent === 100 ? "#22C55E" : "#F59E0B",
             transition: "width .35s ease",
           }} />
+        </div>
+
+        {/* Streak - perfect days back to back */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            background: summary.streak > 0 ? "rgba(245,158,11,0.22)" : "rgba(255,255,255,0.1)",
+            border: `1px solid ${summary.streak > 0 ? "rgba(245,158,11,0.55)" : "rgba(255,255,255,0.18)"}`,
+            borderRadius: 999, padding: "7px 14px",
+          }}>
+            <span style={{ fontSize: 16 }}>{summary.streak > 0 ? "🔥" : "🌟"}</span>
+            <span style={{ fontSize: 14, fontWeight: 900 }}>
+              {summary.streak} day{summary.streak === 1 ? "" : "s"}
+            </span>
+            <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.68)", fontWeight: 600 }}>
+              {summary.streak > 0 ? "streak" : "no streak yet"}
+            </span>
+          </div>
+          {summary.best > 0 && (
+            <span style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>
+              best {summary.best} day{summary.best === 1 ? "" : "s"}
+            </span>
+          )}
         </div>
       </div>
 

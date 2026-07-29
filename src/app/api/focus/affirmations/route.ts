@@ -89,7 +89,36 @@ export async function GET() {
     const average = tracked ? Math.round(days.reduce((a, d) => a + d.percent, 0) / tracked) : 0;
     const perfect = days.filter((d) => d.percent === 100).length;
 
-    return NextResponse.json({ items: ITEMS, days, summary: { tracked, average, perfect } });
+    // A day counts towards the streak once every item is ticked. Counted back
+    // from today, and from yesterday if today is not done yet - so an unfinished
+    // today does not read as a broken streak before the day is over.
+    const scored = new Map(days.map((d) => [d.day, d.percent]));
+    const dayBefore = (iso: string) => {
+      const [y, m, dd] = iso.split("-").map(Number);
+      const t = new Date(Date.UTC(y, m - 1, dd - 1));
+      return `${t.getUTCFullYear()}-${String(t.getUTCMonth() + 1).padStart(2, "0")}-${String(t.getUTCDate()).padStart(2, "0")}`;
+    };
+
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
+    let cursor = scored.get(today) === 100 ? today : dayBefore(today);
+    let streak = 0;
+    while (scored.get(cursor) === 100) {
+      streak++;
+      cursor = dayBefore(cursor);
+    }
+
+    // Longest run of perfect days anywhere in the record.
+    const perfectDays = days.filter((d) => d.percent === 100).map((d) => d.day).sort();
+    let best = 0, run = 0, prev: string | null = null;
+    for (const day of perfectDays) {
+      run = prev && dayBefore(day) === prev ? run + 1 : 1;
+      if (run > best) best = run;
+      prev = day;
+    }
+
+    return NextResponse.json({ items: ITEMS, days, summary: { tracked, average, perfect, streak, best } });
   } catch {
     return NextResponse.json({ error: "Failed to load" }, { status: 500 });
   }
