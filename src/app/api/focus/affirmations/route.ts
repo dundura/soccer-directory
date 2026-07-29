@@ -18,6 +18,18 @@ export const ITEMS = [
   "Don't eat after 9pm",
 ];
 
+/**
+ * Neon hands a DATE column back as a Date object, and String(date) gives
+ * "Tue Jul 29 2026 ..." - slicing that yields "Tue Jul 29", which is not a
+ * date at all. Normalise to YYYY-MM-DD from either shape.
+ */
+function isoDay(value: unknown): string {
+  if (value instanceof Date) {
+    return `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(2, "0")}-${String(value.getUTCDate()).padStart(2, "0")}`;
+  }
+  return String(value).slice(0, 10);
+}
+
 async function ensureTable() {
   await sql`
     CREATE TABLE IF NOT EXISTS focus_affirmations (
@@ -47,19 +59,27 @@ export async function GET() {
     `;
 
     const byDay = new Map<string, boolean[]>();
-    for (const r of rows as { day: string; item_idx: number; done: boolean }[]) {
-      const key = String(r.day).slice(0, 10);
+    for (const r of rows as { day: unknown; item_idx: number; done: boolean }[]) {
+      const key = isoDay(r.day);
       if (!byDay.has(key)) byDay.set(key, new Array(ITEMS.length).fill(false));
       byDay.get(key)![r.item_idx] = r.done;
     }
 
-    const days = [...byDay.entries()].map(([day, done]) => ({
-      day,
-      done,
-      complete: done.filter(Boolean).length,
-    }));
+    const days = [...byDay.entries()].map(([day, done]) => {
+      const complete = done.filter(Boolean).length;
+      return {
+        day,
+        done,
+        complete,
+        percent: Math.round((complete / ITEMS.length) * 100),
+      };
+    });
 
-    return NextResponse.json({ items: ITEMS, days });
+    const tracked = days.length;
+    const average = tracked ? Math.round(days.reduce((a, d) => a + d.percent, 0) / tracked) : 0;
+    const perfect = days.filter((d) => d.percent === 100).length;
+
+    return NextResponse.json({ items: ITEMS, days, summary: { tracked, average, perfect } });
   } catch {
     return NextResponse.json({ error: "Failed to load" }, { status: 500 });
   }

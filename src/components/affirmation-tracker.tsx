@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-type Day = { day: string; done: boolean[]; complete: number };
+type Day = { day: string; done: boolean[]; complete: number; percent: number };
+type Summary = { tracked: number; average: number; perfect: number };
 
 const todayISO = () => {
   const d = new Date();
@@ -19,6 +20,7 @@ const pretty = (iso: string) => {
 export function AffirmationTracker() {
   const [items, setItems] = useState<string[]>([]);
   const [days, setDays] = useState<Day[]>([]);
+  const [summary, setSummary] = useState<Summary>({ tracked: 0, average: 0, perfect: 0 });
   const [loading, setLoading] = useState(true);
   const [newDay, setNewDay] = useState(todayISO());
   const [busy, setBusy] = useState(false);
@@ -27,7 +29,11 @@ export function AffirmationTracker() {
     try {
       const res = await fetch("/api/focus/affirmations");
       const data = await res.json();
-      if (data && data.items) { setItems(data.items); setDays(data.days || []); }
+      if (data && data.items) {
+        setItems(data.items);
+        setDays(data.days || []);
+        setSummary(data.summary || { tracked: 0, average: 0, perfect: 0 });
+      }
     } finally {
       setLoading(false);
     }
@@ -53,7 +59,8 @@ export function AffirmationTracker() {
       if (d.day !== day) return d;
       const done = d.done.slice();
       done[idx] = next;
-      return { ...d, done, complete: done.filter(Boolean).length };
+      const complete = done.filter(Boolean).length;
+      return { ...d, done, complete, percent: Math.round((complete / items.length) * 100) };
     }));
     await fetch("/api/focus/affirmations", {
       method: "PATCH",
@@ -74,6 +81,13 @@ export function AffirmationTracker() {
     return <div style={{ padding: 40, textAlign: "center", color: "#6B7D8E", fontSize: 14 }}>Loading…</div>;
   }
 
+  const tone = (pct: number) =>
+    pct === 100 ? { fg: "#15803D", bg: "#DCFCE7", bar: "#16A34A" }
+    : pct >= 60 ? { fg: "#B45309", bg: "#FEF3C7", bar: "#F59E0B" }
+    : { fg: "#B91C1C", bg: "#FEE2E2", bar: "#EF4444" };
+
+  const today = days.find((d) => d.day === todayISO()) || null;
+
   const card: React.CSSProperties = {
     background: "#fff", border: "1px solid #E1E8EF", borderRadius: 14,
     boxShadow: "0 2px 10px rgba(15,49,84,0.06)",
@@ -81,6 +95,40 @@ export function AffirmationTracker() {
 
   return (
     <div style={{ maxWidth: 760, margin: "0 auto", padding: "24px 20px 56px" }}>
+
+      {/* Today at a glance */}
+      <div style={{
+        ...card, padding: "20px 22px", marginBottom: 18,
+        background: "linear-gradient(135deg,#0F3154,#1c4a7a)", border: "none", color: "#fff",
+      }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)" }}>
+            {today ? "Today" : "No entry for today"}
+          </div>
+          <div style={{ marginLeft: "auto", fontSize: 12, color: "rgba(255,255,255,0.7)", fontWeight: 600 }}>
+            {summary.tracked} day{summary.tracked === 1 ? "" : "s"} tracked · {summary.average}% average · {summary.perfect} perfect
+          </div>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 10, marginTop: 6 }}>
+          <span style={{ fontSize: 46, fontWeight: 900, lineHeight: 1, letterSpacing: "-0.02em" }}>
+            {today ? today.percent : 0}%
+          </span>
+          {today && (
+            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.72)", fontWeight: 600, paddingBottom: 7 }}>
+              {today.complete} of {items.length} done
+            </span>
+          )}
+        </div>
+
+        <div style={{ background: "rgba(255,255,255,0.16)", borderRadius: 9, height: 10, overflow: "hidden", marginTop: 14 }}>
+          <div style={{
+            width: `${today ? Math.max(today.percent, 2) : 2}%`, height: "100%", borderRadius: 9,
+            background: today && today.percent === 100 ? "#22C55E" : "#F59E0B",
+            transition: "width .35s ease",
+          }} />
+        </div>
+      </div>
 
       {/* Add a day */}
       <div style={{ ...card, padding: 16, marginBottom: 18, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
@@ -124,10 +172,9 @@ export function AffirmationTracker() {
             <div style={{ fontSize: 15.5, fontWeight: 800, color: "#0F3154" }}>{pretty(d.day)}</div>
             <div style={{
               fontSize: 12, fontWeight: 800, padding: "3px 10px", borderRadius: 999,
-              background: d.complete === items.length ? "#DCFCE7" : "#F1F5F9",
-              color: d.complete === items.length ? "#15803D" : "#6B7D8E",
+              background: tone(d.percent).bg, color: tone(d.percent).fg,
             }}>
-              {d.complete} of {items.length}
+              {d.percent}% · {d.complete} of {items.length}
             </div>
             <button
               type="button"
