@@ -9,9 +9,10 @@ import { MarketingHub } from "@/components/marketing-hub";
 import { NewsletterHub } from "@/components/newsletter-hub";
 import { PostsHub } from "@/components/posts-hub";
 import { DailyPlaybook } from "@/components/daily-playbook";
-type Tab = "playbook" | "projects" | "clients" | "blog" | "newsletter" | "posts";
+import { AffirmationTracker } from "@/components/affirmation-tracker";
+type Tab = "playbook" | "projects" | "clients" | "blog" | "newsletter" | "posts" | "affirmations";
 
-const TAB_ORDER: Tab[] = ["playbook", "projects", "clients", "blog", "newsletter", "posts"];
+const TAB_ORDER: Tab[] = ["playbook", "projects", "clients", "blog", "newsletter", "posts", "affirmations"];
 const TAB_LABELS: Record<Tab, string> = {
   playbook:   "Daily Playbook",
   projects:   "Projects",
@@ -19,6 +20,7 @@ const TAB_LABELS: Record<Tab, string> = {
   blog:       "Marketing",
   newsletter: "Email Newsletter",
   posts:      "Our Posts",
+  affirmations: "Daily Affirmations",
 };
 
 export default function FocusClient() {
@@ -72,6 +74,7 @@ export default function FocusClient() {
       {tab === "blog"       && <MarketingHub />}
       {tab === "newsletter" && <NewsletterHub />}
       {tab === "posts"      && <PostsHub />}
+      {tab === "affirmations" && <AffirmationTracker />}
     </div>
   );
 }

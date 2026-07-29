@@ -1,0 +1,136 @@
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { neon } from "@neondatabase/serverless";
+
+const sql = neon(process.env.DATABASE_URL!);
+
+/**
+ * The daily affirmations. Stored by index, not by text, so the wording
+ * can be reworded later without orphaning a day's ticks.
+ */
+export const ITEMS = [
+  "Don't eat before 1pm",
+  "Only one snack per day",
+  "Walk 20 minutes after each meal",
+  "30 min weight training",
+  "16 ounces of water before each meal or snack",
+  "No sugars or simple carbs",
+  "Don't eat after 9pm",
+];
+
+async function ensureTable() {
+  await sql`
+    CREATE TABLE IF NOT EXISTS focus_affirmations (
+      id SERIAL PRIMARY KEY,
+      user_email TEXT NOT NULL,
+      day DATE NOT NULL,
+      item_idx INT NOT NULL,
+      done BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE (user_email, day, item_idx)
+    )
+  `;
+}
+
+/** GET — every day this user has started, newest first, with its ticks. */
+export async function GET() {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    await ensureTable();
+
+    const rows = await sql`
+      SELECT day, item_idx, done
+      FROM focus_affirmations
+      WHERE user_email = ${session.user.email}
+      ORDER BY day DESC, item_idx ASC
+    `;
+
+    const byDay = new Map<string, boolean[]>();
+    for (const r of rows as { day: string; item_idx: number; done: boolean }[]) {
+      const key = String(r.day).slice(0, 10);
+      if (!byDay.has(key)) byDay.set(key, new Array(ITEMS.length).fill(false));
+      byDay.get(key)![r.item_idx] = r.done;
+    }
+
+    const days = [...byDay.entries()].map(([day, done]) => ({
+      day,
+      done,
+      complete: done.filter(Boolean).length,
+    }));
+
+    return NextResponse.json({ items: ITEMS, days });
+  } catch {
+    return NextResponse.json({ error: "Failed to load" }, { status: 500 });
+  }
+}
+
+/** POST { day } — start tracking a day. Existing ticks are left alone. */
+export async function POST(req: Request) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    await ensureTable();
+
+    const body = await req.json().catch(() => ({}));
+    const day = String(body.day || "").slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+      return NextResponse.json({ error: "A day is needed, as YYYY-MM-DD" }, { status: 400 });
+    }
+
+    for (let i = 0; i < ITEMS.length; i++) {
+      await sql`
+        INSERT INTO focus_affirmations (user_email, day, item_idx, done)
+        VALUES (${session.user.email}, ${day}, ${i}, FALSE)
+        ON CONFLICT (user_email, day, item_idx) DO NOTHING
+      `;
+    }
+
+    return NextResponse.json({ success: true, day });
+  } catch {
+    return NextResponse.json({ error: "Could not add that day" }, { status: 500 });
+  }
+}
+
+/** PATCH { day, itemIdx, done } — tick one off, or put it back. */
+export async function PATCH(req: Request) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    await ensureTable();
+
+    const body = await req.json().catch(() => ({}));
+    const day = String(body.day || "").slice(0, 10);
+    const itemIdx = Number(body.itemIdx);
+    const done = !!body.done;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !Number.isInteger(itemIdx) || itemIdx < 0 || itemIdx >= ITEMS.length) {
+      return NextResponse.json({ error: "Bad request" }, { status: 400 });
+    }
+
+    await sql`
+      INSERT INTO focus_affirmations (user_email, day, item_idx, done)
+      VALUES (${session.user.email}, ${day}, ${itemIdx}, ${done})
+      ON CONFLICT (user_email, day, item_idx) DO UPDATE SET done = ${done}
+    `;
+
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Could not save that" }, { status: 500 });
+  }
+}
+
+/** DELETE ?day= — drop a day entirely. */
+export async function DELETE(req: Request) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { searchParams } = new URL(req.url);
+    const day = String(searchParams.get("day") || "").slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return NextResponse.json({ error: "Bad request" }, { status: 400 });
+
+    await sql`DELETE FROM focus_affirmations WHERE user_email = ${session.user.email} AND day = ${day}`;
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Could not remove that day" }, { status: 500 });
+  }
+}
