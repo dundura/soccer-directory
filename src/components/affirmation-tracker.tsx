@@ -26,6 +26,7 @@ export function AffirmationTracker() {
   const [busy, setBusy] = useState(false);
   // Which day is open for ticking. Everything else stays collapsed in history.
   const [openDay, setOpenDay] = useState<string | null>(null);
+  const [view, setView] = useState<"tracker" | "history">("tracker");
 
   const load = async () => {
     try {
@@ -157,8 +158,29 @@ export function AffirmationTracker() {
         </div>
       </div>
 
+
+      {/* Tracker / History */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        {(["tracker", "history"] as const).map((v) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => setView(v)}
+            style={{
+              padding: "9px 18px", borderRadius: 9, cursor: "pointer", fontFamily: "inherit",
+              fontSize: 13, fontWeight: 800,
+              border: `1px solid ${view === v ? "#0F3154" : "#E1E8EF"}`,
+              background: view === v ? "#0F3154" : "#fff",
+              color: view === v ? "#fff" : "#0F3154",
+            }}
+          >
+            {v === "tracker" ? "Tracker" : "History"}
+          </button>
+        ))}
+      </div>
+
       {/* Add a day */}
-      <div style={{ ...card, padding: 16, marginBottom: 18, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+      <div style={{ ...card, padding: 16, marginBottom: 18, display: view === "tracker" ? "flex" : "none", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
         <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "#6B7D8E" }}>
           Add a day
         </span>
@@ -185,7 +207,7 @@ export function AffirmationTracker() {
         </button>
       </div>
 
-      {days.length === 0 && (
+      {view === "tracker" && days.length === 0 && (
         <div style={{ ...card, padding: 32, textAlign: "center" }}>
           <div style={{ fontSize: 34, marginBottom: 8 }}>✅</div>
           <div style={{ fontSize: 16, fontWeight: 800, color: "#0F3154", marginBottom: 6 }}>No days yet</div>
@@ -193,7 +215,7 @@ export function AffirmationTracker() {
         </div>
       )}
 
-      {days.length > 0 && (
+      {view === "history" && days.length > 0 && (
         <div style={{ ...card, padding: "6px 8px", marginBottom: 18 }}>
           <div style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: "0.13em", textTransform: "uppercase", color: "#6B7D8E", padding: "10px 10px 8px" }}>
             History
@@ -202,7 +224,7 @@ export function AffirmationTracker() {
             <button
               key={`h-${d.day}`}
               type="button"
-              onClick={() => setOpenDay(openDay === d.day ? null : d.day)}
+              onClick={() => { setOpenDay(d.day); setView("tracker"); }}
               style={{
                 display: "flex", alignItems: "center", gap: 12, width: "100%",
                 padding: "10px 12px", border: "none", borderRadius: 9, cursor: "pointer",
@@ -220,7 +242,7 @@ export function AffirmationTracker() {
         </div>
       )}
 
-      {days.filter((d) => d.day === openDay).map((d) => (
+      {view === "tracker" && days.filter((d) => d.day === openDay).map((d) => (
         <div key={d.day} style={{ ...card, padding: 18, marginBottom: 14 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ fontSize: 15.5, fontWeight: 800, color: "#0F3154" }}>{pretty(d.day)}</div>
