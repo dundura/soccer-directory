@@ -5,26 +5,17 @@ import { neon } from "@neondatabase/serverless";
 const sql = neon(process.env.DATABASE_URL!);
 
 /**
- * The daily affirmations. Stored by index, not by text, so the wording
- * can be reworded later without orphaning a day's ticks.
+ * The daily household chores. Stored by index, not by text, so a chore can
+ * be reworded later without orphaning a day's ticks — and for the same reason
+ * new chores must be appended, never inserted.
  */
 export const ITEMS = [
-  // Indexes 0-6 keep their positions. Ticks are stored against the index, so
-  // inserting anything in the middle would silently rewrite what every past
-  // day's ticks meant — the meal items are reworded in place and everything
-  // new is appended.
-  "Don't eat before 1pm",
-  "Only one snack per day",
-  "Walk 20 minutes after breakfast",
-  "30 min weight training",
-  "16 ounces of water before breakfast",
-  "No sugars or simple carbs",
-  "Don't eat after 9pm",
-  "Walk 20 minutes after lunch",
-  "Walk 20 minutes after dinner",
-  "16 ounces of water before lunch",
-  "16 ounces of water before dinner",
-  "Walked 10K steps",
+  "Made up bed",
+  "Cleaned kitchen",
+  "Cleaned sofa",
+  "Put away all shoes",
+  "Put away all bags",
+  "Put away all balls",
 ];
 
 /**
@@ -41,7 +32,7 @@ function isoDay(value: unknown): string {
 
 async function ensureTable() {
   await sql`
-    CREATE TABLE IF NOT EXISTS focus_affirmations (
+    CREATE TABLE IF NOT EXISTS focus_chores (
       id SERIAL PRIMARY KEY,
       user_email TEXT NOT NULL,
       day DATE NOT NULL,
@@ -52,13 +43,13 @@ async function ensureTable() {
     )
   `;
   await sql`
-    CREATE OR REPLACE VIEW focus_affirmation_daily AS
+    CREATE OR REPLACE VIEW focus_chore_daily AS
       SELECT user_email,
              day,
              COUNT(*) FILTER (WHERE done) AS completed,
              COUNT(*) AS total,
              ROUND(100.0 * COUNT(*) FILTER (WHERE done) / NULLIF(COUNT(*), 0)) AS percent
-      FROM focus_affirmations
+      FROM focus_chores
       GROUP BY user_email, day
   `;
 }
@@ -72,7 +63,7 @@ export async function GET() {
 
     const rows = await sql`
       SELECT day, item_idx, done
-      FROM focus_affirmations
+      FROM focus_chores
       WHERE user_email = ${session.user.email}
       ORDER BY day DESC, item_idx ASC
     `;
@@ -148,7 +139,7 @@ export async function POST(req: Request) {
 
     for (let i = 0; i < ITEMS.length; i++) {
       await sql`
-        INSERT INTO focus_affirmations (user_email, day, item_idx, done)
+        INSERT INTO focus_chores (user_email, day, item_idx, done)
         VALUES (${session.user.email}, ${day}, ${i}, FALSE)
         ON CONFLICT (user_email, day, item_idx) DO NOTHING
       `;
@@ -176,7 +167,7 @@ export async function PATCH(req: Request) {
     }
 
     await sql`
-      INSERT INTO focus_affirmations (user_email, day, item_idx, done)
+      INSERT INTO focus_chores (user_email, day, item_idx, done)
       VALUES (${session.user.email}, ${day}, ${itemIdx}, ${done})
       ON CONFLICT (user_email, day, item_idx) DO UPDATE SET done = ${done}
     `;
@@ -196,7 +187,7 @@ export async function DELETE(req: Request) {
     const day = String(searchParams.get("day") || "").slice(0, 10);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return NextResponse.json({ error: "Bad request" }, { status: 400 });
 
-    await sql`DELETE FROM focus_affirmations WHERE user_email = ${session.user.email} AND day = ${day}`;
+    await sql`DELETE FROM focus_chores WHERE user_email = ${session.user.email} AND day = ${day}`;
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Could not remove that day" }, { status: 500 });
