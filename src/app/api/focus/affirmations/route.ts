@@ -16,7 +16,7 @@ export const ITEMS = [
   "Don't eat before 1pm",
   "Only one snack per day",
   "Walk 20 minutes after breakfast",
-  "30 min weight training",
+  "15 min weight training",
   "16 ounces of water before breakfast",
   "No sugars or simple carbs",
   "Don't eat after 9pm",
