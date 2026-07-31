@@ -28,6 +28,29 @@ export const ITEMS = [
 ];
 
 /**
+ * The order to show them in, as indexes into ITEMS.
+ *
+ * The array above cannot be reordered — a tick is stored against its index, so
+ * moving an entry would rewrite what every past day's ticks meant. This gives
+ * the list a sensible reading order (through the day, meal by meal, exercise
+ * last) while every stored tick keeps pointing at the habit it was ticked for.
+ */
+export const DISPLAY_ORDER = [
+  0,  // Don't eat before 1pm
+  1,  // Only one snack per day
+  4,  // water before breakfast
+  2,  // walk after breakfast
+  9,  // water before lunch
+  7,  // walk after lunch
+  10, // water before dinner
+  8,  // walk after dinner
+  5,  // No sugars or simple carbs
+  6,  // Don't eat after 9pm
+  3,  // 15 min weight training
+  11, // Walked 10K steps
+];
+
+/**
  * Neon hands a DATE column back as a Date object, and String(date) gives
  * "Tue Jul 29 2026 ..." - slicing that yields "Tue Jul 29", which is not a
  * date at all. Normalise to YYYY-MM-DD from either shape.
@@ -127,7 +150,7 @@ export async function GET() {
       prev = day;
     }
 
-    return NextResponse.json({ items: ITEMS, days, summary: { tracked, average, perfect, streak, best } });
+    return NextResponse.json({ items: ITEMS, order: DISPLAY_ORDER, days, summary: { tracked, average, perfect, streak, best } });
   } catch {
     return NextResponse.json({ error: "Failed to load" }, { status: 500 });
   }

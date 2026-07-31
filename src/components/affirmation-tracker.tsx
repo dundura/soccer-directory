@@ -19,6 +19,9 @@ const pretty = (iso: string) => {
 
 export function AffirmationTracker() {
   const [items, setItems] = useState<string[]>([]);
+  // Display positions, as indexes into items. A tick is stored against the
+  // item index, so the list is reordered for reading only — never in place.
+  const [order, setOrder] = useState<number[]>([]);
   const [days, setDays] = useState<Day[]>([]);
   const [summary, setSummary] = useState<Summary>({ tracked: 0, average: 0, perfect: 0, streak: 0, best: 0 });
   const [loading, setLoading] = useState(true);
@@ -34,6 +37,9 @@ export function AffirmationTracker() {
       const data = await res.json();
       if (data && data.items) {
         setItems(data.items);
+        setOrder(Array.isArray(data.order) && data.order.length
+          ? data.order
+          : data.items.map((_: string, i: number) => i));
         setDays(data.days || []);
         setSummary(data.summary || { tracked: 0, average: 0, perfect: 0, streak: 0, best: 0 });
         setOpenDay((cur) => cur || todayISO());
@@ -264,7 +270,8 @@ export function AffirmationTracker() {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {items.map((label, i) => {
+            {(order.length ? order : items.map((_, i) => i)).map((i) => {
+              const label = items[i];
               const done = !!d.done[i];
               return (
                 <button

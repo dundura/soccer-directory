@@ -18,6 +18,9 @@ export const ITEMS = [
   "Put away all balls",
 ];
 
+/** Authored in reading order already, so this is just identity. */
+export const DISPLAY_ORDER = ITEMS.map((_, i) => i);
+
 /**
  * Neon hands a DATE column back as a Date object, and String(date) gives
  * "Tue Jul 29 2026 ..." - slicing that yields "Tue Jul 29", which is not a
@@ -118,7 +121,7 @@ export async function GET() {
       prev = day;
     }
 
-    return NextResponse.json({ items: ITEMS, days, summary: { tracked, average, perfect, streak, best } });
+    return NextResponse.json({ items: ITEMS, order: DISPLAY_ORDER, days, summary: { tracked, average, perfect, streak, best } });
   } catch {
     return NextResponse.json({ error: "Failed to load" }, { status: 500 });
   }
