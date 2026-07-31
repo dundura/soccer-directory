@@ -53,9 +53,39 @@ export default function FocusClient() {
 
   return (
     <div style={{ fontFamily: "var(--font-body, 'DM Sans', sans-serif)" }}>
-      {/* Tab bar */}
+      {/* Nine tabs do not fit a phone. Below 820px they collapse into a
+          select, which is native, thumb-friendly and needs no scrolling —
+          rather than a row that runs off the edge with no sign it continues. */}
+      <style>{`
+        .focus-tabbar { display: flex; gap: 0; }
+        .focus-tabpick { display: none; }
+        @media (max-width: 820px) {
+          .focus-tabbar { display: none; }
+          .focus-tabpick { display: block; padding: 12px 0; }
+        }
+      `}</style>
+
       <div style={{ borderBottom: "2px solid #E1E8EF" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px", display: "flex", gap: 0 }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px" }}>
+          <div className="focus-tabpick">
+            <label htmlFor="focus-tab-select" style={{ display: "block", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#94a3b8", marginBottom: 6 }}>
+              Section
+            </label>
+            <select
+              id="focus-tab-select"
+              value={tab}
+              onChange={(e) => setTab(e.target.value as Tab)}
+              style={{
+                width: "100%", padding: "12px 14px", fontSize: 15, fontWeight: 700,
+                color: "#0F3154", background: "#fff", border: "2px solid #E1E8EF",
+                borderRadius: 10, fontFamily: "inherit",
+              }}
+            >
+              {TAB_ORDER.map(t => <option key={t} value={t}>{TAB_LABELS[t]}</option>)}
+            </select>
+          </div>
+
+          <div className="focus-tabbar">
           {TAB_ORDER.map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
               padding: "14px 24px", fontSize: 14, fontWeight: tab === t ? 700 : 500,
@@ -67,6 +97,7 @@ export default function FocusClient() {
               {TAB_LABELS[t]}
             </button>
           ))}
+          </div>
         </div>
       </div>
 
