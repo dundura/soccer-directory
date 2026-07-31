@@ -14,7 +14,7 @@ export const ITEMS = [
   // day's ticks meant — the meal items are reworded in place and everything
   // new is appended.
   "Don't eat before 1pm",
-  "Only one snack per day",
+  "Only two snacks per day",
   "Walk 20 minutes after breakfast",
   "15 min weight training",
   "16 ounces of water before breakfast",
@@ -37,7 +37,7 @@ export const ITEMS = [
  */
 export const DISPLAY_ORDER = [
   0,  // Don't eat before 1pm
-  1,  // Only one snack per day
+  1,  // Only two snacks per day
   4,  // water before breakfast
   2,  // walk after breakfast
   9,  // water before lunch
@@ -45,8 +45,8 @@ export const DISPLAY_ORDER = [
   10, // water before dinner
   8,  // walk after dinner
   5,  // No sugars or simple carbs
-  6,  // Don't eat after 9pm
   3,  // 15 min weight training
+  6,  // Don't eat after 9pm  — second to last
   11, // Walked 10K steps
 ];
 
