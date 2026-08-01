@@ -11,9 +11,10 @@ import { PostsHub } from "@/components/posts-hub";
 import { DailyPlaybook } from "@/components/daily-playbook";
 import { AffirmationTracker } from "@/components/affirmation-tracker";
 import { ChoresTracker } from "@/components/chores-tracker";
-type Tab = "playbook" | "projects" | "clients" | "blog" | "newsletter" | "posts" | "affirmations" | "chores";
+import { WeightTracker } from "@/components/weight-tracker";
+type Tab = "playbook" | "projects" | "clients" | "blog" | "newsletter" | "posts" | "affirmations" | "chores" | "weight";
 
-const TAB_ORDER: Tab[] = ["playbook", "projects", "clients", "blog", "newsletter", "posts", "affirmations", "chores"];
+const TAB_ORDER: Tab[] = ["playbook", "projects", "clients", "blog", "newsletter", "posts", "affirmations", "chores", "weight"];
 const TAB_LABELS: Record<Tab, string> = {
   playbook:   "Daily Playbook",
   projects:   "Projects",
@@ -23,6 +24,7 @@ const TAB_LABELS: Record<Tab, string> = {
   posts:      "Our Posts",
   affirmations: "Daily Affirmations",
   chores:     "Household Chores",
+  weight:     "Weight Tracker",
 };
 
 export default function FocusClient() {
@@ -109,6 +111,7 @@ export default function FocusClient() {
       {tab === "posts"      && <PostsHub />}
       {tab === "affirmations" && <AffirmationTracker />}
       {tab === "chores"       && <ChoresTracker />}
+      {tab === "weight"       && <WeightTracker />}
     </div>
   );
 }
