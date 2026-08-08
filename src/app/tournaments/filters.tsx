@@ -12,7 +12,7 @@ export function TournamentFilters({ tournaments }: { tournaments: Tournament[] }
   const [state, setState] = useState(searchParams.get("state") || "");
   const [gender, setGender] = useState("");
   const [level, setLevel] = useState("");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [page, setPage] = useState(1);
   const [viewAll, setViewAll] = useState(false);
 

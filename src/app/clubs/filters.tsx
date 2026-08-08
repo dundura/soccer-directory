@@ -9,7 +9,7 @@ const PER_PAGE = 10;
 
 export function ClubFilters({ clubs }: { clubs: Club[] }) {
   const searchParams = useSearchParams();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [level, setLevel] = useState("");
   const [state, setState] = useState(searchParams.get("state") || "");
   const [page, setPage] = useState(1);

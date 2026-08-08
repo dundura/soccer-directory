@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const categories = [
-  { label: "All Categories", value: "" },
+  { label: "Everything", value: "" },
   { label: "Clubs", value: "clubs" },
   { label: "Teams", value: "teams" },
   { label: "Trainers", value: "trainers" },
@@ -21,9 +21,13 @@ export function HeroSearchBar() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const path = category || "clubs";
-    const params = query.trim() ? `?search=${encodeURIComponent(query.trim())}` : "";
-    router.push(`/${path}${params}`);
+    const q = query.trim();
+    // No category picked → search every listing type, not just clubs
+    if (!category) {
+      router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
+      return;
+    }
+    router.push(`/${category}${q ? `?search=${encodeURIComponent(q)}` : ""}`);
   }
 
   return (
@@ -32,7 +36,7 @@ export function HeroSearchBar() {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search by club name, city, or state..."
+        placeholder="Search by name, city, or state..."
         className="flex-1 px-5 py-4 rounded-xl text-primary text-base placeholder:text-muted focus:outline-none"
       />
       <select

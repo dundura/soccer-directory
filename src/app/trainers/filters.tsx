@@ -11,7 +11,7 @@ export function TrainerFilters({ trainers }: { trainers: Trainer[] }) {
   const searchParams = useSearchParams();
   const [specialty, setSpecialty] = useState(searchParams.get("specialty") || "");
   const [state, setState] = useState(searchParams.get("state") || "");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [page, setPage] = useState(1);
   const [viewAll, setViewAll] = useState(false);
 

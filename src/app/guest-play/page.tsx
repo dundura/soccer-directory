@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { getGuestOpportunities } from "@/lib/db";
-import { PageHeader, ListingCard, AnytimeInlineCTA } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
+import { GuestPlayFilters } from "./filters";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -45,7 +47,6 @@ export default async function GuestPlayPage() {
   const all = await getGuestOpportunities();
   // Filter out expired opportunities
   const guestOpportunities = all.filter((opp) => !isExpired(opp.dates));
-  const sorted = [...guestOpportunities].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
 
   return (
     <>
@@ -53,40 +54,9 @@ export default async function GuestPlayPage() {
         title="Guest Player Opportunities"
         description="Find short-term playing opportunities for tournaments and showcases. Great exposure without switching clubs."
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16">
-        {sorted.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-muted text-lg">No upcoming guest player opportunities at the moment.</p>
-            <p className="text-muted text-sm mt-2">Check back soon or list your own opportunity!</p>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sorted.map((opp) => (
-              <ListingCard
-                key={opp.id}
-                href={`/guest-play/${opp.slug}`}
-                title={opp.teamName}
-                subtitle={`${opp.tournament} \u00b7 ${opp.city}, ${opp.state}`}
-                image={opp.teamPhoto && !opp.teamPhoto.includes("idf.webp") ? opp.teamPhoto : opp.logo || opp.imageUrl || undefined}
-                badges={[
-                  { label: opp.level, variant: "blue" },
-                  { label: opp.gender, variant: opp.gender === "Boys" ? "blue" : "purple" },
-                  { label: opp.ageGroup },
-                ]}
-                details={[
-                  { label: "Dates", value: opp.dates },
-                  { label: "Tournament", value: opp.tournament },
-                  { label: "Positions Needed", value: opp.positionsNeeded },
-                ]}
-                featured={opp.featured}
-                imagePosition={opp.imagePosition}
-                cta="View Details"
-              />
-            ))}
-          </div>
-        )}
-        <div className="mt-12"><AnytimeInlineCTA /></div>
-      </div>
+      <Suspense>
+        <GuestPlayFilters opportunities={guestOpportunities} />
+      </Suspense>
     </>
   );
 }

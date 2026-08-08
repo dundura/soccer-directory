@@ -11,7 +11,7 @@ export function CampFilters({ camps }: { camps: Camp[] }) {
   const searchParams = useSearchParams();
   const [campType, setCampType] = useState("");
   const [state, setState] = useState(searchParams.get("state") || "");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [page, setPage] = useState(1);
   const [viewAll, setViewAll] = useState(false);
 

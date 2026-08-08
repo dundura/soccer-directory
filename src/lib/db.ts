@@ -4478,3 +4478,121 @@ export async function deleteBookMediaAppearance(id: string): Promise<boolean> {
   const rows = await sql`DELETE FROM book_media_appearances WHERE id = ${id} RETURNING id`;
   return rows.length > 0;
 }
+
+// ── Site-wide Search ─────────────────────────────────────────
+
+export interface SiteSearchResult {
+  id: string;
+  type: string;
+  typeLabel: string;
+  name: string;
+  href: string;
+  city: string;
+  state: string;
+  description: string;
+  image: string | null;
+  featured: boolean;
+}
+
+/** type → display label + URL prefix, used to build result links */
+const SEARCH_TYPE_META: Record<string, { label: string; path: string }> = {
+  club: { label: "Clubs", path: "clubs" },
+  team: { label: "Teams", path: "teams" },
+  trainer: { label: "Trainers", path: "trainers" },
+  recruiter: { label: "College Recruiting", path: "college-recruiting" },
+  consultant: { label: "Consultants", path: "consultants" },
+  camp: { label: "Camps", path: "camps" },
+  guest: { label: "Guest Play", path: "guest-play" },
+  tournament: { label: "Tournaments", path: "tournaments" },
+  futsal: { label: "Futsal", path: "futsal" },
+  trip: { label: "International Trips", path: "international-trips" },
+  marketplace: { label: "Shop", path: "shop" },
+  player: { label: "Players", path: "players" },
+  podcast: { label: "Podcasts", path: "podcasts" },
+  fbgroup: { label: "Facebook Groups", path: "facebook-groups" },
+  instagrampage: { label: "Instagram Pages", path: "instagram-pages" },
+  tiktokpage: { label: "TikTok Pages", path: "tiktok-pages" },
+  service: { label: "Services", path: "services" },
+  tryout: { label: "Tryouts", path: "tryouts" },
+  specialevent: { label: "Special Events", path: "special-events" },
+  trainingapp: { label: "Training Apps", path: "training-apps" },
+  blog: { label: "Blogs", path: "blogs" },
+  youtube: { label: "YouTube Channels", path: "youtube-channels" },
+  scrimmage: { label: "Scrimmages", path: "scrimmages" },
+  soccerbook: { label: "Books", path: "books-and-authors" },
+  photovideo: { label: "Photo & Video", path: "photo-video-services" },
+};
+
+/**
+ * Search every listing table by name, city and state.
+ * Name matches rank above location-only matches; exact then prefix name matches rank highest.
+ */
+export async function searchAllListings(query: string, limit = 300): Promise<SiteSearchResult[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  const p = `%${q}%`;
+
+  // Every branch returns the same shape: id, slug, name, city, state, description, image, featured, type
+  const results = await Promise.all([
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'club' AS type FROM clubs WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, team_photo, image_url) AS image, featured, 'team' AS type FROM teams WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'trainer' AS type FROM trainers WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'recruiter' AS type FROM recruiters WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'consultant' AS type FROM consultants WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'camp' AS type FROM camps WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, team_name AS name, city, state, description, COALESCE(logo, team_photo, image_url) AS image, featured, 'guest' AS type FROM guest_opportunities WHERE status = 'approved' AND (team_name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'tournament' AS type FROM tournaments WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, team_photo, image_url) AS image, featured, 'futsal' AS type FROM futsal_teams WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, trip_name AS name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'trip' AS type FROM international_trips WHERE status = 'approved' AND (trip_name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, image_url AS image, featured, 'marketplace' AS type FROM marketplace WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, player_name AS name, city, state, description, COALESCE(image_url, team_photo) AS image, featured, 'player' AS type FROM player_profiles WHERE status = 'approved' AND (player_name ILIKE ${p} OR team_name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'podcast' AS type FROM podcasts WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'fbgroup' AS type FROM facebook_groups WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'instagrampage' AS type FROM instagram_pages WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'tiktokpage' AS type FROM tiktok_pages WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, image_url AS image, featured, 'service' AS type FROM services WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'tryout' AS type FROM tryouts WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'specialevent' AS type FROM special_events WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, image_url AS image, featured, 'trainingapp' AS type FROM training_apps WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'blog' AS type FROM blogs WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'youtube' AS type FROM youtube_channels WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, team_name AS name, city, state, description, COALESCE(logo, team_photo, image_url) AS image, featured, 'scrimmage' AS type FROM scrimmages WHERE status = 'approved' AND (team_name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'soccerbook' AS type FROM books WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+    sql`SELECT id, slug, name, city, state, description, COALESCE(logo, image_url) AS image, featured, 'photovideo' AS type FROM photo_video_services WHERE status = 'approved' AND (name ILIKE ${p} OR city ILIKE ${p} OR state ILIKE ${p})`,
+  ]);
+
+  const lower = q.toLowerCase();
+  /** 0 = exact name, 1 = name starts with, 2 = name contains, 3 = location-only match */
+  function rank(name: string): number {
+    const n = (name || "").toLowerCase();
+    if (n === lower) return 0;
+    if (n.startsWith(lower)) return 1;
+    if (n.includes(lower)) return 2;
+    return 3;
+  }
+
+  return results
+    .flat()
+    .map((r) => {
+      const meta = SEARCH_TYPE_META[r.type as string];
+      return {
+        id: r.id as string,
+        type: r.type as string,
+        typeLabel: meta.label,
+        name: (r.name as string) || "",
+        href: `/${meta.path}/${r.slug as string}`,
+        city: (r.city as string) || "",
+        state: (r.state as string) || "",
+        description: (r.description as string) || "",
+        image: (r.image as string) || null,
+        featured: !!r.featured,
+      };
+    })
+    .sort((a, b) => {
+      const ra = rank(a.name), rb = rank(b.name);
+      if (ra !== rb) return ra - rb;
+      if (a.featured !== b.featured) return a.featured ? -1 : 1;
+      return a.name.localeCompare(b.name);
+    })
+    .slice(0, limit);
+}
