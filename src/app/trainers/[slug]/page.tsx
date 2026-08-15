@@ -15,6 +15,7 @@ import type { Metadata } from "next";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingPostsSidebar } from "@/components/listing-posts";
 import { ListingEventsSection, ListingEventsSidebar } from "@/components/listing-events-section";
+import { ClampedText } from "@/components/clamped-text";
 
 export const revalidate = 3600;
 
@@ -313,7 +314,22 @@ export default async function TrainerDetailPage({ params }: Props) {
                   {trainer.credentials && (
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Credentials</p>
-                      <InlineEditField ownerId={ownerId} listingType="trainer" listingId={trainer.id} field="credentials" value={trainer.credentials} tag="p" className="text-sm text-primary leading-relaxed whitespace-pre-line" multiline />
+                      {/* Clamped rather than inline-editable when it is long:
+                          one coach listed 50-odd licenses, which made this
+                          section most of the page. Short credentials keep the
+                          edit-in-place behaviour, since that is the common case
+                          and the owner should not lose it to an edge case. */}
+                      {trainer.credentials.length > 320 ? (
+                        <ClampedText
+                          text={trainer.credentials}
+                          className="text-sm text-primary leading-relaxed"
+                          clampLines={8}
+                          label="Show all credentials"
+                          title="Licenses &amp; Certifications"
+                        />
+                      ) : (
+                        <InlineEditField ownerId={ownerId} listingType="trainer" listingId={trainer.id} field="credentials" value={trainer.credentials} tag="p" className="text-sm text-primary leading-relaxed whitespace-pre-line" multiline />
+                      )}
                     </div>
                   )}
                 </div>
