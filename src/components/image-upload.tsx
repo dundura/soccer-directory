@@ -8,8 +8,20 @@ import { useState, useRef } from "react";
 const MAX_DIMENSION = 1600;
 const TARGET_BYTES = 450 * 1024;
 
+// What /api/upload will accept. A file of any other type has to be re-encoded
+// here or the upload is rejected — which is what happened to every photo picked
+// straight from an iPhone library: iOS hands over image/heic, the old
+// "already small enough" shortcut passed it through untouched, and the API
+// answered "File type not allowed."
+const UPLOADABLE = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
 async function compressImage(file: File): Promise<File> {
-  if (file.type === "image/gif" || file.size <= TARGET_BYTES) return file;
+  const typeOk = UPLOADABLE.includes(file.type);
+  // GIFs are animated; re-encoding would flatten them to one frame.
+  if (file.type === "image/gif") return file;
+  // Only skip the work when the file is BOTH small enough and already a type
+  // the API takes. Skipping on size alone is what let HEIC through.
+  if (typeOk && file.size <= TARGET_BYTES) return file;
   try {
     const bitmap = await createImageBitmap(file);
     const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
@@ -25,10 +37,14 @@ async function compressImage(file: File): Promise<File> {
     ctx.fillRect(0, 0, w, h);
     ctx.drawImage(bitmap, 0, 0, w, h);
     const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
-    if (!blob || blob.size >= file.size) return file;
+    // Bigger than the original is only a reason to keep the original when the
+    // original can actually be uploaded. For a HEIC, a larger JPEG still beats
+    // a file the API will refuse.
+    if (!blob) return file;
+    if (blob.size >= file.size && typeOk) return file;
     return new File([blob.slice(0, blob.size, "image/jpeg")], file.name.replace(/\.\w+$/, "") + ".jpg", { type: "image/jpeg" });
   } catch {
-    return file; // any failure: upload the original
+    return file; // any failure: upload the original and let the API judge it
   }
 }
 
@@ -57,7 +73,15 @@ export function ImageUpload({ onUploaded }: { onUploaded: (url: string) => void 
         body: JSON.stringify({ filename: file.name, contentType: file.type }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Failed to get upload URL");
+      if (!res.ok) {
+        // 401 here means the session lapsed while the form was open, which the
+        // generic message made look like a broken uploader.
+        if (res.status === 401) throw new Error("Your session expired — sign in again and retry.");
+        if (!UPLOADABLE.includes(file.type)) {
+          throw new Error("That photo format could not be converted. Save it as a JPEG or PNG and try again.");
+        }
+        throw new Error(json.error || "Failed to get upload URL");
+      }
 
       const putRes = await fetch(json.uploadUrl, {
         method: "PUT",
