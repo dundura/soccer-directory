@@ -28,7 +28,15 @@ export function ClampedText({
   title?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const needsClamp = (text || "").length > threshold;
+
+  // Strip blob: images. Pasting a screenshot into the rich-text editor inlines
+  // an <img src="blob:..."> — a URL that only exists for the browser session
+  // that made it, so it is already broken by the time anyone else loads the
+  // page. On this profile it sat at the top of the credentials and filled the
+  // whole clamped area with a broken-image icon, which read as the clamp being
+  // broken rather than the image.
+  const html = (text || "").replace(/<img[^>]+src=["']blob:[^"']*["'][^>]*>/gi, "");
+  const needsClamp = html.length > threshold;
 
   // These fields hold HTML, not plain text — the same content InlineEditField
   // renders with dangerouslySetInnerHTML. Rendering it as a string prints the
@@ -38,7 +46,7 @@ export function ClampedText({
   const htmlClass = `${className} [&>p]:mb-0 [&>p]:leading-relaxed`;
 
   if (!needsClamp) {
-    return <div className={htmlClass} dangerouslySetInnerHTML={{ __html: text }} />;
+    return <div className={htmlClass} dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
   return (
@@ -48,7 +56,7 @@ export function ClampedText({
           clamp matched nothing and all fifty credentials rendered above the
           button. The fade makes it read as cut off rather than finished. */}
       <div className="relative overflow-hidden" style={{ maxHeight: `${clampLines * 1.5}rem` }}>
-        <div className={htmlClass} dangerouslySetInnerHTML={{ __html: text }} />
+        <div className={htmlClass} dangerouslySetInnerHTML={{ __html: html }} />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent" />
       </div>
       {/* Fewer lines than the dialog holds, so "Show all" is the obvious move.
@@ -91,7 +99,7 @@ export function ClampedText({
             <div className="overflow-y-auto px-5 py-4">
               <div
                 className="text-sm text-primary sm:columns-2 sm:gap-6 [&>p]:mb-0 [&>p]:leading-relaxed [&>p]:break-inside-avoid [&>p>strong]:block [&>p>strong]:mt-3 [&>p>strong]:mb-1"
-                dangerouslySetInnerHTML={{ __html: text }}
+                dangerouslySetInnerHTML={{ __html: html }}
               />
             </div>
             <div className="border-t border-border px-5 py-3">

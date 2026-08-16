@@ -212,7 +212,7 @@ export default async function CampDetailPage({ params }: Props) {
       </div>
 
       <div className="max-w-[1100px] mx-auto px-6 pb-16">
-        <div className="grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+        <div className="grid lg:grid-cols-[280px_minmax(0,1fr)] gap-6 items-start">
 
           {/* ====== LEFT SIDEBAR (desktop only) ====== */}
           <aside className="hidden lg:flex flex-col gap-4">

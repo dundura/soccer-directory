@@ -107,7 +107,7 @@ export default async function TryoutDetailPage({ params }: Props) {
       </div>
 
       <div className="max-w-[1100px] mx-auto px-6 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5 lg:gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)] gap-5 lg:gap-6 items-start">
 
           {/* ====== LEFT SIDEBAR ====== */}
           <aside className="order-4 lg:order-none lg:[grid-row:span_10] flex flex-col gap-4">

@@ -82,7 +82,7 @@ export default async function TournamentDetailPage({ params }: Props) {
       </div>
 
       <div className="max-w-[1100px] mx-auto px-6 pb-16">
-        <div className="grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+        <div className="grid lg:grid-cols-[280px_minmax(0,1fr)] gap-6 items-start">
 
           {/* ====== MAIN TOP (Hero + At a Glance) - appears first on mobile ====== */}
           <div className="flex flex-col gap-5 lg:col-start-2 lg:row-start-1">
