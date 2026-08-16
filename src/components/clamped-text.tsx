@@ -43,16 +43,14 @@ export function ClampedText({
 
   return (
     <>
-      <div
-        className={htmlClass}
-        style={{
-          display: "-webkit-box",
-          WebkitLineClamp: clampLines,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-        }}
-        dangerouslySetInnerHTML={{ __html: text }}
-      />
+      {/* A height cap, NOT -webkit-line-clamp. Line clamp only counts inline
+          lines, and this content is a stack of block <p> elements — so the
+          clamp matched nothing and all fifty credentials rendered above the
+          button. The fade makes it read as cut off rather than finished. */}
+      <div className="relative overflow-hidden" style={{ maxHeight: `${clampLines * 1.5}rem` }}>
+        <div className={htmlClass} dangerouslySetInnerHTML={{ __html: text }} />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent" />
+      </div>
       {/* Fewer lines than the dialog holds, so "Show all" is the obvious move.
           Once open, the dialog closes on tap-outside, Close, or the ×. */}
       <button
