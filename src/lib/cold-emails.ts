@@ -107,16 +107,23 @@ export const COLD_EMAILS: ColdEmail[] = [
             <p style="margin:0 0 16px 0; text-align:left;">${greeting(contactName)}</p>
 
             <p style="margin:0 0 16px 0; text-align:left;">
-              Following up on the listing for ${club}.
+              One more thing I should have mentioned - clubs in the directory also get a write-up on the blog. Here's the one I did for KC Legends:
             </p>
 
             <p style="margin:0 0 16px 0; text-align:left;">
-              One thing I didn't mention: alongside the listing I write the club up properly. Here's the one for KC Legends:<br>
-              ${link(`${SITE}/blog/kc-legends-soccer-revolutionizing-player-development`, "Read it here")}
+              ${link(`${SITE}/blog/kc-legends-soccer-revolutionizing-player-development`, `${SITE}/blog/kc-legends-soccer-revolutionizing-player-development`)}
             </p>
 
             <p style="margin:0 0 16px 0; text-align:left;">
-              Happy to do the same for you. Just reply with your age groups and playing level.
+              These are great for us because they drive member traffic, and they give your club more exposure.
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              Same as the listing: I write the first draft, you tell me what to change, and nothing gets published until you're happy with it. Then it goes out to the group.
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              Just reply back to let me know about the listing, and we can go from there.
             </p>
 
             <p style="margin:24px 0 0 0; text-align:left;">
