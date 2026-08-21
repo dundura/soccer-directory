@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { COLD_EMAILS } from "@/lib/cold-emails";
 
 type Club = {
   id: number;
@@ -35,27 +36,6 @@ const STATUS_COLOURS: Record<string, string> = {
   not_interested: "#b91c1c",
 };
 
-// The sequence as it is actually sent. Kept here so the copy has one home
-// rather than living only in a sent-mail folder.
-const SEQUENCE = [
-  {
-    n: 1,
-    name: "SNM Cold 1 — Free club listing",
-    subject: "Listing {{club}} on Soccer Near Me",
-    purpose:
-      "The opener. Leads with the 100,000-member Facebook group as the reason the directory exists, offers the listing free, links the finished KC Legends example, offers to build it from their age groups and playing level, and promises approval before it is shared with the group. Signed Neil.",
-    timing: "Day 0",
-  },
-  {
-    n: 2,
-    name: "SNM Cold 2 — Blog write-up",
-    subject: "Re: Listing {{club}} on Soccer Near Me",
-    purpose:
-      "Same thread, non-repliers only. Adds the blog write-up as a second reason to claim the listing, linking the KC Legends article.",
-    timing: "4–5 days after email 1",
-  },
-];
-
 const card: React.CSSProperties = {
   background: "#fff",
   border: "1px solid #E1E8EF",
@@ -70,6 +50,36 @@ export function ColdOutreach() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<number | null>(null);
   const [onlyWithEmail, setOnlyWithEmail] = useState(true);
+  const [sending, setSending] = useState<string | null>(null);
+  const [sendMsg, setSendMsg] = useState<Record<number, string>>({});
+
+  const sendEmail = async (club: Club, n: number) => {
+    const key = `${club.id}:${n}`;
+    if (sending) return;
+    if (!confirm(`Send email ${n} to ${club.name} at ${club.email}?`)) return;
+    setSending(key);
+    setSendMsg(m => ({ ...m, [club.id]: "" }));
+    try {
+      const res = await fetch("/api/focus/cold/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clubId: club.id, emailNumber: n }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) { setSendMsg(m => ({ ...m, [club.id]: d.error || "Send failed." })); return; }
+      const stamp = new Date().toISOString();
+      setClubs(prev => prev.map(c => c.id === club.id
+        ? { ...c, status: n === 1 ? "sent_1" : "sent_2",
+            email1_sent_at: n === 1 ? stamp : c.email1_sent_at,
+            email2_sent_at: n === 2 ? stamp : c.email2_sent_at }
+        : c));
+      setSendMsg(m => ({ ...m, [club.id]: `✓ Email ${n} sent` }));
+    } catch {
+      setSendMsg(m => ({ ...m, [club.id]: "Send failed." }));
+    } finally {
+      setSending(null);
+    }
+  };
 
   useEffect(() => {
     fetch("/api/focus/cold")
@@ -177,6 +187,34 @@ export function ColdOutreach() {
                     {"  ·  "}
                     {c.email2_sent_at ? `E2 ${String(c.email2_sent_at).slice(0, 10)}` : "E2 —"}
                   </p>
+                  <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                    {[1, 2].map(n => {
+                      const done = n === 1 ? !!c.email1_sent_at : !!c.email2_sent_at;
+                      const blocked = !c.email || done || (n === 2 && !c.email1_sent_at);
+                      return (
+                        <button
+                          key={n}
+                          onClick={() => sendEmail(c, n)}
+                          disabled={blocked || sending === `${c.id}:${n}`}
+                          title={done ? "Already sent" : n === 2 && !c.email1_sent_at ? "Send email 1 first" : undefined}
+                          style={{
+                            flex: 1, padding: "6px 10px", fontSize: 12, fontWeight: 700, borderRadius: 8,
+                            border: "2px solid " + (blocked ? "#E1E8EF" : "#0F3154"),
+                            background: blocked ? "#f6f8fa" : "#0F3154",
+                            color: blocked ? "#94a3b8" : "#fff",
+                            cursor: blocked ? "not-allowed" : "pointer", fontFamily: "inherit",
+                          }}
+                        >
+                          {sending === `${c.id}:${n}` ? "Sending…" : `Send ${n}`}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {sendMsg[c.id] && (
+                    <p style={{ margin: "6px 0 0", fontSize: 11, fontWeight: 700, color: sendMsg[c.id].startsWith("✓") ? "#15803d" : "#b91c1c" }}>
+                      {sendMsg[c.id]}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -187,18 +225,21 @@ export function ColdOutreach() {
       {tab === "sequence" && (
         <>
           <p style={{ color: "#6B7D8E", fontSize: 14, marginTop: 0 }}>
-            Sent by hand from Gmail. Mark each club&rsquo;s status on the Clubs tab as you go.
+            Sent from the Clubs tab. Previewed here with a sample club name.
           </p>
-          {SEQUENCE.map(e => (
+          {COLD_EMAILS.map(e => (
             <div key={e.n} style={card}>
               <p style={{ margin: 0, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#94a3b8" }}>
                 Email {e.n} · {e.timing}
               </p>
               <p style={{ margin: "6px 0 0", fontWeight: 700, color: "#0F3154" }}>{e.name}</p>
               <p style={{ margin: "4px 0 0", fontSize: 13, color: "#0F3154" }}>
-                <strong>Subject:</strong> {e.subject}
+                <strong>Subject:</strong> {e.subject("Example FC")}
               </p>
-              <p style={{ margin: "8px 0 0", fontSize: 13, color: "#6B7D8E", lineHeight: 1.6 }}>{e.purpose}</p>
+              <div
+                style={{ marginTop: 12, padding: 14, background: "#f8fafc", border: "1px solid #E1E8EF", borderRadius: 8 }}
+                dangerouslySetInnerHTML={{ __html: e.html("Example FC", "club@example.com") }}
+              />
             </div>
           ))}
         </>
