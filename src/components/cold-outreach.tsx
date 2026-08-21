@@ -15,6 +15,7 @@ type Club = {
   status: string;
   email1_sent_at: string | null;
   email2_sent_at: string | null;
+  email3_sent_at: string | null;
   notes: string | null;
 };
 
@@ -22,6 +23,7 @@ const STATUS_LABELS: Record<string, string> = {
   not_contacted: "Not contacted",
   sent_1: "Email 1 sent",
   sent_2: "Email 2 sent",
+  sent_3: "Email 3 sent",
   replied: "Replied",
   claimed: "Claimed listing",
   not_interested: "Not interested",
@@ -31,6 +33,7 @@ const STATUS_COLOURS: Record<string, string> = {
   not_contacted: "#94a3b8",
   sent_1: "#0F3154",
   sent_2: "#0F3154",
+  sent_3: "#0F3154",
   replied: "#15803d",
   claimed: "#15803d",
   not_interested: "#b91c1c",
@@ -69,9 +72,10 @@ export function ColdOutreach() {
       if (!res.ok) { setSendMsg(m => ({ ...m, [club.id]: d.error || "Send failed." })); return; }
       const stamp = new Date().toISOString();
       setClubs(prev => prev.map(c => c.id === club.id
-        ? { ...c, status: n === 1 ? "sent_1" : "sent_2",
+        ? { ...c, status: n === 1 ? "sent_1" : n === 2 ? "sent_2" : "sent_3",
             email1_sent_at: n === 1 ? stamp : c.email1_sent_at,
-            email2_sent_at: n === 2 ? stamp : c.email2_sent_at }
+            email2_sent_at: n === 2 ? stamp : c.email2_sent_at,
+            email3_sent_at: n === 3 ? stamp : c.email3_sent_at }
         : c));
       setSendMsg(m => ({ ...m, [club.id]: `✓ Email ${n} sent` }));
     } catch {
@@ -186,10 +190,14 @@ export function ColdOutreach() {
                     {c.email1_sent_at ? `E1 ${String(c.email1_sent_at).slice(0, 10)}` : "E1 —"}
                     {"  ·  "}
                     {c.email2_sent_at ? `E2 ${String(c.email2_sent_at).slice(0, 10)}` : "E2 —"}
+                    {"  ·  "}
+                    {c.email3_sent_at ? `E3 ${String(c.email3_sent_at).slice(0, 10)}` : "E3 —"}
                   </p>
                   <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                    {[1, 2].map(n => {
-                      const done = n === 1 ? !!c.email1_sent_at : !!c.email2_sent_at;
+                    {[1, 2, 3].map(n => {
+                      const done = n === 1 ? !!c.email1_sent_at : n === 2 ? !!c.email2_sent_at : !!c.email3_sent_at;
+                      // 2 is a follow-up on 1's thread; 3 is a fresh subject
+                      // and stands on its own.
                       const blocked = !c.email || done || (n === 2 && !c.email1_sent_at);
                       return (
                         <button

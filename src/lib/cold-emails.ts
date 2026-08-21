@@ -15,6 +15,7 @@ export const REPLY_TO = "neil@anytime-soccer.com";
 export const BCC = "neil@anytime-soccer.com";
 
 const SITE = "https://www.soccer-near-me.com";
+const PLAN_URL = "https://www.anytime-soccer.com/free-soccer-drills-for-kids";
 const GROUP = "https://www.facebook.com/groups/guestplayers";
 
 // First name when we have one, "there" when we do not — "Hi ," reads like an
@@ -57,7 +58,7 @@ export type ColdEmail = {
   n: number;
   name: string;
   timing: string;
-  subject: (club: string) => string;
+  subject: (club?: string) => string;
   html: (club: string, clubEmail: string, contactName?: string | null) => string;
 };
 
@@ -131,6 +132,45 @@ export const COLD_EMAILS: ColdEmail[] = [
               Neil
             </p>`,
         "SNM Cold 2 — Blog write-up"
+      ),
+  },
+  {
+    n: 3,
+    name: "SNM Cold 3 — Free 7-Day Training Plan",
+    timing: "After the listing thread has run its course",
+    // A different reason for writing, so a new subject and a new thread rather
+    // than a third message stacked under the listing conversation.
+    subject: () => "Free 7-Day Training Plan",
+    html: (club, clubEmail, contactName) =>
+      shell(
+        `
+            <p style="margin:0 0 16px 0; text-align:left;">${greeting(contactName)}</p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              No chase on the listing - it's there whenever you want it.
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              Different reason for writing. We put together a free 7-Day Training Plan that clubs pass on to their families - it's actually loads of follow-along videos players can do at home, no equipment needed.
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              It's totally free (forever), and it's yours to send to your parents if that's useful.
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              ${link(PLAN_URL, PLAN_URL)}
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              Most clubs lose players in the gaps between seasons rather than during them, and a bit of structure at home is the cheapest fix I know of.
+            </p>
+
+            <p style="margin:24px 0 0 0; text-align:left;">
+              Best,<br>
+              Neil
+            </p>`,
+        "Free 7-Day Training Plan"
       ),
   },
 ];
