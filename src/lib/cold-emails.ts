@@ -77,7 +77,7 @@ export const COLD_EMAILS: ColdEmail[] = [
             </p>
 
             <p style="margin:0 0 16px 0;">
-              I didn't want to leave ${club} off the list. It's completely free - once your listing is live, I'll share it with the group.
+              Would ${club} be interested in a free listing? Once it's live, I'll share it with the group, and members will reach out to you directly.
             </p>
 
             <p style="margin:0 0 16px 0;">
@@ -86,7 +86,7 @@ export const COLD_EMAILS: ColdEmail[] = [
             </p>
 
             <p style="margin:0 0 16px 0;">
-              Just reply back with your age groups and playing level, and I'll create the first draft.
+              Just reply back and I'll create the first draft.
             </p>
 
             <p style="margin:0 0 16px 0;">
