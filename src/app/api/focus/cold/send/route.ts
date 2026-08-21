@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { neon } from "@neondatabase/serverless";
 import { auth } from "@/lib/auth";
-import { getColdEmail, SENDER_NAME, SENDER_EMAIL, REPLY_TO, BCC } from "@/lib/cold-emails";
+import { getColdEmail, sentAtColumn, sentStatus, SENDER_NAME, SENDER_EMAIL, REPLY_TO, BCC } from "@/lib/cold-emails";
 
 const sql = neon(process.env.DATABASE_URL!);
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -20,7 +20,8 @@ export async function POST(req: NextRequest) {
   const rows = await sql`
     SELECT c.id, c.name, c.email,
            COALESCE(o.status, 'not_contacted') AS status,
-           o.email1_sent_at, o.email2_sent_at, o.email3_sent_at, o.contact_name, o.email1_message_id
+           o.email1_sent_at, o.email2_sent_at, o.email3_sent_at,
+           o.email4_sent_at, o.email5_sent_at, o.contact_name, o.email1_message_id
       FROM clubs c LEFT JOIN cold_outreach o ON o.club_id = c.id
      WHERE c.id = ${clubId} LIMIT 1`;
   const club = rows[0];
@@ -28,7 +29,12 @@ export async function POST(req: NextRequest) {
   if (!club.email) return NextResponse.json({ error: "That club has no email on file." }, { status: 400 });
 
   // Never send the same touch twice — the date column is the record.
-  const already = email.n === 1 ? club.email1_sent_at : email.n === 2 ? club.email2_sent_at : club.email3_sent_at;
+  //
+  // Read by column name rather than a ladder of ternaries. The old form had
+  // "everything that is not 1 or 2" fall through to email 3, so the moment a
+  // fourth touch existed it would have checked email 3's date, found it set,
+  // and refused to send — or found it empty and sent a duplicate.
+  const already = club[sentAtColumn(email.n)] as string | null;
   if (already) {
     return NextResponse.json(
       { error: `Email ${email.n} already went to ${club.email} on ${String(already).slice(0, 10)}.` },
@@ -67,20 +73,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "Send failed." }, { status: 502 });
   }
 
-  const status = email.n === 1 ? "sent_1" : email.n === 2 ? "sent_2" : "sent_3";
+  const status = sentStatus(email.n);
+  const now = new Date().toISOString();
+  const at = (n: number) => (email.n === n ? now : null);
+
   await sql`
-    INSERT INTO cold_outreach (club_id, status, email1_sent_at, email2_sent_at, email3_sent_at, email1_message_id, updated_at)
+    INSERT INTO cold_outreach (club_id, status, email1_sent_at, email2_sent_at, email3_sent_at, email4_sent_at, email5_sent_at, email1_message_id, updated_at)
     VALUES (${clubId}, ${status},
-            ${email.n === 1 ? new Date().toISOString() : null},
-            ${email.n === 2 ? new Date().toISOString() : null},
-            ${email.n === 3 ? new Date().toISOString() : null},
+            ${at(1)}, ${at(2)}, ${at(3)}, ${at(4)}, ${at(5)},
             ${messageId},
             NOW())
     ON CONFLICT (club_id) DO UPDATE SET
       status = ${status},
-      email1_sent_at = COALESCE(cold_outreach.email1_sent_at, ${email.n === 1 ? new Date().toISOString() : null}),
-      email2_sent_at = COALESCE(cold_outreach.email2_sent_at, ${email.n === 2 ? new Date().toISOString() : null}),
-      email3_sent_at = COALESCE(cold_outreach.email3_sent_at, ${email.n === 3 ? new Date().toISOString() : null}),
+      email1_sent_at = COALESCE(cold_outreach.email1_sent_at, ${at(1)}),
+      email2_sent_at = COALESCE(cold_outreach.email2_sent_at, ${at(2)}),
+      email3_sent_at = COALESCE(cold_outreach.email3_sent_at, ${at(3)}),
+      email4_sent_at = COALESCE(cold_outreach.email4_sent_at, ${at(4)}),
+      email5_sent_at = COALESCE(cold_outreach.email5_sent_at, ${at(5)}),
       email1_message_id = COALESCE(cold_outreach.email1_message_id, ${messageId}),
       updated_at = NOW()`;
 

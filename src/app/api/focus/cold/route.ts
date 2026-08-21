@@ -22,6 +22,8 @@ async function ensureTable() {
   await sql`ALTER TABLE cold_outreach ADD COLUMN IF NOT EXISTS contact_name TEXT`;
   await sql`ALTER TABLE cold_outreach ADD COLUMN IF NOT EXISTS email1_message_id TEXT`;
   await sql`ALTER TABLE cold_outreach ADD COLUMN IF NOT EXISTS email3_sent_at TIMESTAMPTZ`;
+  await sql`ALTER TABLE cold_outreach ADD COLUMN IF NOT EXISTS email4_sent_at TIMESTAMPTZ`;
+  await sql`ALTER TABLE cold_outreach ADD COLUMN IF NOT EXISTS email5_sent_at TIMESTAMPTZ`;
 }
 
 export const STATUSES = [
@@ -29,6 +31,8 @@ export const STATUSES = [
   "sent_1",
   "sent_2",
   "sent_3",
+  "sent_4",
+  "sent_5",
   "replied",
   "claimed",
   "not_interested",
@@ -42,7 +46,8 @@ export async function GET() {
   const rows = await sql`
     SELECT c.id, c.name, c.city, c.state, c.email, c.phone, c.website, c.slug,
            COALESCE(o.status, 'not_contacted') AS status,
-           o.email1_sent_at, o.email2_sent_at, o.email3_sent_at, o.notes, o.contact_name
+           o.email1_sent_at, o.email2_sent_at, o.email3_sent_at,
+           o.email4_sent_at, o.email5_sent_at, o.notes, o.contact_name
       FROM clubs c
       LEFT JOIN cold_outreach o ON o.club_id = c.id
      ORDER BY (c.email IS NULL), c.state NULLS LAST, c.name`;

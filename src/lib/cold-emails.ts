@@ -16,6 +16,10 @@ export const BCC = "neil@anytime-soccer.com";
 
 const SITE = "https://www.soccer-near-me.com";
 const PLAN_URL = "https://www.anytime-soccer.com/free-soccer-drills-for-kids";
+// No ?si= share token. It is YouTube's copy-link tracking parameter, it does
+// nothing for us, and an opaque query string is what makes Gmail put its
+// "Redirect Notice" interstitial in front of the click.
+const SAMPLE_VIDEO_URL = "https://youtu.be/4ZBEfaLB7rM";
 const GROUP = "https://www.facebook.com/groups/guestplayers";
 
 // First name when we have one, "there" when we do not — "Hi ," reads like an
@@ -173,6 +177,87 @@ export const COLD_EMAILS: ColdEmail[] = [
         "Something for your players"
       ),
   },
+  {
+    n: 4,
+    name: "SNM Cold 4 — Sample session",
+    timing: "About a week after email 3",
+    // Names what they get, not what it costs them to read. "If you'd rather
+    // watch than read" concedes the last email was a chore before this one is
+    // even open.
+    subject: () => "A session your players can do at home",
+    html: (club, clubEmail, contactName) =>
+      shell(
+        `
+            <p style="margin:0 0 16px 0; text-align:left;">${greeting(contactName)}</p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              Last week I sent over the free 7-Day Training Plan. Here's one of the ball mastery sessions from it, so you can see what your players would actually be doing:
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              ${link(SAMPLE_VIDEO_URL, "Beginner Ball Mastery")}
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              They press play and train along - it's that simple. Send it to your families if it's useful:
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              ${link(PLAN_URL, PLAN_URL)}
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              The seven days are just a small sample. If you want the full program - the ones that build on each other, plus a coach view of who's training between practices - I'll set your team up with a free season so you can see it in action.
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              Just let me know.
+            </p>
+
+            <p style="margin:24px 0 0 0; text-align:left;">
+              Best,<br>
+              Neil
+            </p>`,
+        "A session your players can do at home"
+      ),
+  },
+  {
+    n: 5,
+    name: "SNM Cold 5 — Should I close this out?",
+    timing: "Last touch. Nothing follows it.",
+    // The exit, offered rather than chased. A question they can answer in one
+    // word is what gets a reply out of somebody who has ignored four emails.
+    subject: () => "Should I close this out?",
+    html: (club, clubEmail, contactName) =>
+      shell(
+        `
+            <p style="margin:0 0 16px 0; text-align:left;">${greeting(contactName)}</p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              I've sent a few notes about listing ${club} on Soccer Near Me and haven't heard back, which usually means the timing's wrong.
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              If you'd still like the listing, just reply and I will build the first draft.
+            </p>
+
+            <p style="margin:0 0 16px 0; text-align:left;">
+              Also, if you want a team to try Anytime Soccer Training for free this season, that's also available.
+            </p>
+
+            <p style="margin:24px 0 0 0; text-align:left;">
+              Best,<br>
+              Neil
+            </p>`,
+        "Should I close this out?"
+      ),
+  },
 ];
 
 export const getColdEmail = (n: number) => COLD_EMAILS.find((e) => e.n === n) || null;
+
+/** The column on cold_outreach that records touch n. */
+export const sentAtColumn = (n: number) => `email${n}_sent_at`;
+
+/** The status a club is in once touch n has gone. */
+export const sentStatus = (n: number) => `sent_${n}`;

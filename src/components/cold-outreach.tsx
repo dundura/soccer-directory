@@ -16,14 +16,24 @@ type Club = {
   email1_sent_at: string | null;
   email2_sent_at: string | null;
   email3_sent_at: string | null;
+  email4_sent_at: string | null;
+  email5_sent_at: string | null;
   notes: string | null;
 };
+
+// One touch's date, by number. Everything below reads through this rather than
+// naming email1/2/3 by hand, so a sixth email is one entry in COLD_EMAILS and
+// two columns — nothing here has to be found and edited again.
+const sentAt = (c: Club, n: number) =>
+  (c as unknown as Record<string, string | null>)[`email${n}_sent_at`] ?? null;
 
 const STATUS_LABELS: Record<string, string> = {
   not_contacted: "Not contacted",
   sent_1: "Email 1 sent",
   sent_2: "Email 2 sent",
   sent_3: "Email 3 sent",
+  sent_4: "Email 4 sent",
+  sent_5: "Email 5 sent",
   replied: "Replied",
   claimed: "Claimed listing",
   not_interested: "Not interested",
@@ -72,10 +82,7 @@ export function ColdOutreach() {
       if (!res.ok) { setSendMsg(m => ({ ...m, [club.id]: d.error || "Send failed." })); return; }
       const stamp = new Date().toISOString();
       setClubs(prev => prev.map(c => c.id === club.id
-        ? { ...c, status: n === 1 ? "sent_1" : n === 2 ? "sent_2" : "sent_3",
-            email1_sent_at: n === 1 ? stamp : c.email1_sent_at,
-            email2_sent_at: n === 2 ? stamp : c.email2_sent_at,
-            email3_sent_at: n === 3 ? stamp : c.email3_sent_at }
+        ? { ...c, status: `sent_${n}`, [`email${n}_sent_at`]: stamp }
         : c));
       setSendMsg(m => ({ ...m, [club.id]: `✓ Email ${n} sent` }));
     } catch {
@@ -187,17 +194,22 @@ export function ColdOutreach() {
                     ))}
                   </select>
                   <p style={{ margin: "6px 0 0", fontSize: 11, color: "#94a3b8" }}>
-                    {c.email1_sent_at ? `E1 ${String(c.email1_sent_at).slice(0, 10)}` : "E1 —"}
-                    {"  ·  "}
-                    {c.email2_sent_at ? `E2 ${String(c.email2_sent_at).slice(0, 10)}` : "E2 —"}
-                    {"  ·  "}
-                    {c.email3_sent_at ? `E3 ${String(c.email3_sent_at).slice(0, 10)}` : "E3 —"}
+                    {COLD_EMAILS.map((e, i) => {
+                      const at = sentAt(c, e.n);
+                      return (
+                        <span key={e.n}>
+                          {i > 0 ? "  ·  " : ""}
+                          {at ? `E${e.n} ${String(at).slice(0, 10)}` : `E${e.n} —`}
+                        </span>
+                      );
+                    })}
                   </p>
                   <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                    {[1, 2, 3].map(n => {
-                      const done = n === 1 ? !!c.email1_sent_at : n === 2 ? !!c.email2_sent_at : !!c.email3_sent_at;
-                      // 2 is a follow-up on 1's thread; 3 is a fresh subject
-                      // and stands on its own.
+                    {COLD_EMAILS.map(({ n }) => {
+                      const done = !!sentAt(c, n);
+                      // 2 is a follow-up on 1's thread, so it cannot go first.
+                      // 3, 4 and 5 each open on their own subject and stand
+                      // alone, so none of them gates on what came before.
                       const blocked = !c.email || done || (n === 2 && !c.email1_sent_at);
                       return (
                         <button
