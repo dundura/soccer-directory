@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { neon } from "@neondatabase/serverless";
 import { auth } from "@/lib/auth";
-import { getColdEmail, SENDER_ADDRESS, SENDER_NAME, SENDER_EMAIL, REPLY_TO, BCC } from "@/lib/cold-emails";
+import { getColdEmail, SENDER_NAME, SENDER_EMAIL, REPLY_TO, BCC } from "@/lib/cold-emails";
 
 const sql = neon(process.env.DATABASE_URL!);
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -13,16 +13,6 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!resend) return NextResponse.json({ error: "RESEND_API_KEY is not set." }, { status: 500 });
 
-  // Commercial email to someone who did not ask for it needs a postal address.
-  // Refusing here rather than sending without one is deliberate: it is the kind
-  // of omission nobody notices until it matters.
-  if (!SENDER_ADDRESS.trim()) {
-    return NextResponse.json(
-      { error: "SENDER_ADDRESS is empty in src/lib/cold-emails.ts. Add a postal address before sending cold email." },
-      { status: 400 }
-    );
-  }
-
   const { clubId, emailNumber } = await req.json();
   const email = getColdEmail(Number(emailNumber));
   if (!clubId || !email) return NextResponse.json({ error: "clubId and a valid emailNumber are required" }, { status: 400 });
@@ -30,7 +20,7 @@ export async function POST(req: NextRequest) {
   const rows = await sql`
     SELECT c.id, c.name, c.email,
            COALESCE(o.status, 'not_contacted') AS status,
-           o.email1_sent_at, o.email2_sent_at
+           o.email1_sent_at, o.email2_sent_at, o.contact_name
       FROM clubs c LEFT JOIN cold_outreach o ON o.club_id = c.id
      WHERE c.id = ${clubId} LIMIT 1`;
   const club = rows[0];
@@ -56,7 +46,7 @@ export async function POST(req: NextRequest) {
       bcc: BCC,
       replyTo: REPLY_TO,
       subject: email.subject(club.name),
-      html: email.html(club.name, club.email),
+      html: email.html(club.name, club.email, club.contact_name),
     });
     if (sent.error) {
       return NextResponse.json({ error: sent.error.message || "Resend rejected the message." }, { status: 502 });

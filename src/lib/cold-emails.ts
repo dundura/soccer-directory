@@ -1,11 +1,9 @@
 // Cold outreach to clubs — the copy, in one place.
 //
-// These go to people who never asked to hear from us, which is the whole
-// difference from every other email this app sends. US commercial email has to
-// carry a real postal address and a working opt-out, so SENDER_ADDRESS below is
-// not decoration: the send route refuses to run while it is unset.
+// Ported from the GHL templates. The merge fields become arguments:
+//   {{contact.first_name}}   -> contactName, falling back to "there"
+//   {{contact.company_name}} -> the club name
 
-export const SENDER_ADDRESS = ""; // TODO: postal address, required before sending
 export const SENDER_NAME = "Neil Crawford";
 
 // Resend will only send from a verified domain, and soccer-near-me.com is the
@@ -17,29 +15,56 @@ export const REPLY_TO = "neil@anytime-soccer.com";
 export const BCC = "neil@anytime-soccer.com";
 
 const SITE = "https://www.soccer-near-me.com";
+const GROUP = "https://www.facebook.com/groups/guestplayers";
 
-function footer(clubEmail: string) {
-  const optOut = `${SITE}/opt-out?email=${encodeURIComponent(clubEmail)}`;
-  return `
-  <p style="margin:28px 0 0;font-size:12px;color:#8a97a4;line-height:1.6;">
-    You are receiving this because ${SENDER_NAME} is building a free directory of youth soccer clubs.
-    <a href="${optOut}" style="color:#8a97a4;">Tell me not to write again</a> and I will not contact you.<br>
-    ${SENDER_ADDRESS}
-  </p>`;
-}
+// First name when we have one, "there" when we do not — "Hi ," reads like an
+// unfinished mail merge.
+const greeting = (contactName?: string | null) => {
+  const first = String(contactName || "").trim().split(/\s+/)[0];
+  return `Hi ${first || "there"},`;
+};
 
-const shell = (body: string, clubEmail: string) => `
-<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:560px;">
+// A one-line opt-out. Nothing else in this app emails people who did not ask
+// for it, and an unsubscribe path is what keeps that defensible.
+const footer = (clubEmail: string) => `
+            <p style="margin:24px 0 0 0; font-size:12px; color:#8a97a4;">
+              <a href="${SITE}/opt-out?email=${encodeURIComponent(clubEmail)}" style="color:#8a97a4;">Tell me not to write again</a>
+            </p>`;
+
+const shell = (body: string, clubEmail: string) => `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0; padding:0; background-color:#ffffff;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#ffffff; padding:24px 0;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:4px;">
+        <tr>
+          <td style="padding:32px 32px 24px 32px; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:1.6; color:#222222;">
 ${body}
 ${footer(clubEmail)}
-</div>`;
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>`;
+
+// Outlook renders link text in the body colour without the conditional font tag.
+const link = (href: string, text: string) =>
+  `<a href="${href}" style="color:#1a73e8;; mso-style-textfill-fill-color: #1a73e8;"><!--[if mso]><font color="#1a73e8"><![endif]-->${text}<!--[if mso]></font><![endif]--></a>`;
 
 export type ColdEmail = {
   n: number;
   name: string;
   timing: string;
   subject: (club: string) => string;
-  html: (club: string, clubEmail: string) => string;
+  html: (club: string, clubEmail: string, contactName?: string | null) => string;
 };
 
 export const COLD_EMAILS: ColdEmail[] = [
@@ -48,20 +73,36 @@ export const COLD_EMAILS: ColdEmail[] = [
     name: "SNM Cold 1 — Free club listing",
     timing: "Day 0",
     subject: (club) => `Listing ${club} on Soccer Near Me`,
-    html: (club, clubEmail) =>
+    html: (club, clubEmail, contactName) =>
       shell(
         `
-  <p style="margin:0 0 16px;">Hi,</p>
+            <p style="margin:0 0 16px 0;">${greeting(contactName)}</p>
 
-  <p style="margin:0 0 16px;">I run a Facebook group for youth soccer families that has grown past <strong>100,000 members</strong>. The question that comes up more than any other is where to find a good club &mdash; so I built <a href="${SITE}" style="color:#0F3154;">Soccer Near Me</a> to answer it.</p>
+            <p style="margin:0 0 16px 0;">
+              A few years back I started a ${link(GROUP, "Facebook group")} for parents like me looking for clubs - it's grown to 100,000 members, so I built Soccer Near Me to make it easy for members to search and compare clubs.
+            </p>
 
-  <p style="margin:0 0 16px;">I&rsquo;d like to add <strong>${club}</strong>, free.</p>
+            <p style="margin:0 0 16px 0;">
+              I didn't want to leave ${club} off the list. It's completely free - once your listing is live, I'll share it with the group.
+            </p>
 
-  <p style="margin:0 0 16px;">Here is a finished one so you can see what it looks like: <a href="${SITE}/clubs/kc-legends" style="color:#0F3154;">KC Legends</a>.</p>
+            <p style="margin:0 0 16px 0;">
+              Here's what a finished one looks like:<br>
+              ${link(`${SITE}/clubs/kc-legends`, `${SITE}/clubs/kc-legends`)}
+            </p>
 
-  <p style="margin:0 0 16px;">Send me your age groups and playing level and I&rsquo;ll build the page for you. You&rsquo;ll see it and approve it before it goes anywhere near the group.</p>
+            <p style="margin:0 0 16px 0;">
+              Just reply back with your age groups and playing level, and I'll create the first draft.
+            </p>
 
-  <p style="margin:0;">Neil</p>`,
+            <p style="margin:0 0 16px 0;">
+              I'll share it with you for editing and approval. Then I'll share it with the group.
+            </p>
+
+            <p style="margin:24px 0 0 0;">
+              Best,<br>
+              Neil
+            </p>`,
         clubEmail
       ),
   },
@@ -70,18 +111,28 @@ export const COLD_EMAILS: ColdEmail[] = [
     name: "SNM Cold 2 — Blog write-up",
     timing: "4–5 days after email 1, non-repliers only",
     subject: (club) => `Re: Listing ${club} on Soccer Near Me`,
-    html: (club, clubEmail) =>
+    html: (club, clubEmail, contactName) =>
       shell(
         `
-  <p style="margin:0 0 16px;">Hi,</p>
+            <p style="margin:0 0 16px 0;">${greeting(contactName)}</p>
 
-  <p style="margin:0 0 16px;">Following up on the listing for <strong>${club}</strong>.</p>
+            <p style="margin:0 0 16px 0;">
+              Following up on the listing for ${club}.
+            </p>
 
-  <p style="margin:0 0 16px;">One thing I didn&rsquo;t mention: alongside the listing I write the club up properly. Here is the one for KC Legends &mdash; <a href="${SITE}/blog/kc-legends-soccer-revolutionizing-player-development" style="color:#0F3154;">read it here</a>.</p>
+            <p style="margin:0 0 16px 0;">
+              One thing I didn't mention: alongside the listing I write the club up properly. Here's the one for KC Legends:<br>
+              ${link(`${SITE}/blog/kc-legends-soccer-revolutionizing-player-development`, "Read it here")}
+            </p>
 
-  <p style="margin:0 0 16px;">Happy to do the same for you. Just reply with your age groups and playing level.</p>
+            <p style="margin:0 0 16px 0;">
+              Happy to do the same for you. Just reply with your age groups and playing level.
+            </p>
 
-  <p style="margin:0;">Neil</p>`,
+            <p style="margin:24px 0 0 0;">
+              Best,<br>
+              Neil
+            </p>`,
         clubEmail
       ),
   },

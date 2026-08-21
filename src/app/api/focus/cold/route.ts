@@ -14,8 +14,10 @@ async function ensureTable() {
     email1_sent_at TIMESTAMPTZ,
     email2_sent_at TIMESTAMPTZ,
     notes TEXT,
+    contact_name TEXT,
     updated_at TIMESTAMPTZ DEFAULT NOW()
   )`;
+  await sql`ALTER TABLE cold_outreach ADD COLUMN IF NOT EXISTS contact_name TEXT`;
 }
 
 export const STATUSES = [
@@ -35,7 +37,7 @@ export async function GET() {
   const rows = await sql`
     SELECT c.id, c.name, c.city, c.state, c.email, c.phone, c.website, c.slug,
            COALESCE(o.status, 'not_contacted') AS status,
-           o.email1_sent_at, o.email2_sent_at, o.notes
+           o.email1_sent_at, o.email2_sent_at, o.notes, o.contact_name
       FROM clubs c
       LEFT JOIN cold_outreach o ON o.club_id = c.id
      ORDER BY (c.email IS NULL), c.state NULLS LAST, c.name`;
@@ -49,7 +51,7 @@ export async function PATCH(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await ensureTable();
 
-  const { clubId, status, notes } = await req.json();
+  const { clubId, status, notes, contactName } = await req.json();
   if (!clubId) return NextResponse.json({ error: "clubId required" }, { status: 400 });
   if (status && !STATUSES.includes(status)) {
     return NextResponse.json({ error: "Unknown status" }, { status: 400 });
@@ -59,11 +61,12 @@ export async function PATCH(req: NextRequest) {
   // without a second click, and COALESCE means re-selecting a status never
   // rewrites a date that is already set.
   await sql`
-    INSERT INTO cold_outreach (club_id, status, notes, email1_sent_at, email2_sent_at, updated_at)
+    INSERT INTO cold_outreach (club_id, status, notes, contact_name, email1_sent_at, email2_sent_at, updated_at)
     VALUES (
       ${clubId},
       ${status || "not_contacted"},
       ${notes ?? null},
+      ${contactName ?? null},
       ${status === "sent_1" || status === "sent_2" ? new Date().toISOString() : null},
       ${status === "sent_2" ? new Date().toISOString() : null},
       NOW()
@@ -71,6 +74,7 @@ export async function PATCH(req: NextRequest) {
     ON CONFLICT (club_id) DO UPDATE SET
       status = COALESCE(${status || null}, cold_outreach.status),
       notes = COALESCE(${notes ?? null}, cold_outreach.notes),
+      contact_name = COALESCE(${contactName ?? null}, cold_outreach.contact_name),
       email1_sent_at = COALESCE(cold_outreach.email1_sent_at, ${status === "sent_1" || status === "sent_2" ? new Date().toISOString() : null}),
       email2_sent_at = COALESCE(cold_outreach.email2_sent_at, ${status === "sent_2" ? new Date().toISOString() : null}),
       updated_at = NOW()`;
