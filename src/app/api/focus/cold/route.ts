@@ -9,7 +9,11 @@ const sql = neon(process.env.DATABASE_URL!);
 // state). One row per club, created on first update.
 async function ensureTable() {
   await sql`CREATE TABLE IF NOT EXISTS cold_outreach (
-    club_id INTEGER PRIMARY KEY,
+    -- TEXT, because clubs.id is a text slug like 'umm95icvulas4'. As INTEGER
+    -- this column could not be joined or written to at all: every query in the
+    -- Cold tab compares it against clubs.id, and Postgres refuses
+    -- integer = text outright.
+    club_id TEXT PRIMARY KEY,
     status TEXT NOT NULL DEFAULT 'not_contacted',
     email1_sent_at TIMESTAMPTZ,
     email2_sent_at TIMESTAMPTZ,
@@ -24,6 +28,9 @@ async function ensureTable() {
   await sql`ALTER TABLE cold_outreach ADD COLUMN IF NOT EXISTS email3_sent_at TIMESTAMPTZ`;
   await sql`ALTER TABLE cold_outreach ADD COLUMN IF NOT EXISTS email4_sent_at TIMESTAMPTZ`;
   await sql`ALTER TABLE cold_outreach ADD COLUMN IF NOT EXISTS email5_sent_at TIMESTAMPTZ`;
+  // Repair for the table as it was first created. Safe to run every time:
+  // altering a text column to text is a no-op.
+  await sql`ALTER TABLE cold_outreach ALTER COLUMN club_id TYPE TEXT`;
 }
 
 export const STATUSES = [

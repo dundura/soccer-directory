@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { COLD_EMAILS } from "@/lib/cold-emails";
 
 type Club = {
-  id: number;
+  id: string;  // clubs.id is a text slug, not a number
   name: string;
   city: string | null;
   state: string | null;
@@ -61,10 +61,10 @@ export function ColdOutreach() {
   const [tab, setTab] = useState<"clubs" | "sequence">("clubs");
   const [clubs, setClubs] = useState<Club[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState<number | null>(null);
+  const [saving, setSaving] = useState<string | null>(null);
   const [onlyWithEmail, setOnlyWithEmail] = useState(true);
   const [sending, setSending] = useState<string | null>(null);
-  const [sendMsg, setSendMsg] = useState<Record<number, string>>({});
+  const [sendMsg, setSendMsg] = useState<Record<string, string>>({});
 
   const sendEmail = async (club: Club, n: number) => {
     const key = `${club.id}:${n}`;
@@ -100,7 +100,7 @@ export function ColdOutreach() {
       .finally(() => setLoading(false));
   }, []);
 
-  const setStatus = async (clubId: number, status: string) => {
+  const setStatus = async (clubId: string, status: string) => {
     setSaving(clubId);
     setClubs(prev => prev.map(c => (c.id === clubId ? { ...c, status } : c)));
     try {
