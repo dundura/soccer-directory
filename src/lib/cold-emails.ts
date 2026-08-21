@@ -34,7 +34,7 @@ const shell = (body: string, title: string) => `<!DOCTYPE html>
 <body style="margin:0; padding:0; background-color:#ffffff;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#ffffff; padding:24px 0;">
   <tr>
-    <td align="center">
+    <td align="left">
       <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:4px;">
         <tr>
           <td align="left" style="padding:32px 32px 24px 32px; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:1.6; color:#222222; text-align:left;">
@@ -87,10 +87,6 @@ export const COLD_EMAILS: ColdEmail[] = [
 
             <p style="margin:0 0 16px 0; text-align:left;">
               Just reply back and I'll create the first draft.
-            </p>
-
-            <p style="margin:0 0 16px 0; text-align:left;">
-              I'll share it with you for editing and approval. Then I'll share it with the group.
             </p>
 
             <p style="margin:24px 0 0 0; text-align:left;">
