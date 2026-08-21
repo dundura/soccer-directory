@@ -37,7 +37,7 @@ const shell = (body: string, title: string) => `<!DOCTYPE html>
     <td align="center">
       <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:4px;">
         <tr>
-          <td style="padding:32px 32px 24px 32px; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:1.6; color:#222222;">
+          <td style="padding:32px 32px 24px 32px; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:1.6; color:#222222; text-align:left;">
 ${body}
 
           </td>
