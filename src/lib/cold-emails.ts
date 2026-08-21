@@ -24,19 +24,13 @@ const greeting = (contactName?: string | null) => {
   return `Hi ${first || "there"},`;
 };
 
-// A one-line opt-out. Nothing else in this app emails people who did not ask
-// for it, and an unsubscribe path is what keeps that defensible.
-const footer = (clubEmail: string) => `
-            <p style="margin:24px 0 0 0; font-size:12px; color:#8a97a4;">
-              <a href="${SITE}/opt-out?email=${encodeURIComponent(clubEmail)}" style="color:#8a97a4;">Tell me not to write again</a>
-            </p>`;
-
-const shell = (body: string, clubEmail: string) => `<!DOCTYPE html>
+const shell = (body: string, title: string) => `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
+<title>${title}</title>
+<!-- outlook-fixes-applied --></head>
 <body style="margin:0; padding:0; background-color:#ffffff;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#ffffff; padding:24px 0;">
   <tr>
@@ -45,7 +39,7 @@ const shell = (body: string, clubEmail: string) => `<!DOCTYPE html>
         <tr>
           <td style="padding:32px 32px 24px 32px; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:1.6; color:#222222;">
 ${body}
-${footer(clubEmail)}
+
           </td>
         </tr>
       </table>
@@ -103,7 +97,7 @@ export const COLD_EMAILS: ColdEmail[] = [
               Best,<br>
               Neil
             </p>`,
-        clubEmail
+        "SNM Cold 1 — Free club listing"
       ),
   },
   {
@@ -133,7 +127,7 @@ export const COLD_EMAILS: ColdEmail[] = [
               Best,<br>
               Neil
             </p>`,
-        clubEmail
+        "SNM Cold 2 — Blog write-up"
       ),
   },
 ];
