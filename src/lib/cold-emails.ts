@@ -170,7 +170,7 @@ export const COLD_EMAILS: ColdEmail[] = [
               Best,<br>
               Neil
             </p>`,
-        "Free 7-Day Training Plan"
+        "Something for your players"
       ),
   },
 ];
