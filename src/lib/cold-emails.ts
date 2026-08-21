@@ -86,7 +86,7 @@ export const COLD_EMAILS: ColdEmail[] = [
             </p>
 
             <p style="margin:0 0 16px 0; text-align:left;">
-              Just reply back and I'll create the first draft.
+              Just reply back and I'll create the first draft and send it back.
             </p>
 
             <p style="margin:24px 0 0 0; text-align:left;">
