@@ -163,7 +163,7 @@ export const COLD_EMAILS: ColdEmail[] = [
             </p>
 
             <p style="margin:0 0 16px 0; text-align:left;">
-              Most clubs lose players in the gaps between seasons rather than during them, and a bit of structure at home is the cheapest fix I know of.
+              Hope your players get something out of it.
             </p>
 
             <p style="margin:24px 0 0 0; text-align:left;">
