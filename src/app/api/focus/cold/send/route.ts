@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   const rows = await sql`
     SELECT c.id, c.name, c.email,
            COALESCE(o.status, 'not_contacted') AS status,
-           o.email1_sent_at, o.email2_sent_at, o.contact_name
+           o.email1_sent_at, o.email2_sent_at, o.contact_name, o.email1_message_id
       FROM clubs c LEFT JOIN cold_outreach o ON o.club_id = c.id
      WHERE c.id = ${clubId} LIMIT 1`;
   const club = rows[0];
@@ -39,6 +39,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Send email 1 first — email 2 is a follow-up on the same thread." }, { status: 400 });
   }
 
+  // Real threading, not just a "Re:" prefix. Email 1's Message-ID is kept and
+  // quoted back on the follow-up, so a mail client stacks them in one
+  // conversation instead of showing two unrelated messages.
+  let messageId: string | null = null;
+  const parent = club.email1_message_id as string | null;
+  const headers =
+    email.n === 2 && parent ? { "In-Reply-To": parent, References: parent } : undefined;
+
   try {
     const sent = await resend.emails.send({
       from: `${SENDER_NAME} <${SENDER_EMAIL}>`,
@@ -47,25 +55,31 @@ export async function POST(req: NextRequest) {
       replyTo: REPLY_TO,
       subject: email.subject(club.name),
       html: email.html(club.name, club.email, club.contact_name),
+      ...(headers ? { headers } : {}),
     });
     if (sent.error) {
       return NextResponse.json({ error: sent.error.message || "Resend rejected the message." }, { status: 502 });
     }
+    // Resend returns its own id; the RFC Message-ID it stamps is that id at
+    // the sending domain, which is what a client threads on.
+    if (email.n === 1 && sent.data?.id) messageId = `<${sent.data.id}@${SENDER_EMAIL.split("@")[1]}>`;
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "Send failed." }, { status: 502 });
   }
 
   const status = email.n === 1 ? "sent_1" : "sent_2";
   await sql`
-    INSERT INTO cold_outreach (club_id, status, email1_sent_at, email2_sent_at, updated_at)
+    INSERT INTO cold_outreach (club_id, status, email1_sent_at, email2_sent_at, email1_message_id, updated_at)
     VALUES (${clubId}, ${status},
             ${email.n === 1 ? new Date().toISOString() : null},
             ${email.n === 2 ? new Date().toISOString() : null},
+            ${messageId},
             NOW())
     ON CONFLICT (club_id) DO UPDATE SET
       status = ${status},
       email1_sent_at = COALESCE(cold_outreach.email1_sent_at, ${email.n === 1 ? new Date().toISOString() : null}),
       email2_sent_at = COALESCE(cold_outreach.email2_sent_at, ${email.n === 2 ? new Date().toISOString() : null}),
+      email1_message_id = COALESCE(cold_outreach.email1_message_id, ${messageId}),
       updated_at = NOW()`;
 
   return NextResponse.json({ success: true, sentTo: club.email, emailNumber: email.n });

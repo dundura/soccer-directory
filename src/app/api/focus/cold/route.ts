@@ -15,9 +15,11 @@ async function ensureTable() {
     email2_sent_at TIMESTAMPTZ,
     notes TEXT,
     contact_name TEXT,
+    email1_message_id TEXT,
     updated_at TIMESTAMPTZ DEFAULT NOW()
   )`;
   await sql`ALTER TABLE cold_outreach ADD COLUMN IF NOT EXISTS contact_name TEXT`;
+  await sql`ALTER TABLE cold_outreach ADD COLUMN IF NOT EXISTS email1_message_id TEXT`;
 }
 
 export const STATUSES = [
