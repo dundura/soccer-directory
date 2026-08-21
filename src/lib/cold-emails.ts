@@ -37,7 +37,7 @@ const shell = (body: string, title: string) => `<!DOCTYPE html>
     <td align="center">
       <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:4px;">
         <tr>
-          <td style="padding:32px 32px 24px 32px; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:1.6; color:#222222; text-align:left;">
+          <td align="left" style="padding:32px 32px 24px 32px; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:1.6; color:#222222; text-align:left;">
 ${body}
 
           </td>
@@ -70,30 +70,30 @@ export const COLD_EMAILS: ColdEmail[] = [
     html: (club, clubEmail, contactName) =>
       shell(
         `
-            <p style="margin:0 0 16px 0;">${greeting(contactName)}</p>
+            <p style="margin:0 0 16px 0; text-align:left;">${greeting(contactName)}</p>
 
-            <p style="margin:0 0 16px 0;">
-              A few years back I started a ${link(GROUP, "Facebook group")} for parents like me looking for clubs - it's grown to 100,000 members, so I built Soccer Near Me to make it easy for members to search and compare clubs.
+            <p style="margin:0 0 16px 0; text-align:left;">
+              A few years back I started a ${link(GROUP, "Facebook group")} for parents like me looking for clubs and guest playing - it's grown to 100,000 members, so I built Soccer Near Me to make it easy for members to search and compare clubs.
             </p>
 
-            <p style="margin:0 0 16px 0;">
+            <p style="margin:0 0 16px 0; text-align:left;">
               Would ${club} be interested in a free listing? Once it's live, I'll share it with the group, and members will reach out to you directly.
             </p>
 
-            <p style="margin:0 0 16px 0;">
+            <p style="margin:0 0 16px 0; text-align:left;">
               Here's what a finished one looks like:<br>
               ${link(`${SITE}/clubs/kc-legends`, `${SITE}/clubs/kc-legends`)}
             </p>
 
-            <p style="margin:0 0 16px 0;">
+            <p style="margin:0 0 16px 0; text-align:left;">
               Just reply back and I'll create the first draft.
             </p>
 
-            <p style="margin:0 0 16px 0;">
+            <p style="margin:0 0 16px 0; text-align:left;">
               I'll share it with you for editing and approval. Then I'll share it with the group.
             </p>
 
-            <p style="margin:24px 0 0 0;">
+            <p style="margin:24px 0 0 0; text-align:left;">
               Best,<br>
               Neil
             </p>`,
@@ -108,22 +108,22 @@ export const COLD_EMAILS: ColdEmail[] = [
     html: (club, clubEmail, contactName) =>
       shell(
         `
-            <p style="margin:0 0 16px 0;">${greeting(contactName)}</p>
+            <p style="margin:0 0 16px 0; text-align:left;">${greeting(contactName)}</p>
 
-            <p style="margin:0 0 16px 0;">
+            <p style="margin:0 0 16px 0; text-align:left;">
               Following up on the listing for ${club}.
             </p>
 
-            <p style="margin:0 0 16px 0;">
+            <p style="margin:0 0 16px 0; text-align:left;">
               One thing I didn't mention: alongside the listing I write the club up properly. Here's the one for KC Legends:<br>
               ${link(`${SITE}/blog/kc-legends-soccer-revolutionizing-player-development`, "Read it here")}
             </p>
 
-            <p style="margin:0 0 16px 0;">
+            <p style="margin:0 0 16px 0; text-align:left;">
               Happy to do the same for you. Just reply with your age groups and playing level.
             </p>
 
-            <p style="margin:24px 0 0 0;">
+            <p style="margin:24px 0 0 0; text-align:left;">
               Best,<br>
               Neil
             </p>`,
