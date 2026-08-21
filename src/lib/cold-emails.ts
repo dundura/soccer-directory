@@ -140,7 +140,7 @@ export const COLD_EMAILS: ColdEmail[] = [
     timing: "After the listing thread has run its course",
     // A different reason for writing, so a new subject and a new thread rather
     // than a third message stacked under the listing conversation.
-    subject: () => "Free 7-Day Training Plan",
+    subject: () => "Something for your players",
     html: (club, clubEmail, contactName) =>
       shell(
         `
