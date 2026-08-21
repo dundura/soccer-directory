@@ -151,7 +151,7 @@ export const COLD_EMAILS: ColdEmail[] = [
             </p>
 
             <p style="margin:0 0 16px 0; text-align:left;">
-              Different reason for writing. We put together a free 7-Day Training Plan that clubs pass on to their families - it's actually loads of follow-along videos players can do at home, no equipment needed.
+              Different reason for writing. We put together a free 7-Day Training Plan that clubs pass on to their families - it's actually loads of follow-along videos players can do at home.
             </p>
 
             <p style="margin:0 0 16px 0; text-align:left;">
