@@ -100,6 +100,27 @@ export function ColdOutreach() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Saved on blur, one field at a time — a PATCH per keystroke races itself.
+  const saveField = async (clubId: string, field: 'email' | 'website' | 'phone', value: string) => {
+    setSaving(clubId);
+    setClubs(prev => prev.map(c => (c.id === clubId ? { ...c, [field]: value } : c)));
+    try {
+      const res = await fetch("/api/focus/cold", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clubId, [field]: value }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setSendMsg(m => ({ ...m, [clubId]: d.error || "Could not save that." }));
+      }
+    } catch {
+      setSendMsg(m => ({ ...m, [clubId]: "Could not save that." }));
+    } finally {
+      setSaving(null);
+    }
+  };
+
   const setStatus = async (clubId: string, status: string) => {
     setSaving(clubId);
     setClubs(prev => prev.map(c => (c.id === clubId ? { ...c, status } : c)));
@@ -165,17 +186,46 @@ export function ColdOutreach() {
                   <p style={{ margin: "2px 0 0", fontSize: 13, color: "#6B7D8E" }}>
                     {[c.city, c.state].filter(Boolean).join(", ") || "—"}
                   </p>
-                  <p style={{ margin: "6px 0 0", fontSize: 13 }}>
-                    {c.email
-                      ? <a href={`mailto:${c.email}`} style={{ color: "#0F3154", fontWeight: 600 }}>{c.email}</a>
-                      : <span style={{ color: "#b91c1c", fontWeight: 600 }}>No email on file</span>}
-                  </p>
-                  {c.phone && <p style={{ margin: "2px 0 0", fontSize: 13, color: "#6B7D8E" }}>{c.phone}</p>}
-                  {c.website && (
-                    <p style={{ margin: "2px 0 0", fontSize: 13 }}>
-                      <a href={c.website} target="_blank" rel="noreferrer" style={{ color: "#6B7D8E" }}>{c.website}</a>
-                    </p>
-                  )}
+                  {/* Editable here, and only here. The onboarding CRM mirrors
+                      these and refuses writes to them, so each has exactly one
+                      place it can change — which is what stops a sync between
+                      the two ever overwriting somebody's work. */}
+                  <div style={{ display: "grid", gap: 6, marginTop: 8, maxWidth: 420 }}>
+                    <input
+                      type="email"
+                      defaultValue={c.email || ""}
+                      placeholder="No email yet — add one"
+                      onBlur={e => { if (e.target.value.trim() !== (c.email || "")) saveField(c.id, "email", e.target.value.trim()); }}
+                      style={{
+                        padding: "7px 10px", fontSize: 13, borderRadius: 8, fontFamily: "inherit",
+                        border: `1px solid ${c.email ? "#E1E8EF" : "#fca5a5"}`,
+                        color: "#0F3154", fontWeight: 600,
+                        background: c.email ? "#fff" : "#fef2f2",
+                      }}
+                    />
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <input
+                        defaultValue={c.website || ""}
+                        placeholder="Website"
+                        onBlur={e => { if (e.target.value.trim() !== (c.website || "")) saveField(c.id, "website", e.target.value.trim()); }}
+                        style={{ flex: 2, minWidth: 0, padding: "7px 10px", fontSize: 13, borderRadius: 8, border: "1px solid #E1E8EF", color: "#6B7D8E", fontFamily: "inherit" }}
+                      />
+                      <input
+                        defaultValue={c.phone || ""}
+                        placeholder="Phone"
+                        onBlur={e => { if (e.target.value.trim() !== (c.phone || "")) saveField(c.id, "phone", e.target.value.trim()); }}
+                        style={{ flex: 1, minWidth: 0, padding: "7px 10px", fontSize: 13, borderRadius: 8, border: "1px solid #E1E8EF", color: "#6B7D8E", fontFamily: "inherit" }}
+                      />
+                    </div>
+                    {c.website && (
+                      <a
+                        href={/^https?:\/\//i.test(c.website) ? c.website : `https://${c.website}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ fontSize: 12, color: "#DC373E", fontWeight: 600 }}
+                      >Open {c.website} &rarr;</a>
+                    )}
+                  </div>
                 </div>
 
                 <div style={{ minWidth: 190 }}>

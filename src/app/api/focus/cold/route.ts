@@ -68,8 +68,23 @@ export async function PATCH(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await ensureTable();
 
-  const { clubId, status, notes, contactName } = await req.json();
+  const { clubId, status, notes, contactName, email, website, phone } = await req.json();
   if (!clubId) return NextResponse.json({ error: "clubId required" }, { status: 400 });
+
+  // The club's own contact details live on `clubs`, not on the outreach row —
+  // they are facts about the club, true whether or not we ever write to it.
+  //
+  // This is where they are edited. The CRM mirrors them and refuses writes, so
+  // there is exactly one place each of these can change.
+  if (email !== undefined || website !== undefined || phone !== undefined) {
+    const addr = email === undefined ? undefined : String(email).trim().toLowerCase();
+    if (addr && !/.+@.+\..+/.test(addr)) {
+      return NextResponse.json({ error: "That is not a valid email." }, { status: 400 });
+    }
+    if (addr !== undefined) await sql`UPDATE clubs SET email = ${addr || null} WHERE id = ${clubId}`;
+    if (website !== undefined) await sql`UPDATE clubs SET website = ${String(website).trim() || null} WHERE id = ${clubId}`;
+    if (phone !== undefined) await sql`UPDATE clubs SET phone = ${String(phone).trim() || null} WHERE id = ${clubId}`;
+  }
   if (status && !STATUSES.includes(status)) {
     return NextResponse.json({ error: "Unknown status" }, { status: 400 });
   }
