@@ -4596,3 +4596,69 @@ export async function searchAllListings(query: string, limit = 300): Promise<Sit
     })
     .slice(0, limit);
 }
+
+// ---------------------------------------------------------------- listing emails
+
+/**
+ * One row per email sent to a listing owner.
+ *
+ * The unique key on (listing_type, listing_id, step) is the whole point: it is
+ * what stops a second click of Send welcome, or a re-run of a scheduled step,
+ * mailing the same person twice. Nothing here decides WHEN to send -- callers
+ * ask hasListingEmail first and record after a successful send.
+ */
+export async function ensureListingEmailsTable(): Promise<void> {
+  await sql`
+    CREATE TABLE IF NOT EXISTS listing_emails (
+      id SERIAL PRIMARY KEY,
+      listing_type TEXT NOT NULL,
+      listing_id TEXT NOT NULL,
+      step TEXT NOT NULL,
+      email TEXT,
+      sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (listing_type, listing_id, step)
+    )`;
+}
+
+export async function hasListingEmail(type: string, id: string, step: string): Promise<boolean> {
+  await ensureListingEmailsTable();
+  const rows = await sql`
+    SELECT 1 FROM listing_emails
+     WHERE listing_type = ${normalizeType(type)} AND listing_id = ${id} AND step = ${step}
+     LIMIT 1`;
+  return rows.length > 0;
+}
+
+export async function recordListingEmail(type: string, id: string, step: string, email: string): Promise<void> {
+  await ensureListingEmailsTable();
+  await sql`
+    INSERT INTO listing_emails (listing_type, listing_id, step, email)
+    VALUES (${normalizeType(type)}, ${id}, ${step}, ${email})
+    ON CONFLICT (listing_type, listing_id, step) DO NOTHING`;
+}
+
+/** Which steps have already gone out, so the admin can see it on the row. */
+export async function getListingEmailSteps(): Promise<Record<string, string[]>> {
+  await ensureListingEmailsTable();
+  const rows = await sql`SELECT listing_type, listing_id, step FROM listing_emails`;
+  const out: Record<string, string[]> = {};
+  for (const r of rows) {
+    const key = `${r.listing_type}-${r.listing_id}`;
+    (out[key] ||= []).push(r.step as string);
+  }
+  return out;
+}
+
+/**
+ * The person behind a listing: their real name and email off the account.
+ *
+ * Not the contact fields on the listing itself. Those only exist on some types
+ * -- clubs and trainers have no person-name column at all -- whereas every
+ * listing carries a user_id and every account has both a name and an email.
+ */
+export async function getListingOwnerById(type: string, id: string): Promise<{ name: string; email: string } | null> {
+  const email = await getListingOwnerEmailById(type, id);
+  if (!email) return null;
+  const user = await getUserByEmail(email);
+  return { name: (user?.name || "").trim(), email };
+}

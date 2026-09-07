@@ -70,6 +70,8 @@ export default function AdminClient() {
   });
   const [users, setUsers] = useState<User[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
+  // { "podcast-abc123": ["welcome"] } -- which emails a listing has had.
+  const [emailSteps, setEmailSteps] = useState<Record<string, string[]>>({});
   const [reviewComments, setReviewComments] = useState<ReviewComment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -152,6 +154,7 @@ export default function AdminClient() {
       setUsers(data.users);
       setListings(data.listings);
       setReviewComments(data.clubReviewComments || []);
+      setEmailSteps(data.emailSteps || {});
       setHeroTagline(data.heroTagline || "");
     } catch {
       setError("Failed to load admin data");
@@ -526,6 +529,16 @@ export default function AdminClient() {
                                           )}
                                           {listing.status === "approved" && (
                                             <button onClick={() => adminAction({ action: "updateStatus", type: listing.type, id: listing.id, status: "rejected" })} disabled={actionLoading !== null} className="text-xs px-2.5 py-1 rounded-lg border border-red-200 text-[#DC373E] hover:bg-red-50 transition-colors disabled:opacity-50">Reject</button>
+                                          )}
+                                          {/* Listings go live on submission, so this is the
+                                              first time the owner hears from a person. Once
+                                              sent it turns into a label -- the guard is in the
+                                              database, but the row should say so before you
+                                              click. */}
+                                          {(emailSteps[`${listing.type}-${listing.id}`] || []).includes("welcome") ? (
+                                            <span className="text-xs px-2.5 py-1 rounded-lg bg-surface text-muted border border-border">Welcomed</span>
+                                          ) : (
+                                            <button onClick={() => adminAction({ action: "sendWelcome", type: listing.type, id: listing.id })} disabled={actionLoading !== null} className="text-xs px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors disabled:opacity-50">Send welcome</button>
                                           )}
                                           <button onClick={() => adminAction({ action: "updateFeatured", type: listing.type, id: listing.id, featured: !listing.featured, name: listing.name, slug: listing.slug })} disabled={actionLoading !== null} className="text-xs px-2.5 py-1 rounded-lg border border-border hover:bg-surface transition-colors disabled:opacity-50">{listing.featured ? "Unfeature" : "Feature"}</button>
                                           <button onClick={() => handleEdit(listing)} disabled={editLoading} className="text-xs px-2.5 py-1 rounded-lg bg-accent/10 text-accent-hover border border-accent/20 hover:bg-accent/20 transition-colors disabled:opacity-50">Edit</button>

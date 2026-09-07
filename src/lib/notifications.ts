@@ -52,7 +52,7 @@ export async function notifyNewListing(type: string, data: Record<string, string
           <div style="font-family: sans-serif; max-width: 600px;">
             <div style="background: #FEF3C7; border: 1px solid #F59E0B; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;">
               <strong style="color: #92400E;">Action Required:</strong>
-              <span style="color: #92400E;"> This listing is pending approval.</span>
+              <span style="color: #92400E;"> This listing is already live. Send them their welcome from the admin.</span>
             </div>
             <h2 style="color: #1a365d;">New ${label} Listed on Soccer Near Me</h2>
             <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
@@ -245,5 +245,67 @@ export async function notifyListingFeatured(type: string, listingName: string, s
     });
   } catch (err) {
     console.error("Failed to send featured notification email:", err);
+  }
+}
+
+/**
+ * The welcome an owner gets when Neil signs their listing off.
+ *
+ * Listings go live the moment they are submitted, so this is not "you have
+ * been approved" -- it is the first time a real person has said hello, and the
+ * moment to tell them what to do next. Sent by hand from the admin, never
+ * automatically, which is why it can say their listing has been looked at.
+ *
+ * Greets by first name off the account, because the contact-name column only
+ * exists on some listing types -- clubs and trainers have none at all.
+ */
+export async function notifyListingWelcome(
+  type: string,
+  listingName: string,
+  slug: string,
+  owner: { name: string; email: string },
+) {
+  if (!resend || !owner?.email) return false;
+
+  const label = TYPE_LABELS[type] || type;
+  const listingUrl = `https://www.soccer-near-me.com/${typeToPath(type)}/${slug}`;
+  const first = (owner.name || "").trim().split(/\s+/)[0] || "there";
+
+  try {
+    await resend.emails.send({
+      from: "Soccer Near Me <notifications@soccer-near-me.com>",
+      to: [owner.email],
+      bcc: [NOTIFY_EMAIL],
+      replyTo: NOTIFY_EMAIL,
+      subject: `${listingName} is live on Soccer Near Me`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; color: #333;">
+          <h1 style="color: #1a365d; font-size: 22px; margin: 0 0 16px;">You are live on Soccer Near Me</h1>
+          <p style="font-size: 15px; line-height: 1.65; margin: 0 0 16px;">Hi ${first},</p>
+          <p style="font-size: 15px; line-height: 1.65; margin: 0 0 16px;">
+            Thanks for listing <strong>${listingName}</strong>. I have had a look through it and it is live on the site now.
+          </p>
+          <div style="text-align: center; margin: 26px 0;">
+            <a href="${listingUrl}" style="display: inline-block; padding: 14px 32px; background: #DC373E; color: #fff; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 15px;">View your ${label.toLowerCase()}</a>
+          </div>
+          <div style="background: #F5F8FB; border-left: 4px solid #DC373E; border-radius: 4px; padding: 18px 22px; margin: 0 0 20px;">
+            <p style="margin: 0 0 6px; font-size: 12px; font-weight: bold; color: #64748b; letter-spacing: 0.08em; text-transform: uppercase;">Worth doing next</p>
+            <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #1a365d;">
+              Add a photo and a fuller description &mdash; listings with both get opened far more often than ones without.
+            </p>
+          </div>
+          <p style="font-size: 15px; line-height: 1.65; margin: 0 0 16px;">
+            Anything you want changed, just reply to this email and I will sort it.
+          </p>
+          <p style="font-size: 15px; line-height: 1.65; margin: 0;">Neil<br/>
+            <span style="color: #666; font-size: 14px;">Soccer Near Me</span>
+          </p>
+        </div>
+      `,
+    });
+    return true;
+  } catch (err) {
+    console.error("Failed to send listing welcome email:", err);
+    return false;
   }
 }

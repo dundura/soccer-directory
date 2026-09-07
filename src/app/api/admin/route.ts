@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getUserByEmail, getAllUsers, getAllListings, updateUserRole, updateListingStatus, updateListingFeatured, deleteUserAccount, getListingDataAdmin, updateListingAdmin, getSetting, updateSetting, getListingOwnerEmailById, getAllClubReviewComments, adminDeleteClubReviewComment } from "@/lib/db";
-import { notifyListingFeatured } from "@/lib/notifications";
+import { getUserByEmail, getAllUsers, getAllListings, updateUserRole, updateListingStatus, updateListingFeatured, deleteUserAccount, getListingDataAdmin, updateListingAdmin, getSetting, updateSetting, getListingOwnerEmailById, getListingOwnerById, getAllClubReviewComments, adminDeleteClubReviewComment, hasListingEmail, recordListingEmail, getListingEmailSteps } from "@/lib/db";
+import { notifyListingFeatured, notifyListingWelcome } from "@/lib/notifications";
 
 async function requireAdmin() {
   const session = await auth();
@@ -27,12 +27,38 @@ export async function GET(req: Request) {
       return NextResponse.json(data);
     }
 
-    const [users, listings, heroTagline, clubReviewComments] = await Promise.all([getAllUsers(), getAllListings(), getSetting("hero_tagline"), getAllClubReviewComments()]);
-    return NextResponse.json({ users, listings, heroTagline, clubReviewComments });
+    const [users, listings, heroTagline, clubReviewComments, emailSteps] = await Promise.all([getAllUsers(), getAllListings(), getSetting("hero_tagline"), getAllClubReviewComments(), getListingEmailSteps()]);
+    return NextResponse.json({ users, listings, heroTagline, clubReviewComments, emailSteps });
   } catch (err) {
     console.error("Admin GET error:", err);
     return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to load" }, { status: 500 });
   }
+}
+
+/**
+ * Send a listing owner their welcome, once.
+ *
+ * The guard is a row in listing_emails rather than a flag on the listing: the
+ * same table has to carry every later step in the sequence, and six listing
+ * tables do not each want a column per email.
+ */
+async function sendListingWelcome(type: string, id: string): Promise<{ ok: boolean; error?: string }> {
+  if (!type || !id) return { ok: false, error: "Missing listing" };
+  if (await hasListingEmail(type, id, "welcome")) {
+    return { ok: false, error: "They have already had the welcome." };
+  }
+  const owner = await getListingOwnerById(type, id);
+  if (!owner) return { ok: false, error: "No account email for that listing." };
+
+  const listing = await getListingDataAdmin(type, id);
+  const name = (listing?.name as string) || (listing?.title as string) || "Your listing";
+  const slug = (listing?.slug as string) || "";
+
+  const sent = await notifyListingWelcome(type, name, slug, owner);
+  if (!sent) return { ok: false, error: "The email did not send." };
+
+  await recordListingEmail(type, id, "welcome", owner.email);
+  return { ok: true };
 }
 
 export async function PUT(req: Request) {
@@ -48,7 +74,16 @@ export async function PUT(req: Request) {
         break;
       case "updateStatus":
         await updateListingStatus(data.type, data.id, data.status);
+        // Approving one is also the moment its owner should hear from us.
+        if (data.status === "approved") {
+          await sendListingWelcome(data.type, data.id).catch(() => {});
+        }
         break;
+      case "sendWelcome": {
+        const result = await sendListingWelcome(data.type, data.id);
+        if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
+        break;
+      }
       case "updateFeatured":
         await updateListingFeatured(data.type, data.id, data.featured);
         if (data.featured && data.name && data.slug) {
