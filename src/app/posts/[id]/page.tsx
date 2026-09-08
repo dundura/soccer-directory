@@ -75,8 +75,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       if (!videoUrl) return null;
       const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
       if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
-      const vimeoMatch = videoUrl.match(/vimeo\.com\/(\d+)/);
-      if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+      // Keep the privacy hash on an unlisted video (vimeo.com/123/abc or ?h=abc).
+      // The player answers 403 without it.
+      const vimeoMatch = videoUrl.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/(\w+))?/);
+      if (vimeoMatch) {
+        const hash = vimeoMatch[2] || (videoUrl.match(/[?&]h=(\w+)/) || [])[1];
+        return `https://player.vimeo.com/video/${vimeoMatch[1]}${hash ? `?h=${hash}` : ""}`;
+      }
       return null;
     }
     const embedUrl = getEmbedUrl(post.videoUrl);

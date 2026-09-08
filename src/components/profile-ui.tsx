@@ -8,9 +8,18 @@ function getEmbedUrl(url: string): { src: string; type: "video" | "youtube" | "v
   // YouTube (regular, shorts, embeds, youtu.be)
   let match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
   if (match) return { src: `https://www.youtube.com/embed/${match[1]}?autoplay=1&mute=1&loop=1&playlist=${match[1]}&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`, type: "youtube" };
-  // Vimeo
-  match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (match) return { src: `https://player.vimeo.com/video/${match[1]}?autoplay=1&muted=1&loop=1&title=0&byline=0&portrait=0&api=1`, type: "vimeo" };
+  // Vimeo. An unlisted video carries a privacy hash as well as an id, either as
+  // a second path segment (vimeo.com/123456/abc123) or as ?h=abc123. The player
+  // answers 403 without it, so dropping the hash is why a link that plays fine
+  // on vimeo.com showed nothing here.
+  match = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/(\w+))?/);
+  if (match) {
+    const hash = match[2] || (url.match(/[?&]h=(\w+)/) || [])[1];
+    return {
+      src: `https://player.vimeo.com/video/${match[1]}?autoplay=1&muted=1&loop=1&title=0&byline=0&portrait=0&api=1${hash ? `&h=${hash}` : ""}`,
+      type: "vimeo",
+    };
+  }
   // TikTok video
   match = url.match(/tiktok\.com\/@[\w.-]+\/video\/(\d+)/);
   if (match) return { src: `https://www.tiktok.com/embed/v2/${match[1]}`, type: "tiktok" };
