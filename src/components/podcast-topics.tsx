@@ -284,18 +284,18 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
             <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
             {topic.previewImage && (
               <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-4">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-surface">
+                <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-surface">
                   <img src={topic.previewImage} alt={topic.title} className="w-full h-full object-contain" />
                 </div>
               </div>
             )}
-            <div className="flex-1 min-w-0 p-4 sm:p-5 flex items-center justify-between gap-3">
+            <div className="flex-1 min-w-0 p-3 sm:p-5 flex items-center justify-between gap-2 sm:gap-3">
               <div className="min-w-0">
-                <h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight group-hover:text-accent transition-colors">{topic.title}</h3>
+                <h3 className="font-[family-name:var(--font-display)] text-base sm:text-xl leading-tight font-extrabold text-primary uppercase tracking-tight break-words group-hover:text-accent transition-colors">{topic.title}</h3>
                 {topic.description && <p className="text-sm text-primary/70 mt-1 line-clamp-2">{topic.description}</p>}
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="text-xs text-muted">{topic.episodes.length} episode{topic.episodes.length !== 1 ? "s" : ""}</span>
-                  <span className="text-sm font-semibold text-accent group-hover:text-accent-hover transition-colors">View Episodes →</span>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
+                  <span className="text-xs text-muted whitespace-nowrap">{topic.episodes.length} episode{topic.episodes.length !== 1 ? "s" : ""}</span>
+                  <span className="text-sm font-semibold text-accent whitespace-nowrap group-hover:text-accent-hover transition-colors">View Episodes →</span>
                 </div>
               </div>
               {isOwner && (
@@ -329,7 +329,7 @@ export function PodcastTopicsSection({ podcastId, podcastSlug, ownerId }: { podc
                 </div>
               )}
             </div>
-            <div className="flex items-center justify-center w-12 sm:w-14 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
+            <div className="hidden sm:flex items-center justify-center w-14 flex-shrink-0 bg-primary group-hover:bg-accent transition-colors self-stretch rounded-r-xl">
               <span className="text-white text-2xl font-light">&#8250;</span>
             </div>
           </a>
