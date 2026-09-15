@@ -13,6 +13,7 @@ const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
   guest: "Guest Play Opportunity", tournament: "Tournament", futsal: "Futsal Team",
   player: "Player Profile", service: "Product / Service",
+  soccerbook: "Book", photovideo: "Photo & Video Service",
   tryout: "Tryout", specialevent: "Special Event", recruiter: "College Recruiting Advisor",
   scrimmage: "Scrimmage",
 };
@@ -21,6 +22,7 @@ const TYPE_PATHS: Record<string, string> = {
   club: "clubs", team: "teams", trainer: "trainers", camp: "camps",
   guest: "guest-play", tournament: "tournaments", futsal: "futsal",
   player: "players", service: "services",
+  soccerbook: "books-and-authors", photovideo: "photo-video-services",
   tryout: "tryouts", specialevent: "special-events", recruiter: "college-recruiting",
   scrimmage: "scrimmages",
 };
@@ -56,7 +58,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const listing = await getListingContact(type, slug);
+    let listing = await getListingContact(type, slug);
+    // Book pages linked to /contact/service/<slug> until 2026-09-15, and those
+    // links are already shared; look the slug up as a book before giving up.
+    if (!listing && type === "service") listing = await getListingContact("soccerbook", slug);
     if (!listing) {
       return NextResponse.json({ error: "Listing not found" }, { status: 404 });
     }

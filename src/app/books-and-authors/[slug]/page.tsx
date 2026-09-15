@@ -166,7 +166,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                 </a>
               )}
               <a
-                href={`/contact/service/${slug}`}
+                href={`/contact/soccerbook/${slug}`}
                 className="bg-white text-primary border-2 border-border px-6 py-3 rounded-xl text-sm font-bold hover:bg-surface transition-colors"
               >
                 Contact Provider
@@ -190,7 +190,7 @@ export default async function ServiceDetailPage({ params }: Props) {
               {service.email && (
                 <div>
                   <span className="text-muted font-medium">Email</span>
-                  <p className="font-bold text-accent-hover"><a href={`/contact/service/${slug}`} className="hover:underline">Contact</a></p>
+                  <p className="font-bold text-accent-hover"><a href={`/contact/soccerbook/${slug}`} className="hover:underline">Contact</a></p>
                 </div>
               )}
               {service.phone && (

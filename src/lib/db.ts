@@ -2782,6 +2782,8 @@ export async function getListingContact(type: string, slug: string): Promise<{ n
     case "instagrampage": rows = await sql`SELECT name, email, user_id FROM instagram_pages WHERE slug = ${slug} LIMIT 1`; break;
     case "tiktokpage": rows = await sql`SELECT name, email, user_id FROM tiktok_pages WHERE slug = ${slug} LIMIT 1`; break;
     case "service": rows = await sql`SELECT name, email, user_id FROM services WHERE slug = ${slug} LIMIT 1`; break;
+    case "soccerbook": rows = await sql`SELECT name, email, user_id FROM books WHERE slug = ${slug} LIMIT 1`; break;
+    case "photovideo": rows = await sql`SELECT name, email, user_id FROM photo_video_services WHERE slug = ${slug} LIMIT 1`; break;
     case "tryout": rows = await sql`SELECT name, email, user_id FROM tryouts WHERE slug = ${slug} LIMIT 1`; break;
     case "specialevent": rows = await sql`SELECT name, email, user_id FROM special_events WHERE slug = ${slug} LIMIT 1`; break;
     case "trainingapp": rows = await sql`SELECT name, email, user_id FROM training_apps WHERE slug = ${slug} LIMIT 1`; break;
