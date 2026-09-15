@@ -15,6 +15,10 @@
     {
       "path": "/api/cron/task-reminders",
       "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/cold-drip",
+      "schedule": "0 14 * * 1-5"
     }
   ]
 }
