@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { notifyNewListing } from "@/lib/notifications";
+import { getListingPath } from "@/lib/utils";
 import {
   getListingsByUserId,
   getListingData,
@@ -257,6 +259,7 @@ export async function PUT(req: Request) {
     // Get the slug for redirect
     const { getListingSlugById } = await import("@/lib/db");
     const slug = await getListingSlugById(type, id) || id;
+    revalidatePath(getListingPath(type, slug));
     return NextResponse.json({ success: true, slug, type });
   } catch (err) {
     if (err instanceof Error && err.message === "SLUG_TAKEN") {
@@ -277,6 +280,8 @@ export async function PATCH(req: Request) {
     const { type, id, action } = await req.json();
     const user = await getUserByEmail(session.user.email);
     const isAdmin = user?.role === "admin";
+    const { getListingSlugById } = await import("@/lib/db");
+    const slug = await getListingSlugById(type, id) || id;
 
     if (action === "restore") {
       const { restoreListing } = await import("@/lib/db");
@@ -284,6 +289,7 @@ export async function PATCH(req: Request) {
       if (!restored) {
         return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
       }
+      revalidatePath(getListingPath(type, slug));
       return NextResponse.json({ success: true });
     }
 
@@ -291,6 +297,7 @@ export async function PATCH(req: Request) {
     if (!archived) {
       return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
     }
+    revalidatePath(getListingPath(type, slug));
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Failed to update listing" }, { status: 500 });
@@ -307,10 +314,13 @@ export async function DELETE(req: Request) {
     const { type, id } = await req.json();
     const user = await getUserByEmail(session.user.email);
     const isAdmin = user?.role === "admin";
+    const { getListingSlugById } = await import("@/lib/db");
+    const slug = await getListingSlugById(type, id) || id;
     const deleted = await deleteListing(type, id, session.user.id, isAdmin);
     if (!deleted) {
       return NextResponse.json({ error: "Listing not found or not authorized" }, { status: 404 });
     }
+    revalidatePath(getListingPath(type, slug));
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Failed to delete listing" }, { status: 500 });

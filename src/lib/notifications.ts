@@ -27,6 +27,7 @@ const TYPE_LABELS: Record<string, string> = {
   trainingapp: "Training App",
   blog: "Blog",
   youtube: "YouTube Channel",
+  soccerbook: "Soccer Book",
 };
 
 // ── Email notification ──────────────────────────────────────

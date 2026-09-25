@@ -204,8 +204,11 @@ export default async function TripDetailPage({ params }: Props) {
                   <EditSectionLink ownerId={ownerId} listingType="trip" listingId={trip.id} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  {trip.extraVideos.slice(0, 6).map((url, i) => (
-                    <VideoEmbed key={i} url={url} />
+                  {trip.extraVideos.slice(0, 6).map((ev, i) => (
+                    <div key={i}>
+                      {ev.title && <p className="text-sm font-semibold text-primary mb-1.5">{ev.title}</p>}
+                      <VideoEmbed url={ev.url} />
+                    </div>
                   ))}
                 </div>
               </section>

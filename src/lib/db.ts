@@ -729,7 +729,7 @@ function mapTrip(r: Record<string, unknown>): InternationalTrip {
     featured: r.featured as boolean,
     createdAt: r.created_at as string, updatedAt: r.updated_at as string,
     staffMembers: r.staff_members ? (typeof r.staff_members === 'string' ? JSON.parse(r.staff_members) : r.staff_members) as InternationalTrip['staffMembers'] : undefined,
-    extraVideos: r.extra_videos ? (typeof r.extra_videos === 'string' ? JSON.parse(r.extra_videos) : r.extra_videos) as string[] : undefined,
+    extraVideos: r.extra_videos ? (typeof r.extra_videos === 'string' ? JSON.parse(r.extra_videos) : r.extra_videos) as InternationalTrip['extraVideos'] : undefined,
     ...mapProfileFields(r),
   };
 }
@@ -1501,9 +1501,9 @@ function mapSoccerBook(r: Record<string, unknown>): SoccerBook {
   if (r.media_appearances) {
     try { mediaAppearances = typeof r.media_appearances === 'string' ? JSON.parse(r.media_appearances) : r.media_appearances as SoccerBook["mediaAppearances"]; } catch { mediaAppearances = undefined; }
   }
-  let extraVideos: string[] | undefined;
+  let extraVideos: SoccerBook["extraVideos"];
   if (r.extra_videos) {
-    try { extraVideos = typeof r.extra_videos === 'string' ? JSON.parse(r.extra_videos) : r.extra_videos as string[]; } catch { extraVideos = undefined; }
+    try { extraVideos = typeof r.extra_videos === 'string' ? JSON.parse(r.extra_videos) : r.extra_videos as SoccerBook["extraVideos"]; } catch { extraVideos = undefined; }
   }
   return {
     id: r.id as string, slug: r.slug as string, name: r.name as string,

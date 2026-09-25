@@ -371,7 +371,7 @@ export interface InternationalTrip extends ProfileFields {
   createdAt: string;
   updatedAt: string;
   staffMembers?: { name: string; role: string; photo?: string; bio?: string }[];
-  extraVideos?: string[];
+  extraVideos?: { title?: string; url: string }[];
 }
 
 export interface MarketplaceItem {
@@ -776,7 +776,7 @@ export interface SoccerBook extends ProfileFields {
   announcementCta3?: string;
   announcementCtaUrl3?: string;
   aboutAuthor?: string;
-  extraVideos?: string[];
+  extraVideos?: { title?: string; url: string }[];
   featured: boolean;
   status?: string;
   userId?: string;

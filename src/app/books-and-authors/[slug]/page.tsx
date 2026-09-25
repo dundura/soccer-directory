@@ -257,8 +257,11 @@ export default async function ServiceDetailPage({ params }: Props) {
                   <EditSectionLink ownerId={ownerId} listingType="soccerbook" listingId={service.id} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  {service.extraVideos.slice(0, 6).map((url, i) => (
-                    <VideoEmbed key={i} url={url} />
+                  {service.extraVideos.slice(0, 6).map((ev, i) => (
+                    <div key={i}>
+                      {ev.title && <p className="text-sm font-semibold text-primary mb-1.5">{ev.title}</p>}
+                      <VideoEmbed url={ev.url} />
+                    </div>
                   ))}
                 </div>
               </div>
