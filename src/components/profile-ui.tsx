@@ -5,6 +5,7 @@ import { useState, useRef } from "react";
 // ── Video Embed ──────────────────────────────────────────────
 
 function getEmbedUrl(url: string): { src: string; type: "video" | "youtube" | "vimeo" | "instagram" | "tiktok" | "spotify" } | null {
+  if (!url || typeof url !== "string") return null;
   // YouTube (regular, shorts, embeds, youtu.be)
   let match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]+)/);
   if (match) return { src: `https://www.youtube.com/embed/${match[1]}?autoplay=1&mute=1&loop=1&playlist=${match[1]}&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`, type: "youtube" };
