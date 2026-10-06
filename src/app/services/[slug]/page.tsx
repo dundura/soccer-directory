@@ -42,7 +42,7 @@ const plainDescription = service.description
     return ogMeta(
     `${service.name} | Products & Services | Soccer Near Me`,
     plainDescription,
-    service.imageUrl,
+    service.previewImage || service.imageUrl,
     `/services/${slug}`,
   );
 }

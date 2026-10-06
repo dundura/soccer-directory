@@ -875,6 +875,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
     { name: "_profile", label: "Images & Video", type: "heading" },
     { name: "_imgwarning", label: "Do not use Facebook or Imgur image links — they will expire.", type: "warning" },
     { name: "imageUrl", label: "Product Image", type: "image" },
+    { name: "previewImage", label: "Preview Image (shown when your page is shared on Facebook)", type: "image" },
     { name: "photos", label: "Additional Photos (up to 5 URLs)", type: "photos" },
     { name: "videoUrl", label: "Video (YouTube/Vimeo)" },
     { name: "_announcement", label: "Special Offers (up to 3)", type: "heading" },
