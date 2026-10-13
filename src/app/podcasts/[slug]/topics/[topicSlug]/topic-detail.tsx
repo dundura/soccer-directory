@@ -329,8 +329,8 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
             </div>
           ) : (
             <>
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                <div className="flex-1 min-w-0 w-full">
                   {ep.title && <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="hover:text-accent transition-colors"><h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight hover:text-accent break-words">{ep.title}</h3></a>}
                   {(ep.previewImage || ep.description) && (
                     <div className="mt-2 overflow-hidden">
@@ -361,7 +361,7 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
                   )}
                 </div>
                 {isOwner && (
-                  <div className="flex gap-3 flex-shrink-0 items-center">
+                  <div className="flex gap-4 flex-shrink-0 items-center order-first sm:order-last self-end sm:self-auto">
                     <button onClick={() => handleMoveEpisode(ep.id, "up")} disabled={epIdx === 0} className="text-xs text-muted hover:text-primary disabled:opacity-30 transition-colors">▲</button>
                     <button onClick={() => handleMoveEpisode(ep.id, "down")} disabled={epIdx === topic.episodes.length - 1} className="text-xs text-muted hover:text-primary disabled:opacity-30 transition-colors">▼</button>
                     <button onClick={() => handleEdit(ep)} className="text-xs text-accent hover:text-accent-hover transition-colors">Edit</button>
