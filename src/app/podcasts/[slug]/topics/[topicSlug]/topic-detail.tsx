@@ -255,9 +255,9 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
       {view === "list" && topic.episodes.length > 0 && (
         <div className="bg-white rounded-xl border border-border overflow-hidden">
           {topic.episodes.map((ep, idx) => (
-            <div key={ep.id} className="flex items-center gap-3 px-5 py-3 border-b border-border last:border-b-0 hover:bg-surface transition-colors">
+            <div key={ep.id} className="flex items-start gap-3 px-4 sm:px-5 py-3 border-b border-border last:border-b-0 hover:bg-surface transition-colors">
               <span className="text-xs text-muted w-5 flex-shrink-0">{idx + 1}</span>
-              <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="flex-1 text-sm font-semibold text-primary hover:text-accent transition-colors min-w-0 truncate">
+              <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="flex-1 text-sm font-semibold text-primary hover:text-accent transition-colors min-w-0 break-words">
                 {ep.title || `Episode ${idx + 1}`}
               </a>
               {isOwner && (
@@ -331,12 +331,12 @@ export function PodcastTopicDetail({ topic, podcastId, podcastSlug, ownerId }: {
             <>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  {ep.title && <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="hover:text-accent transition-colors"><h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight hover:text-accent">{ep.title}</h3></a>}
+                  {ep.title && <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="hover:text-accent transition-colors"><h3 className="font-[family-name:var(--font-display)] text-lg sm:text-xl font-extrabold text-primary uppercase tracking-tight hover:text-accent break-words">{ep.title}</h3></a>}
                   {(ep.previewImage || ep.description) && (
                     <div className="mt-2 overflow-hidden">
                       {ep.previewImage && (
-                        <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="float-left mr-5 mb-3 block flex-shrink-0">
-                          <img src={ep.previewImage} alt={ep.title || 'Episode preview'} className="w-32 sm:w-44 rounded-lg object-cover" />
+                        <a href={`/podcasts/${podcastSlug}/episodes/${ep.slug || ep.id}`} className="block mb-3 sm:float-left sm:mr-5 sm:flex-shrink-0">
+                          <img src={ep.previewImage} alt={ep.title || 'Episode preview'} className="w-full max-h-[260px] sm:w-44 sm:max-h-none rounded-lg object-cover" />
                         </a>
                       )}
                       {ep.description && (
