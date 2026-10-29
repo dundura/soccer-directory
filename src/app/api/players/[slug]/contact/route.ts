@@ -6,12 +6,19 @@ import { verifyCaptcha } from "@/lib/captcha";
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const NOTIFY_EMAIL = "neil@anytime-soccer.com";
 
+const BLOCKED_EMAILS: string[] = ["dan.stitchkrafts@gmail.com"];
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function POST(req: Request, { params }: Props) {
   try {
     const { slug } = await params;
     const { name, email, team, message, captchaToken } = await req.json();
+
+    // Blocked senders
+    if (email && BLOCKED_EMAILS.includes(String(email).toLowerCase())) {
+      return NextResponse.json({ success: true }); // silently discard
+    }
 
     if (!(await verifyCaptcha(captchaToken))) {
       return NextResponse.json({ error: "Captcha verification failed" }, { status: 400 });

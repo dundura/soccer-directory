@@ -7,7 +7,7 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 const NOTIFY_EMAIL = "neil@anytime-soccer.com";
 
 const BLOCKED_DOMAINS = ["soccerclubhq.com"];
-const BLOCKED_EMAILS: string[] = [];
+const BLOCKED_EMAILS: string[] = ["dan.stitchkrafts@gmail.com"];
 
 const TYPE_LABELS: Record<string, string> = {
   club: "Club", team: "Team", trainer: "Trainer", camp: "Camp",
