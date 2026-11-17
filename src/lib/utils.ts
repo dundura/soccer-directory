@@ -25,6 +25,7 @@ const LISTING_TYPE_TO_PATH: Record<string, string> = {
   blog: "blogs",
   youtube: "youtube-channels",
   soccerbook: "books-and-authors",
+  trainingapp: "training-apps",
 };
 
 export function getListingPath(listingType: string, slug: string): string {

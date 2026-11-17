@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { patchListingField } from "@/lib/db";
+import { revalidatePath } from "next/cache";
+import { patchListingField, getListingSlugById } from "@/lib/db";
+import { getListingPath } from "@/lib/utils";
 
 export async function PATCH(req: Request) {
   const session = await auth();
@@ -25,6 +27,12 @@ export async function PATCH(req: Request) {
     if (!updated) {
       return NextResponse.json({ error: "Update failed or not authorized" }, { status: 404 });
     }
+
+    // Show the edit on the public page right away instead of after the hourly refresh.
+    try {
+      const slug = await getListingSlugById(type, id);
+      if (slug) revalidatePath(getListingPath(type, slug));
+    } catch {}
 
     return NextResponse.json({ success: true });
   } catch {
