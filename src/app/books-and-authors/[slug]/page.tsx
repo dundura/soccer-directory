@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getSoccerBookBySlug, getSoccerBookSlugs, getListingOwner } from "@/lib/db";
+import { getSoccerBookBySlug, getSoccerBookSlugs, getListingOwner, getBookSeries } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
@@ -11,9 +11,11 @@ import { ReviewSection } from "@/components/review-section";
 import { AnnouncementSection } from "@/components/announcement-section";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import type { BookSeriesEntry } from "@/lib/types";
 import { SponsorsSection } from "@/components/sponsors-section";
 import { ListingEventsSection } from "@/components/listing-events-section";
 import { BookMediaSection } from "@/components/book-media-section";
+import { BookSeriesSection } from "@/components/book-series-section";
 
 export const revalidate = 3600;
 
@@ -60,6 +62,15 @@ export default async function ServiceDetailPage({ params }: Props) {
     ownerId = await getListingOwner("soccerbook", slug);
   } catch {
     ownerId = null;
+  }
+
+  let seriesBooks: BookSeriesEntry[] = [];
+  if (service.seriesName) {
+    try {
+      seriesBooks = await getBookSeries(service.id);
+    } catch {
+      seriesBooks = [];
+    }
   }
 
   const pageUrl = `https://www.soccer-near-me.com/books-and-authors/${slug}`;
@@ -116,6 +127,11 @@ export default async function ServiceDetailPage({ params }: Props) {
               <div className="mb-6">
                 <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="description" value={service.description} tag="div" className="text-gray-600 leading-relaxed [&>p]:mb-3 [&>p:last-child]:mb-0 [&>p:empty]:hidden" multiline />
               </div>
+            )}
+
+            {/* Book Series: every book in the series, each linking to its own page */}
+            {service.seriesName && seriesBooks.length > 0 && (
+              <BookSeriesSection seriesName={service.seriesName} books={seriesBooks} currentBookId={service.id} />
             )}
 
             {/* Special Offers */}

@@ -777,11 +777,21 @@ export interface SoccerBook extends ProfileFields {
   announcementCtaUrl3?: string;
   aboutAuthor?: string;
   extraVideos?: { title?: string; url: string }[];
+  seriesName?: string;
+  seriesOrder?: number;
   featured: boolean;
   status?: string;
   userId?: string;
   createdAt: string;
   updatedAt?: string;
+}
+
+export interface BookSeriesEntry {
+  id: string;
+  slug: string;
+  name: string;
+  imageUrl?: string;
+  seriesOrder?: number;
 }
 
 export interface PhotoVideoService extends ProfileFields {
