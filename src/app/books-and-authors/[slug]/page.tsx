@@ -120,7 +120,7 @@ export default async function ServiceDetailPage({ params }: Props) {
             )}
 
             {/* Series: works like podcast topics, each series opens a page of its books */}
-            <BookSeriesSection bookId={service.id} bookSlug={slug} ownerId={ownerId} />
+            <BookSeriesSection bookId={service.id} ownerId={ownerId} />
 
             {/* Special Offers */}
             {(service.announcementHeading || service.announcementText || service.announcementImage || service.announcementHeading2 || service.announcementText2 || service.announcementImage2 || service.announcementHeading3 || service.announcementText3 || service.announcementImage3) && (
