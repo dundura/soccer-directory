@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { Club, Team, TeamEvent, Trainer, Recruiter, Camp, Tryout, SpecialEvent, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, Podcast, TopEpisode, FacebookGroup, InstagramPage, TikTokPage, Service, TrainingApp, Blog, FeaturedPost, YoutubeChannel, FeaturedVideo, ProfileFields, MediaLink, Sponsor, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment, Scrimmage, SoccerBook, BookSeriesEntry, PhotoVideoService } from "./types";
+import type { Club, Team, TeamEvent, Trainer, Recruiter, Camp, Tryout, SpecialEvent, GuestOpportunity, BlogPost, Tournament, FutsalTeam, InternationalTrip, MarketplaceItem, PlayerProfile, Podcast, TopEpisode, FacebookGroup, InstagramPage, TikTokPage, Service, TrainingApp, Blog, FeaturedPost, YoutubeChannel, FeaturedVideo, ProfileFields, MediaLink, Sponsor, Review, ReviewerRole, ReviewStatus, ForumTopic, ForumCategory, ForumComment, GuestPost, GuestPostCategory, GuestPostComment, Scrimmage, SoccerBook, PhotoVideoService } from "./types";
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -1397,7 +1397,6 @@ export async function createSoccerBookListing(data: Record<string, string>, user
   const slug = slugify(data.name);
   const pf = profileFields(data);
   await sql`INSERT INTO books (id, slug, name, author, category, city, country, state, price, description, website, email, phone, image_url, video_url, image_position, hero_image_position, photos, tagline, sponsors, about_author, announcement_heading, announcement_text, announcement_image, announcement_cta, announcement_cta_url, announcement_heading_2, announcement_text_2, announcement_image_2, announcement_cta_2, announcement_cta_url_2, announcement_heading_3, announcement_text_3, announcement_image_3, announcement_cta_3, announcement_cta_url_3, featured, user_id, status) VALUES (${id}, ${slug}, ${data.name}, ${data.author || null}, ${data.category}, ${data.city}, ${data.country || 'United States'}, ${data.state}, ${data.price || null}, ${data.description || null}, ${data.website || null}, ${data.email || null}, ${data.phone || null}, ${data.imageUrl || null}, ${data.videoUrl || null}, ${Number(data.imagePosition) || 50}, ${Number(data.heroImagePosition) || 50}, ${pf.photos}, ${pf.tagline}, ${pf.sponsors}, ${data.aboutAuthor || null}, ${data.announcementHeading || null}, ${data.announcementText || null}, ${data.announcementImage || null}, ${data.announcementCta || null}, ${data.announcementCtaUrl || null}, ${data.announcementHeading2 || null}, ${data.announcementText2 || null}, ${data.announcementImage2 || null}, ${data.announcementCta2 || null}, ${data.announcementCtaUrl2 || null}, ${data.announcementHeading3 || null}, ${data.announcementText3 || null}, ${data.announcementImage3 || null}, ${data.announcementCta3 || null}, ${data.announcementCtaUrl3 || null}, false, ${userId}, 'approved')`;
-  await saveBookSeries(id, data);
   return slug;
 }
 
@@ -1498,59 +1497,203 @@ export async function getSoccerBookSlugs(): Promise<string[]> {
   return rows.map((r) => r.slug as string);
 }
 
-// A series is the same series name on books from the same owner, so nobody
-// else's book can be added to an author's series by typing its name.
-let bookSeriesColumnsReady = false;
-async function ensureBookSeriesColumns() {
-  if (bookSeriesColumnsReady) return;
+// ── Book Series ──────────────────────────────────────────────
+// Works like podcast topics: an author creates a series, then adds books to it.
+// Every book in a series is a full book listing with its own page.
+export interface BookSeriesBook {
+  id: string;
+  slug: string;
+  name: string;
+  imageUrl?: string;
+  description?: string;
+  website?: string;
+}
+
+export interface BookSeries {
+  id: string;
+  slug: string;
+  title: string;
+  description?: string;
+  previewImage?: string;
+  pinned: boolean;
+  books: BookSeriesBook[];
+}
+
+let bookSeriesReady = false;
+async function ensureBookSeriesTables() {
+  if (bookSeriesReady) return;
+  await sql`CREATE TABLE IF NOT EXISTS book_series (
+    id TEXT PRIMARY KEY,
+    book_id TEXT NOT NULL,
+    user_id TEXT,
+    title TEXT NOT NULL,
+    slug TEXT NOT NULL UNIQUE,
+    description TEXT,
+    preview_image TEXT,
+    pinned BOOLEAN DEFAULT false,
+    sort_order INTEGER,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  )`;
+  await sql`ALTER TABLE books ADD COLUMN IF NOT EXISTS series_id TEXT`;
   await sql`ALTER TABLE books ADD COLUMN IF NOT EXISTS series_name TEXT`;
   await sql`ALTER TABLE books ADD COLUMN IF NOT EXISTS series_order INTEGER`;
-  bookSeriesColumnsReady = true;
+
+  // Books saved with the earlier typed series name move into a real series once.
+  // The id comes from the owner and name, so running this twice changes nothing.
+  await sql`
+    INSERT INTO book_series (id, book_id, user_id, title, slug)
+    SELECT DISTINCT ON (key) 'bs' || md5(key), id, user_id, series_name,
+      trim(both '-' from regexp_replace(LOWER(series_name), '[^a-z0-9]+', '-', 'g')) || '-' || left(md5(key), 6)
+    FROM (SELECT id, user_id, series_name, COALESCE(user_id, '') || '|' || LOWER(series_name) AS key FROM books WHERE series_name IS NOT NULL AND series_id IS NULL) legacy
+    ORDER BY key, id
+    ON CONFLICT (id) DO NOTHING`;
+  await sql`
+    UPDATE books SET series_id = 'bs' || md5(COALESCE(user_id, '') || '|' || LOWER(series_name)), series_name = NULL
+    WHERE series_name IS NOT NULL AND series_id IS NULL`;
+  bookSeriesReady = true;
 }
 
-async function saveBookSeries(id: string, data: Record<string, string>) {
-  if (!("seriesName" in data) && !("seriesOrder" in data)) return;
-  await ensureBookSeriesColumns();
-
-  const before = await sql`SELECT series_name, user_id FROM books WHERE id = ${id} LIMIT 1`;
-  if (!before[0]) return;
-  const oldName = (before[0].series_name as string | null) || null;
-  const ownerId = (before[0].user_id as string | null) ?? null;
-
-  const name = (data.seriesName || "").trim().replace(/\s+/g, " ").slice(0, 200) || null;
-  const parsedOrder = parseInt(data.seriesOrder || "", 10);
-  const order = name && parsedOrder >= 1 && parsedOrder <= 9999 ? parsedOrder : null;
-  await sql`UPDATE books SET series_name = ${name}, series_order = ${order} WHERE id = ${id}`;
-
-  // Every book in the old and new series lists this one, so refresh them all.
-  const rows = await sql`
-    SELECT slug FROM books
-    WHERE user_id IS NOT DISTINCT FROM ${ownerId}
-      AND series_name IS NOT NULL
-      AND (LOWER(series_name) = LOWER(${name}) OR LOWER(series_name) = LOWER(${oldName}))`;
-  try {
-    const { revalidatePath } = await import("next/cache");
-    for (const r of rows) revalidatePath(`/books-and-authors/${r.slug}`);
-  } catch {}
-}
-
-export async function getBookSeries(bookId: string): Promise<BookSeriesEntry[]> {
-  const rows = await sql`
-    SELECT b.id, b.slug, b.name, b.image_url, b.series_order
-    FROM books b
-    JOIN books current_book ON current_book.id = ${bookId}
-    WHERE b.status = 'approved'
-      AND current_book.series_name IS NOT NULL
-      AND LOWER(b.series_name) = LOWER(current_book.series_name)
-      AND b.user_id IS NOT DISTINCT FROM current_book.user_id
-    ORDER BY b.series_order ASC NULLS LAST, b.name ASC`;
-  return rows.map((r) => ({
+function mapBookSeries(r: Record<string, unknown>, books: BookSeriesBook[]): BookSeries {
+  return {
     id: r.id as string,
     slug: r.slug as string,
-    name: r.name as string,
-    imageUrl: (r.image_url as string | null) || undefined,
-    seriesOrder: (r.series_order as number | null) ?? undefined,
-  }));
+    title: r.title as string,
+    description: (r.description as string | null) || undefined,
+    previewImage: (r.preview_image as string | null) || undefined,
+    pinned: !!r.pinned,
+    books,
+  };
+}
+
+async function booksForSeries(seriesIds: string[]): Promise<Record<string, BookSeriesBook[]>> {
+  const grouped: Record<string, BookSeriesBook[]> = {};
+  if (seriesIds.length === 0) return grouped;
+  const rows = await sql`
+    SELECT id, slug, name, image_url, description, website, series_id FROM books
+    WHERE series_id = ANY(${seriesIds}) AND status = 'approved'
+    ORDER BY series_order ASC NULLS LAST, name ASC`;
+  for (const r of rows) {
+    const key = r.series_id as string;
+    (grouped[key] ||= []).push({
+      id: r.id as string,
+      slug: r.slug as string,
+      name: r.name as string,
+      imageUrl: (r.image_url as string | null) || undefined,
+      description: (r.description as string | null) || undefined,
+      website: (r.website as string | null) || undefined,
+    });
+  }
+  return grouped;
+}
+
+// All series belonging to the author of this book.
+export async function getBookSeriesForBook(bookId: string): Promise<BookSeries[]> {
+  await ensureBookSeriesTables();
+  const book = await sql`SELECT user_id FROM books WHERE id = ${bookId} LIMIT 1`;
+  if (!book[0]) return [];
+  const ownerId = (book[0].user_id as string | null) ?? null;
+  const rows = ownerId
+    ? await sql`SELECT * FROM book_series WHERE user_id = ${ownerId} ORDER BY COALESCE(sort_order, 999999) ASC, created_at ASC`
+    : await sql`SELECT * FROM book_series WHERE book_id = ${bookId} ORDER BY COALESCE(sort_order, 999999) ASC, created_at ASC`;
+  const books = await booksForSeries(rows.map((r) => r.id as string));
+  return rows.map((r) => mapBookSeries(r, books[r.id as string] || []));
+}
+
+export async function getBookSeriesBySlug(bookId: string, seriesSlug: string): Promise<BookSeries | null> {
+  const all = await getBookSeriesForBook(bookId);
+  return all.find((series) => series.slug === seriesSlug) || null;
+}
+
+async function uniqueBookSeriesSlug(title: string): Promise<string> {
+  const base = slugify(title) || "series";
+  let candidate = base;
+  for (let n = 2; n < 500; n++) {
+    const taken = await sql`SELECT 1 FROM book_series WHERE slug = ${candidate} LIMIT 1`;
+    if (!taken[0]) return candidate;
+    candidate = `${base}-${n}`;
+  }
+  return `${base}-${genId()}`;
+}
+
+export async function createBookSeries(bookId: string, data: { title: string; description?: string; previewImage?: string }): Promise<string> {
+  await ensureBookSeriesTables();
+  const book = await sql`SELECT user_id, series_id FROM books WHERE id = ${bookId} LIMIT 1`;
+  if (!book[0]) throw new Error("BOOK_NOT_FOUND");
+  const id = genId();
+  const slug = await uniqueBookSeriesSlug(data.title);
+  await sql`INSERT INTO book_series (id, book_id, user_id, title, slug, description, preview_image)
+    VALUES (${id}, ${bookId}, ${book[0].user_id ?? null}, ${data.title}, ${slug}, ${data.description || null}, ${data.previewImage || null})`;
+  // The book the series was started from is its first book.
+  if (!book[0].series_id) await sql`UPDATE books SET series_id = ${id}, series_order = 1 WHERE id = ${bookId}`;
+  return id;
+}
+
+export async function updateBookSeries(seriesId: string, data: { title: string; description?: string; previewImage?: string }) {
+  await sql`UPDATE book_series SET title = ${data.title}, description = ${data.description || null}, preview_image = ${data.previewImage || null} WHERE id = ${seriesId}`;
+}
+
+// Deleting a series keeps its books. They stay listed with their own pages.
+export async function deleteBookSeries(seriesId: string) {
+  await sql`UPDATE books SET series_id = NULL, series_order = NULL WHERE series_id = ${seriesId}`;
+  await sql`DELETE FROM book_series WHERE id = ${seriesId}`;
+}
+
+export async function toggleBookSeriesPin(seriesId: string) {
+  await sql`UPDATE book_series SET pinned = NOT COALESCE(pinned, false) WHERE id = ${seriesId}`;
+}
+
+export async function reorderBookSeries(seriesIds: string[]) {
+  for (let i = 0; i < seriesIds.length; i++) {
+    await sql`UPDATE book_series SET sort_order = ${i} WHERE id = ${seriesIds[i]}`;
+  }
+}
+
+export async function reorderBooksInSeries(seriesId: string, bookIds: string[]) {
+  for (let i = 0; i < bookIds.length; i++) {
+    await sql`UPDATE books SET series_order = ${i + 1} WHERE id = ${bookIds[i]} AND series_id = ${seriesId}`;
+  }
+}
+
+export async function removeBookFromSeries(seriesId: string, bookId: string) {
+  await sql`UPDATE books SET series_id = NULL, series_order = NULL WHERE id = ${bookId} AND series_id = ${seriesId}`;
+}
+
+// Creates a full book listing in the series. Author details come from the book
+// the author is adding it from, so they only fill in what differs.
+export async function addBookToSeries(
+  fromBookId: string,
+  seriesId: string,
+  data: { name: string; imageUrl?: string; description?: string; website?: string; price?: string },
+): Promise<string> {
+  await ensureBookSeriesTables();
+  const from = await sql`SELECT * FROM books WHERE id = ${fromBookId} LIMIT 1`;
+  if (!from[0]) throw new Error("BOOK_NOT_FOUND");
+  const source = from[0];
+  const newSlug = slugify(data.name);
+  if (!newSlug) throw new Error("BOOK_TITLE_INVALID");
+  const taken = await sql`SELECT 1 FROM books WHERE slug = ${newSlug} LIMIT 1`;
+  if (taken[0]) throw new Error("BOOK_TITLE_TAKEN");
+
+  const text = (value: unknown) => (value as string | null) || "";
+  const slug = await createSoccerBookListing({
+    name: data.name,
+    author: text(source.author),
+    category: text(source.category),
+    city: text(source.city),
+    country: text(source.country),
+    state: text(source.state),
+    email: text(source.email),
+    phone: text(source.phone),
+    aboutAuthor: text(source.about_author),
+    imageUrl: data.imageUrl || "",
+    description: data.description || "",
+    website: data.website || "",
+    price: data.price || "",
+  }, source.user_id as string);
+
+  const next = await sql`SELECT COALESCE(MAX(series_order), 0) + 1 AS next FROM books WHERE series_id = ${seriesId}`;
+  await sql`UPDATE books SET series_id = ${seriesId}, series_order = ${next[0].next}, author_image = ${source.author_image ?? null} WHERE slug = ${slug}`;
+  return slug;
 }
 
 function mapSoccerBook(r: Record<string, unknown>): SoccerBook {
@@ -1591,8 +1734,6 @@ function mapSoccerBook(r: Record<string, unknown>): SoccerBook {
     link3Label: r.link3_label as string | undefined,
     link3Url: r.link3_url as string | undefined,
     extraVideos,
-    seriesName: (r.series_name as string | null) || undefined,
-    seriesOrder: (r.series_order as number | null) ?? undefined,
     featured: r.featured as boolean, status: r.status as string | undefined,
     userId: r.user_id as string | undefined, createdAt: r.created_at as string,
     updatedAt: r.updated_at as string | undefined,
@@ -2104,7 +2245,7 @@ function mapTrainingAppToForm(r: Record<string, unknown>): Record<string, string
   return { slug: s(r.slug), name: s(r.name), providerName: s(r.provider_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), appStoreUrl: s(r.app_store_url), googlePlayUrl: s(r.google_play_url), facebook: sm.facebook, instagram: sm.instagram, linkedin: sm.linkedin, twitter: sm.twitter, imageUrl: s(r.image_url), videoUrl: s(r.video_url), photos: s(r.photos), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3), aboutAuthor: s(r.about_author), tagline: s(r.tagline) };
 }
 function mapSoccerBookToForm(r: Record<string, unknown>): Record<string, string> {
-  return { seriesName: s(r.series_name), seriesOrder: r.series_order == null ? "" : String(r.series_order), slug: s(r.slug), name: s(r.name), author: s(r.author), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), videoUrl: s(r.video_url), extraVideos: jsonOrStr(r.extra_videos), photos: s(r.photos), tagline: s(r.tagline), aboutAuthor: s(r.about_author), authorImage: s(r.author_image), link2Label: s(r.link2_label), link2Url: s(r.link2_url), link3Label: s(r.link3_label), link3Url: s(r.link3_url), mediaAppearances: jsonOrStr(r.media_appearances), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3) };
+  return { slug: s(r.slug), name: s(r.name), author: s(r.author), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), videoUrl: s(r.video_url), extraVideos: jsonOrStr(r.extra_videos), photos: s(r.photos), tagline: s(r.tagline), aboutAuthor: s(r.about_author), authorImage: s(r.author_image), link2Label: s(r.link2_label), link2Url: s(r.link2_url), link3Label: s(r.link3_label), link3Url: s(r.link3_url), mediaAppearances: jsonOrStr(r.media_appearances), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3) };
 }
 function mapPhotoVideoServiceToForm(r: Record<string, unknown>): Record<string, string> {
   return { slug: s(r.slug), name: s(r.name), providerName: s(r.provider_name), category: s(r.category), city: s(r.city), country: s(r.country) || "United States", state: s(r.state), price: s(r.price), description: s(r.description), website: s(r.website), email: s(r.email), phone: s(r.phone), imageUrl: s(r.image_url), videoUrl: s(r.video_url), photos: s(r.photos), tagline: s(r.tagline), aboutAuthor: s(r.about_author), announcementHeading: s(r.announcement_heading), announcementText: s(r.announcement_text), announcementImage: s(r.announcement_image), announcementCta: s(r.announcement_cta), announcementCtaUrl: s(r.announcement_cta_url), announcementHeading2: s(r.announcement_heading_2), announcementText2: s(r.announcement_text_2), announcementImage2: s(r.announcement_image_2), announcementCta2: s(r.announcement_cta_2), announcementCtaUrl2: s(r.announcement_cta_url_2), announcementHeading3: s(r.announcement_heading_3), announcementText3: s(r.announcement_text_3), announcementImage3: s(r.announcement_image_3), announcementCta3: s(r.announcement_cta_3), announcementCtaUrl3: s(r.announcement_cta_url_3) };
@@ -2300,7 +2441,6 @@ export async function updateListing(type: string, id: string, data: Record<strin
       } else {
         rows = await sql`UPDATE books SET name=${data.name}, author=${data.author || null}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, tagline=${pf.tagline}, preview_image=${pf.previewImage}, sponsors=${pf.sponsors}, about_author=${data.aboutAuthor || null}, author_image=${data.authorImage || null}, link2_label=${data.link2Label || null}, link2_url=${data.link2Url || null}, link3_label=${data.link3Label || null}, link3_url=${data.link3Url || null}, media_appearances=${data.mediaAppearances || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, extra_videos=${data.extraVideos || null}, updated_at=NOW() WHERE id=${id} AND user_id=${userId} RETURNING id`;
       }
-      if (rows.length > 0) await saveBookSeries(id, data);
       break;
     }
     case "photovideo": {
@@ -2551,7 +2691,6 @@ export async function updateListingAdmin(type: string, id: string, data: Record<
       } else {
         rows = await sql`UPDATE books SET name=${data.name}, author=${data.author || null}, category=${data.category}, city=${data.city}, country=${data.country || 'United States'}, state=${data.state}, price=${data.price || null}, description=${data.description || null}, website=${data.website || null}, email=${data.email || null}, phone=${data.phone || null}, image_url=${data.imageUrl || null}, video_url=${data.videoUrl || null}, image_position=${Number(data.imagePosition) || 50}, hero_image_position=${Number(data.heroImagePosition) || 50}, photos=${parsePhotos(data.photos)}, tagline=${pf.tagline}, preview_image=${pf.previewImage}, sponsors=${pf.sponsors}, about_author=${data.aboutAuthor || null}, author_image=${data.authorImage || null}, link2_label=${data.link2Label || null}, link2_url=${data.link2Url || null}, link3_label=${data.link3Label || null}, link3_url=${data.link3Url || null}, media_appearances=${data.mediaAppearances || null}, announcement_heading=${data.announcementHeading || null}, announcement_text=${data.announcementText || null}, announcement_image=${data.announcementImage || null}, announcement_cta=${data.announcementCta || null}, announcement_cta_url=${data.announcementCtaUrl || null}, announcement_heading_2=${data.announcementHeading2 || null}, announcement_text_2=${data.announcementText2 || null}, announcement_image_2=${data.announcementImage2 || null}, announcement_cta_2=${data.announcementCta2 || null}, announcement_cta_url_2=${data.announcementCtaUrl2 || null}, announcement_heading_3=${data.announcementHeading3 || null}, announcement_text_3=${data.announcementText3 || null}, announcement_image_3=${data.announcementImage3 || null}, announcement_cta_3=${data.announcementCta3 || null}, announcement_cta_url_3=${data.announcementCtaUrl3 || null}, updated_at=NOW() WHERE id=${id} RETURNING id`;
       }
-      if (rows.length > 0) await saveBookSeries(id, data);
       break;
     }
     case "photovideo": {
