@@ -177,8 +177,23 @@ export default async function ServiceDetailPage({ params }: Props) {
               </a>
             </div>
 
+            {/* About the Author */}
+            {(service.aboutAuthor || ownerId) && (
+              <div className="border-t border-border pt-6 mt-6">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight mb-3">About the Author</h2>
+                <div>
+                  {service.authorImage && (
+                    <a href={service.authorImage} target="_blank" rel="noopener noreferrer">
+                      <img src={service.authorImage} alt="About the Author" className="w-40 h-40 rounded-xl object-cover float-left mr-5 mb-3 cursor-pointer hover:opacity-90 transition-opacity" />
+                    </a>
+                  )}
+                  <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="aboutAuthor" value={service.aboutAuthor || ""} tag="div" className="text-gray-600 leading-relaxed [&>p]:mb-3 [&>p:last-child]:mb-0 [&>p:empty]:hidden" multiline />
+                </div>
+              </div>
+            )}
+
             {/* Details */}
-            <div className="border-t border-border pt-6 grid grid-cols-2 gap-4 text-sm">
+            <div className="border-t border-border pt-6 mt-6 grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-muted font-medium">Category</span>
                 <p className="font-bold text-primary">{service.category}</p>
@@ -204,21 +219,6 @@ export default async function ServiceDetailPage({ params }: Props) {
                 </div>
               )}
             </div>
-
-            {/* About the Author */}
-            {(service.aboutAuthor || ownerId) && (
-              <div className="border-t border-border pt-6 mt-6">
-                <h2 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight mb-3">About the Author</h2>
-                <div>
-                  {service.authorImage && (
-                    <a href={service.authorImage} target="_blank" rel="noopener noreferrer">
-                      <img src={service.authorImage} alt="About the Author" className="w-40 h-40 rounded-xl object-cover float-left mr-5 mb-3 cursor-pointer hover:opacity-90 transition-opacity" />
-                    </a>
-                  )}
-                  <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="aboutAuthor" value={service.aboutAuthor || ""} tag="div" className="text-gray-600 leading-relaxed [&>p]:mb-3 [&>p:last-child]:mb-0 [&>p:empty]:hidden" multiline />
-                </div>
-              </div>
-            )}
 
             {/* Special Events — only shows when events exist */}
             <ListingEventsSection listingType="soccerbook" listingId={service.id} listingSlug={slug} ownerId={ownerId} />

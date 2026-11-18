@@ -58,8 +58,8 @@ export function SeriesForm({ heading, submitLabel, initial, onSubmit, onCancel }
     <div className="bg-white rounded-xl p-4 space-y-3 border border-border">
       <p className="text-sm font-bold text-primary">{heading}</p>
       <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Series name (e.g. England or Bust)" className={inputClass} />
-      <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" rows={2} className={`${inputClass} resize-none`} />
-      <ImageField label="Preview Image (optional)" value={previewImage} onChange={setPreviewImage} />
+      <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Subtext shown under the series name (optional)" rows={2} className={`${inputClass} resize-none`} />
+      <ImageField label="Preview Image (optional, uses the first book's cover if blank)" value={previewImage} onChange={setPreviewImage} />
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex gap-2">
         <button onClick={submit} disabled={saving || !title.trim()} className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-hover transition-colors disabled:opacity-50">
@@ -128,6 +128,7 @@ export function BookSeriesSection({ bookId, bookSlug, ownerId }: { bookId: strin
   const [loading, setLoading] = useState(true);
   const [showSeriesForm, setShowSeriesForm] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
+  const [editingSeriesId, setEditingSeriesId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
 
   const fetchSeries = useCallback(async () => {
@@ -165,6 +166,7 @@ export function BookSeriesSection({ bookId, bookSlug, ownerId }: { bookId: strin
   const pinned = series.filter((item) => item.pinned);
   const others = series.filter((item) => !item.pinned);
   const shown = expanded ? series : [...pinned, ...others].slice(0, 3);
+  const editingSeries = series.find((item) => item.id === editingSeriesId);
 
   return (
     <section className="border-t border-border pt-6 mt-6 mb-6" aria-labelledby="book-series-heading">
@@ -195,6 +197,22 @@ export function BookSeriesSection({ bookId, bookSlug, ownerId }: { bookId: strin
           />
         )}
 
+        {isOwner && editingSeries && (
+          <SeriesForm
+            key={editingSeries.id}
+            heading="Edit Series"
+            submitLabel="Save Series"
+            initial={editingSeries}
+            onCancel={() => setEditingSeriesId(null)}
+            onSubmit={async (values) => {
+              const result = await postBookSeries({ action: "updateSeries", bookId, seriesId: editingSeries.id, ...values });
+              if (!result.ok) return result.error || "The series could not be saved.";
+              setEditingSeriesId(null);
+              fetchSeries();
+            }}
+          />
+        )}
+
         {isOwner && showBookForm && series.length > 0 && (
           <AddBookForm
             bookId={bookId}
@@ -210,6 +228,8 @@ export function BookSeriesSection({ bookId, bookSlug, ownerId }: { bookId: strin
 
         {shown.map((item) => {
           const index = series.findIndex((entry) => entry.id === item.id);
+          // A series without its own image shows the cover of its first book.
+          const cardImage = item.previewImage || item.books[0]?.imageUrl;
           return (
             <a
               key={item.id}
@@ -217,10 +237,10 @@ export function BookSeriesSection({ bookId, bookSlug, ownerId }: { bookId: strin
               className="group flex bg-white rounded-xl border border-border hover:border-accent/30 hover:shadow-lg transition-all overflow-hidden"
             >
               <div className="w-1.5 bg-accent self-stretch flex-shrink-0 rounded-l-xl" />
-              {item.previewImage && (
+              {cardImage && (
                 <div className="flex items-center justify-center flex-shrink-0 p-2 sm:p-4">
                   <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-surface">
-                    <img src={item.previewImage} alt={item.title} className="w-full h-full object-contain" />
+                    <img src={cardImage} alt={item.title} className="w-full h-full object-contain" />
                   </div>
                 </div>
               )}
@@ -244,6 +264,7 @@ export function BookSeriesSection({ bookId, bookSlug, ownerId }: { bookId: strin
                     <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); togglePin(item.id); }} className={`text-[10px] transition-colors ${item.pinned ? "text-amber-600 font-semibold" : "text-muted hover:text-amber-600"}`} aria-label={item.pinned ? "Unpin series" : "Pin series"}>
                       {item.pinned ? "★" : "☆"}
                     </button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditingSeriesId(item.id); setShowSeriesForm(false); setShowBookForm(false); }} className="text-[10px] font-semibold text-accent hover:text-accent-hover transition-colors">Edit</button>
                     <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(item.id); }} className="text-[10px] text-muted hover:text-red-500 transition-colors" aria-label="Delete series">✕</button>
                   </div>
                 )}
