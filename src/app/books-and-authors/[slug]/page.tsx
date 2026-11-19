@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getSoccerBookBySlug, getSoccerBookSlugs, getListingOwner } from "@/lib/db";
+import { getSoccerBookBySlug, getSoccerBookSlugs, getListingOwner, getBookSeriesForBook } from "@/lib/db";
 import { ManageListingButton, EditSectionLink } from "@/components/manage-listing-button";
 import { InlineEditField } from "@/components/inline-edit";
 import { VideoEmbed, ShareButtons } from "@/components/profile-ui";
@@ -63,6 +63,18 @@ export default async function ServiceDetailPage({ params }: Props) {
     ownerId = null;
   }
 
+  // A book in a series links back to the listing that is the series' own page.
+  let seriesPageSlug: string | undefined;
+  try {
+    const allSeries = await getBookSeriesForBook(service.id);
+    const series = allSeries.find((item) => item.books.some((book) => book.id === service.id));
+    if (series && series.bookId !== service.id) {
+      seriesPageSlug = series.books.find((book) => book.id === series.bookId)?.slug;
+    }
+  } catch {
+    seriesPageSlug = undefined;
+  }
+
   const pageUrl = `https://www.soccer-near-me.com/books-and-authors/${slug}`;
   const image = service.imageUrl || DEFAULT_IMAGE;
   let photos: string[] = [];
@@ -99,10 +111,18 @@ export default async function ServiceDetailPage({ params }: Props) {
           <div className="p-6 md:p-8">
             <div className="mb-4">
               <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="name" value={service.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
+              {service.tagline && (
+                <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="tagline" value={service.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+              )}
               <div className="flex flex-wrap items-center gap-2 mt-3 mb-2">
                 <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold">
                   {service.category}
                 </span>
+                {seriesPageSlug && (
+                  <a href={`/books-and-authors/${seriesPageSlug}`} className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                    Series
+                  </a>
+                )}
                 {service.aboutAuthor && (
                   <a href="#about-the-author" className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
                     Author
@@ -117,9 +137,6 @@ export default async function ServiceDetailPage({ params }: Props) {
               </div>
               {service.price && (
                 <p className="text-2xl font-bold text-primary mt-1">{service.price}</p>
-              )}
-              {service.tagline && (
-                <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="tagline" value={service.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
               )}
               <p className="text-sm text-muted mt-1">
                 by {service.author} &middot; {service.city}, {service.state}
