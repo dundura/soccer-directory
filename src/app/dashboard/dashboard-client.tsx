@@ -378,6 +378,7 @@ function DashboardContent() {
   const typeParam = searchParams.get("type") as ListingType | null;
   const editTypeParam = searchParams.get("editType") as ListingType | null;
   const editIdParam = searchParams.get("editId");
+  const seriesBookParam = searchParams.get("seriesBook");
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(!!typeParam);
@@ -530,10 +531,11 @@ function DashboardContent() {
         </button>
         <div className="bg-white rounded-2xl border border-border p-6 md:p-8">
           <h2 className="font-[family-name:var(--font-display)] text-xl font-bold mb-6">
-            {formDefaultType === "player" ? "Create Guest Player Profile" : "Create New Listing"}
+            {formDefaultType === "player" ? "Create Guest Player Profile" : formDefaultType === "soccerbook" && seriesBookParam ? "Create New Book" : "Create New Listing"}
           </h2>
           <ListingForm
             defaultType={formDefaultType}
+            seriesBookId={formDefaultType === "soccerbook" ? seriesBookParam || undefined : undefined}
             onSuccess={(newSlug?: string, newType?: string) => {
               if (newSlug && newType) {
                 const path = `/${TYPE_PATHS[newType] || newType}/${newSlug}`;

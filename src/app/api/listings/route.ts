@@ -38,6 +38,8 @@ import {
   archiveListing,
   deleteListing,
   createFundraiser,
+  getListingOwnerIdById,
+  joinSeriesOfBook,
 } from "@/lib/db";
 
 export async function GET(req: Request) {
@@ -83,7 +85,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { type, data } = await req.json();
+    const { type, data, seriesBookId } = await req.json();
     let slug: string;
 
     switch (type) {
@@ -222,6 +224,20 @@ export async function POST(req: Request) {
         break;
       default:
         return NextResponse.json({ error: "Invalid listing type" }, { status: 400 });
+    }
+
+    // "+ New Book" on a book page: the new book joins that book's series.
+    // The listing already exists, so a failure here must not report the save as failed.
+    if (type === "soccerbook" && typeof seriesBookId === "string" && seriesBookId) {
+      try {
+        const ownerId = await getListingOwnerIdById("soccerbook", seriesBookId);
+        const user = session.user.email ? await getUserByEmail(session.user.email) : null;
+        if (ownerId === session.user.id || user?.role === "admin") {
+          await joinSeriesOfBook(seriesBookId, slug);
+        }
+      } catch (err) {
+        console.error("Failed to add new book to series:", err);
+      }
     }
 
     // Send notifications (don't block the response)

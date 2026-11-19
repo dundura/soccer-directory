@@ -11,6 +11,9 @@ import {
   reorderBooksInSeries,
   removeBookFromSeries,
   addBookToSeries,
+  attachBookToSeries,
+  ensureSeriesForBook,
+  getBooksOutsideSeries,
   getListingOwnerIdById,
   getUserByEmail,
 } from "@/lib/db";
@@ -32,8 +35,8 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const bookId = searchParams.get("bookId");
   if (!bookId) return NextResponse.json({ error: "Missing bookId" }, { status: 400 });
-  const series = await getBookSeriesForBook(bookId);
-  return NextResponse.json({ series });
+  const [series, otherBooks] = await Promise.all([getBookSeriesForBook(bookId), getBooksOutsideSeries(bookId)]);
+  return NextResponse.json({ series, otherBooks });
 }
 
 export async function POST(req: Request) {
@@ -61,6 +64,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ id });
     }
 
+    if (action === "addBook" && !title) return NextResponse.json({ error: "Book title required" }, { status: 400 });
+    const addsBook = action === "addBook" || action === "attachBook";
+    const activeSeriesId = addsBook ? await ensureSeriesForBook(bookId) : seriesId;
+
     // Everything below acts on a series, which must belong to this book's author.
     const owned = await getBookSeriesForBook(bookId);
 
@@ -71,7 +78,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true });
     }
 
-    const series = owned.find((item) => item.id === seriesId);
+    const series = owned.find((item) => item.id === activeSeriesId);
     if (!series) return NextResponse.json({ error: "Series not found" }, { status: 404 });
 
     if (action === "updateSeries") {
@@ -86,6 +93,13 @@ export async function POST(req: Request) {
     } else if (action === "removeBook") {
       if (!body.targetBookId) return NextResponse.json({ error: "Missing book" }, { status: 400 });
       await removeBookFromSeries(series.id, body.targetBookId);
+    } else if (action === "attachBook") {
+      // Only the author's own books that are not already in a series can be added.
+      const available = await getBooksOutsideSeries(bookId);
+      if (!available.some((book) => book.id === body.targetBookId)) {
+        return NextResponse.json({ error: "That book cannot be added to this series." }, { status: 400 });
+      }
+      await attachBookToSeries(series.id, body.targetBookId);
     } else if (action === "addBook") {
       if (!title) return NextResponse.json({ error: "Book title required" }, { status: 400 });
       const slug = await addBookToSeries(bookId, series.id, {

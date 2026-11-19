@@ -1437,6 +1437,8 @@ interface ListingFormProps {
   editId?: string;
   initialData?: Record<string, string>;
   isAdmin?: boolean;
+  /** Book whose series a newly created book should join. */
+  seriesBookId?: string;
 }
 
 // ── Section grouping helper ──────────────────────────────────────
@@ -1455,7 +1457,7 @@ function groupFieldsIntoSections(fields: FieldDef[]) {
   return sections;
 }
 
-export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType, editType, editId, initialData, isAdmin }: ListingFormProps) {
+export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType, editType, editId, initialData, isAdmin, seriesBookId }: ListingFormProps) {
   const isEdit = mode === "edit";
   const startType = editType || defaultType || "club";
   const [type, setType] = useState<ListingType>(startType);
@@ -1546,7 +1548,7 @@ export function ListingForm({ onSuccess, onCancel, mode = "create", defaultType,
           ? JSON.stringify({ action: "updateListing", type, id: editId, data: formData })
           : isEdit
           ? JSON.stringify({ type, id: editId, data: formData })
-          : JSON.stringify({ type, data: formData });
+          : JSON.stringify({ type, data: formData, seriesBookId });
 
         const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body });
         const text = await res.text();

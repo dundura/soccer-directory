@@ -1658,6 +1658,40 @@ export async function removeBookFromSeries(seriesId: string, bookId: string) {
   await sql`UPDATE books SET series_id = NULL, series_order = NULL WHERE id = ${bookId} AND series_id = ${seriesId}`;
 }
 
+// The first book added to a listing starts the series, with this book as Book 1.
+export async function ensureSeriesForBook(bookId: string): Promise<string> {
+  await ensureBookSeriesTables();
+  const book = await sql`SELECT name, series_id FROM books WHERE id = ${bookId} LIMIT 1`;
+  if (!book[0]) throw new Error("BOOK_NOT_FOUND");
+  if (book[0].series_id) return book[0].series_id as string;
+  return createBookSeries(bookId, { title: book[0].name as string });
+}
+
+// The author's other books that can still be added to a series.
+export async function getBooksOutsideSeries(bookId: string): Promise<{ id: string; name: string }[]> {
+  await ensureBookSeriesTables();
+  const book = await sql`SELECT user_id FROM books WHERE id = ${bookId} LIMIT 1`;
+  const ownerId = book[0]?.user_id as string | null | undefined;
+  if (!ownerId) return [];
+  const rows = await sql`
+    SELECT id, name FROM books
+    WHERE user_id = ${ownerId} AND status = 'approved' AND series_id IS NULL AND id != ${bookId}
+    ORDER BY name ASC`;
+  return rows.map((r) => ({ id: r.id as string, name: r.name as string }));
+}
+
+export async function attachBookToSeries(seriesId: string, bookId: string) {
+  const next = await sql`SELECT COALESCE(MAX(series_order), 0) + 1 AS next FROM books WHERE series_id = ${seriesId}`;
+  await sql`UPDATE books SET series_id = ${seriesId}, series_order = ${next[0].next} WHERE id = ${bookId}`;
+}
+
+// Puts a book just created from the listing form into the series of the book it was started from.
+export async function joinSeriesOfBook(fromBookId: string, newBookSlug: string) {
+  const seriesId = await ensureSeriesForBook(fromBookId);
+  const rows = await sql`SELECT id FROM books WHERE slug = ${newBookSlug} LIMIT 1`;
+  if (rows[0]) await attachBookToSeries(seriesId, rows[0].id as string);
+}
+
 // Creates a full book listing in the series. Author details come from the book
 // the author is adding it from, so they only fill in what differs.
 export async function addBookToSeries(

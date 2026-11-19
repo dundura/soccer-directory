@@ -98,9 +98,22 @@ export default async function ServiceDetailPage({ params }: Props) {
           {/* Product Info */}
           <div className="p-6 md:p-8">
             <div className="mb-4">
-              <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold mb-2">
-                {service.category}
-              </span>
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold">
+                  {service.category}
+                </span>
+                {service.aboutAuthor && (
+                  <a href="#about-the-author" className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                    Author
+                  </a>
+                )}
+                <a href="#contact-details" className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                  Contact
+                </a>
+                <a href="#share-listing" className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                  Share
+                </a>
+              </div>
               <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="name" value={service.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
               {service.price && (
                 <p className="text-2xl font-bold text-primary mt-1">{service.price}</p>
@@ -179,7 +192,7 @@ export default async function ServiceDetailPage({ params }: Props) {
 
             {/* About the Author */}
             {(service.aboutAuthor || ownerId) && (
-              <div className="border-t border-border pt-6 mt-6">
+              <div id="about-the-author" className="border-t border-border pt-6 mt-6 scroll-mt-24">
                 <h2 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight mb-3">About the Author</h2>
                 <div>
                   {service.authorImage && (
@@ -193,7 +206,7 @@ export default async function ServiceDetailPage({ params }: Props) {
             )}
 
             {/* Details */}
-            <div className="border-t border-border pt-6 mt-6 grid grid-cols-2 gap-4 text-sm">
+            <div id="contact-details" className="border-t border-border pt-6 mt-6 grid grid-cols-2 gap-4 text-sm scroll-mt-24">
               <div>
                 <span className="text-muted font-medium">Category</span>
                 <p className="font-bold text-primary">{service.category}</p>
@@ -272,7 +285,7 @@ export default async function ServiceDetailPage({ params }: Props) {
             )}
 
             {/* Share */}
-            <div className="border-t border-border pt-6 mt-6">
+            <div id="share-listing" className="border-t border-border pt-6 mt-6 scroll-mt-24">
               <h4 className="text-sm font-bold mb-2.5">Share this listing</h4>
               <ShareButtons url={pageUrl} title={service.name} />
             </div>
