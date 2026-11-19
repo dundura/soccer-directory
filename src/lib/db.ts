@@ -1511,6 +1511,8 @@ export interface BookSeriesBook {
 
 export interface BookSeries {
   id: string;
+  /** The listing that is the series' own page. It is not one of the numbered books. */
+  bookId: string;
   slug: string;
   title: string;
   description?: string;
@@ -1556,6 +1558,7 @@ async function ensureBookSeriesTables() {
 function mapBookSeries(r: Record<string, unknown>, books: BookSeriesBook[]): BookSeries {
   return {
     id: r.id as string,
+    bookId: r.book_id as string,
     slug: r.slug as string,
     title: r.title as string,
     description: (r.description as string | null) || undefined,

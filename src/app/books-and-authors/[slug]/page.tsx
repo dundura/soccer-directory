@@ -98,7 +98,8 @@ export default async function ServiceDetailPage({ params }: Props) {
           {/* Product Info */}
           <div className="p-6 md:p-8">
             <div className="mb-4">
-              <div className="flex flex-wrap items-center gap-2 mb-2">
+              <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="name" value={service.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
+              <div className="flex flex-wrap items-center gap-2 mt-3 mb-2">
                 <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold">
                   {service.category}
                 </span>
@@ -114,7 +115,6 @@ export default async function ServiceDetailPage({ params }: Props) {
                   Share
                 </a>
               </div>
-              <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="name" value={service.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
               {service.price && (
                 <p className="text-2xl font-bold text-primary mt-1">{service.price}</p>
               )}

@@ -902,7 +902,7 @@ const FIELDS: Record<ListingType, FieldDef[]> = {
   soccerbook: [
     { name: "name", label: "Book Title", required: true },
     { name: "author", label: "Author Name", required: true },
-    { name: "category", label: "Category", required: true, options: ["Soccer Strategy", "Player Development", "Coaching", "Parent Guide", "Biography", "Fiction", "Youth Soccer", "Other"] },
+    { name: "category", label: "Category", required: true, options: ["Soccer Strategy", "Player Development", "Coaching", "Parent Guide", "Biography", "Fiction", "Youth Soccer", "Young Readers", "Other"] },
     { name: "city", label: "City", required: true },
     { name: "country", label: "Country", required: true, type: "country" },
     { name: "state", label: "State", required: true, type: "state-select" },

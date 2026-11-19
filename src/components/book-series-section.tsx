@@ -73,12 +73,14 @@ export function BookSeriesSection({ bookId, ownerId }: { bookId: string; ownerId
   useEffect(() => { fetchSeries(); }, [fetchSeries]);
 
   const series = allSeries.find((item) => item.books.some((book) => book.id === bookId));
+  // The listing the series started from is the series page itself, so it is not numbered as a book.
+  const books = series ? series.books.filter((book) => book.id !== series.bookId) : [];
 
   const move = async (index: number, direction: -1 | 1) => {
     if (!series) return;
     const target = index + direction;
-    if (target < 0 || target >= series.books.length) return;
-    const order = series.books.map((book) => book.id);
+    if (target < 0 || target >= books.length) return;
+    const order = books.map((book) => book.id);
     [order[index], order[target]] = [order[target], order[index]];
     await postBookSeries({ action: "reorderBooks", bookId, seriesId: series.id, order });
     fetchSeries();
@@ -92,8 +94,8 @@ export function BookSeriesSection({ bookId, ownerId }: { bookId: string; ownerId
   };
 
   if (loading) return null;
-  // Readers only see this once there is more than one book to show.
-  if (!isOwner && (!series || series.books.length < 2)) return null;
+  // Readers only see this when there is another book to go to from this page.
+  if (!isOwner && !books.some((book) => book.id !== bookId)) return null;
 
   return (
     <section className="border-t border-border pt-6 mt-6 mb-6" aria-labelledby="book-series-heading">
@@ -120,11 +122,11 @@ export function BookSeriesSection({ bookId, ownerId }: { bookId: string; ownerId
           />
         )}
 
-        {!series && !showExistingForm && (
+        {books.length === 0 && !showExistingForm && (
           <p className="text-sm text-muted text-center py-4">Have more books in this series? Add them here.</p>
         )}
 
-        {series?.books.map((book, index) => {
+        {books.map((book, index) => {
           const isCurrent = book.id === bookId;
           const description = (book.description || "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
           return (
