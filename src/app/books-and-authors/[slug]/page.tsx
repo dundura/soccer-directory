@@ -110,11 +110,11 @@ export default async function ServiceDetailPage({ params }: Props) {
           {/* Product Info */}
           <div className="p-6 md:p-8">
             <div className="mb-4">
-              <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="name" value={service.name} tag="h1" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
+              <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="name" value={service.name} tag="h1" overlayEdit className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary uppercase leading-tight tracking-tight" />
               {service.tagline && (
-                <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="tagline" value={service.tagline} tag="p" className="text-sm text-accent font-medium mt-1" />
+                <InlineEditField ownerId={ownerId} listingType="soccerbook" listingId={service.id} field="tagline" value={service.tagline} tag="p" overlayEdit className="text-sm text-accent font-medium mt-1" />
               )}
-              <div className="flex flex-wrap items-center gap-2 mt-3 mb-2">
+              <div className="flex flex-wrap items-center gap-2 mt-2 mb-2">
                 <span className="inline-block px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold">
                   {service.category}
                 </span>

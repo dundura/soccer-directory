@@ -11,6 +11,7 @@ export function InlineEditField({
   value,
   className,
   multiline,
+  overlayEdit,
   tag: Tag = "p",
 }: {
   ownerId: string | null;
@@ -20,6 +21,8 @@ export function InlineEditField({
   value: string;
   className?: string;
   multiline?: boolean;
+  /** Floats the Edit button over the field so it adds no empty line below it. */
+  overlayEdit?: boolean;
   tag?: "p" | "h1" | "h2" | "h3" | "span" | "div";
 }) {
   const { data: session } = useSession();
@@ -111,7 +114,7 @@ export function InlineEditField({
       {canEdit && (
         <button
           onClick={() => { setDraft(current); setEditing(true); }}
-          className="inline-flex ml-2 text-xs font-semibold text-accent hover:text-accent-hover transition-colors opacity-0 group-hover/inline:opacity-100"
+          className={`${overlayEdit ? "absolute top-0 right-0 bg-white pl-2" : "inline-flex ml-2"} text-xs font-semibold text-accent hover:text-accent-hover transition-colors opacity-0 group-hover/inline:opacity-100`}
         >
           Edit
         </button>
